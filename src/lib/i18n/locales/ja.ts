@@ -130,6 +130,7 @@ const ja: Dictionary = {
   editor_save: "保存",
 
   common_loading: "読み込み中...",
+  common_back: "Back",
   common_error: "エラー",
   common_retry: "再試行",
   common_all: "すべて",

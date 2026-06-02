@@ -130,6 +130,7 @@ const fr: Dictionary = {
   editor_save: "Enregistrer",
 
   common_loading: "Chargement...",
+  common_back: "Back",
   common_error: "Erreur",
   common_retry: "Reessayer",
   common_all: "Tous",

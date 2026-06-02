@@ -130,6 +130,7 @@ const ko: Dictionary = {
   editor_save: "저장",
 
   common_loading: "로딩 중...",
+  common_back: "Back",
   common_error: "오류",
   common_retry: "재시도",
   common_all: "전체",

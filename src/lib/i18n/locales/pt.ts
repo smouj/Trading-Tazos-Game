@@ -130,6 +130,7 @@ const pt: Dictionary = {
   editor_save: "Salvar",
 
   common_loading: "Carregando...",
+  common_back: "Back",
   common_error: "Erro",
   common_retry: "Tentar novamente",
   common_all: "Todos",

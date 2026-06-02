@@ -167,6 +167,7 @@ export interface Dictionary {
   common_no: string
   common_cancel: string
   common_confirm_delete: string
+  common_back: string
 
   // Auth
   auth_login: string

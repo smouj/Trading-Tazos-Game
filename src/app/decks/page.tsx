@@ -4,32 +4,19 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
 import { useI18n } from "@/lib/i18n"
-import { Layers, Plus, Trash2, Star, ArrowLeft } from "lucide-react"
+import { Layers, Plus, Trash2, Star, ArrowLeft, Swords, Shield, Zap } from "lucide-react"
 
 interface DeckTazo {
-  id: string
-  name: string
-  displayName: string
-  imageUrl: string
-  franchise: string
-  attack: number
-  defense: number
-  resistance: number
-  weight: number
-  stability: number
-  spin: number
-  control: number
-  bounce: number
-  precision: number
+  id: string; name: string; displayName: string; imageUrl: string; franchise: string
+  attack: number; defense: number; resistance: number
+  weight: number; stability: number; spin: number
+  control: number; bounce: number; precision: number
   role?: string | null
 }
+interface Deck { id: string; name: string; isActive: boolean; tazoCount: number; tazos: DeckTazo[] }
 
-interface Deck {
-  id: string
-  name: string
-  isActive: boolean
-  tazoCount: number
-  tazos: DeckTazo[]
+const FRANCHISE_BORDER: Record<string, string> = {
+  pokemon: "#FFCB05", digimon: "#00A1E9", "dragon-ball-z": "#FF6B00",
 }
 
 export default function DecksPage() {
@@ -43,18 +30,13 @@ export default function DecksPage() {
 
   const fetchDecks = () => {
     if (!token) return
-    fetch("/api/decks", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch("/api/decks", { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => res.json())
       .then((d) => setDecks(d.decks || []))
       .catch(() => {})
       .finally(() => setFetching(false))
   }
-
-  useEffect(() => {
-    fetchDecks()
-  }, [token])
+  useEffect(() => { fetchDecks() }, [token])
 
   const handleCreate = async () => {
     if (!deckName.trim()) return
@@ -62,32 +44,17 @@ export default function DecksPage() {
     try {
       const res = await fetch("/api/decks", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ name: deckName, tazoIds: [] }),
       })
-      if (res.ok) {
-        setDeckName("")
-        setShowCreate(false)
-        fetchDecks()
-      } else {
-        const d = await res.json()
-        setError(d.error || "Failed to create deck")
-      }
-    } catch {
-      setError("Network error")
-    }
+      if (res.ok) { setDeckName(""); setShowCreate(false); fetchDecks() }
+      else { const d = await res.json(); setError(d.error || "Failed") }
+    } catch { setError("Network error") }
   }
 
   const handleActivate = async (deckId: string) => {
     await fetch(`/api/decks/${deckId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      method: "PATCH", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ isActive: true }),
     })
     fetchDecks()
@@ -96,27 +63,26 @@ export default function DecksPage() {
   const handleDelete = async (deckId: string) => {
     if (!confirm(t.common_confirm_delete)) return
     await fetch(`/api/decks/${deckId}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
+      method: "DELETE", headers: { Authorization: `Bearer ${token}` },
     })
     fetchDecks()
   }
 
   if (loading || fetching) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-purple-500 border-t-transparent" />
+      <div className="min-h-screen flex items-center justify-center mag-bg">
+        <div className="mag-spinner w-12 h-12 rounded-full border-4 border-[#FFCC00] border-t-[#E3350D]" />
       </div>
     )
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="text-center space-y-4">
-          <Layers className="w-12 h-12 text-zinc-600 mx-auto" />
-          <p className="text-zinc-400">{t.auth_login_subtitle}</p>
-          <Link href="/login" className="inline-block bg-purple-600 hover:bg-purple-500 text-white px-6 py-2.5 rounded-lg font-semibold transition-colors">
+      <div className="min-h-screen flex items-center justify-center px-4 mag-bg">
+        <div className="text-center space-y-5">
+          <Layers className="w-16 h-16 text-[#1a1a1a]/20 mx-auto" />
+          <p className="font-bold text-sm text-[#1a1a1a]/50 uppercase tracking-wider">{t.auth_login_subtitle}</p>
+          <Link href="/login" className="inline-block py-3 px-8 mag-btn bg-[#E3350D] text-white text-sm font-black uppercase tracking-widest">
             {t.auth_login}
           </Link>
         </div>
@@ -125,53 +91,52 @@ export default function DecksPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-950">
-      {/* Header */}
-      <header className="bg-zinc-900 border-b border-zinc-800 px-4 py-3">
-        <div className="max-w-7xl mx-auto flex items-center gap-4">
-          <Link href="/" className="text-zinc-400 hover:text-white transition-colors">
+    <div className="min-h-screen flex flex-col mag-bg">
+      {/* Magazine masthead */}
+      <header className="bg-[#3B4CCA] border-b-4 border-[#1a1a1a] mag-stripes">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
+          <Link href="/" className="text-white hover:opacity-70">
             <ArrowLeft className="w-5 h-5" />
           </Link>
-          <h1 className="text-lg font-bold text-white">{t.decks_title}</h1>
+          <h1 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight mag-stroke-sm">
+            {t.decks_title}
+          </h1>
           <button
             onClick={() => setShowCreate(!showCreate)}
-            className="ml-auto flex items-center gap-1.5 bg-purple-600 hover:bg-purple-500 text-white text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors"
+            className="ml-auto mag-btn bg-[#FFCC00] text-[#1a1a1a] flex items-center gap-1.5 px-4 py-2 text-xs font-black uppercase tracking-wider"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
             {t.decks_create}
           </button>
         </div>
       </header>
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-4">
-        {/* Create deck form */}
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-6">
+        {/* Create form */}
         {showCreate && (
-          <div className="mb-6 bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-            <div className="flex gap-3">
+          <div className="mb-6 border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] p-4" style={{ background: "white" }}>
+            <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="text"
                 value={deckName}
                 onChange={(e) => setDeckName(e.target.value)}
                 placeholder={t.decks_name_placeholder}
-                className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-purple-500"
+                className="flex-1 border-3 border-[#1a1a1a] px-4 py-2.5 text-sm font-bold text-[#1a1a1a] placeholder:text-[#1a1a1a]/30 shadow-[2px_2px_0px_#1a1a1a] focus:outline-none focus:border-[#3B4CCA]"
+                style={{ background: "#fffef0" }}
                 onKeyDown={(e) => e.key === "Enter" && handleCreate()}
                 autoFocus
               />
-              <button
-                onClick={handleCreate}
-                className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
-              >
-                {t.decks_create}
-              </button>
-              <button
-                onClick={() => setShowCreate(false)}
-                className="text-zinc-400 hover:text-white text-sm px-2"
-              >
-                {t.common_cancel}
-              </button>
+              <div className="flex gap-2">
+                <button onClick={handleCreate} className="mag-btn bg-[#3B4CCA] text-white px-5 py-2.5 text-xs font-black uppercase tracking-wider">
+                  {t.decks_create}
+                </button>
+                <button onClick={() => setShowCreate(false)} className="mag-btn bg-[#1a1a1a] text-[#FFCC00] px-3 py-2.5 text-xs font-black uppercase tracking-wider">
+                  {t.common_cancel}
+                </button>
+              </div>
             </div>
-            {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
-            <p className="text-zinc-500 text-xs mt-2">
+            {error && <p className="text-sm font-bold text-[#E3350D] mt-2">{error}</p>}
+            <p className="text-[10px] font-bold text-[#1a1a1a]/50 mt-2 uppercase tracking-wider">
               ✨ {t.decks_select_tazos} — {t.decks_min_tazos}
             </p>
           </div>
@@ -183,81 +148,107 @@ export default function DecksPage() {
             {decks.map((deck) => (
               <div
                 key={deck.id}
-                className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 hover:border-zinc-700 transition-colors"
+                className="border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] p-5 hover:shadow-[6px_6px_0px_#1a1a1a] hover:-translate-y-[1px] transition-all"
+                style={{ background: "white" }}
               >
-                <div className="flex items-center gap-3 mb-3">
+                {/* Header */}
+                <div className="flex items-start gap-3 mb-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-white font-semibold">{deck.name}</h3>
+                      <h2 className="text-lg font-black text-[#1a1a1a] uppercase tracking-tight">{deck.name}</h2>
                       {deck.isActive && (
-                        <span className="text-[10px] bg-purple-500/20 text-purple-400 border border-purple-500/30 px-2 py-0.5 rounded-full font-semibold">
+                        <span className="inline-flex items-center gap-1 text-[9px] bg-[#FFCC00] text-[#1a1a1a] font-black px-2 py-0.5 border-2 border-[#1a1a1a] uppercase tracking-wider shadow-[2px_2px_0px_#1a1a1a]">
+                          <Star className="w-2.5 h-2.5 fill-[#1a1a1a]" />
                           {t.decks_active}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-zinc-500 mt-0.5">
+                    <p className="text-xs font-bold text-[#1a1a1a]/50 uppercase tracking-wider mt-0.5">
                       {deck.tazoCount} {t.decks_tazo_count}
                     </p>
                   </div>
-                  <div className="flex gap-1">
+
+                  <div className="flex gap-1.5">
                     {!deck.isActive && (
                       <button
                         onClick={() => handleActivate(deck.id)}
-                        className="flex items-center gap-1 text-[10px] bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-2 py-1 rounded transition-colors"
-                        title={t.decks_activate}
+                        className="mag-btn bg-[#FFCC00] text-[#1a1a1a] px-3 py-1.5 text-[10px] font-black uppercase tracking-wider flex items-center gap-1"
                       >
                         <Star className="w-3 h-3" />
+                        {t.decks_activate}
                       </button>
                     )}
                     <button
                       onClick={() => handleDelete(deck.id)}
-                      className="flex items-center gap-1 text-[10px] bg-zinc-800 hover:bg-red-500/20 text-zinc-500 hover:text-red-400 px-2 py-1 rounded transition-colors"
-                      title={t.decks_delete}
+                      className="mag-btn bg-white text-[#E3350D] border-[#E3350D] px-3 py-1.5 text-[10px] font-black uppercase tracking-wider flex items-center gap-1"
+                      style={{ borderWidth: "3px", borderStyle: "solid" }}
                     >
                       <Trash2 className="w-3 h-3" />
                     </button>
                   </div>
                 </div>
 
-                {/* Tazo preview strip */}
-                {deck.tazos.length > 0 && (
-                  <div className="flex gap-2 overflow-x-auto pb-1">
-                    {deck.tazos.map((tazo) => (
-                      <div
-                        key={tazo.id}
-                        className="shrink-0 w-14 h-14 bg-zinc-800 rounded-lg flex items-center justify-center overflow-hidden"
-                      >
-                        {tazo.imageUrl ? (
-                          <img
-                            src={tazo.imageUrl}
-                            alt={tazo.name || ""}
-                            className="w-12 h-12 object-contain"
-                          />
-                        ) : (
-                          <span className="text-zinc-600 text-xs">{tazo.name?.[0] || "?"}</span>
-                        )}
-                      </div>
-                    ))}
+                {/* Tazo strip */}
+                {deck.tazos.length > 0 ? (
+                  <div className="flex gap-2 overflow-x-auto pb-1 custom-scrollbar">
+                    {deck.tazos.map((tazo) => {
+                      const borderColor = FRANCHISE_BORDER[tazo.franchise] || "#1a1a1a"
+                      return (
+                        <div
+                          key={tazo.id}
+                          className="shrink-0 border-3 shadow-[2px_2px_0px_#1a1a1a] overflow-hidden"
+                          style={{ borderColor, background: "white", width: "80px" }}
+                        >
+                          <div className="h-1" style={{ background: borderColor }} />
+                          <div className="p-1.5 flex items-center justify-center bg-[#fffef0]" style={{ aspectRatio: "1" }}>
+                            {tazo.imageUrl ? (
+                              <img src={tazo.imageUrl} alt={tazo.name || ""} className="w-full h-full object-contain" loading="lazy" />
+                            ) : (
+                              <span className="text-xl font-black text-[#1a1a1a]/15">?</span>
+                            )}
+                          </div>
+                          <div className="p-1">
+                            <p className="text-[8px] font-black text-[#1a1a1a] truncate leading-tight">
+                              {tazo.name || "?"}
+                            </p>
+                            <div className="flex gap-0.5 mt-0.5">
+                              <span className="text-[7px] font-bold text-[#E3350D]">{tazo.attack}</span>
+                              <span className="text-[7px] font-bold text-[#1a1a1a]/30">/</span>
+                              <span className="text-[7px] font-bold text-[#3B4CCA]">{tazo.defense}</span>
+                              <span className="text-[7px] font-bold text-[#1a1a1a]/30">/</span>
+                              <span className="text-[7px] font-bold text-[#F59E0B]">{tazo.bounce}</span>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
-                )}
-                {deck.tazos.length === 0 && (
-                  <p className="text-xs text-zinc-600 italic">{t.decks_select_tazos}</p>
+                ) : (
+                  <p className="text-xs font-bold text-[#1a1a1a]/30 italic uppercase tracking-wider py-4 text-center border-2 border-dashed border-[#1a1a1a]/20">
+                    {t.decks_select_tazos}
+                  </p>
                 )}
               </div>
             ))}
           </div>
-        ) : (
-          <div className="text-center py-20">
-            <Layers className="w-16 h-16 text-zinc-700 mx-auto mb-4" />
-            <p className="text-zinc-400 text-lg mb-2">{t.decks_empty}</p>
+        ) : !showCreate ? (
+          /* Empty state */
+          <div
+            className="text-center py-20 border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a]"
+            style={{ background: "#fffef0" }}
+          >
+            <Layers className="w-20 h-20 text-[#1a1a1a]/15 mx-auto mb-4" />
+            <h2 className="text-2xl font-black text-[#E3350D] mb-2 uppercase tracking-wider mag-stroke-sm">
+              {t.decks_empty}
+            </h2>
             <button
               onClick={() => setShowCreate(true)}
-              className="text-purple-400 hover:text-purple-300 text-sm"
+              className="inline-block mt-4 py-3 px-8 mag-btn bg-[#3B4CCA] text-white text-sm font-black uppercase tracking-widest"
             >
               {t.decks_create}
             </button>
           </div>
-        )}
+        ) : null}
       </main>
     </div>
   )

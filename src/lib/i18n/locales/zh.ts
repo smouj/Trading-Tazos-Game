@@ -130,6 +130,7 @@ const zh: Dictionary = {
   editor_save: "保存",
 
   common_loading: "加载中...",
+  common_back: "Back",
   common_error: "错误",
   common_retry: "重试",
   common_all: "全部",

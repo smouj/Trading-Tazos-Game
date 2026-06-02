@@ -130,6 +130,7 @@ const ru: Dictionary = {
   editor_save: "Сохранить",
 
   common_loading: "Загрузка...",
+  common_back: "Back",
   common_error: "Ошибка",
   common_retry: "Повторить",
   common_all: "Все",

@@ -6,11 +6,11 @@ import AlbumView from '@/components/game/album-view'
 import { BattleView } from '@/components/game/battle-view'
 import { ScannerView } from '@/components/game/scanner-view'
 import StatsPanel from '@/components/game/stats-panel'
-import { BookOpen, Swords, Scan, BarChart3, Circle } from 'lucide-react'
+import { BookOpen, Swords, Scan, BarChart3, Disc3 } from 'lucide-react'
 
 const TABS: { id: GameView; label: string; icon: typeof BookOpen }[] = [
   { id: 'album', label: 'Album', icon: BookOpen },
-  { id: 'battle', label: 'Battle', icon: Swords },
+  { id: 'battle', label: 'Battle!', icon: Swords },
   { id: 'scanner', label: 'Scanner', icon: Scan },
   { id: 'stats', label: 'Stats', icon: BarChart3 },
 ]
@@ -24,61 +24,104 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="min-h-screen flex flex-col game-bg">
-      {/* Header */}
-      <header className="border-b border-white/10 bg-[#12122a]/80 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          {/* Title Row */}
-          <div className="flex items-center gap-3 mb-2">
-            {/* Tazo Icon */}
-            <div className="relative w-10 h-10 sm:w-12 sm:h-12 shrink-0">
+    <div className="min-h-screen flex flex-col mag-bg">
+      {/* ===== MAGAZINE MASTHEAD ===== */}
+      <header className="sticky top-0 z-40 bg-[#FFCC00] border-b-4 border-[#1a1a1a] mag-stripes">
+        {/* Top bar with exclusive badge */}
+        <div className="bg-[#1a1a1a] text-white text-center py-1 px-4">
+          <span className="text-[10px] sm:text-xs font-black tracking-[3px] uppercase text-[#FFCC00]">
+            ★ EXCLUSIVE — COLLECTOR&apos;S EDITION ★
+          </span>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
+          {/* Title Row - Magazine Masthead */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Spinning Tazo Disc Icon */}
+            <div className="relative shrink-0">
               <div
-                className="w-full h-full rounded-full flex items-center justify-center"
+                className="mag-spinner w-11 h-11 sm:w-14 sm:h-14 rounded-full border-[3px] border-[#1a1a1a] flex items-center justify-center"
                 style={{
-                  background: 'linear-gradient(135deg, #FFCB05, #FF6B00, #00A1E9)',
-                  boxShadow: '0 0 12px rgba(255, 203, 5, 0.3)',
+                  background: 'conic-gradient(from 0deg, #FFCC00, #E3350D, #3B4CCA, #FF6B00, #00A1E9, #78C850, #FFCC00)',
+                  boxShadow: '3px 3px 0px #1a1a1a',
                 }}
               >
-                <Circle className="w-5 h-5 sm:w-6 sm:h-6 text-white/90" fill="white" fillOpacity={0.2} />
+                <div className="w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-white border-2 border-[#1a1a1a] flex items-center justify-center">
+                  <Disc3 className="w-3 h-3 sm:w-4 sm:h-4 text-[#1a1a1a]" />
+                </div>
               </div>
             </div>
-            <div className="min-w-0">
-              <h1 className="text-xl sm:text-2xl font-black bg-gradient-to-r from-yellow-400 via-orange-400 to-cyan-400 bg-clip-text text-transparent leading-tight">
-                Tazos Legends Arena
+
+            {/* Title & Subtitle */}
+            <div className="min-w-0 flex-1">
+              <h1
+                className="text-2xl sm:text-4xl lg:text-5xl font-black leading-none tracking-tight mag-stroke"
+                style={{ WebkitTextStroke: '3px #1a1a1a' }}
+              >
+                TAZOS LEGENDS
               </h1>
-              <p className="text-[10px] sm:text-xs text-white/40 leading-tight truncate">
-                Escanea tus tazos antiguos, crea tu álbum digital y hazlos combatir en una arena física
-              </p>
+              <div className="flex items-baseline gap-2 mt-0.5">
+                <span
+                  className="text-lg sm:text-2xl lg:text-3xl font-black italic mag-stroke-red leading-none"
+                  style={{ WebkitTextStroke: '2px #1a1a1a' }}
+                >
+                  ARENA
+                </span>
+                <span className="hidden sm:inline text-[10px] font-black text-[#1a1a1a] bg-white border-2 border-[#1a1a1a] px-1.5 py-0.5 shadow-[2px_2px_0px_#1a1a1a] uppercase tracking-wider">
+                  Vol.1
+                </span>
+              </div>
+            </div>
+
+            {/* Issue info - right side */}
+            <div className="hidden md:flex flex-col items-end gap-1 shrink-0">
+              <div className="speech-bubble text-[10px]">
+                Gotta flip &apos;em all!
+              </div>
+              <span className="text-[9px] font-bold text-[#1a1a1a]/60 italic">
+                Issue #001 — 2025 Edition
+              </span>
             </div>
           </div>
-
-          {/* Navigation Tabs */}
-          <nav className="flex gap-1" role="tablist" aria-label="Game views">
-            {TABS.map(({ id, label, icon: Icon }) => (
-              <button
-                key={id}
-                role="tab"
-                aria-selected={activeView === id}
-                onClick={() => setActiveView(id)}
-                className={`
-                  flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium
-                  transition-all duration-200
-                  ${activeView === id
-                    ? 'bg-white/10 text-white shadow-sm tab-active-glow'
-                    : 'text-white/40 hover:text-white/60 hover:bg-white/5'
-                  }
-                `}
-              >
-                <Icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{label}</span>
-              </button>
-            ))}
-          </nav>
         </div>
+
+        {/* ===== MAGAZINE SECTION TABS ===== */}
+        <nav className="max-w-7xl mx-auto px-4 pb-0" role="tablist" aria-label="Game views">
+          <div className="flex gap-1 sm:gap-2">
+            {TABS.map(({ id, label, icon: Icon }) => {
+              const isActive = activeView === id
+              return (
+                <button
+                  key={id}
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setActiveView(id)}
+                  className={`
+                    flex items-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 font-black text-[11px] sm:text-xs
+                    tracking-wider uppercase transition-all duration-150
+                    ${
+                      isActive
+                        ? 'mag-tab mag-tab-active bg-[#FFCC00] text-[#1a1a1a] rounded-t-lg -mb-[1px]'
+                        : 'mag-tab bg-white/80 text-[#1a1a1a]/60 rounded-t-lg border-2 border-b-0 border-[#1a1a1a]/20 hover:bg-white hover:text-[#1a1a1a] hover:border-[#1a1a1a]/40'
+                    }
+                  `}
+                >
+                  <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span>{label}</span>
+                  {isActive && (
+                    <span className="hidden sm:inline text-[8px] bg-[#E3350D] text-white rounded-full w-4 h-4 flex items-center justify-center border border-[#1a1a1a]">
+                      ★
+                    </span>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        </nav>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-6">
+      {/* ===== MAIN CONTENT - Magazine Pages ===== */}
+      <main className="flex-1 max-w-7xl mx-auto w-full px-3 sm:px-4 py-4 sm:py-6">
         {activeView === 'album' && (
           <AlbumView onStatsUpdate={handleStatsUpdate} />
         )}
@@ -93,15 +136,25 @@ export default function Home() {
         )}
       </main>
 
-      {/* Sticky Footer */}
-      <footer className="border-t border-white/10 bg-[#12122a]/80 backdrop-blur-md mt-auto">
+      {/* ===== MAGAZINE FOOTER BAR ===== */}
+      <footer className="bg-[#E3350D] border-t-4 border-[#1a1a1a] mt-auto">
         <div className="max-w-7xl mx-auto px-4 py-3">
+          {/* Decorative top dots */}
+          <div className="flex justify-center gap-2 mb-2">
+            {['#FFCC00', '#3B4CCA', '#FF6B00', '#78C850', '#00A1E9'].map((color, i) => (
+              <div
+                key={i}
+                className="w-2 h-2 rounded-full border border-[#1a1a1a]/30"
+                style={{ backgroundColor: color }}
+              />
+            ))}
+          </div>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-1">
-            <p className="text-[10px] text-white/25">
+            <p className="text-[10px] sm:text-xs font-bold text-white tracking-wide">
               Tazos Legends Arena &copy; {new Date().getFullYear()} — A nostalgic tribute to the golden age of tazos
             </p>
-            <p className="text-[10px] text-white/15">
-              Pokémon, Digimon & Dragon Ball Z are trademarks of their respective owners
+            <p className="text-[9px] sm:text-[10px] text-white/60 italic text-center sm:text-right">
+              Pokémon, Digimon &amp; Dragon Ball Z are trademarks of their respective owners. This is a fan-made tribute.
             </p>
           </div>
         </div>

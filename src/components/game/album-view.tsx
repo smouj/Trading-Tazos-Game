@@ -15,24 +15,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Search, Filter, Grid3X3, LayoutGrid, BookOpen, PackageX } from 'lucide-react'
+import { Search, Filter, Grid3X3, LayoutGrid, BookOpen, Star, ArrowUpDown } from 'lucide-react'
 
 interface AlbumViewProps {
   onStatsUpdate?: () => void
 }
 
-const FRANCHISE_CHIP_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  pokemon: { bg: 'rgba(255, 203, 5, 0.15)', text: '#FFCB05', border: 'rgba(255, 203, 5, 0.3)' },
-  digimon: { bg: 'rgba(0, 161, 233, 0.15)', text: '#00A1E9', border: 'rgba(0, 161, 233, 0.3)' },
-  dbz: { bg: 'rgba(255, 107, 0, 0.15)', text: '#FF6B00', border: 'rgba(255, 107, 0, 0.3)' },
-}
-
-const RARITY_CHIP_COLORS: Record<string, { bg: string; text: string }> = {
-  common: { bg: 'rgba(156, 163, 175, 0.15)', text: '#9CA3AF' },
-  uncommon: { bg: 'rgba(34, 197, 94, 0.15)', text: '#22C55E' },
-  rare: { bg: 'rgba(59, 130, 246, 0.15)', text: '#3B82F6' },
-  ultra: { bg: 'rgba(168, 85, 247, 0.15)', text: '#A855F7' },
-  legendary: { bg: 'rgba(245, 158, 11, 0.15)', text: '#F59E0B' },
+// Magazine-style franchise chip colors - vibrant, bold, 90s magazine feel
+const FRANCHISE_MAG_COLORS: Record<string, { activeBg: string; activeText: string; inactiveBg: string; inactiveText: string }> = {
+  pokemon: { activeBg: '#FFCC00', activeText: '#1a1a1a', inactiveBg: '#ffffff', inactiveText: '#1a1a1a' },
+  digimon: { activeBg: '#00A1E9', activeText: '#ffffff', inactiveBg: '#ffffff', inactiveText: '#1a1a1a' },
+  dbz: { activeBg: '#FF6B00', activeText: '#1a1a1a', inactiveBg: '#ffffff', inactiveText: '#1a1a1a' },
 }
 
 type GridSize = 'compact' | 'normal'
@@ -99,9 +92,7 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
       const res = await fetch(`/api/tazos/${tazo.id}/toggle-owned`, { method: 'PUT' })
       const data = await res.json()
       if (data.tazo) {
-        // Update in local list
         setTazos(prev => prev.map(t => t.id === tazo.id ? { ...t, isOwned: !t.isOwned } : t))
-        // Update the selected tazo in the modal
         setSelectedTazo(prev => prev?.id === tazo.id ? { ...prev, isOwned: !prev.isOwned } : prev)
         onStatsUpdate?.()
       }
@@ -116,89 +107,146 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
 
   return (
     <div className="space-y-4">
-      {/* Stats Summary Bar */}
-      <div className="flex flex-wrap items-center gap-3 px-1">
-        <div className="flex items-center gap-1.5">
-          <BookOpen className="w-4 h-4 text-white/50" />
-          <span className="text-sm text-white/70">
-            <span className="font-bold text-white">{totalCount}</span> tazos
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="text-sm text-white/70">
-            <span className="font-bold text-green-400">{ownedCount}</span> owned
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="text-sm text-white/70">
-            <span className="font-bold text-yellow-400">{completionPct}%</span> complete
-          </span>
-        </div>
-        {/* Completion mini bar */}
-        <div className="flex-1 min-w-[60px] max-w-[120px] h-1.5 bg-white/10 rounded-full overflow-hidden">
-          <div
-            className="h-full rounded-full bg-gradient-to-r from-yellow-400 to-orange-400 stat-bar-fill"
-            style={{ width: `${completionPct}%` }}
-          />
-        </div>
+      {/* ═══════════════════════════════════════════ */}
+      {/* MAGAZINE BANNER STRIP - Stats Summary Bar  */}
+      {/* ═══════════════════════════════════════════ */}
+      <div
+        className="mag-card-yellow rounded-none px-4 py-3"
+        style={{ borderBottom: '4px solid #1a1a1a' }}
+      >
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Stats in magazine headline style */}
+          <div className="flex items-center gap-1">
+            <BookOpen className="w-5 h-5 text-[#1a1a1a]" />
+            <span className="text-sm font-black text-[#1a1a1a] tracking-tight">
+              {totalCount} TAZOS
+            </span>
+          </div>
 
-        {/* Grid size toggle */}
-        <div className="ml-auto flex gap-0.5 bg-white/5 rounded-lg p-0.5">
-          <button
-            className={`p-1.5 rounded ${gridSize === 'normal' ? 'bg-white/10 text-white' : 'text-white/40'}`}
-            onClick={() => setGridSize('normal')}
-            aria-label="Normal grid"
-          >
-            <LayoutGrid className="w-4 h-4" />
-          </button>
-          <button
-            className={`p-1.5 rounded ${gridSize === 'compact' ? 'bg-white/10 text-white' : 'text-white/40'}`}
-            onClick={() => setGridSize('compact')}
-            aria-label="Compact grid"
-          >
-            <Grid3X3 className="w-4 h-4" />
-          </button>
+          <div
+            className="w-px h-5"
+            style={{ backgroundColor: '#1a1a1a', opacity: 0.3 }}
+          />
+
+          <div className="flex items-center gap-1">
+            <span className="text-sm font-black text-[#E3350D] tracking-tight">
+              {ownedCount} OWNED
+            </span>
+          </div>
+
+          <div
+            className="w-px h-5"
+            style={{ backgroundColor: '#1a1a1a', opacity: 0.3 }}
+          />
+
+          <div className="flex items-center gap-1">
+            <span className="text-sm font-black text-[#3B4CCA] tracking-tight">
+              {completionPct}% COMPLETE
+            </span>
+          </div>
+
+          {/* Magazine subscription card style progress bar */}
+          <div className="flex-1 min-w-[80px] max-w-[160px]">
+            <div
+              className="h-4 rounded-sm overflow-hidden relative"
+              style={{
+                border: '2px solid #1a1a1a',
+                background: '#fffef0',
+              }}
+            >
+              <div
+                className="h-full stat-bar-fill"
+                style={{
+                  width: `${completionPct}%`,
+                  background: 'repeating-linear-gradient(-45deg, #FFCC00, #FFCC00 4px, #FFB800 4px, #FFB800 8px)',
+                  borderRight: completionPct > 0 && completionPct < 100 ? '2px solid #1a1a1a' : 'none',
+                }}
+              />
+              {/* Mini text inside bar */}
+              <span
+                className="absolute inset-0 flex items-center justify-center text-[8px] font-black text-[#1a1a1a] mix-blend-multiply"
+                style={{ textShadow: '0 0 2px rgba(255,255,255,0.8)' }}
+              >
+                {completionPct}%
+              </span>
+            </div>
+          </div>
+
+          {/* Grid size toggle - mag-btn style */}
+          <div className="ml-auto flex gap-1">
+            <button
+              className={`mag-btn px-2 py-1.5 rounded-sm text-[10px] ${
+                gridSize === 'normal'
+                  ? 'bg-[#E3350D] text-white'
+                  : 'bg-white text-[#1a1a1a]'
+              }`}
+              onClick={() => setGridSize('normal')}
+              aria-label="Normal grid"
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </button>
+            <button
+              className={`mag-btn px-2 py-1.5 rounded-sm text-[10px] ${
+                gridSize === 'compact'
+                  ? 'bg-[#E3350D] text-white'
+                  : 'bg-white text-[#1a1a1a]'
+              }`}
+              onClick={() => setGridSize('compact')}
+              aria-label="Compact grid"
+            >
+              <Grid3X3 className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Filter Bar */}
-      <div className="space-y-2.5">
-        {/* Search Row */}
+      {/* ═══════════════════════════════════════════ */}
+      {/* FILTER BAR - Magazine Sidebar Style         */}
+      {/* ═══════════════════════════════════════════ */}
+      <div className="space-y-3">
+        {/* Search Row - Magazine style */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a1a1a]" />
           <Input
-            placeholder="Search tazos..."
+            placeholder="🔍 SEARCH YOUR COLLECTION..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/20 h-9"
+            className="pl-10 mag-card rounded-none h-10 text-sm font-black text-[#1a1a1a] placeholder:text-[#1a1a1a]/40 placeholder:font-black placeholder:text-sm"
+            style={{
+              background: 'white',
+              border: '3px solid #1a1a1a',
+              boxShadow: '4px 4px 0px #1a1a1a',
+            }}
           />
         </div>
 
-        {/* Filter Chips Row */}
-        <div className="flex flex-wrap gap-1.5">
-          {/* Franchise Chips */}
+        {/* Franchise Chips Row - Vibrant magazine style */}
+        <div className="flex flex-wrap gap-2">
+          {/* All chip */}
           <button
             onClick={() => setSelectedFranchise('all')}
-            className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all ${
+            className={`px-3 py-1.5 rounded-sm text-[11px] font-black uppercase tracking-wide transition-all ${
               selectedFranchise === 'all'
-                ? 'bg-white/15 text-white border border-white/20'
-                : 'bg-white/5 text-white/40 border border-transparent hover:bg-white/10'
+                ? 'mag-btn bg-[#1a1a1a] text-white'
+                : 'bg-white text-[#1a1a1a] border-2 border-[#1a1a1a] hover:bg-gray-100'
             }`}
           >
-            All
+            ALL
           </button>
           {franchises.map((f) => {
-            const colors = FRANCHISE_CHIP_COLORS[f.slug] || FRANCHISE_CHIP_COLORS.pokemon
+            const colors = FRANCHISE_MAG_COLORS[f.slug] || FRANCHISE_MAG_COLORS.pokemon
             const isActive = selectedFranchise === f.slug
             return (
               <button
                 key={f.id}
                 onClick={() => setSelectedFranchise(isActive ? 'all' : f.slug)}
-                className="px-2.5 py-1 rounded-full text-[11px] font-medium transition-all"
+                className="px-3 py-1.5 rounded-sm text-[11px] font-black uppercase tracking-wide transition-all"
                 style={{
-                  backgroundColor: isActive ? colors.bg : 'rgba(255,255,255,0.03)',
-                  color: isActive ? colors.text : 'rgba(255,255,255,0.4)',
-                  border: isActive ? `1px solid ${colors.border}` : '1px solid transparent',
+                  backgroundColor: isActive ? colors.activeBg : colors.inactiveBg,
+                  color: isActive ? colors.activeText : colors.inactiveText,
+                  border: isActive ? '3px solid #1a1a1a' : '2px solid #1a1a1a',
+                  boxShadow: isActive ? '3px 3px 0px #1a1a1a' : 'none',
+                  transform: isActive ? 'none' : 'none',
                 }}
               >
                 {f.name}
@@ -207,116 +255,236 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
           })}
         </div>
 
-        {/* More Filters Row */}
+        {/* Filter Dropdowns Row - Magazine sidebar selectors */}
         <div className="flex flex-wrap gap-2 items-center">
-          <Filter className="w-3.5 h-3.5 text-white/30" />
+          <Filter className="w-4 h-4 text-[#1a1a1a]" style={{ strokeWidth: 2.5 }} />
 
           <Select value={selectedRarity} onValueChange={setSelectedRarity}>
-            <SelectTrigger className="w-[120px] h-8 text-[11px] bg-white/5 border-white/10 text-white/70">
+            <SelectTrigger
+              className="w-[130px] h-9 text-[11px] font-black uppercase tracking-wide rounded-none"
+              style={{
+                background: 'white',
+                border: '3px solid #1a1a1a',
+                color: '#1a1a1a',
+                boxShadow: '2px 2px 0px #1a1a1a',
+              }}
+            >
               <SelectValue placeholder="Rarity" />
             </SelectTrigger>
-            <SelectContent className="bg-[#1e1e36] border-white/10">
-              <SelectItem value="all" className="text-white/70 text-[11px]">All Rarities</SelectItem>
-              <SelectItem value="common" className="text-[11px]">
-                <span className="text-gray-400">★ Common</span>
+            <SelectContent
+              className="rounded-none font-black"
+              style={{
+                background: 'white',
+                border: '3px solid #1a1a1a',
+                boxShadow: '4px 4px 0px #1a1a1a',
+              }}
+            >
+              <SelectItem value="all" className="text-[11px] font-black uppercase">All Rarities</SelectItem>
+              <SelectItem value="common" className="text-[11px] font-bold">
+                <span className="text-gray-500">★ Common</span>
               </SelectItem>
-              <SelectItem value="uncommon" className="text-[11px]">
-                <span className="text-green-400">★★ Uncommon</span>
+              <SelectItem value="uncommon" className="text-[11px] font-bold">
+                <span className="text-green-600">★★ Uncommon</span>
               </SelectItem>
-              <SelectItem value="rare" className="text-[11px]">
-                <span className="text-blue-400">★★★ Rare</span>
+              <SelectItem value="rare" className="text-[11px] font-bold">
+                <span className="text-blue-600">★★★ Rare</span>
               </SelectItem>
-              <SelectItem value="ultra" className="text-[11px]">
-                <span className="text-purple-400">★★★★ Ultra</span>
+              <SelectItem value="ultra" className="text-[11px] font-bold">
+                <span className="text-purple-600">★★★★ Ultra</span>
               </SelectItem>
-              <SelectItem value="legendary" className="text-[11px]">
-                <span className="text-amber-400">★★★★★ Legendary</span>
+              <SelectItem value="legendary" className="text-[11px] font-bold">
+                <span className="text-amber-600">★★★★★ Legendary</span>
               </SelectItem>
             </SelectContent>
           </Select>
 
           <Select value={selectedCondition} onValueChange={setSelectedCondition}>
-            <SelectTrigger className="w-[120px] h-8 text-[11px] bg-white/5 border-white/10 text-white/70">
+            <SelectTrigger
+              className="w-[130px] h-9 text-[11px] font-black uppercase tracking-wide rounded-none"
+              style={{
+                background: 'white',
+                border: '3px solid #1a1a1a',
+                color: '#1a1a1a',
+                boxShadow: '2px 2px 0px #1a1a1a',
+              }}
+            >
               <SelectValue placeholder="Condition" />
             </SelectTrigger>
-            <SelectContent className="bg-[#1e1e36] border-white/10">
-              <SelectItem value="all" className="text-white/70 text-[11px]">All Conditions</SelectItem>
-              <SelectItem value="mint" className="text-[11px]"><span className="text-emerald-400">✨ Mint</span></SelectItem>
-              <SelectItem value="good" className="text-[11px]"><span className="text-green-400">👍 Good</span></SelectItem>
-              <SelectItem value="used" className="text-[11px]"><span className="text-yellow-400">🔄 Used</span></SelectItem>
-              <SelectItem value="worn" className="text-[11px]"><span className="text-orange-400">⚔️ Worn</span></SelectItem>
-              <SelectItem value="holo" className="text-[11px]"><span className="text-cyan-400">🌈 Holo</span></SelectItem>
-              <SelectItem value="metallic" className="text-[11px]"><span className="text-slate-400">🛡️ Metallic</span></SelectItem>
+            <SelectContent
+              className="rounded-none font-black"
+              style={{
+                background: 'white',
+                border: '3px solid #1a1a1a',
+                boxShadow: '4px 4px 0px #1a1a1a',
+              }}
+            >
+              <SelectItem value="all" className="text-[11px] font-black uppercase">All Conditions</SelectItem>
+              <SelectItem value="mint" className="text-[11px] font-bold"><span className="text-emerald-600">✨ Mint</span></SelectItem>
+              <SelectItem value="good" className="text-[11px] font-bold"><span className="text-green-600">👍 Good</span></SelectItem>
+              <SelectItem value="used" className="text-[11px] font-bold"><span className="text-yellow-600">🔄 Used</span></SelectItem>
+              <SelectItem value="worn" className="text-[11px] font-bold"><span className="text-orange-600">⚔️ Worn</span></SelectItem>
+              <SelectItem value="holo" className="text-[11px] font-bold"><span className="text-cyan-600">🌈 Holo</span></SelectItem>
+              <SelectItem value="metallic" className="text-[11px] font-bold"><span className="text-slate-600">🛡️ Metallic</span></SelectItem>
             </SelectContent>
           </Select>
 
           <Select value={selectedOwned} onValueChange={setSelectedOwned}>
-            <SelectTrigger className="w-[110px] h-8 text-[11px] bg-white/5 border-white/10 text-white/70">
-              <SelectValue placeholder="Owned" />
+            <SelectTrigger
+              className="w-[120px] h-9 text-[11px] font-black uppercase tracking-wide rounded-none"
+              style={{
+                background: 'white',
+                border: '3px solid #1a1a1a',
+                color: '#1a1a1a',
+                boxShadow: '2px 2px 0px #1a1a1a',
+              }}
+            >
+              <SelectValue placeholder="Status" />
             </SelectTrigger>
-            <SelectContent className="bg-[#1e1e36] border-white/10">
-              <SelectItem value="all" className="text-white/70 text-[11px]">All Status</SelectItem>
-              <SelectItem value="owned" className="text-[11px]"><span className="text-green-400">✓ Owned</span></SelectItem>
-              <SelectItem value="missing" className="text-[11px]"><span className="text-red-400">✗ Missing</span></SelectItem>
+            <SelectContent
+              className="rounded-none font-black"
+              style={{
+                background: 'white',
+                border: '3px solid #1a1a1a',
+                boxShadow: '4px 4px 0px #1a1a1a',
+              }}
+            >
+              <SelectItem value="all" className="text-[11px] font-black uppercase">All Status</SelectItem>
+              <SelectItem value="owned" className="text-[11px] font-bold"><span className="text-green-600">✓ Owned</span></SelectItem>
+              <SelectItem value="missing" className="text-[11px] font-bold"><span className="text-red-600">✗ Missing</span></SelectItem>
             </SelectContent>
           </Select>
 
-          <div className="ml-auto flex gap-1 items-center">
+          {/* Sort - right aligned */}
+          <div className="ml-auto flex gap-1.5 items-center">
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-[100px] h-8 text-[11px] bg-white/5 border-white/10 text-white/70">
+              <SelectTrigger
+                className="w-[110px] h-9 text-[11px] font-black uppercase tracking-wide rounded-none"
+                style={{
+                  background: 'white',
+                  border: '3px solid #1a1a1a',
+                  color: '#1a1a1a',
+                  boxShadow: '2px 2px 0px #1a1a1a',
+                }}
+              >
                 <SelectValue placeholder="Sort" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1e1e36] border-white/10">
-                <SelectItem value="name" className="text-white/70 text-[11px]">Name</SelectItem>
-                <SelectItem value="rarity" className="text-[11px]">Rarity</SelectItem>
-                <SelectItem value="attack" className="text-[11px]">Attack</SelectItem>
-                <SelectItem value="defense" className="text-[11px]">Defense</SelectItem>
-                <SelectItem value="spin" className="text-[11px]">Spin</SelectItem>
-                <SelectItem value="printedNumber" className="text-[11px]">Number</SelectItem>
+              <SelectContent
+                className="rounded-none font-black"
+                style={{
+                  background: 'white',
+                  border: '3px solid #1a1a1a',
+                  boxShadow: '4px 4px 0px #1a1a1a',
+                }}
+              >
+                <SelectItem value="name" className="text-[11px] font-black uppercase">Name</SelectItem>
+                <SelectItem value="rarity" className="text-[11px] font-bold">Rarity</SelectItem>
+                <SelectItem value="attack" className="text-[11px] font-bold">Attack</SelectItem>
+                <SelectItem value="defense" className="text-[11px] font-bold">Defense</SelectItem>
+                <SelectItem value="spin" className="text-[11px] font-bold">Spin</SelectItem>
+                <SelectItem value="printedNumber" className="text-[11px] font-bold">Number</SelectItem>
               </SelectContent>
             </Select>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 text-white/40 hover:text-white hover:bg-white/5"
+            <button
+              className="mag-btn px-2 py-1.5 rounded-sm bg-white text-[#1a1a1a] flex items-center gap-1"
               onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+              aria-label={sortOrder === 'asc' ? 'Sort descending' : 'Sort ascending'}
             >
-              {sortOrder === 'asc' ? '↑' : '↓'}
-            </Button>
+              <ArrowUpDown className="w-3.5 h-3.5" />
+              <span className="text-[10px] font-black">{sortOrder === 'asc' ? 'A→Z' : 'Z→A'}</span>
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Tazos Grid */}
+      {/* ═══════════════════════════════════════════ */}
+      {/* TAZOS GRID - Paper textured, magazine style */}
+      {/* ═══════════════════════════════════════════ */}
       {loading ? (
-        <div className={`grid gap-3 ${
-          gridSize === 'compact'
-            ? 'grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7'
-            : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
-        }`}>
+        <div
+          className={`grid gap-3 ${
+            gridSize === 'compact'
+              ? 'grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7'
+              : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
+          }`}
+        >
           {Array.from({ length: 12 }).map((_, i) => (
-            <div key={i} className="rounded-xl bg-[#1e1e36] border border-white/5 p-3 flex flex-col items-center gap-2">
-              <Skeleton className="w-[100px] h-[100px] rounded-full bg-white/5" />
-              <Skeleton className="h-3 w-20 bg-white/5" />
-              <Skeleton className="h-2 w-14 bg-white/5" />
-              <Skeleton className="h-2 w-16 bg-white/5" />
+            <div
+              key={i}
+              className="rounded-none p-3 flex flex-col items-center gap-2"
+              style={{
+                background: '#fff9d6',
+                border: '3px solid #1a1a1a',
+                boxShadow: '4px 4px 0px #1a1a1a',
+              }}
+            >
+              <Skeleton
+                className="w-[100px] h-[100px] rounded-full"
+                style={{ background: 'rgba(255, 204, 0, 0.3)', border: '2px solid #1a1a1a' }}
+              />
+              <Skeleton
+                className="h-3 w-20"
+                style={{ background: 'rgba(255, 204, 0, 0.3)' }}
+              />
+              <Skeleton
+                className="h-2 w-14"
+                style={{ background: 'rgba(255, 204, 0, 0.2)' }}
+              />
+              <Skeleton
+                className="h-2 w-16"
+                style={{ background: 'rgba(255, 204, 0, 0.2)' }}
+              />
             </div>
           ))}
         </div>
       ) : tazos.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <PackageX className="w-16 h-16 text-white/15 mb-4" />
-          <h3 className="text-lg font-bold text-white/40 mb-1">No tazos found</h3>
-          <p className="text-sm text-white/25 max-w-[280px]">
+        /* ═══ Empty State - Magazine style ═══ */
+        <div
+          className="mag-card rounded-none py-16 flex flex-col items-center justify-center text-center mag-dots"
+          style={{ background: '#fffef0' }}
+        >
+          <div className="relative mb-4">
+            <Star
+              className="w-20 h-20 text-[#FFCC00]"
+              style={{
+                strokeWidth: 1.5,
+                filter: 'drop-shadow(3px 3px 0px #1a1a1a)',
+              }}
+            />
+            <span
+              className="absolute inset-0 flex items-center justify-center text-2xl font-black text-[#1a1a1a]"
+              style={{ transform: 'rotate(-5deg)' }}
+            >
+              !
+            </span>
+          </div>
+          <h3
+            className="text-2xl font-black text-[#1a1a1a] mb-2 mag-stroke-sm"
+            style={{
+              paintOrder: 'stroke fill',
+              WebkitTextStroke: '1px #1a1a1a',
+              color: '#E3350D',
+              textTransform: 'uppercase',
+              letterSpacing: '2px',
+            }}
+          >
+            NO TAZOS FOUND!
+          </h3>
+          <p className="text-sm font-bold text-[#1a1a1a]/60 max-w-[300px]">
             Try adjusting your filters or search terms to find what you&apos;re looking for.
           </p>
         </div>
       ) : (
-        <div className={`grid gap-3 ${
-          gridSize === 'compact'
-            ? 'grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7'
-            : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
-        }`}>
+        <div
+          className={`grid gap-3 mag-dots p-2 rounded-sm ${
+            gridSize === 'compact'
+              ? 'grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7'
+              : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
+          }`}
+          style={{
+            background: '#fffef0',
+            border: '2px solid #1a1a1a',
+          }}
+        >
           {tazos.map((tazo) => (
             <TazoCard
               key={tazo.id}

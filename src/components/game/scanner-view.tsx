@@ -12,11 +12,13 @@ import {
   ImagePlus,
   Save,
   RotateCcw,
+  Camera,
+  ArrowRight,
+  Star,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -24,9 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import type { Tazo, Franchise, Collection, TazoCondition, PhysicalType, Rarity } from '@/lib/game/types'
 import {
   POKEMON_TYPES,
@@ -104,7 +103,7 @@ export function ScannerView() {
     return () => clearInterval(interval)
   }, [isScanning])
 
-  // Draw detection overlay
+  // Draw detection overlay - MAGAZINE STYLE with thick black circles and green scan line
   useEffect(() => {
     if (!canvasRef.current || !uploadedImageUrl || step !== 'detect' || regions.length === 0) return
     const canvas = canvasRef.current
@@ -126,43 +125,87 @@ export function ScannerView() {
         const rw = region.width * scale
         const rh = region.height * scale
 
-        if (region.included) {
-          ctx.strokeStyle = '#00ffaa'
-          ctx.lineWidth = 2
-          ctx.shadowColor = '#00ffaa'
-          ctx.shadowBlur = 8
-        } else {
-          ctx.strokeStyle = '#ff4444'
-          ctx.lineWidth = 2
-          ctx.shadowColor = '#ff4444'
-          ctx.shadowBlur = 4
-        }
-
-        // Draw circle
+        // Draw thick black circle around detected tazos
         const centerX = rx + rw / 2
         const centerY = ry + rh / 2
         const radius = Math.min(rw, rh) / 2
-        ctx.beginPath()
-        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2)
-        ctx.stroke()
 
-        // Draw crosshair
-        ctx.shadowBlur = 0
-        ctx.beginPath()
-        ctx.moveTo(centerX - 6, centerY)
-        ctx.lineTo(centerX + 6, centerY)
-        ctx.moveTo(centerX, centerY - 6)
-        ctx.lineTo(centerX, centerY + 6)
-        ctx.stroke()
+        if (region.included) {
+          // Outer black ring - thick
+          ctx.strokeStyle = '#000000'
+          ctx.lineWidth = 5
+          ctx.shadowColor = 'transparent'
+          ctx.shadowBlur = 0
+          ctx.beginPath()
+          ctx.arc(centerX, centerY, radius + 3, 0, Math.PI * 2)
+          ctx.stroke()
+
+          // Inner green ring
+          ctx.strokeStyle = '#22c55e'
+          ctx.lineWidth = 3
+          ctx.shadowColor = '#22c55e'
+          ctx.shadowBlur = 10
+          ctx.beginPath()
+          ctx.arc(centerX, centerY, radius, 0, Math.PI * 2)
+          ctx.stroke()
+          ctx.shadowBlur = 0
+
+          // Draw thick crosshair
+          ctx.strokeStyle = '#000000'
+          ctx.lineWidth = 3
+          ctx.beginPath()
+          ctx.moveTo(centerX - 10, centerY)
+          ctx.lineTo(centerX + 10, centerY)
+          ctx.moveTo(centerX, centerY - 10)
+          ctx.lineTo(centerX, centerY + 10)
+          ctx.stroke()
+
+          // Green inner crosshair
+          ctx.strokeStyle = '#22c55e'
+          ctx.lineWidth = 1.5
+          ctx.beginPath()
+          ctx.moveTo(centerX - 8, centerY)
+          ctx.lineTo(centerX + 8, centerY)
+          ctx.moveTo(centerX, centerY - 8)
+          ctx.lineTo(centerX, centerY + 8)
+          ctx.stroke()
+        } else {
+          // Excluded - red with thick black outline
+          ctx.strokeStyle = '#000000'
+          ctx.lineWidth = 4
+          ctx.shadowBlur = 0
+          ctx.beginPath()
+          ctx.arc(centerX, centerY, radius + 2, 0, Math.PI * 2)
+          ctx.stroke()
+
+          ctx.strokeStyle = '#ef4444'
+          ctx.lineWidth = 2
+          ctx.shadowColor = '#ef4444'
+          ctx.shadowBlur = 6
+          ctx.beginPath()
+          ctx.arc(centerX, centerY, radius, 0, Math.PI * 2)
+          ctx.stroke()
+          ctx.shadowBlur = 0
+
+          // X mark
+          ctx.strokeStyle = '#ef4444'
+          ctx.lineWidth = 3
+          ctx.beginPath()
+          ctx.moveTo(centerX - 8, centerY - 8)
+          ctx.lineTo(centerX + 8, centerY + 8)
+          ctx.moveTo(centerX + 8, centerY - 8)
+          ctx.lineTo(centerX - 8, centerY + 8)
+          ctx.stroke()
+        }
       })
 
-      // Draw scan line
+      // Draw scan line - GREEN instead of cyan
       if (isScanning) {
         const lineY = (scanLineY / 100) * canvas.height
         const gradient = ctx.createLinearGradient(0, lineY - 20, 0, lineY + 20)
-        gradient.addColorStop(0, 'rgba(0, 255, 170, 0)')
-        gradient.addColorStop(0.5, 'rgba(0, 255, 170, 0.6)')
-        gradient.addColorStop(1, 'rgba(0, 255, 170, 0)')
+        gradient.addColorStop(0, 'rgba(34, 197, 94, 0)')
+        gradient.addColorStop(0.5, 'rgba(34, 197, 94, 0.6)')
+        gradient.addColorStop(1, 'rgba(34, 197, 94, 0)')
         ctx.fillStyle = gradient
         ctx.fillRect(0, lineY - 20, canvas.width, 40)
       }
@@ -270,7 +313,6 @@ export function ScannerView() {
       const newTazos: ExtractedTazo[] = []
 
       for (const region of selectedRegions) {
-        // Create a preview by simulating the crop on canvas
         const previewUrl = uploadedImageUrl || ''
 
         newTazos.push({
@@ -421,80 +463,128 @@ export function ScannerView() {
     if (fileInputRef.current) fileInputRef.current.value = ''
   }, [])
 
-  return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/20">
-            <Zap className="h-4 w-4 text-emerald-400" />
-          </div>
-          <h2 className="text-lg font-semibold text-emerald-400">Tazo Scanner</h2>
-        </div>
-        {step !== 'upload' && (
-          <Button variant="ghost" size="sm" onClick={handleReset}>
-            <RotateCcw className="mr-1 h-3 w-3" />
-            Reset
-          </Button>
-        )}
-      </div>
+  const stepIndex = ['upload', 'detect', 'extract'].indexOf(step)
 
-      {/* Step Indicators */}
-      <div className="flex items-center gap-2">
-        {(['upload', 'detect', 'extract'] as ScannerStep[]).map((s, i) => (
-          <div key={s} className="flex items-center gap-2">
-            <div
-              className={`flex h-7 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-colors ${
-                step === s
-                  ? 'bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/30'
-                  : i < ['upload', 'detect', 'extract'].indexOf(step)
-                  ? 'bg-emerald-500/10 text-emerald-500/60'
-                  : 'bg-muted text-muted-foreground'
-              }`}
-            >
-              <span className="font-bold">{i + 1}</span>
-              <span className="capitalize">{s}</span>
+  return (
+    <div className="space-y-5">
+      {/* ===== MAGAZINE HEADER ===== */}
+      <div className="relative">
+        {/* Blue background strip */}
+        <div className="mag-card-blue rounded-t-none border-b-4 border-black px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full border-3 border-black bg-yellow-400 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                <Camera className="h-5 w-5 text-black" />
+              </div>
+              <div>
+                <h2 className="mag-stroke text-2xl font-black tracking-tight sm:text-3xl">
+                  TAZO SCANNER
+                </h2>
+                <p className="text-sm font-bold text-white drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+                  ⚡ SCAN YOUR REAL TAZOS! ⚡
+                </p>
+              </div>
             </div>
-            {i < 2 && (
-              <div
-                className={`h-px w-6 ${
-                  i < ['upload', 'detect', 'extract'].indexOf(step)
-                    ? 'bg-emerald-500/40'
-                    : 'bg-border'
-                }`}
-              />
+            {step !== 'upload' && (
+              <button
+                onClick={handleReset}
+                className="mag-btn flex items-center gap-1.5 px-3 py-1.5 text-sm"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                RESET
+              </button>
             )}
           </div>
-        ))}
+        </div>
+
+        {/* Magazine step indicators - HOW IT WORKS */}
+        <div className="mag-card rounded-t-none border-t-0">
+          <div className="flex items-center justify-between px-2 py-2">
+            <span className="mag-stroke-sm text-xs font-black">HOW IT WORKS:</span>
+            <div className="flex items-center gap-1">
+              {([
+                { key: 'upload', label: 'UPLOAD', num: '1' },
+                { key: 'detect', label: 'SCAN', num: '2' },
+                { key: 'extract', label: 'SAVE', num: '3' },
+              ] as const).map((s, i) => {
+                const isActive = step === s.key
+                const isDone = i < stepIndex
+                return (
+                  <div key={s.key} className="flex items-center gap-1">
+                    <div
+                      className={`flex items-center gap-1 rounded-md border-2 px-2 py-1 text-xs font-black transition-all ${
+                        isActive
+                          ? 'border-black bg-yellow-400 text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
+                          : isDone
+                          ? 'border-black bg-green-400 text-black'
+                          : 'border-gray-400 bg-gray-100 text-gray-400'
+                      }`}
+                    >
+                      <span
+                        className={`flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-black ${
+                          isActive
+                            ? 'bg-black text-yellow-400'
+                            : isDone
+                            ? 'bg-black text-green-400'
+                            : 'bg-gray-300 text-gray-500'
+                        }`}
+                      >
+                        {isDone ? '✓' : s.num}
+                      </span>
+                      <span className="hidden sm:inline">{s.label}</span>
+                    </div>
+                    {i < 2 && (
+                      <ArrowRight
+                        className={`h-3.5 w-3.5 ${
+                          isDone ? 'text-green-500' : 'text-gray-300'
+                        }`}
+                      />
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
       </div>
 
-      <Separator />
-
-      {/* UPLOAD STEP */}
+      {/* ===== UPLOAD STEP ===== */}
       {step === 'upload' && (
-        <Card className="border-dashed border-2 border-emerald-500/30 bg-gradient-to-b from-emerald-500/5 to-transparent">
-          <CardContent className="p-6">
-            <div
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-              onClick={() => fileInputRef.current?.click()}
-              className="flex cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-emerald-500/20 bg-background/50 p-8 transition-all hover:border-emerald-500/40 hover:bg-emerald-500/5"
-            >
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10">
+        <div className="space-y-4">
+          {/* Upload area with magazine dots texture and yellow tint */}
+          <div
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
+            className="mag-card-yellow mag-dots relative cursor-pointer overflow-hidden border-4 border-dashed border-black transition-all hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+          >
+            <div className="relative z-10 flex flex-col items-center justify-center gap-4 p-8 sm:p-12">
+              {/* Icon circle */}
+              <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                 {isUploading ? (
-                  <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
+                  <Loader2 className="h-9 w-9 animate-spin text-black" />
                 ) : (
-                  <ImagePlus className="h-8 w-8 text-emerald-400" />
+                  <ImagePlus className="h-9 w-9 text-black" />
                 )}
               </div>
+
+              {/* Bold drop text */}
               <div className="text-center">
-                <p className="text-sm font-medium">
-                  {isUploading ? 'Uploading...' : 'Drop your tazo photo here'}
+                <p className="mag-stroke-sm text-xl font-black sm:text-2xl">
+                  {isUploading ? 'UPLOADING...' : 'DROP YOUR TAZO PHOTO HERE!'}
                 </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  or click to browse - PNG, JPG, WEBP accepted
+                <p className="mt-2 text-sm font-bold text-black/70">
+                  or click to browse — PNG, JPG, WEBP accepted
                 </p>
               </div>
+
+              {/* Decorative magazine callout */}
+              <div className="speech-bubble mt-2 px-4 py-2">
+                <p className="text-xs font-black">
+                  📸 Pro tip: Lay tazos flat on a contrasting surface for best results!
+                </p>
+              </div>
+
               <input
                 ref={fileInputRef}
                 type="file"
@@ -503,181 +593,216 @@ export function ScannerView() {
                 className="hidden"
               />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+
+          {/* HOW IT WORKS - Step detail boxes */}
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { num: '1', title: 'UPLOAD', desc: 'Take a photo of your tazos', icon: Upload, color: 'bg-yellow-400' },
+              { num: '2', title: 'SCAN', desc: 'AI detects each tazo', icon: Scan, color: 'bg-green-400' },
+              { num: '3', title: 'SAVE', desc: 'Add to your collection!', icon: Save, color: 'bg-red-400' },
+            ].map((item) => (
+              <div key={item.num} className="mag-card flex flex-col items-center gap-2 p-3 text-center">
+                <div
+                  className={`flex h-8 w-8 items-center justify-center rounded-full border-2 border-black ${item.color} text-sm font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}
+                >
+                  {item.num}
+                </div>
+                <item.icon className="h-5 w-5 text-black" />
+                <p className="text-xs font-black">{item.title}</p>
+                <p className="text-[10px] font-semibold text-black/60">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
 
-      {/* DETECT STEP */}
+      {/* ===== DETECT STEP ===== */}
       {step === 'detect' && uploadedImageUrl && (
         <div className="space-y-4">
-          {/* Detection Overlay */}
-          <Card className="overflow-hidden border-emerald-500/20 bg-black">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-sm text-emerald-400">
-                  <Scan className="h-4 w-4" />
-                  Detection View
-                </CardTitle>
-                {imageDimensions && (
-                  <Badge variant="outline" className="text-xs text-emerald-500/70">
-                    {imageDimensions.width} x {imageDimensions.height}
-                  </Badge>
-                )}
+          {/* Detection Overlay - White card with thick black border */}
+          <div className="mag-card overflow-hidden p-0">
+            {/* Detection header */}
+            <div className="flex items-center justify-between border-b-4 border-black bg-black px-4 py-2">
+              <div className="flex items-center gap-2">
+                <Scan className="h-5 w-5 text-green-400" />
+                <span className="text-sm font-black text-white tracking-wide">
+                  🔍 DETECTION VIEW
+                </span>
               </div>
-            </CardHeader>
-            <CardContent className="p-4">
-              <div className="relative overflow-hidden rounded-lg">
+              {imageDimensions && (
+                <span className="exclusive-badge text-xs">
+                  {imageDimensions.width} × {imageDimensions.height}
+                </span>
+              )}
+            </div>
+
+            {/* Canvas area */}
+            <div className="bg-white p-3">
+              <div className="relative overflow-hidden rounded-lg border-2 border-black">
                 <canvas
                   ref={canvasRef}
                   className="mx-auto block max-h-[400px] w-auto"
                 />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          {/* Controls */}
+          {/* Controls - Magazine button style */}
           <div className="flex flex-wrap items-center gap-3">
-            <Button
+            <button
               onClick={handleDetect}
               disabled={isDetecting}
-              className="bg-emerald-600 hover:bg-emerald-700"
+              className="mag-btn flex items-center gap-2 bg-green-400 px-5 py-2.5 text-sm disabled:opacity-50"
             >
               {isDetecting ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Scanning...
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  SCANNING...
                 </>
               ) : (
                 <>
-                  <Scan className="mr-2 h-4 w-4" />
-                  Scan for Tazos
+                  <Scan className="h-4 w-4" />
+                  SCAN FOR TAZOS!
                 </>
               )}
-            </Button>
+            </button>
 
             {regions.length > 0 && (
-              <Button
+              <button
                 onClick={handleExtract}
                 disabled={isExtracting || regions.filter((r) => r.included).length === 0}
-                className="bg-cyan-600 hover:bg-cyan-700"
+                className="mag-btn flex items-center gap-2 bg-yellow-400 px-5 py-2.5 text-sm disabled:opacity-50"
               >
                 {isExtracting ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Extracting...
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    EXTRACTING...
                   </>
                 ) : (
                   <>
-                    <Crop className="mr-2 h-4 w-4" />
-                    Extract Selected ({regions.filter((r) => r.included).length})
+                    <Crop className="h-4 w-4" />
+                    EXTRACT SELECTED ({regions.filter((r) => r.included).length})
                   </>
                 )}
-              </Button>
+              </button>
             )}
           </div>
 
-          {/* Region List */}
+          {/* Region List - Magazine card grid */}
           {regions.length > 0 && (
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm">
-                  Detected Regions ({regions.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
-                  {regions.map((region, index) => (
-                    <button
-                      key={index}
-                      onClick={() => toggleRegion(index)}
-                      className={`flex items-center gap-2 rounded-lg border p-2 text-left text-xs transition-all ${
-                        region.included
-                          ? 'border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/15'
-                          : 'border-border bg-muted/30 opacity-60 hover:opacity-80'
-                      }`}
-                    >
-                      {region.included ? (
-                        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
-                      ) : (
-                        <XCircle className="h-4 w-4 shrink-0 text-muted-foreground" />
-                      )}
-                      <span>
-                        Region {index + 1}
-                        <br />
-                        <span className="text-muted-foreground">
-                          {region.width}x{region.height}
-                        </span>
+            <div className="mag-card-red">
+              <div className="flex items-center gap-2 border-b-2 border-black px-4 py-2">
+                <Star className="h-4 w-4 text-white" />
+                <span className="text-sm font-black text-white">
+                  DETECTED REGIONS ({regions.length})
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-2 p-3 sm:grid-cols-3 md:grid-cols-4">
+                {regions.map((region, index) => (
+                  <button
+                    key={index}
+                    onClick={() => toggleRegion(index)}
+                    className={`flex items-center gap-2 rounded-lg border-3 p-2 text-left text-xs transition-all ${
+                      region.included
+                        ? 'border-black bg-green-100 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5'
+                        : 'border-gray-400 bg-gray-100 opacity-60 hover:opacity-80'
+                    }`}
+                  >
+                    {region.included ? (
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-green-600" />
+                    ) : (
+                      <XCircle className="h-4 w-4 shrink-0 text-gray-400" />
+                    )}
+                    <span className="font-black">
+                      Region {index + 1}
+                      <br />
+                      <span className="font-semibold text-black/50">
+                        {region.width}×{region.height}
                       </span>
-                    </button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       )}
 
-      {/* EXTRACT STEP */}
+      {/* ===== EXTRACT STEP ===== */}
       {step === 'extract' && extractedTazos.length > 0 && (
         <div className="space-y-4">
+          {/* Extract header */}
           <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              {extractedTazos.length} tazo{extractedTazos.length !== 1 ? 's' : ''} extracted
-            </p>
-            <Button
+            <div className="flex items-center gap-2">
+              <span className="mag-stroke-sm text-lg font-black">
+                {extractedTazos.length} TAZO{extractedTazos.length !== 1 ? 'S' : ''} EXTRACTED!
+              </span>
+            </div>
+            <button
               onClick={handleSaveAll}
               disabled={isSavingAll}
-              className="bg-emerald-600 hover:bg-emerald-700"
+              className="mag-btn flex items-center gap-2 bg-green-400 px-4 py-2 text-sm disabled:opacity-50"
             >
               {isSavingAll ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving All...
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  SAVING ALL...
                 </>
               ) : (
                 <>
-                  <Save className="mr-2 h-4 w-4" />
-                  Save All ({extractedTazos.length})
+                  <Save className="h-4 w-4" />
+                  SAVE ALL ({extractedTazos.length})
                 </>
               )}
-            </Button>
+            </button>
           </div>
 
+          {/* Extracted tazo cards */}
           <div className="grid gap-4">
-            {extractedTazos.map((tazo) => (
-              <Card key={tazo.id} className="overflow-hidden">
+            {extractedTazos.map((tazo, tazoIndex) => (
+              <div key={tazo.id} className="mag-card overflow-hidden p-0">
                 <div className="flex flex-col sm:flex-row">
-                  {/* Tazo Preview */}
-                  <div className="flex items-center justify-center bg-gradient-to-br from-emerald-500/10 via-cyan-500/10 to-emerald-500/5 p-6 sm:w-48">
+                  {/* Tazo Preview - Magazine style */}
+                  <div className="mag-stripes relative flex items-center justify-center p-6 sm:w-52">
                     <div className="relative">
-                      <div className="h-28 w-28 overflow-hidden rounded-full border-4 border-emerald-500/30 bg-muted shadow-lg shadow-emerald-500/10">
+                      <div className="h-28 w-28 overflow-hidden rounded-full border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                         <img
                           src={tazo.imageUrl}
                           alt="Extracted tazo"
                           className="h-full w-full object-cover"
                         />
                       </div>
-                      <div className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white shadow">
+                      {/* Rarity badge */}
+                      <div className="absolute -bottom-2 -right-2 flex h-7 w-7 items-center justify-center rounded-full border-2 border-black bg-yellow-400 text-xs font-black text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                         {RARITY_CONFIG[tazo.rarity]?.label[0] || 'C'}
+                      </div>
+                      {/* Number badge */}
+                      <div className="absolute -top-2 -left-2 flex h-6 w-6 items-center justify-center rounded-full border-2 border-black bg-red-500 text-[10px] font-black text-white shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
+                        {tazoIndex + 1}
                       </div>
                     </div>
                   </div>
 
-                  {/* Form */}
-                  <div className="flex-1 p-4">
+                  {/* Form - White background, thick black borders on inputs */}
+                  <div className="flex-1 bg-white p-4">
                     <div className="grid gap-3 sm:grid-cols-2">
-                      <div className="space-y-1.5 sm:col-span-2">
-                        <Label className="text-xs">Name</Label>
-                        <Input
+                      <div className="space-y-1 sm:col-span-2">
+                        <label className="text-xs font-black uppercase tracking-wide">
+                          Tazo Name
+                        </label>
+                        <input
                           placeholder="Enter tazo name..."
                           value={tazo.name}
                           onChange={(e) => updateExtractedTazo(tazo.id, 'name', e.target.value)}
-                          className="h-8 text-sm"
+                          className="h-9 w-full rounded-md border-3 border-black bg-white px-3 text-sm font-semibold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] focus:outline-none focus:ring-2 focus:ring-yellow-400"
                         />
                       </div>
 
-                      <div className="space-y-1.5">
-                        <Label className="text-xs">Franchise</Label>
+                      <div className="space-y-1">
+                        <label className="text-xs font-black uppercase tracking-wide">
+                          Franchise
+                        </label>
                         <Select
                           value={tazo.franchiseId}
                           onValueChange={(val) => {
@@ -689,10 +814,10 @@ export function ScannerView() {
                             updateExtractedTazo(tazo.id, 'combatType', '')
                           }}
                         >
-                          <SelectTrigger className="h-8 text-sm">
+                          <SelectTrigger className="h-9 border-3 border-black bg-white font-semibold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
                             <SelectValue placeholder="Select franchise" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="border-3 border-black">
                             {franchises.map((f) => (
                               <SelectItem key={f.id} value={f.id}>
                                 {f.name}
@@ -702,16 +827,18 @@ export function ScannerView() {
                         </Select>
                       </div>
 
-                      <div className="space-y-1.5">
-                        <Label className="text-xs">Collection</Label>
+                      <div className="space-y-1">
+                        <label className="text-xs font-black uppercase tracking-wide">
+                          Collection
+                        </label>
                         <Select
                           value={tazo.collectionId}
                           onValueChange={(val) => updateExtractedTazo(tazo.id, 'collectionId', val)}
                         >
-                          <SelectTrigger className="h-8 text-sm">
+                          <SelectTrigger className="h-9 border-3 border-black bg-white font-semibold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
                             <SelectValue placeholder="Select collection" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="border-3 border-black">
                             {getCollectionsForFranchise(tazo.franchiseId).map((c) => (
                               <SelectItem key={c.id} value={c.id}>
                                 {c.name}
@@ -721,16 +848,18 @@ export function ScannerView() {
                         </Select>
                       </div>
 
-                      <div className="space-y-1.5">
-                        <Label className="text-xs">Combat Type</Label>
+                      <div className="space-y-1">
+                        <label className="text-xs font-black uppercase tracking-wide">
+                          Combat Type
+                        </label>
                         <Select
                           value={tazo.combatType}
                           onValueChange={(val) => updateExtractedTazo(tazo.id, 'combatType', val)}
                         >
-                          <SelectTrigger className="h-8 text-sm">
+                          <SelectTrigger className="h-9 border-3 border-black bg-white font-semibold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
                             <SelectValue placeholder="Select type" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="border-3 border-black">
                             {getCombatTypesForFranchise(tazo.franchiseId).map((type) => (
                               <SelectItem key={type} value={type}>
                                 {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -740,16 +869,18 @@ export function ScannerView() {
                         </Select>
                       </div>
 
-                      <div className="space-y-1.5">
-                        <Label className="text-xs">Rarity</Label>
+                      <div className="space-y-1">
+                        <label className="text-xs font-black uppercase tracking-wide">
+                          Rarity
+                        </label>
                         <Select
                           value={tazo.rarity}
                           onValueChange={(val) => updateExtractedTazo(tazo.id, 'rarity', val)}
                         >
-                          <SelectTrigger className="h-8 text-sm">
+                          <SelectTrigger className="h-9 border-3 border-black bg-white font-semibold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="border-3 border-black">
                             {Object.entries(RARITY_CONFIG).map(([key, cfg]) => (
                               <SelectItem key={key} value={key}>
                                 {cfg.label}
@@ -759,16 +890,18 @@ export function ScannerView() {
                         </Select>
                       </div>
 
-                      <div className="space-y-1.5">
-                        <Label className="text-xs">Condition</Label>
+                      <div className="space-y-1">
+                        <label className="text-xs font-black uppercase tracking-wide">
+                          Condition
+                        </label>
                         <Select
                           value={tazo.condition}
                           onValueChange={(val) => updateExtractedTazo(tazo.id, 'condition', val)}
                         >
-                          <SelectTrigger className="h-8 text-sm">
+                          <SelectTrigger className="h-9 border-3 border-black bg-white font-semibold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="border-3 border-black">
                             {Object.entries(CONDITION_CONFIG).map(([key, cfg]) => (
                               <SelectItem key={key} value={key}>
                                 {cfg.icon} {cfg.label}
@@ -778,16 +911,18 @@ export function ScannerView() {
                         </Select>
                       </div>
 
-                      <div className="space-y-1.5">
-                        <Label className="text-xs">Physical Type</Label>
+                      <div className="space-y-1">
+                        <label className="text-xs font-black uppercase tracking-wide">
+                          Physical Type
+                        </label>
                         <Select
                           value={tazo.physicalType}
                           onValueChange={(val) => updateExtractedTazo(tazo.id, 'physicalType', val)}
                         >
-                          <SelectTrigger className="h-8 text-sm">
+                          <SelectTrigger className="h-9 border-3 border-black bg-white font-semibold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="border-3 border-black">
                             {Object.entries(PHYSICAL_TYPE_CONFIG).map(([key, cfg]) => (
                               <SelectItem key={key} value={key}>
                                 {cfg.label}
@@ -798,43 +933,46 @@ export function ScannerView() {
                       </div>
                     </div>
 
-                    <div className="mt-3 flex justify-end">
-                      <Button
-                        size="sm"
+                    {/* Save button - mag-btn yellow style */}
+                    <div className="mt-4 flex justify-end">
+                      <button
                         onClick={() => handleSaveIndividual(tazo)}
                         disabled={savingIndividual === tazo.id}
-                        variant="outline"
-                        className="border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/10"
+                        className="mag-btn flex items-center gap-2 bg-yellow-400 px-5 py-2 text-sm disabled:opacity-50"
                       >
                         {savingIndividual === tazo.id ? (
-                          <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                          <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
-                          <Save className="mr-1 h-3 w-3" />
+                          <Save className="h-4 w-4" />
                         )}
-                        Save
-                      </Button>
+                        SAVE!
+                      </button>
                     </div>
                   </div>
                 </div>
-              </Card>
+              </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* Empty state after all saved */}
+      {/* ===== Empty state after all saved ===== */}
       {step === 'extract' && extractedTazos.length === 0 && (
-        <Card className="border-emerald-500/20">
-          <CardContent className="flex flex-col items-center gap-3 p-8 text-center">
-            <CheckCircle2 className="h-12 w-12 text-emerald-400" />
-            <p className="font-medium text-emerald-400">All tazos saved!</p>
-            <p className="text-sm text-muted-foreground">Your scanned tazos have been added to your collection.</p>
-            <Button onClick={handleReset} variant="outline" className="border-emerald-500/30 text-emerald-600">
-              <Upload className="mr-2 h-4 w-4" />
-              Scan More
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="mag-card flex flex-col items-center gap-4 p-8 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-black bg-green-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <CheckCircle2 className="h-8 w-8 text-black" />
+          </div>
+          <div>
+            <p className="mag-stroke-sm text-xl font-black">ALL TAZOS SAVED!</p>
+            <p className="mt-1 text-sm font-bold text-black/60">
+              Your scanned tazos have been added to your collection.
+            </p>
+          </div>
+          <button onClick={handleReset} className="mag-btn flex items-center gap-2 bg-yellow-400 px-5 py-2 text-sm">
+            <Upload className="h-4 w-4" />
+            SCAN MORE!
+          </button>
+        </div>
       )}
     </div>
   )

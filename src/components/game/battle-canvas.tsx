@@ -155,6 +155,24 @@ function createCanvasTazo(
   }
 }
 
+// ─── Draw text with black outline ──────────────────────────────────
+function drawStrokedText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  fillColor: string,
+  strokeColor: string = '#000',
+  strokeWidth: number = 3
+) {
+  ctx.strokeStyle = strokeColor
+  ctx.lineWidth = strokeWidth
+  ctx.lineJoin = 'round'
+  ctx.strokeText(text, x, y)
+  ctx.fillStyle = fillColor
+  ctx.fillText(text, x, y)
+}
+
 // ─── Main Component ──────────────────────────────────────────────────
 export function BattleCanvas({
   playerTazos,
@@ -219,26 +237,21 @@ export function BattleCanvas({
     const findAliveBySide = (side: 'player' | 'opponent') => canvasTazos.filter(t => t.side === side && t.isAlive)
     const findAnyBySide = (side: 'player' | 'opponent') => canvasTazos.find(t => t.side === side)
 
-    // Helper: find tazo from event, with fallbacks
     const resolveActor = (): CanvasTazo | undefined => {
       const byId = findTazo(event.actorId)
       if (byId) return byId
-      // Try matching name from description
       for (const t of canvasTazos) {
         if (event.description.includes(t.name) && t.isAlive) return t
       }
-      // Fallback: first alive player tazo
       return findAliveBySide('player')[0] || findAnyBySide('player')
     }
     const resolveTarget = (actorSide: 'player' | 'opponent'): CanvasTazo | undefined => {
       const byId = findTazo(event.targetId)
       if (byId) return byId
-      // Try matching name from description (exclude actor)
       const actor = resolveActor()
       for (const t of canvasTazos) {
         if (event.description.includes(t.name) && t.id !== actor?.id && t.isAlive) return t
       }
-      // Fallback: first alive tazo from opposite side
       const oppSide = actorSide === 'player' ? 'opponent' : 'player'
       return findAliveBySide(oppSide)[0] || findAnyBySide(oppSide)
     }
@@ -249,14 +262,12 @@ export function BattleCanvas({
         const actor = resolveActor()
         const target = actor ? resolveTarget(actor.side) : undefined
         if (actor && target) {
-          // Move actor toward target
           actor.movingToCenter = true
           actor.targetX = target.x
           actor.targetY = target.y
           actor.shakeTimer = 300
           target.shakeTimer = 500
 
-          // Spawn collision sparks
           const sparkCount = 12
           for (let i = 0; i < sparkCount; i++) {
             const angle = (Math.PI * 2 * i) / sparkCount + Math.random() * 0.5
@@ -274,14 +285,12 @@ export function BattleCanvas({
             })
           }
 
-          // Update target HP
           if (event.damage) {
             target.hp = Math.max(0, target.hp - event.damage)
             target.glowTimer = 400
             target.glowColor = '#ff4444'
           }
 
-          // Return actor to base after delay
           setTimeout(() => {
             actor.movingToCenter = false
             actor.targetX = actor.baseX
@@ -292,7 +301,6 @@ export function BattleCanvas({
       }
 
       case 'spin_decay': {
-        // Try to find the tazo by name in description, or apply to all alive tazos
         const found = canvasTazos.find(t => event.description.includes(t.name) && t.isAlive)
         if (found) {
           const match = event.description.match(/Spin: (\d+)/)
@@ -301,7 +309,6 @@ export function BattleCanvas({
             found.spinSpeed = (found.spin / found.maxSpin) * 0.15 + 0.01
           }
         } else {
-          // Apply to all alive tazos that match
           for (const t of canvasTazos) {
             if (t.isAlive && event.description.includes(t.name)) {
               const match = event.description.match(/Spin: (\d+)/)
@@ -323,7 +330,6 @@ export function BattleCanvas({
           target.ringOutAnim = 1
           target.hp = 0
 
-          // Ring-out trail particles
           for (let i = 0; i < 20; i++) {
             const angle = Math.random() * Math.PI * 2
             particlesRef.current.push({
@@ -350,7 +356,6 @@ export function BattleCanvas({
           target.knockoutAnim = 1
           target.hp = 0
 
-          // Knockout explosion
           for (let i = 0; i < 30; i++) {
             const angle = Math.random() * Math.PI * 2
             const spd = 1 + Math.random() * 6
@@ -378,7 +383,6 @@ export function BattleCanvas({
           actor.glowTimer = 800
           actor.glowColor = typeColor
 
-          // Type advantage flash
           for (let i = 0; i < 15; i++) {
             const angle = Math.random() * Math.PI * 2
             particlesRef.current.push({
@@ -406,7 +410,6 @@ export function BattleCanvas({
           actor.glowColor = '#00FF88'
           actor.radius *= 1.15
 
-          // Evolution glow-up particles
           for (let i = 0; i < 25; i++) {
             const angle = Math.random() * Math.PI * 2
             const dist = actor.radius * 0.5 + Math.random() * actor.radius
@@ -436,7 +439,6 @@ export function BattleCanvas({
           actor.radius *= 1.1
           actor.attack += 20
 
-          // DBZ ki aura explosion
           for (let i = 0; i < 40; i++) {
             const angle = Math.random() * Math.PI * 2
             const spd = 2 + Math.random() * 5
@@ -463,7 +465,6 @@ export function BattleCanvas({
           actor.glowTimer = 600
           actor.glowColor = '#fff'
 
-          // Skill flash
           for (let i = 0; i < 10; i++) {
             const angle = Math.random() * Math.PI * 2
             particlesRef.current.push({
@@ -483,7 +484,6 @@ export function BattleCanvas({
       }
 
       case 'combo': {
-        // Big combo effect
         const cx = dimensions.width / 2
         const cy = dimensions.height / 2
         for (let i = 0; i < 50; i++) {
@@ -557,13 +557,24 @@ export function BattleCanvas({
       // ── Clear ──
       ctx.clearRect(0, 0, w, h)
 
-      // ── Background ──
+      // ── Background - Cream/magazine tones ──
       const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(w, h))
-      bgGrad.addColorStop(0, '#1a1a2e')
-      bgGrad.addColorStop(0.5, '#16213e')
-      bgGrad.addColorStop(1, '#0f0f1a')
+      bgGrad.addColorStop(0, '#FFF8E7')  // warm cream
+      bgGrad.addColorStop(0.5, '#F5E6C8')  // tan
+      bgGrad.addColorStop(1, '#E8D5A8')  // deeper tan
       ctx.fillStyle = bgGrad
       ctx.fillRect(0, 0, w, h)
+
+      // ── Magazine dots texture in background ──
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.015)'
+      const dotSpacing = 12
+      for (let dx = 0; dx < w; dx += dotSpacing) {
+        for (let dy = 0; dy < h; dy += dotSpacing) {
+          ctx.beginPath()
+          ctx.arc(dx, dy, 1.5, 0, Math.PI * 2)
+          ctx.fill()
+        }
+      }
 
       // ── Arena floor ──
       ctx.save()
@@ -571,25 +582,25 @@ export function BattleCanvas({
       ctx.arc(cx, cy, arenaRadius, 0, Math.PI * 2)
       ctx.clip()
 
-      // Floor gradient
+      // Floor gradient - lighter cream/tan
       const floorGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, arenaRadius)
-      floorGrad.addColorStop(0, '#2a2a3e')
-      floorGrad.addColorStop(0.7, '#1e1e30')
-      floorGrad.addColorStop(1, '#14142a')
+      floorGrad.addColorStop(0, '#FFF5D6')   // light cream center
+      floorGrad.addColorStop(0.5, '#F5E6C8') // warm tan
+      floorGrad.addColorStop(1, '#E8D5A8')   // deeper tan edge
       ctx.fillStyle = floorGrad
       ctx.fillRect(cx - arenaRadius, cy - arenaRadius, arenaRadius * 2, arenaRadius * 2)
 
-      // Floor texture - concentric circles
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)'
+      // Floor texture - concentric circles (subtle)
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.06)'
       ctx.lineWidth = 1
-      for (let r = 20; r < arenaRadius; r += 20) {
+      for (let r = 20; r < arenaRadius; r += 25) {
         ctx.beginPath()
         ctx.arc(cx, cy, r, 0, Math.PI * 2)
         ctx.stroke()
       }
 
       // Center cross
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)'
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)'
       ctx.lineWidth = 2
       ctx.beginPath()
       ctx.moveTo(cx - arenaRadius * 0.8, cy)
@@ -602,27 +613,47 @@ export function BattleCanvas({
 
       ctx.restore()
 
-      // ── Arena border ──
-      ctx.strokeStyle = '#4a4a6a'
+      // ── Arena border - thick black ──
+      ctx.strokeStyle = '#000000'
       ctx.lineWidth = 6
       ctx.beginPath()
       ctx.arc(cx, cy, arenaRadius, 0, Math.PI * 2)
       ctx.stroke()
 
-      // Glow on border
-      ctx.strokeStyle = 'rgba(100, 100, 200, 0.3)'
-      ctx.lineWidth = 12
+      // Subtle outer glow
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)'
+      ctx.lineWidth = 10
       ctx.beginPath()
-      ctx.arc(cx, cy, arenaRadius, 0, Math.PI * 2)
+      ctx.arc(cx, cy, arenaRadius + 5, 0, Math.PI * 2)
       ctx.stroke()
 
-      // ── Side labels ──
-      ctx.font = `bold ${Math.max(10, arenaRadius * 0.06)}px sans-serif`
+      // ── Side labels - Bold with black outline ──
+      const labelSize = Math.max(12, arenaRadius * 0.07)
+      ctx.font = `900 ${labelSize}px sans-serif`
       ctx.textAlign = 'center'
-      ctx.fillStyle = 'rgba(100, 200, 255, 0.5)'
-      ctx.fillText('PLAYER', cx - arenaRadius * 0.45, cy - arenaRadius * 0.75)
-      ctx.fillStyle = 'rgba(255, 100, 100, 0.5)'
-      ctx.fillText('OPPONENT', cx + arenaRadius * 0.45, cy - arenaRadius * 0.75)
+      ctx.textBaseline = 'middle'
+
+      // PLAYER in blue with black outline
+      drawStrokedText(
+        ctx,
+        'PLAYER',
+        cx - arenaRadius * 0.45,
+        cy - arenaRadius * 0.78,
+        '#2563EB',  // bold blue
+        '#000000',
+        4
+      )
+
+      // OPPONENT in red with black outline
+      drawStrokedText(
+        ctx,
+        'OPPONENT',
+        cx + arenaRadius * 0.45,
+        cy - arenaRadius * 0.78,
+        '#DC2626',  // bold red
+        '#000000',
+        4
+      )
 
       // ── Update & Draw Tazos ──
       for (const tazo of canvasTazosRef.current) {
@@ -702,7 +733,7 @@ export function BattleCanvas({
           const evoR = drawRadius + 6 + Math.sin(evoPhase) * 2
           ctx.beginPath()
           ctx.arc(drawX, drawY, evoR, 0, Math.PI * 2)
-          ctx.strokeStyle = 'rgba(0, 255, 136, 0.25)'
+          ctx.strokeStyle = 'rgba(0, 200, 100, 0.3)'
           ctx.lineWidth = 2
           ctx.stroke()
         }
@@ -727,9 +758,9 @@ export function BattleCanvas({
         ctx.fillStyle = grad
         ctx.fill()
 
-        // Disc border
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)'
-        ctx.lineWidth = 2
+        // Disc border - thick black for magazine style
+        ctx.strokeStyle = '#000000'
+        ctx.lineWidth = 2.5
         ctx.stroke()
 
         // Spinning pattern (rotating lines)
@@ -738,7 +769,7 @@ export function BattleCanvas({
         ctx.rotate(tazo.rotation)
         ctx.beginPath()
         ctx.arc(0, 0, drawRadius * 0.85, 0, Math.PI * 2)
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)'
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.12)'
         ctx.lineWidth = 1
         ctx.stroke()
 
@@ -748,7 +779,7 @@ export function BattleCanvas({
           ctx.beginPath()
           ctx.moveTo(0, 0)
           ctx.lineTo(Math.cos(angle) * drawRadius * 0.85, Math.sin(angle) * drawRadius * 0.85)
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)'
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)'
           ctx.lineWidth = 1
           ctx.stroke()
         }
@@ -756,7 +787,7 @@ export function BattleCanvas({
         // Center circle
         ctx.beginPath()
         ctx.arc(0, 0, drawRadius * 0.3, 0, Math.PI * 2)
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)'
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.25)'
         ctx.fill()
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
         ctx.lineWidth = 1
@@ -764,46 +795,58 @@ export function BattleCanvas({
 
         ctx.restore()
 
-        // Character initial
+        // Character initial - white with black shadow for readability
         const fontSize = Math.max(10, drawRadius * 0.5)
-        ctx.font = `bold ${fontSize}px sans-serif`
+        ctx.font = `900 ${fontSize}px sans-serif`
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
         ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'
         ctx.shadowBlur = 3
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)'
         ctx.fillText(tazo.name.charAt(0).toUpperCase(), drawX, drawY)
         ctx.shadowBlur = 0
 
-        // Name below disc
+        // Name below disc - bold with outline
         const nameFontSize = Math.max(8, drawRadius * 0.28)
-        ctx.font = `bold ${nameFontSize}px sans-serif`
+        ctx.font = `900 ${nameFontSize}px sans-serif`
         ctx.textAlign = 'center'
         ctx.textBaseline = 'top'
-        ctx.fillStyle = tazo.side === 'player' ? 'rgba(100, 200, 255, 0.8)' : 'rgba(255, 120, 120, 0.8)'
-        ctx.fillText(tazo.name, drawX, drawY + drawRadius + 4)
+        const nameColor = tazo.side === 'player' ? '#2563EB' : '#DC2626'
+        drawStrokedText(
+          ctx,
+          tazo.name,
+          drawX,
+          drawY + drawRadius + 4,
+          nameColor,
+          '#000000',
+          2
+        )
 
         // Health bar
         if (tazo.isAlive) {
           const barW = drawRadius * 2
-          const barH = 4
+          const barH = 5
           const barX = drawX - drawRadius
-          const barY = drawY + drawRadius + nameFontSize + 6
+          const barY = drawY + drawRadius + nameFontSize + 8
           const hpPct = Math.max(0, tazo.hp / tazo.maxHp)
 
-          // Background
-          ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
+          // Background with black border
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.15)'
+          ctx.fillRect(barX - 1, barY - 1, barW + 2, barH + 2)
+
+          // White fill
+          ctx.fillStyle = '#FFFFFF'
           ctx.fillRect(barX, barY, barW, barH)
 
           // HP fill
-          const hpColor = hpPct > 0.5 ? '#4CAF50' : hpPct > 0.25 ? '#FF9800' : '#F44336'
+          const hpColor = hpPct > 0.5 ? '#22C55E' : hpPct > 0.25 ? '#F59E0B' : '#EF4444'
           ctx.fillStyle = hpColor
           ctx.fillRect(barX, barY, barW * hpPct, barH)
 
           // Border
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
-          ctx.lineWidth = 0.5
-          ctx.strokeRect(barX, barY, barW, barH)
+          ctx.strokeStyle = '#000000'
+          ctx.lineWidth = 1.5
+          ctx.strokeRect(barX - 0.5, barY - 0.5, barW + 1, barH + 1)
         }
 
         ctx.restore()
@@ -894,7 +937,7 @@ export function BattleCanvas({
         const pulse = Math.sin(now / 500) * 0.15 + 0.15
         ctx.beginPath()
         ctx.arc(cx, cy, arenaRadius * 0.05, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(255, 255, 255, ${pulse})`
+        ctx.fillStyle = `rgba(0, 0, 0, ${pulse})`
         ctx.fill()
       }
 

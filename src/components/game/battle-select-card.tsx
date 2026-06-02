@@ -57,31 +57,31 @@ export function BattleSelectCard({ tazo, selected, onSelect, disabled }: BattleS
       onClick={() => !disabled && onSelect(tazo.id)}
       disabled={disabled}
       className={cn(
-        'relative group rounded-xl border-2 p-3 transition-all duration-200 text-left w-full',
-        'hover:scale-[1.02] active:scale-[0.98]',
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+        'relative group border-3 border-black p-3 transition-all duration-200 text-left w-full',
+        'hover:scale-[1.03] active:scale-[0.97]',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2',
         selected
-          ? 'border-yellow-400 bg-yellow-50 shadow-lg shadow-yellow-200/50 ring-2 ring-yellow-300'
-          : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md',
-        disabled && 'opacity-50 cursor-not-allowed hover:scale-100'
+          ? 'bg-yellow-300 shadow-[3px_3px_0_0_#000] ring-2 ring-yellow-500'
+          : 'bg-white shadow-[2px_2px_0_0_#000] hover:shadow-[3px_3px_0_0_#000]',
+        disabled && 'opacity-40 cursor-not-allowed hover:scale-100 hover:shadow-[2px_2px_0_0_#000]'
       )}
     >
-      {/* Selection checkmark */}
+      {/* Selection checkmark - magazine sticker style */}
       {selected && (
-        <div className="absolute -top-2 -right-2 z-10 bg-yellow-400 rounded-full w-6 h-6 flex items-center justify-center shadow-md animate-in zoom-in duration-200">
-          <Check className="w-4 h-4 text-yellow-900" />
+        <div className="absolute -top-2 -right-2 z-10 bg-red-500 border-2 border-black rounded-full w-6 h-6 flex items-center justify-center shadow-[2px_2px_0_0_#000] animate-in zoom-in duration-200">
+          <Check className="w-4 h-4 text-white" />
         </div>
       )}
 
       {/* Header: Name + Franchise */}
       <div className="flex items-start justify-between gap-1 mb-2">
         <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-sm truncate leading-tight">{tazo.name}</h3>
-          <p className="text-[10px] text-muted-foreground truncate">{tazo.franchise?.name}</p>
+          <h3 className="font-black text-sm truncate leading-tight text-black">{tazo.name}</h3>
+          <p className="text-[10px] text-black/50 font-bold truncate">{tazo.franchise?.name}</p>
         </div>
         <div
-          className="w-3 h-3 rounded-full shrink-0 mt-0.5 ring-2 ring-offset-1"
-          style={{ backgroundColor: franchiseColor, ringColor: franchiseColor }}
+          className="w-4 h-4 rounded-full shrink-0 mt-0.5 border-2 border-black"
+          style={{ backgroundColor: franchiseColor }}
         />
       </div>
 
@@ -89,14 +89,14 @@ export function BattleSelectCard({ tazo, selected, onSelect, disabled }: BattleS
       <div className="flex items-center gap-1 mb-2 flex-wrap">
         <Badge
           variant="outline"
-          className={cn('text-[9px] px-1.5 py-0 h-4', rarity.color, rarity.bgColor, rarity.borderColor)}
+          className={cn('text-[9px] px-1.5 py-0 h-4 font-black border-2', rarity.color, rarity.bgColor, rarity.borderColor)}
         >
           {rarity.label}
         </Badge>
         {tazo.combatType && (
           <Badge
             variant="outline"
-            className="text-[9px] px-1.5 py-0 h-4 text-white border-0"
+            className="text-[9px] px-1.5 py-0 h-4 text-white border-2 border-black font-bold"
             style={{ backgroundColor: combatColor }}
           >
             {tazo.combatType}
@@ -109,8 +109,8 @@ export function BattleSelectCard({ tazo, selected, onSelect, disabled }: BattleS
       <div className="grid grid-cols-3 gap-x-2 gap-y-1">
         {statBars.map((stat) => (
           <div key={stat.label} className="flex items-center gap-1">
-            <span className="text-[8px] text-muted-foreground font-medium w-6">{stat.label}</span>
-            <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+            <span className="text-[7px] text-black/50 font-black w-6">{stat.label}</span>
+            <div className="flex-1 h-1.5 bg-black/10 border border-black/20 rounded-full overflow-hidden">
               <div
                 className={cn('h-full rounded-full transition-all', stat.color)}
                 style={{ width: `${stat.value}%` }}
@@ -122,7 +122,7 @@ export function BattleSelectCard({ tazo, selected, onSelect, disabled }: BattleS
 
       {/* Skill */}
       {tazo.skill && (
-        <p className="text-[9px] text-muted-foreground mt-1.5 truncate italic">
+        <p className="text-[9px] text-black/50 mt-1.5 truncate italic font-bold">
           {tazo.skill}
         </p>
       )}

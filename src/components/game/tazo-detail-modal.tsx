@@ -7,10 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
-import { Lock, Unlock, Swords, Trophy, X, ChevronRight, Zap, ArrowUpCircle } from 'lucide-react'
+import { Lock, Unlock, Swords, X, ArrowUpCircle, ArrowRight } from 'lucide-react'
 
 interface TazoDetailModalProps {
   tazo: Tazo | null
@@ -19,19 +16,19 @@ interface TazoDetailModalProps {
   onToggleOwned?: (tazo: Tazo) => void
 }
 
-const FRANCHISE_COLORS: Record<string, { from: string; to: string; text: string; border: string }> = {
-  pokemon: { from: '#FFCB05', to: '#FF8C00', text: '#92400E', border: '#FFCB05' },
-  digimon: { from: '#00A1E9', to: '#0057B7', text: '#1E3A5F', border: '#00A1E9' },
-  dbz: { from: '#FF6B00', to: '#CC4400', text: '#7C2D12', border: '#FF6B00' },
+const FRANCHISE_COLORS: Record<string, { from: string; to: string; text: string; border: string; banner: string }> = {
+  pokemon: { from: '#FFCB05', to: '#FF8C00', text: '#92400E', border: '#FFCB05', banner: 'linear-gradient(90deg, #FFCB05, #FF8C00)' },
+  digimon: { from: '#00A1E9', to: '#0057B7', text: '#1E3A5F', border: '#00A1E9', banner: 'linear-gradient(90deg, #00A1E9, #0057B7)' },
+  dbz: { from: '#FF6B00', to: '#CC4400', text: '#7C2D12', border: '#FF6B00', banner: 'linear-gradient(90deg, #FF6B00, #CC4400)' },
 }
 
 const STAT_CONFIG = [
-  { key: 'attack' as const, label: 'ATK', color: '#EF4444', icon: '⚔️' },
-  { key: 'defense' as const, label: 'DEF', color: '#3B82F6', icon: '🛡️' },
-  { key: 'spin' as const, label: 'SPIN', color: '#10B981', icon: '🌀' },
-  { key: 'weight' as const, label: 'WEIGHT', color: '#F59E0B', icon: '⚖️' },
-  { key: 'aura' as const, label: 'AURA', color: '#8B5CF6', icon: '✨' },
-  { key: 'control' as const, label: 'CONTROL', color: '#EC4899', icon: '🎯' },
+  { key: 'attack' as const, label: 'ATK', color: '#E3350D', icon: '⚔️', bgColor: '#E3350D15' },
+  { key: 'defense' as const, label: 'DEF', color: '#3B4CCA', icon: '🛡️', bgColor: '#3B4CCA15' },
+  { key: 'spin' as const, label: 'SPIN', color: '#78C850', icon: '🌀', bgColor: '#78C85015' },
+  { key: 'weight' as const, label: 'WEIGHT', color: '#FFCC00', icon: '⚖️', bgColor: '#FFCC0015' },
+  { key: 'aura' as const, label: 'AURA', color: '#A855F7', icon: '✨', bgColor: '#A855F715' },
+  { key: 'control' as const, label: 'CONTROL', color: '#EC4899', icon: '🎯', bgColor: '#EC489915' },
 ]
 
 const RARITY_STARS: Record<Rarity, string> = {
@@ -40,6 +37,23 @@ const RARITY_STARS: Record<Rarity, string> = {
   rare: '★★★',
   ultra: '★★★★',
   legendary: '★★★★★',
+}
+
+const RARITY_HEX: Record<Rarity, string> = {
+  common: '#9CA3AF',
+  uncommon: '#22C55E',
+  rare: '#3B82F6',
+  ultra: '#A855F7',
+  legendary: '#F59E0B',
+}
+
+const CONDITION_HEX: Record<TazoCondition, string> = {
+  mint: '#10B981',
+  good: '#22C55E',
+  used: '#EAB308',
+  worn: '#F97316',
+  holo: '#06B6D4',
+  metallic: '#94A3B8',
 }
 
 // Pokémon type advantage table
@@ -52,6 +66,38 @@ const POKEMON_ADVANTAGES: Record<string, string[]> = {
   ghost: ['normal'],
   dragon: ['dragon'],
   normal: [],
+}
+
+// Fun flavor quotes for each franchise
+const FLAVOR_QUOTES: Record<string, string[]> = {
+  pokemon: [
+    "Gotta spin 'em all!",
+    "This one's a real spinner!",
+    "Watch out for that type advantage!",
+    "A champion in the making!",
+    "Pocket power, maximum spin!",
+  ],
+  digimon: [
+    "Digivolve and spin!",
+    "Digital power unleashed!",
+    "This Digimon means business!",
+    "Spin force: OVER 9000... wait, wrong franchise!",
+    "Data never spins this hard!",
+  ],
+  dbz: [
+    "It's OVER 9000 RPM!",
+    "Power level: MAXIMUM SPIN!",
+    "This tazo goes Super Saiyan!",
+    "Kamehameha spin incoming!",
+    "The strongest in the universe!",
+  ],
+}
+
+function getFlavorQuote(franchise: string, tazoName: string): string {
+  const quotes = FLAVOR_QUOTES[franchise] || FLAVOR_QUOTES.pokemon
+  // Simple hash based on name for consistent quotes
+  const hash = tazoName.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)
+  return quotes[hash % quotes.length]
 }
 
 export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: TazoDetailModalProps) {
@@ -68,39 +114,130 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: 
   const isWorn = tazo.condition === 'worn'
   const totalBattles = tazo.battleWins + tazo.battleLosses
   const winRate = totalBattles > 0 ? Math.round((tazo.battleWins / totalBattles) * 100) : 0
+  const totalStats = tazo.attack + tazo.defense + tazo.spin + tazo.weight + tazo.aura + tazo.control
 
   let circleBorderClass = ''
   if (isHolo) circleBorderClass = 'holo-border'
   else if (isLegendary) circleBorderClass = 'legendary-glow'
 
+  const rarityHex = RARITY_HEX[tazo.rarity as Rarity] || '#9CA3AF'
+  const conditionHex = CONDITION_HEX[tazo.condition as TazoCondition] || '#94A3B8'
+
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto custom-scrollbar bg-[#1a1a2e] border-white/10 text-white p-0">
+      <DialogContent
+        className="mag-detail-modal max-w-lg max-h-[92vh] overflow-y-auto custom-scrollbar p-0 gap-0 border-0"
+        showCloseButton={false}
+        style={{
+          background: 'white',
+          border: '4px solid #1a1a1a',
+          boxShadow: '8px 8px 0px #1a1a1a',
+          borderRadius: '0',
+        }}
+      >
         <DialogHeader className="sr-only">
           <DialogTitle>{tazo.name}</DialogTitle>
         </DialogHeader>
 
-        <div className="p-6">
-          {/* Close button */}
+        {/* ===== MAGAZINE CENTERFOLD LAYOUT ===== */}
+
+        {/* TOP BANNER STRIP - franchise colored with name in huge stroke text */}
+        <div
+          className="relative px-4 py-3 sm:px-6 sm:py-4"
+          style={{
+            background: franchiseColors.banner,
+            borderBottom: '4px solid #1a1a1a',
+          }}
+        >
+          {/* Halftone overlay on banner */}
+          <div className="absolute inset-0 mag-halftone opacity-30 pointer-events-none" />
+
+          {/* Close button - magazine style */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-white/40 hover:text-white transition-colors z-10"
+            className="absolute top-2 right-2 sm:top-3 sm:right-3 z-20 w-8 h-8 flex items-center justify-center border-2 border-black bg-white hover:bg-red-500 hover:text-white transition-colors font-black text-sm"
+            style={{ boxShadow: '2px 2px 0px #1a1a1a' }}
             aria-label="Close"
           >
-            <X className="w-5 h-5" />
+            ✕
           </button>
 
-          {/* Large Circular Tazo Display */}
-          <div className="flex justify-center mb-4">
+          {/* Collection tag */}
+          <div className="relative z-10 mb-1">
+            <span
+              className="inline-block px-2 py-0.5 text-[10px] font-black uppercase tracking-wider bg-white border-2 border-black"
+              style={{ boxShadow: '2px 2px 0px #1a1a1a' }}
+            >
+              {tazo.franchise?.name || 'Unknown'}
+              {tazo.collection?.year ? ` · ${tazo.collection.year}` : ''}
+            </span>
+          </div>
+
+          {/* HUGE NAME */}
+          <h2
+            className="relative z-10 text-3xl sm:text-4xl font-black leading-none mag-stroke-white uppercase tracking-tight"
+            style={{
+              paintOrder: 'stroke fill',
+              WebkitTextStroke: '2.5px #1a1a1a',
+              color: 'white',
+            }}
+          >
+            {tazo.name}
+          </h2>
+
+          {/* Rarity stars row */}
+          <div className="relative z-10 flex items-center gap-2 mt-1.5">
+            <span
+              className="text-sm font-black"
+              style={{
+                color: rarityHex,
+                textShadow: '0 0 8px ' + rarityHex + '60',
+              }}
+            >
+              {RARITY_STARS[tazo.rarity as Rarity]}
+            </span>
+            <span
+              className="text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 border-2 border-black"
+              style={{
+                background: rarityHex + '30',
+                color: rarityHex,
+              }}
+            >
+              {rarityConfig?.label}
+            </span>
+            <span
+              className="text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 border-2 border-black"
+              style={{
+                background: conditionHex + '30',
+                color: conditionHex,
+              }}
+            >
+              {conditionConfig?.icon} {conditionConfig?.label}
+            </span>
+            {isLegendary && (
+              <span className="exclusive-badge" style={{ position: 'relative', top: 0, right: 0, transform: 'rotate(0deg)' }}>
+                LEGENDARY
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* CONTENT AREA */}
+        <div className="px-4 sm:px-6 py-4 space-y-4 mag-dots" style={{ background: '#fffef0' }}>
+
+          {/* ===== LARGE TAZO DISC + SPEECH BUBBLE ===== */}
+          <div className="flex flex-col items-center">
+            {/* The Big Disc */}
             <div
               className={`
-                relative w-[160px] h-[160px] sm:w-[180px] sm:h-[180px]
+                relative w-[180px] h-[180px] sm:w-[220px] sm:h-[220px]
                 rounded-full flex items-center justify-center
                 ${circleBorderClass}
               `}
               style={{
-                border: isHolo ? undefined : isLegendary ? '4px solid #FBBF24' : `4px solid ${franchiseColors.border}80`,
-                padding: '4px',
+                border: isHolo ? undefined : isLegendary ? '5px solid #FBBF24' : `5px solid ${franchiseColors.border}`,
+                padding: '6px',
+                boxShadow: isLegendary ? undefined : '6px 6px 0px #1a1a1a',
               }}
             >
               <div
@@ -111,7 +248,8 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: 
                   ${isWorn ? 'worn-overlay' : ''}
                 `}
                 style={{
-                  background: `linear-gradient(135deg, ${franchiseColors.from}30, ${franchiseColors.to}50, ${franchiseColors.from}20)`,
+                  background: `linear-gradient(135deg, ${franchiseColors.from}40, ${franchiseColors.to}60, ${franchiseColors.from}30)`,
+                  border: '3px solid #1a1a1a',
                 }}
               >
                 {tazo.imageUrl ? (
@@ -123,15 +261,18 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: 
                 ) : (
                   <>
                     <span
-                      className="text-5xl sm:text-6xl font-black leading-none"
-                      style={{ color: franchiseColors.from, textShadow: `0 0 20px ${franchiseColors.from}40` }}
+                      className="text-6xl sm:text-7xl font-black leading-none"
+                      style={{
+                        color: franchiseColors.from,
+                        textShadow: `0 0 24px ${franchiseColors.from}50, 2px 2px 0px #1a1a1a`,
+                      }}
                     >
                       {tazo.name.charAt(0)}
                     </span>
                     {tazo.printedNumber && (
                       <span
-                        className="text-xs font-semibold mt-1 opacity-70"
-                        style={{ color: franchiseColors.from }}
+                        className="text-xs font-black mt-1 px-2 py-0.5 bg-black/20 rounded-full"
+                        style={{ color: 'white' }}
                       >
                         #{tazo.printedNumber}
                       </span>
@@ -139,217 +280,485 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: 
                   </>
                 )}
 
+                {/* Lock overlay */}
                 {!tazo.isOwned && (
                   <div className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center">
-                    <Lock className="w-10 h-10 text-white/60" />
+                    <Lock className="w-12 h-12 text-white/70" />
                   </div>
                 )}
               </div>
             </div>
-          </div>
 
-          {/* Name & Collection */}
-          <div className="text-center mb-3">
-            <h2 className="text-xl font-black">{tazo.name}</h2>
-            <p className="text-sm text-white/50">
-              {tazo.collection?.name || 'Unknown Collection'} {tazo.collection?.year ? `(${tazo.collection.year})` : ''}
-            </p>
-          </div>
-
-          {/* Badges Row */}
-          <div className="flex flex-wrap gap-1.5 justify-center mb-4">
-            <Badge
-              style={{
-                backgroundColor: franchiseColors.from + '25',
-                color: franchiseColors.from,
-                borderColor: franchiseColors.from + '40',
-              }}
-              variant="outline"
-            >
-              {tazo.franchise?.name}
-            </Badge>
-            <Badge
-              variant="outline"
-              style={{
-                color: rarityConfig?.color === 'text-gray-600' ? '#9CA3AF' :
-                       rarityConfig?.color === 'text-green-600' ? '#22C55E' :
-                       rarityConfig?.color === 'text-blue-600' ? '#3B82F6' :
-                       rarityConfig?.color === 'text-purple-600' ? '#A855F7' :
-                       '#F59E0B',
-                borderColor: rarityConfig?.color === 'text-gray-600' ? '#9CA3AF40' :
-                             rarityConfig?.color === 'text-green-600' ? '#22C55E40' :
-                             rarityConfig?.color === 'text-blue-600' ? '#3B82F640' :
-                             rarityConfig?.color === 'text-purple-600' ? '#A855F740' :
-                             '#F59E0B40',
-              }}
-            >
-              {RARITY_STARS[tazo.rarity as Rarity]} {rarityConfig?.label}
-            </Badge>
-            <Badge
-              variant="outline"
-              style={{
-                color: conditionConfig?.color === 'text-emerald-600' ? '#10B981' :
-                       conditionConfig?.color === 'text-green-600' ? '#22C55E' :
-                       conditionConfig?.color === 'text-yellow-600' ? '#EAB308' :
-                       conditionConfig?.color === 'text-orange-600' ? '#F97316' :
-                       conditionConfig?.color === 'text-cyan-600' ? '#06B6D4' :
-                       '#94A3B8',
-                borderColor: 'currentColor',
-              }}
-            >
-              {conditionConfig?.icon} {conditionConfig?.label}
-            </Badge>
-            {tazo.combatType && (
-              <Badge variant="outline" className="border-white/20 text-white/60">
-                {tazo.combatType}
-              </Badge>
-            )}
-          </div>
-
-          {/* Skill */}
-          {tazo.skill && (
-            <div className="bg-white/5 rounded-lg p-3 mb-4">
-              <div className="flex items-center gap-2 mb-1">
-                <Zap className="w-4 h-4 text-yellow-400" />
-                <span className="font-bold text-sm text-yellow-400">{tazo.skill}</span>
-              </div>
-              {tazo.skillDesc && (
-                <p className="text-xs text-white/60 leading-relaxed">{tazo.skillDesc}</p>
-              )}
-            </div>
-          )}
-
-          {/* Stats */}
-          <div className="space-y-2 mb-4">
-            <h3 className="text-sm font-bold text-white/70 uppercase tracking-wider">Stats</h3>
-            {STAT_CONFIG.map((stat) => (
-              <div key={stat.key} className="flex items-center gap-2">
-                <span className="text-xs w-4">{stat.icon}</span>
-                <span className="text-xs font-mono text-white/50 w-16">{stat.label}</span>
-                <div className="flex-1 h-2.5 bg-white/10 rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full stat-bar-fill"
-                    style={{
-                      width: `${tazo[stat.key]}%`,
-                      backgroundColor: stat.color,
-                    }}
-                  />
-                </div>
-                <span className="text-xs font-mono font-bold text-white/80 w-8 text-right">{tazo[stat.key]}</span>
-              </div>
-            ))}
-            <div className="flex items-center gap-2 mt-1 pt-1 border-t border-white/5">
-              <span className="text-xs">📊</span>
-              <span className="text-xs font-mono text-white/50 w-16">TOTAL</span>
-              <span className="text-xs font-mono font-bold text-white/80 ml-auto">
-                {tazo.attack + tazo.defense + tazo.spin + tazo.weight + tazo.aura + tazo.control}
+            {/* Speech Bubble with flavor quote */}
+            <div className="mt-3 speech-bubble text-center max-w-[260px]">
+              <span className="mag-stroke-sm" style={{ color: franchiseColors.text, WebkitTextStroke: '0.5px #1a1a1a' }}>
+                &ldquo;{getFlavorQuote(franchiseSlug, tazo.name)}&rdquo;
               </span>
             </div>
           </div>
 
-          <Separator className="bg-white/10 mb-4" />
+          {/* ===== STATS SECTION - Magazine Infographic ===== */}
+          <div
+            style={{
+              border: '3px solid #1a1a1a',
+              boxShadow: '4px 4px 0px #1a1a1a',
+              background: 'white',
+            }}
+          >
+            {/* Stats header */}
+            <div
+              className="px-3 py-1.5 text-center font-black text-xs uppercase tracking-widest"
+              style={{
+                background: '#1a1a1a',
+                color: '#FFCC00',
+                borderBottom: '3px solid #1a1a1a',
+                letterSpacing: '2px',
+              }}
+            >
+              ⚡ Power Stats ⚡
+            </div>
 
-          {/* Franchise-Specific Info */}
-          {franchiseSlug === 'pokemon' && tazo.combatType && (
-            <div className="bg-white/5 rounded-lg p-3 mb-4">
-              <h4 className="text-xs font-bold text-yellow-400 mb-2 uppercase tracking-wider">Type Advantages</h4>
-              <div className="flex flex-wrap gap-1.5">
-                {(POKEMON_ADVANTAGES[tazo.combatType] || []).length > 0 ? (
-                  (POKEMON_ADVANTAGES[tazo.combatType] || []).map((type) => (
-                    <Badge key={type} variant="outline" className="text-[10px] border-green-500/40 text-green-400">
-                      <ArrowUpCircle className="w-3 h-3 mr-0.5" /> vs {type}
-                    </Badge>
-                  ))
-                ) : (
-                  <span className="text-xs text-white/40">No type advantages</span>
-                )}
+            <div className="p-3 space-y-2">
+              {STAT_CONFIG.map((stat) => (
+                <div
+                  key={stat.key}
+                  className="flex items-center gap-2"
+                  style={{
+                    background: stat.bgColor,
+                    padding: '4px 8px',
+                    borderRadius: '2px',
+                    border: '1px solid ' + stat.color + '30',
+                  }}
+                >
+                  <span className="text-sm w-5 text-center">{stat.icon}</span>
+                  <span
+                    className="text-[10px] font-black uppercase tracking-wider w-[52px]"
+                    style={{ color: stat.color }}
+                  >
+                    {stat.label}
+                  </span>
+                  <div className="flex-1 h-5 bg-white border-2 border-black overflow-hidden relative">
+                    <div
+                      className="h-full stat-bar-fill"
+                      style={{
+                        width: `${tazo[stat.key]}%`,
+                        background: `linear-gradient(90deg, ${stat.color}, ${stat.color}CC)`,
+                      }}
+                    />
+                    {/* Halftone texture on bar */}
+                    <div
+                      className="absolute inset-0 pointer-events-none opacity-20"
+                      style={{
+                        backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.1) 3px, rgba(0,0,0,0.1) 4px)`,
+                      }}
+                    />
+                  </div>
+                  <span
+                    className="text-sm font-black w-8 text-right"
+                    style={{ color: stat.color }}
+                  >
+                    {tazo[stat.key]}
+                  </span>
+                </div>
+              ))}
+
+              {/* Total */}
+              <div
+                className="flex items-center justify-between mt-1 pt-2"
+                style={{ borderTop: '3px dashed #1a1a1a20' }}
+              >
+                <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: '#1a1a1a' }}>
+                  📊 Total Power
+                </span>
+                <span
+                  className="text-lg font-black px-2 py-0.5 border-2 border-black"
+                  style={{
+                    background: '#FFCC00',
+                    color: '#1a1a1a',
+                    boxShadow: '2px 2px 0px #1a1a1a',
+                  }}
+                >
+                  {totalStats}
+                </span>
               </div>
+            </div>
+          </div>
+
+          {/* ===== SKILL SECTION - Yellow Strip ===== */}
+          {tazo.skill && (
+            <div
+              className="mag-card-yellow p-3"
+              style={{
+                background: '#FFCC00',
+                border: '3px solid #1a1a1a',
+                boxShadow: '4px 4px 0px #1a1a1a',
+              }}
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-lg">⚡</span>
+                <span
+                  className="font-black text-base uppercase tracking-wide mag-stroke"
+                  style={{
+                    paintOrder: 'stroke fill',
+                    WebkitTextStroke: '1.5px #1a1a1a',
+                    color: '#E3350D',
+                  }}
+                >
+                  {tazo.skill}
+                </span>
+              </div>
+              {tazo.skillDesc && (
+                <p
+                  className="text-xs italic font-semibold pl-7"
+                  style={{ color: '#1a1a1aCC' }}
+                >
+                  {tazo.skillDesc}
+                </p>
+              )}
             </div>
           )}
 
+          {/* ===== EVOLUTION / TRANSFORM SECTION ===== */}
           {franchiseSlug === 'digimon' && (tazo.evolutionFrom || tazo.evolutionTo) && (
-            <div className="bg-white/5 rounded-lg p-3 mb-4">
-              <h4 className="text-xs font-bold text-[#00A1E9] mb-2 uppercase tracking-wider">Digievolution</h4>
-              <div className="flex items-center gap-2 text-xs text-white/70">
+            <div
+              className="p-3"
+              style={{
+                background: 'white',
+                border: '3px solid #1a1a1a',
+                boxShadow: '4px 4px 0px #1a1a1a',
+              }}
+            >
+              <div
+                className="text-center font-black text-[10px] uppercase tracking-widest mb-2 py-1"
+                style={{
+                  background: '#00A1E9',
+                  color: 'white',
+                  border: '2px solid #1a1a1a',
+                }}
+              >
+                🔥 DIGIEVOLUTION 🔥
+              </div>
+              <div className="flex items-center justify-center gap-2">
                 {tazo.evolutionFrom && (
-                  <Badge variant="outline" className="border-blue-400/40 text-blue-300 text-[10px]">
-                    ← {tazo.evolutionFrom}
-                  </Badge>
+                  <div className="flex flex-col items-center gap-1">
+                    <div
+                      className="w-14 h-14 rounded-full flex items-center justify-center border-3 border-black text-lg font-black"
+                      style={{
+                        background: 'linear-gradient(135deg, #00A1E940, #0057B740)',
+                        border: '3px solid #1a1a1a',
+                      }}
+                    >
+                      {tazo.evolutionFrom.charAt(0)}
+                    </div>
+                    <span className="text-[9px] font-black uppercase" style={{ color: '#00A1E9' }}>
+                      {tazo.evolutionFrom}
+                    </span>
+                  </div>
                 )}
-                {tazo.evolutionFrom && tazo.evolutionTo && <ChevronRight className="w-3 h-3 text-white/30" />}
+                <div className="flex flex-col items-center">
+                  <ArrowRight className="w-6 h-6" style={{ color: '#1a1a1a' }} />
+                  <span className="text-[8px] font-black uppercase" style={{ color: '#E3350D' }}>POWER UP!</span>
+                </div>
+                {/* Current tazo silhouette */}
+                <div className="flex flex-col items-center gap-1">
+                  <div
+                    className="w-16 h-16 rounded-full flex items-center justify-center text-xl font-black star-burst"
+                    style={{
+                      background: `linear-gradient(135deg, ${franchiseColors.from}, ${franchiseColors.to})`,
+                      border: '3px solid #1a1a1a',
+                      boxShadow: '3px 3px 0px #1a1a1a',
+                      color: 'white',
+                      textShadow: '1px 1px 0px #1a1a1a',
+                    }}
+                  >
+                    {tazo.name.charAt(0)}
+                  </div>
+                  <span className="text-[9px] font-black uppercase" style={{ color: franchiseColors.text }}>
+                    {tazo.name}
+                  </span>
+                </div>
                 {tazo.evolutionTo && (
-                  <Badge variant="outline" className="border-blue-400/40 text-blue-300 text-[10px]">
-                    {tazo.evolutionTo} →
-                  </Badge>
+                  <>
+                    <div className="flex flex-col items-center">
+                      <ArrowRight className="w-6 h-6" style={{ color: '#1a1a1a' }} />
+                      <span className="text-[8px] font-black uppercase" style={{ color: '#E3350D' }}>POWER UP!</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <div
+                        className="w-14 h-14 rounded-full flex items-center justify-center border-3 border-black text-lg font-black"
+                        style={{
+                          background: 'linear-gradient(135deg, #00A1E940, #0057B740)',
+                          border: '3px solid #1a1a1a',
+                        }}
+                      >
+                        {tazo.evolutionTo.charAt(0)}
+                      </div>
+                      <span className="text-[9px] font-black uppercase" style={{ color: '#00A1E9' }}>
+                        {tazo.evolutionTo}
+                      </span>
+                    </div>
+                  </>
                 )}
               </div>
             </div>
           )}
 
           {franchiseSlug === 'dbz' && (tazo.transformStage || tazo.transformOf) && (
-            <div className="bg-white/5 rounded-lg p-3 mb-4">
-              <h4 className="text-xs font-bold text-[#FF6B00] mb-2 uppercase tracking-wider">Transformation</h4>
-              {tazo.transformStage && (
-                <Badge variant="outline" className="border-orange-400/40 text-orange-300 text-[10px]">
-                  {tazo.transformStage}
-                </Badge>
-              )}
-              {tazo.transformOf && (
-                <p className="text-[10px] text-white/40 mt-1">Transform of: {tazo.transformOf}</p>
-              )}
+            <div
+              className="p-3"
+              style={{
+                background: 'white',
+                border: '3px solid #1a1a1a',
+                boxShadow: '4px 4px 0px #1a1a1a',
+              }}
+            >
+              <div
+                className="text-center font-black text-[10px] uppercase tracking-widest mb-2 py-1"
+                style={{
+                  background: '#FF6B00',
+                  color: 'white',
+                  border: '2px solid #1a1a1a',
+                }}
+              >
+                💥 TRANSFORMATION 💥
+              </div>
+              <div className="flex items-center justify-center gap-3">
+                {tazo.transformOf && (
+                  <>
+                    <div className="flex flex-col items-center gap-1">
+                      <div
+                        className="w-14 h-14 rounded-full flex items-center justify-center text-lg font-black"
+                        style={{
+                          background: 'linear-gradient(135deg, #FF6B0040, #CC440040)',
+                          border: '3px solid #1a1a1a',
+                        }}
+                      >
+                        {tazo.transformOf.charAt(0)}
+                      </div>
+                      <span className="text-[9px] font-black uppercase" style={{ color: '#FF6B00' }}>
+                        {tazo.transformOf}
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <ArrowRight className="w-6 h-6" style={{ color: '#1a1a1a' }} />
+                      <span className="text-[8px] font-black uppercase" style={{ color: '#E3350D' }}>POWER UP!</span>
+                    </div>
+                  </>
+                )}
+                <div className="flex flex-col items-center gap-1">
+                  <div
+                    className="w-16 h-16 rounded-full flex items-center justify-center text-xl font-black star-burst"
+                    style={{
+                      background: `linear-gradient(135deg, ${franchiseColors.from}, ${franchiseColors.to})`,
+                      border: '3px solid #1a1a1a',
+                      boxShadow: '3px 3px 0px #1a1a1a',
+                      color: 'white',
+                      textShadow: '1px 1px 0px #1a1a1a',
+                    }}
+                  >
+                    {tazo.name.charAt(0)}
+                  </div>
+                  {tazo.transformStage && (
+                    <span
+                      className="text-[9px] font-black uppercase px-1.5 py-0.5 border border-black"
+                      style={{ background: '#FF6B0030', color: '#FF6B00' }}
+                    >
+                      {tazo.transformStage}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 
-          {/* Condition Effect */}
+          {/* ===== POKEMON TYPE ADVANTAGE ===== */}
+          {franchiseSlug === 'pokemon' && tazo.combatType && (
+            <div
+              className="p-3"
+              style={{
+                background: 'white',
+                border: '3px solid #1a1a1a',
+                boxShadow: '4px 4px 0px #1a1a1a',
+              }}
+            >
+              <div
+                className="text-center font-black text-[10px] uppercase tracking-widest mb-2 py-1"
+                style={{
+                  background: '#FFCB05',
+                  color: '#1a1a1a',
+                  border: '2px solid #1a1a1a',
+                }}
+              >
+                ⚡ TYPE ADVANTAGES ⚡
+              </div>
+              <div className="flex flex-wrap gap-1.5 justify-center">
+                {(POKEMON_ADVANTAGES[tazo.combatType] || []).length > 0 ? (
+                  (POKEMON_ADVANTAGES[tazo.combatType] || []).map((type) => (
+                    <span
+                      key={type}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-black uppercase border-2 border-black"
+                      style={{
+                        background: '#78C85030',
+                        color: '#78C850',
+                        boxShadow: '2px 2px 0px #1a1a1a',
+                      }}
+                    >
+                      <ArrowUpCircle className="w-3 h-3" /> vs {type}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-[10px] font-bold" style={{ color: '#9CA3AF' }}>
+                    No type advantages
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ===== CONDITION EFFECT ===== */}
           {conditionConfig && (
-            <div className="bg-white/5 rounded-lg p-3 mb-4">
-              <h4 className="text-xs font-bold text-white/60 mb-1 uppercase tracking-wider">Condition Effect</h4>
-              <p className="text-xs text-white/50">{conditionConfig.effect}</p>
+            <div
+              className="px-3 py-2 mag-stripes"
+              style={{
+                background: conditionHex + '15',
+                border: '2px solid ' + conditionHex + '40',
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-sm">{conditionConfig.icon}</span>
+                <span className="text-[10px] font-black uppercase tracking-wider" style={{ color: conditionHex }}>
+                  Condition Effect:
+                </span>
+                <span className="text-xs font-bold" style={{ color: '#1a1a1a' }}>
+                  {conditionConfig.effect}
+                </span>
+              </div>
             </div>
           )}
 
-          {/* Battle Record */}
-          <div className="bg-white/5 rounded-lg p-3 mb-4">
-            <h4 className="text-xs font-bold text-white/60 mb-2 uppercase tracking-wider flex items-center gap-1">
-              <Swords className="w-3 h-3" /> Battle Record
-            </h4>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5">
-                <Trophy className="w-4 h-4 text-green-400" />
-                <span className="text-sm font-bold text-green-400">{tazo.battleWins}</span>
-                <span className="text-xs text-white/40">W</span>
+          {/* ===== BATTLE RECORD - Magazine Score Boxes ===== */}
+          <div
+            className="p-3"
+            style={{
+              background: 'white',
+              border: '3px solid #1a1a1a',
+              boxShadow: '4px 4px 0px #1a1a1a',
+            }}
+          >
+            <div
+              className="text-center font-black text-[10px] uppercase tracking-widest mb-2 py-1"
+              style={{
+                background: '#1a1a1a',
+                color: '#FFCC00',
+                border: '2px solid #1a1a1a',
+              }}
+            >
+              <Swords className="w-3 h-3 inline mr-1" />
+              Battle Record
+              <Swords className="w-3 h-3 inline ml-1" />
+            </div>
+
+            <div className="flex items-stretch justify-center gap-3">
+              {/* Wins Box */}
+              <div
+                className="flex-1 text-center py-2 px-3"
+                style={{
+                  background: '#22C55E',
+                  border: '3px solid #1a1a1a',
+                  boxShadow: '3px 3px 0px #1a1a1a',
+                }}
+              >
+                <div className="text-xs font-black uppercase" style={{ color: '#1a1a1a90' }}>Wins</div>
+                <div
+                  className="text-3xl font-black leading-none"
+                  style={{
+                    color: 'white',
+                    textShadow: '2px 2px 0px #1a1a1a40',
+                  }}
+                >
+                  {tazo.battleWins}
+                </div>
               </div>
-              <div className="flex items-center gap-1.5">
-                <X className="w-4 h-4 text-red-400" />
-                <span className="text-sm font-bold text-red-400">{tazo.battleLosses}</span>
-                <span className="text-xs text-white/40">L</span>
+
+              {/* Losses Box */}
+              <div
+                className="flex-1 text-center py-2 px-3"
+                style={{
+                  background: '#E3350D',
+                  border: '3px solid #1a1a1a',
+                  boxShadow: '3px 3px 0px #1a1a1a',
+                }}
+              >
+                <div className="text-xs font-black uppercase" style={{ color: '#ffffff90' }}>Losses</div>
+                <div
+                  className="text-3xl font-black leading-none"
+                  style={{
+                    color: 'white',
+                    textShadow: '2px 2px 0px #1a1a1a40',
+                  }}
+                >
+                  {tazo.battleLosses}
+                </div>
               </div>
-              <div className="ml-auto">
-                <span className="text-xs text-white/40">Win Rate: </span>
-                <span className="text-sm font-bold text-white/80">{winRate}%</span>
+
+              {/* Win Rate */}
+              <div
+                className="flex-1 text-center py-2 px-3 flex flex-col items-center justify-center"
+                style={{
+                  background: '#FFCC00',
+                  border: '3px solid #1a1a1a',
+                  boxShadow: '3px 3px 0px #1a1a1a',
+                }}
+              >
+                <div className="text-xs font-black uppercase" style={{ color: '#1a1a1a90' }}>Win %</div>
+                <div
+                  className="text-2xl font-black leading-none"
+                  style={{
+                    color: '#1a1a1a',
+                  }}
+                >
+                  {winRate}%
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-2">
-            <Button
-              className="flex-1"
-              variant={tazo.isOwned ? 'destructive' : 'default'}
+          {/* ===== ACTION BUTTONS ===== */}
+          <div className="flex gap-3 pt-1">
+            {/* Toggle Owned - Yellow Magazine Button */}
+            <button
               onClick={() => onToggleOwned?.(tazo)}
+              className="mag-btn flex-1 py-3 px-4 flex items-center justify-center gap-2 text-sm"
+              style={{
+                background: tazo.isOwned ? '#FFCC00' : '#FFCC00',
+                color: '#1a1a1a',
+              }}
             >
               {tazo.isOwned ? (
                 <>
-                  <Unlock className="w-4 h-4 mr-1.5" />
+                  <Unlock className="w-4 h-4" />
                   Mark as Missing
                 </>
               ) : (
                 <>
-                  <Lock className="w-4 h-4 mr-1.5" />
+                  <Lock className="w-4 h-4" />
                   Mark as Owned
                 </>
               )}
-            </Button>
+            </button>
+
+            {/* Close - Red Magazine Button */}
+            <button
+              onClick={onClose}
+              className="mag-btn py-3 px-5 flex items-center justify-center gap-2 text-sm"
+              style={{
+                background: '#E3350D',
+                color: 'white',
+              }}
+            >
+              <X className="w-4 h-4" />
+              Close
+            </button>
           </div>
         </div>
       </DialogContent>

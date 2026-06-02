@@ -48,71 +48,71 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --background: #fffbe6;
+  --foreground: #1a1a1a;
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1a;
+  --primary: #E3350D;
+  --primary-foreground: #ffffff;
+  --secondary: #FFCC00;
+  --secondary-foreground: #1a1a1a;
+  --muted: #f0e6c0;
+  --muted-foreground: #6b5c00;
+  --accent: #3B4CCA;
+  --accent-foreground: #ffffff;
+  --destructive: #E3350D;
+  --border: #1a1a1a;
+  --input: #e0d5a0;
+  --ring: #E3350D;
+  --chart-1: #E3350D;
+  --chart-2: #3B4CCA;
+  --chart-3: #FFCC00;
+  --chart-4: #FF6B00;
+  --chart-5: #00A1E9;
+  --sidebar: #FFCC00;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-primary: #E3350D;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #3B4CCA;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #1a1a1a;
+  --sidebar-ring: #E3350D;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #1a1a2e;
+  --foreground: #FFCC00;
+  --card: #2a2a4e;
+  --card-foreground: #FFCC00;
+  --popover: #2a2a4e;
+  --popover-foreground: #FFCC00;
+  --primary: #E3350D;
+  --primary-foreground: #ffffff;
+  --secondary: #FFCC00;
+  --secondary-foreground: #1a1a1a;
+  --muted: #3a3a5e;
+  --muted-foreground: #c0b060;
+  --accent: #3B4CCA;
+  --accent-foreground: #ffffff;
+  --destructive: #E3350D;
+  --border: #FFCC0060;
+  --input: #3a3a5e;
+  --ring: #E3350D;
+  --chart-1: #E3350D;
+  --chart-2: #3B4CCA;
+  --chart-3: #FFCC00;
+  --chart-4: #FF6B00;
+  --chart-5: #00A1E9;
+  --sidebar: #2a2a4e;
+  --sidebar-foreground: #FFCC00;
+  --sidebar-primary: #E3350D;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #3B4CCA;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #FFCC0060;
+  --sidebar-ring: #E3350D;
 }
 
 @layer base {
@@ -124,7 +124,181 @@
   }
 }
 
-/* ===== TAZO GAME CUSTOM STYLES ===== */
+/* ===== MAGAZINE-STYLE TAZO GAME ===== */
+
+/* Magazine primary colors */
+:root {
+  --mag-yellow: #FFCC00;
+  --mag-red: #E3350D;
+  --mag-blue: #3B4CCA;
+  --mag-black: #1a1a1a;
+  --mag-white: #fffef0;
+  --mag-cream: #fffbe6;
+  --mag-orange: #FF6B00;
+  --mag-cyan: #00A1E9;
+  --mag-green: #78C850;
+  --mag-purple: #A855F7;
+}
+
+/* Magazine background - like aged paper */
+.mag-bg {
+  background-color: var(--mag-cream);
+  background-image:
+    radial-gradient(circle at 15% 85%, rgba(255, 204, 0, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 85% 15%, rgba(227, 53, 13, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(59, 76, 202, 0.04) 0%, transparent 50%);
+}
+
+/* Magazine stroke text - thick black outline */
+.mag-stroke {
+  paint-order: stroke fill;
+  -webkit-text-stroke: 2px var(--mag-black);
+  color: var(--mag-yellow);
+}
+
+.mag-stroke-red {
+  paint-order: stroke fill;
+  -webkit-text-stroke: 2px var(--mag-black);
+  color: var(--mag-red);
+}
+
+.mag-stroke-white {
+  paint-order: stroke fill;
+  -webkit-text-stroke: 1.5px var(--mag-black);
+  color: white;
+}
+
+.mag-stroke-sm {
+  paint-order: stroke fill;
+  -webkit-text-stroke: 1px var(--mag-black);
+}
+
+/* Magazine card - thick border, heavy shadow */
+.mag-card {
+  border: 3px solid var(--mag-black);
+  box-shadow: 4px 4px 0px var(--mag-black);
+  background: white;
+}
+
+.mag-card-yellow {
+  border: 3px solid var(--mag-black);
+  box-shadow: 4px 4px 0px var(--mag-black);
+  background: var(--mag-yellow);
+}
+
+.mag-card-red {
+  border: 3px solid var(--mag-black);
+  box-shadow: 4px 4px 0px var(--mag-black);
+  background: var(--mag-red);
+  color: white;
+}
+
+.mag-card-blue {
+  border: 3px solid var(--mag-black);
+  box-shadow: 4px 4px 0px var(--mag-black);
+  background: var(--mag-blue);
+  color: white;
+}
+
+/* Magazine button */
+.mag-btn {
+  border: 3px solid var(--mag-black);
+  box-shadow: 3px 3px 0px var(--mag-black);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.1s ease;
+}
+.mag-btn:active {
+  box-shadow: 1px 1px 0px var(--mag-black);
+  transform: translate(2px, 2px);
+}
+.mag-btn:hover {
+  box-shadow: 2px 2px 0px var(--mag-black);
+  transform: translate(1px, 1px);
+}
+
+/* Magazine tab navigation */
+.mag-tab {
+  border: 2px solid transparent;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  transition: all 0.15s ease;
+}
+.mag-tab-active {
+  border: 3px solid var(--mag-black);
+  box-shadow: 3px 3px 0px var(--mag-black);
+  transform: translateY(-2px);
+}
+
+/* Speech bubble */
+.speech-bubble {
+  position: relative;
+  background: white;
+  border: 2px solid var(--mag-black);
+  border-radius: 16px;
+  padding: 8px 14px;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 20px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 10px solid var(--mag-black);
+}
+.speech-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -7px;
+  left: 21px;
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 8px solid white;
+  z-index: 1;
+}
+
+/* Exclusive badge */
+.exclusive-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--mag-red);
+  color: white;
+  border: 2px solid var(--mag-black);
+  padding: 2px 8px;
+  font-size: 0.6rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transform: rotate(8deg);
+  z-index: 10;
+  box-shadow: 2px 2px 0px var(--mag-black);
+}
+
+/* Star burst */
+.star-burst {
+  position: relative;
+}
+.star-burst::before {
+  content: '★';
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  font-size: 1.2rem;
+  color: var(--mag-yellow);
+  -webkit-text-stroke: 1px var(--mag-black);
+  z-index: 5;
+}
 
 /* Holographic shimmer animation */
 @keyframes holo-shimmer {
@@ -140,28 +314,29 @@
 
 /* Legendary golden glow pulse */
 @keyframes legendary-glow {
-  0%, 100% { box-shadow: 0 0 8px 2px rgba(251, 191, 36, 0.4), 0 0 16px 4px rgba(251, 191, 36, 0.2); }
-  50% { box-shadow: 0 0 14px 4px rgba(251, 191, 36, 0.6), 0 0 28px 8px rgba(251, 191, 36, 0.3); }
+  0%, 100% { box-shadow: 4px 4px 0px var(--mag-black), 0 0 8px 2px rgba(255, 204, 0, 0.6); }
+  50% { box-shadow: 4px 4px 0px var(--mag-black), 0 0 16px 4px rgba(255, 204, 0, 0.8); }
 }
 
-/* Tazo spin animation on hover */
-@keyframes tazo-spin-hover {
-  0% { transform: perspective(600px) rotateY(0deg) scale(1); }
-  25% { transform: perspective(600px) rotateY(5deg) scale(1.03) translateY(-4px); }
-  75% { transform: perspective(600px) rotateY(-5deg) scale(1.03) translateY(-4px); }
-  100% { transform: perspective(600px) rotateY(0deg) scale(1.03) translateY(-4px); }
+/* Tazo hover animation - magazine lift */
+@keyframes mag-lift {
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-4px) rotate(-1deg); }
+  100% { transform: translateY(-4px) rotate(0deg); }
+}
+
+.tazo-card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.tazo-card-hover:hover {
+  transform: translateY(-6px) rotate(-1deg);
+  box-shadow: 6px 6px 0px var(--mag-black);
 }
 
 /* Worn scratch overlay */
 @keyframes worn-flicker {
-  0%, 100% { opacity: 0.12; }
-  50% { opacity: 0.18; }
-}
-
-/* Float animation for the tazo circle */
-@keyframes tazo-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+  0%, 100% { opacity: 0.08; }
+  50% { opacity: 0.12; }
 }
 
 /* Pulse for uncollected tazos */
@@ -190,9 +365,9 @@
   background: linear-gradient(
     120deg,
     transparent 30%,
-    rgba(255, 255, 255, 0.25) 45%,
-    rgba(255, 255, 255, 0.35) 50%,
-    rgba(255, 255, 255, 0.25) 55%,
+    rgba(255, 255, 255, 0.35) 45%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0.35) 55%,
     transparent 70%
   );
   background-size: 150% 100%;
@@ -212,55 +387,22 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background-image: 
+  background-image:
     repeating-linear-gradient(
       -45deg,
       transparent,
       transparent 2px,
-      rgba(0, 0, 0, 0.15) 2px,
-      rgba(0, 0, 0, 0.15) 4px
-    ),
-    repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 3px,
-      rgba(0, 0, 0, 0.08) 3px,
-      rgba(0, 0, 0, 0.08) 5px
+      rgba(0, 0, 0, 0.12) 2px,
+      rgba(0, 0, 0, 0.12) 4px
     );
   animation: worn-flicker 3s ease-in-out infinite;
   pointer-events: none;
-}
-
-.tazo-card-hover {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.tazo-card-hover:hover {
-  transform: translateY(-6px) scale(1.02);
-  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.5);
-}
-
-/* Custom scrollbar for filter bar and grid */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 3px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 3px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
 }
 
 /* Stat bar animation */
 @keyframes stat-fill {
   from { width: 0; }
 }
-
 .stat-bar-fill {
   animation: stat-fill 0.8s ease-out;
 }
@@ -270,26 +412,74 @@
 .franchise-digimon { background: linear-gradient(135deg, #00A1E9, #0057B7); }
 .franchise-dbz { background: linear-gradient(135deg, #FF6B00, #CC4400); }
 
-/* Game background pattern */
-.game-bg {
-  background-color: #1a1a2e;
-  background-image: 
-    radial-gradient(circle at 20% 80%, rgba(255, 203, 5, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(0, 161, 233, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(255, 107, 0, 0.02) 0%, transparent 50%);
+/* Magazine diagonal stripe pattern */
+.mag-stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 8px,
+    rgba(0, 0, 0, 0.05) 8px,
+    rgba(0, 0, 0, 0.05) 16px
+  );
 }
 
-/* Tab active indicator glow */
-.tab-active-glow {
+/* Magazine dotted pattern */
+.mag-dots {
+  background-image: radial-gradient(circle, rgba(0,0,0,0.06) 1px, transparent 1px);
+  background-size: 12px 12px;
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+/* Magazine zigzag border */
+.mag-zigzag {
   position: relative;
 }
-.tab-active-glow::after {
+.mag-zigzag::after {
   content: '';
   position: absolute;
-  bottom: -2px;
-  left: 10%;
-  right: 10%;
-  height: 2px;
-  border-radius: 1px;
-  background: linear-gradient(90deg, #FFCB05, #FF6B00, #00A1E9);
+  bottom: -6px;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(135deg, var(--mag-red) 25%, transparent 25%) -6px 0,
+    linear-gradient(225deg, var(--mag-red) 25%, transparent 25%) -6px 0,
+    linear-gradient(315deg, var(--mag-red) 25%, transparent 25%),
+    linear-gradient(45deg, var(--mag-red) 25%, transparent 25%);
+  background-size: 12px 6px;
+}
+
+/* Magazine spinner */
+@keyframes mag-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.mag-spinner {
+  animation: mag-spin 1s linear infinite;
+}
+
+/* Print-style halftone dots */
+.mag-halftone {
+  background-image: radial-gradient(circle, rgba(0,0,0,0.08) 1px, transparent 1px);
+  background-size: 6px 6px;
+}
+
+/* Magazine detail modal overlay - yellow tint like magazine page behind */
+[data-slot="dialog-portal"]:has(.mag-detail-modal) [data-slot="dialog-overlay"] {
+  background: rgba(30, 20, 0, 0.7) !important;
 }

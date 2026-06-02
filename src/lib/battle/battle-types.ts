@@ -222,7 +222,7 @@ export const DEFAULT_GAME_MODE: GameModeConfig = {
   pointsPerFlip: 1,
 }
 
-// ---- Stats derived from DB tazo (no aura — 9 direct stats) ----
+// ---- Stats derived from DB tazo (9 direct stats) ----
 export function deriveBattleStats(tazo: {
   attack: number
   defense: number

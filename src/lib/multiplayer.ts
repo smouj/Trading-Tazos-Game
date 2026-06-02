@@ -29,6 +29,7 @@ export function useMultiplayer() {
 
   const wsRef = useRef<WebSocket | null>(null)
   const reconnectRef = useRef(0)
+  const connectRef = useRef<() => void>(() => {})
 
   const connect = useCallback(() => {
     if (!token || !user) return
@@ -92,7 +93,7 @@ export function useMultiplayer() {
       // Exponential backoff reconnect
       const delay = Math.min(1000 * Math.pow(2, reconnectRef.current), 30000)
       reconnectRef.current += 1
-      setTimeout(connect, delay)
+      setTimeout(() => connectRef.current(), delay)
     }
 
     ws.onerror = () => {
@@ -101,8 +102,13 @@ export function useMultiplayer() {
   }, [token, user])
 
   useEffect(() => {
-    if (token) connect()
+    connectRef.current = connect
+  }, [connect])
+
+  useEffect(() => {
+    const timer = token ? window.setTimeout(() => connect(), 0) : null
     return () => {
+      if (timer !== null) window.clearTimeout(timer)
       wsRef.current?.close()
     }
   }, [token, connect])

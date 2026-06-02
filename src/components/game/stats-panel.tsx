@@ -259,7 +259,7 @@ export default function StatsPanel({ refreshKey }: StatsPanelProps) {
         {/* BY RARITY - Blue banner */}
         <div className="mag-card overflow-hidden">
           <div className="mag-card-blue px-4 py-2 flex items-center gap-2 border-b-3 border-[var(--mag-black)]">
-            <Sparkles className="w-4 h-4 text-white" />
+            <Star className="w-4 h-4 text-white" />
             <h3 className="text-sm font-black uppercase tracking-wider text-white mag-stroke-sm" style={{ WebkitTextStroke: '0.5px rgba(0,0,0,0.3)' }}>
               By Rarity
             </h3>

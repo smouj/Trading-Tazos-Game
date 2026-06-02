@@ -3,12 +3,13 @@
 // Matchmaking + room-based PvP relay.
 // No Bun deps — runs on Node 22+.
 // ============================================================
+/* eslint-disable @typescript-eslint/no-require-imports */
 
 const { WebSocketServer } = require("ws")
 const jwt = require("jsonwebtoken")
 
-const JWT_SECRET = proces…CRET || "***"
-const PORT = parseInt(proces…PORT || "3001")
+const JWT_SECRET = process.env.JWT_SECRET || "***"
+const PORT = parseInt(process.env.WS_PORT || "3001")
 const HEARTBEAT_MS = 15000
 
 /** @type {import('ws').WebSocket[]} */

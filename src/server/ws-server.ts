@@ -6,6 +6,7 @@
 
 import { WebSocketServer, WebSocket } from "ws"
 import jwt from "jsonwebtoken"
+import { createServer } from "http"
 
 const JWT_SECRET = process.env.JWT_SECRET || "***"
 const PORT = parseInt(process.env.WS_PORT || "3001")
@@ -135,7 +136,7 @@ wss.on("connection", (ws, req) => {
   log(`🔌 ${player.name} connected (${connections.size} online)`)
 
   // Heartbeat
-  let pingInterval: Timer
+  let pingInterval: ReturnType<typeof setInterval>
   ws.on("pong", () => { player.alive = true })
   pingInterval = setInterval(() => {
     if (!player.alive) {
@@ -230,8 +231,7 @@ wss.on("connection", (ws, req) => {
 })
 
 // ---- Status API (embedded HTTP) ----
-const http = require("http")
-const statusServer = http.createServer((_req: any, res: any) => {
+const statusServer = createServer((_req, res) => {
   if (_req.url === "/status") {
     res.writeHead(200, { "Content-Type": "application/json" })
     res.end(

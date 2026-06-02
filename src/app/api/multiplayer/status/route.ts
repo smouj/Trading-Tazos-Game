@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 
 export async function GET() {
   try {
-    const res = await fetch("http://localhost:3002/status")
+    const res = await fetch("http://127.0.0.1:3002/status")
     if (!res.ok) throw new Error("WS status unreachable")
     const data = await res.json()
     return NextResponse.json({

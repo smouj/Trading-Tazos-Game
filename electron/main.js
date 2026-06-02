@@ -2,6 +2,7 @@
 // Trading Tazos Game — Electron Desktop App
 // Cross-platform wrapper: Windows, macOS, Linux.
 // ============================================================
+/* eslint-disable @typescript-eslint/no-require-imports */
 
 const { app, BrowserWindow, Menu, shell } = require("electron")
 const path = require("path")

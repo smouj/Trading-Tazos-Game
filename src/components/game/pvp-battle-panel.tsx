@@ -129,7 +129,7 @@ export default function PvPBattlePanel() {
     setBattleState(s)
     setMyTurn(true)
     setWaitingForOpponent(false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [mp.lastTurnData])
 
   // ─── Auto-end opponent turn ──────

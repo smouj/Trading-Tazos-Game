@@ -168,6 +168,22 @@ const ja: Dictionary = {
   decks_tazo_count: "タゾ",
   decks_min_tazos: "1つ以上のタゾを選択",
 
+  download_title: "ダウンロード",
+  download_subtitle: "デスクトップアプリ",
+  download_intro: "Trading Tazos Game をデスクトップに！Windows、macOS、Linux 対応。",
+  download_windows: "Windows",
+  download_mac: "macOS",
+  download_linux: "Linux",
+  download_coming_soon: "近日公開",
+  download_version: "バージョン",
+  download_size: "サイズ",
+  download_cta: "ダウンロード",
+  download_also_web: "ブラウザでプレイする",
+  download_requirements: "動作環境",
+  download_requirements_list: "64-bit OS、4 GB RAM、200 MB ディスク",
+  download_source: "ソースコード",
+  download_source_desc: "自分でビルドできます。MITライセンス。",
+
   common_cancel: "キャンセル",
   common_confirm_delete: "本当に削除しますか？",}
 

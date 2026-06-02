@@ -157,6 +157,23 @@ export interface Dictionary {
   editor_status: string
   editor_save: string
 
+  // Download page
+  download_title: string
+  download_subtitle: string
+  download_intro: string
+  download_windows: string
+  download_mac: string
+  download_linux: string
+  download_coming_soon: string
+  download_version: string
+  download_size: string
+  download_cta: string
+  download_also_web: string
+  download_requirements: string
+  download_requirements_list: string
+  download_source: string
+  download_source_desc: string
+
   // Common
   common_loading: string
   common_error: string

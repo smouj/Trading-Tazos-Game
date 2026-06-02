@@ -168,6 +168,22 @@ const es: Dictionary = {
   decks_tazo_count: "tazos",
   decks_min_tazos: "Selecciona al menos 1 tazo",
 
+  download_title: "Descargar",
+  download_subtitle: "App de Escritorio",
+  download_intro: "Lleva Trading Tazos Game a tu escritorio. Disponible para Windows, macOS y Linux.",
+  download_windows: "Windows",
+  download_mac: "macOS",
+  download_linux: "Linux",
+  download_coming_soon: "Proximamente",
+  download_version: "Version",
+  download_size: "Tamano",
+  download_cta: "Descargar para",
+  download_also_web: "Prefieres el navegador? Juega al instante en",
+  download_requirements: "Requisitos",
+  download_requirements_list: "SO 64-bit, 4 GB RAM, 200 MB espacio",
+  download_source: "Codigo Fuente",
+  download_source_desc: "Compilalo tu mismo desde el codigo. Licencia MIT.",
+
   common_cancel: "Cancelar",
   common_confirm_delete: "Seguro que quieres eliminar esto?",}
 

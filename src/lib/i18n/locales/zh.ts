@@ -168,6 +168,22 @@ const zh: Dictionary = {
   decks_tazo_count: "个塔佐",
   decks_min_tazos: "至少选择1个塔佐",
 
+  download_title: "下载",
+  download_subtitle: "桌面应用",
+  download_intro: "将 Trading Tazos Game 带到你的桌面！支持 Windows、macOS 和 Linux。",
+  download_windows: "Windows",
+  download_mac: "macOS",
+  download_linux: "Linux",
+  download_coming_soon: "即将推出",
+  download_version: "版本",
+  download_size: "大小",
+  download_cta: "下载",
+  download_also_web: "用浏览器玩",
+  download_requirements: "系统要求",
+  download_requirements_list: "64位操作系统, 4 GB 内存, 200 MB 磁盘空间",
+  download_source: "源代码",
+  download_source_desc: "自行编译。MIT 许可证。",
+
   common_cancel: "取消",
   common_confirm_delete: "确定要删除吗？",}
 

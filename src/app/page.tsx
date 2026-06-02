@@ -8,7 +8,7 @@ import BattleView from '@/components/game/battle-view'
 import { ScannerView } from '@/components/game/scanner-view'
 import StatsPanel from '@/components/game/stats-panel'
 import LanguageSwitcher from '@/components/ui/language-switcher'
-import { BookOpen, Swords, Scan, BarChart3, User, LogOut, Package, Layers } from 'lucide-react'
+import { BookOpen, Swords, Scan, BarChart3, User, LogOut, Package, Layers, Download } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
 
@@ -44,6 +44,15 @@ export default function Home() {
                   className="text-[10px] sm:text-xs font-bold text-zinc-400 hover:text-[#FFCC00] transition-colors tracking-wider uppercase"
                 >
                   {t.auth_login}
+                </Link>
+                <span className="text-zinc-600">|</span>
+                <span className="text-zinc-600">|</span>
+                <Link
+                  href="/download"
+                  className="text-[10px] sm:text-xs font-bold text-green-400 hover:text-green-300 transition-colors tracking-wider uppercase"
+                >
+                  <Download className="w-3 h-3 inline mr-0.5" />
+                  Desktop
                 </Link>
                 <span className="text-zinc-600">|</span>
                 <Link

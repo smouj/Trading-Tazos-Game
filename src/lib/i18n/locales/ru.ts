@@ -168,6 +168,22 @@ const ru: Dictionary = {
   decks_tazo_count: "тазо",
   decks_min_tazos: "Выбери хотя бы 1 тазо",
 
+  download_title: "Скачать",
+  download_subtitle: "Приложение",
+  download_intro: "Установите Trading Tazos Game на компьютер! Доступно для Windows, macOS и Linux.",
+  download_windows: "Windows",
+  download_mac: "macOS",
+  download_linux: "Linux",
+  download_coming_soon: "Скоро",
+  download_version: "Версия",
+  download_size: "Размер",
+  download_cta: "Скачать для",
+  download_also_web: "Предпочитаете браузер? Играйте на",
+  download_requirements: "Требования",
+  download_requirements_list: "64-битная ОС, 4 ГБ ОЗУ, 200 МБ на диске",
+  download_source: "Исходный код",
+  download_source_desc: "Соберите сами. Лицензия MIT.",
+
   common_cancel: "Отмена",
   common_confirm_delete: "Вы уверены, что хотите удалить это?",}
 

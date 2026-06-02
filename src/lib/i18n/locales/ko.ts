@@ -168,6 +168,22 @@ const ko: Dictionary = {
   decks_tazo_count: "타조",
   decks_min_tazos: "최소 1개 타조 선택",
 
+  download_title: "다운로드",
+  download_subtitle: "데스크톱 앱",
+  download_intro: "Trading Tazos Game 를 데스크톱에서 즐기세요! Windows, macOS, Linux 지원.",
+  download_windows: "Windows",
+  download_mac: "macOS",
+  download_linux: "Linux",
+  download_coming_soon: "곧 출시",
+  download_version: "버전",
+  download_size: "크기",
+  download_cta: "다운로드",
+  download_also_web: "브라우저로 플레이",
+  download_requirements: "시스템 요구사항",
+  download_requirements_list: "64-bit OS, 4 GB RAM, 200 MB 디스크",
+  download_source: "소스 코드",
+  download_source_desc: "직접 빌드하세요. MIT 라이선스.",
+
   common_cancel: "취소",
   common_confirm_delete: "정말 삭제하시겠습니까?",}
 

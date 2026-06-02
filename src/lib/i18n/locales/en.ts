@@ -185,6 +185,10 @@ const en: Dictionary = {
   download_source_desc: "Build it yourself from source. MIT licensed.",
 
   common_cancel: "Cancel",
-  common_confirm_delete: "Are you sure you want to delete this?",}
+  common_confirm_delete: "Are you sure you want to delete this?",
+  shop_title: "Tazo Shop",
+  shop_login_cta: "to buy bags",
+  shop_buy: "Buy",
+}
 
 export default en

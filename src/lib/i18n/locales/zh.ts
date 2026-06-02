@@ -185,6 +185,10 @@ const zh: Dictionary = {
   download_source_desc: "自行编译。MIT 许可证。",
 
   common_cancel: "取消",
-  common_confirm_delete: "确定要删除吗？",}
+  common_confirm_delete: "确定要删除吗？",
+  shop_title: "Tazo Shop",
+  shop_login_cta: "to buy bags",
+  shop_buy: "Buy",
+}
 
 export default zh

@@ -185,6 +185,10 @@ const ja: Dictionary = {
   download_source_desc: "自分でビルドできます。MITライセンス。",
 
   common_cancel: "キャンセル",
-  common_confirm_delete: "本当に削除しますか？",}
+  common_confirm_delete: "本当に削除しますか？",
+  shop_title: "Tazo Shop",
+  shop_login_cta: "to buy bags",
+  shop_buy: "Buy",
+}
 
 export default ja

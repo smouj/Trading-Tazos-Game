@@ -220,4 +220,9 @@ export interface Dictionary {
   decks_delete: string
   decks_tazo_count: string
   decks_min_tazos: string
+  // Shop / Bag system
+  shop_title: string
+  shop_login_cta: string
+  shop_buy: string
+
 }

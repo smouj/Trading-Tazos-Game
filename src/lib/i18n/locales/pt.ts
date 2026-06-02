@@ -185,6 +185,10 @@ const pt: Dictionary = {
   download_source_desc: "Compile voce mesmo. Licenca MIT.",
 
   common_cancel: "Cancelar",
-  common_confirm_delete: "Tem certeza que quer excluir isso?",}
+  common_confirm_delete: "Tem certeza que quer excluir isso?",
+  shop_title: "Tazo Shop",
+  shop_login_cta: "to buy bags",
+  shop_buy: "Buy",
+}
 
 export default pt

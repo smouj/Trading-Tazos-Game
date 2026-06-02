@@ -28,8 +28,11 @@ model User {
   name         String
   displayName  String?
   avatarUrl    String?
+  credits      Int        @default(100)  // Ingame currency
   userTazos    UserTazo[]
   decks        Deck[]
+  bagPurchases BagPurchase[]
+  creditTransactions CreditTransaction[]
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 }
@@ -106,6 +109,8 @@ model Tazo {
   // Relations
   userTazos UserTazo[]
   deckTazos DeckTazo[]
+  bagPurchaseTazos BagPurchase[] @relation("BagTazo")
+  bagPurchaseBonusTazos BagPurchase[] @relation("BagBonusTazo")
 
   @@index([franchiseId])
   @@index([collectionId])
@@ -158,4 +163,32 @@ model BattleRecord {
   rounds        Int      @default(0)
   battleLog     String?  // JSON array of battle events
   createdAt     DateTime @default(now())
+}
+
+model BagPurchase {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  bagType   String   @default("standard") // standard, premium, mega
+  cost      Int      @default(50)
+  tazoId    String?  // The tazo found inside
+  tazo      Tazo?    @relation("BagTazo", fields: [tazoId], references: [id])
+  bonusTazo String?  // Occasional 2nd tazo ID
+  bonusT    Tazo?    @relation("BagBonusTazo", fields: [bonusTazo], references: [id])
+  opened    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model CreditTransaction {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  amount    Int      // positive = earned, negative = spent
+  source    String   // "battle_win", "quest", "daily", "bag_purchase", "admin"
+  reference String?  // Battle/quest ID reference
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }

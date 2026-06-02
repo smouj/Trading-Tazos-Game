@@ -185,6 +185,10 @@ const ru: Dictionary = {
   download_source_desc: "Соберите сами. Лицензия MIT.",
 
   common_cancel: "Отмена",
-  common_confirm_delete: "Вы уверены, что хотите удалить это?",}
+  common_confirm_delete: "Вы уверены, что хотите удалить это?",
+  shop_title: "Tazo Shop",
+  shop_login_cta: "to buy bags",
+  shop_buy: "Buy",
+}
 
 export default ru

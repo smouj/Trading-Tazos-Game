@@ -185,6 +185,10 @@ const ko: Dictionary = {
   download_source_desc: "직접 빌드하세요. MIT 라이선스.",
 
   common_cancel: "취소",
-  common_confirm_delete: "정말 삭제하시겠습니까?",}
+  common_confirm_delete: "정말 삭제하시겠습니까?",
+  shop_title: "Tazo Shop",
+  shop_login_cta: "to buy bags",
+  shop_buy: "Buy",
+}
 
 export default ko

@@ -185,6 +185,10 @@ const de: Dictionary = {
   download_source_desc: "Selbst kompilieren. MIT-Lizenz.",
 
   common_cancel: "Abbrechen",
-  common_confirm_delete: "Bist du sicher, dass du das löschen willst?",}
+  common_confirm_delete: "Bist du sicher, dass du das löschen willst?",
+  shop_title: "Tazo Shop",
+  shop_login_cta: "to buy bags",
+  shop_buy: "Buy",
+}
 
 export default de

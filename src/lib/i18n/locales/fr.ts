@@ -185,6 +185,10 @@ const fr: Dictionary = {
   download_source_desc: "Compilez vous-meme. Licence MIT.",
 
   common_cancel: "Annuler",
-  common_confirm_delete: "Es-tu sur de vouloir supprimer cela?",}
+  common_confirm_delete: "Es-tu sur de vouloir supprimer cela?",
+  shop_title: "Tazo Shop",
+  shop_login_cta: "to buy bags",
+  shop_buy: "Buy",
+}
 
 export default fr

@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     if (search) where.name = { contains: search }
 
     const orderBy: Record<string, string> = {}
-    const allowedSorts = ["name", "number", "rarity", "condition", "category", "sourceStatus", "attack", "defense", "spin", "weight", "aura", "control", "createdAt"]
+    const allowedSorts = ["name", "number", "rarity", "condition", "category", "sourceStatus", "attack", "defense", "resistance", "weight", "stability", "spin", "control", "bounce", "precision", "role", "createdAt"]
     if (allowedSorts.includes(sortBy)) {
       orderBy[sortBy] = sortOrder === "desc" ? "desc" : "asc"
     } else {
@@ -81,10 +81,14 @@ export async function POST(request: NextRequest) {
         transformOf: body.transformOf || null,
         attack: body.attack ?? 50,
         defense: body.defense ?? 50,
-        spin: body.spin ?? 50,
+        resistance: body.resistance ?? 50,
         weight: body.weight ?? 50,
-        aura: body.aura ?? 50,
+        stability: body.stability ?? 50,
+        spin: body.spin ?? 50,
         control: body.control ?? 50,
+        bounce: body.bounce ?? 50,
+        precision: body.precision ?? 50,
+        role: body.role || null,
         isOwned: body.isOwned ?? false,
       },
       include: { franchise: true, collection: true },

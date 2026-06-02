@@ -24,18 +24,18 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
-// ---- Demo tazos (for unauthenticated users) ----
+// ---- Demo tazos (for unauthenticated users) — 9 stats ----
 const DEMO_TAZOS = [
-  { id: "demo-1", name: "Pikachu", slug: "demo-pikachu", franchise: "pokemon", imageUrl: "/tazos/pokemon/pokemon-pikachu.svg", attack: 45, defense: 40, spin: 55, weight: 35, aura: 55, control: 50 },
-  { id: "demo-2", name: "Gengar", slug: "demo-gengar", franchise: "pokemon", imageUrl: "/tazos/pokemon/pokemon-gengar.svg", attack: 65, defense: 60, spin: 45, weight: 40, aura: 70, control: 55 },
-  { id: "demo-3", name: "Greymon", slug: "demo-greymon", franchise: "digimon", imageUrl: "/tazos/digimon/digimon-greymon.svg", attack: 55, defense: 50, spin: 45, weight: 55, aura: 45, control: 40 },
-  { id: "demo-4", name: "Angemon", slug: "demo-angemon", franchise: "digimon", imageUrl: "/tazos/digimon/digimon-angemon.svg", attack: 70, defense: 55, spin: 50, weight: 45, aura: 75, control: 60 },
-  { id: "demo-5", name: "Vegeta", slug: "demo-vegeta", franchise: "dbz", imageUrl: "/tazos/dbz/dbz-vegeta.svg", attack: 60, defense: 45, spin: 50, weight: 50, aura: 60, control: 45 },
-  { id: "demo-6", name: "Goku SSJ", slug: "demo-goku-ssj", franchise: "dbz", imageUrl: "/tazos/dbz/dbz-goku-ssj.svg", attack: 80, defense: 55, spin: 65, weight: 55, aura: 85, control: 60 },
-  { id: "demo-7", name: "Cell", slug: "demo-cell", franchise: "dbz", imageUrl: "/tazos/dbz/dbz-cell.svg", attack: 75, defense: 65, spin: 55, weight: 60, aura: 70, control: 50 },
+  { id: "demo-1", name: "Pikachu", slug: "demo-pikachu", franchise: "pokemon", imageUrl: "/tazos/pokemon/pokemon-pikachu.svg", attack: 45, defense: 40, resistance: 35, weight: 35, stability: 40, spin: 55, control: 50, bounce: 45, precision: 55 },
+  { id: "demo-2", name: "Gengar", slug: "demo-gengar", franchise: "pokemon", imageUrl: "/tazos/pokemon/pokemon-gengar.svg", attack: 65, defense: 60, resistance: 55, weight: 40, stability: 45, spin: 45, control: 55, bounce: 40, precision: 50 },
+  { id: "demo-3", name: "Greymon", slug: "demo-greymon", franchise: "digimon", imageUrl: "/tazos/digimon/digimon-greymon.svg", attack: 55, defense: 50, resistance: 45, weight: 55, stability: 50, spin: 45, control: 40, bounce: 35, precision: 40 },
+  { id: "demo-4", name: "Angemon", slug: "demo-angemon", franchise: "digimon", imageUrl: "/tazos/digimon/digimon-angemon.svg", attack: 70, defense: 55, resistance: 50, weight: 45, stability: 55, spin: 50, control: 60, bounce: 45, precision: 55 },
+  { id: "demo-5", name: "Vegeta", slug: "demo-vegeta", franchise: "dbz", imageUrl: "/tazos/dbz/dbz-vegeta.svg", attack: 60, defense: 45, resistance: 40, weight: 50, stability: 45, spin: 50, control: 45, bounce: 40, precision: 45 },
+  { id: "demo-6", name: "Goku SSJ", slug: "demo-goku-ssj", franchise: "dbz", imageUrl: "/tazos/dbz/dbz-goku-ssj.svg", attack: 80, defense: 55, resistance: 50, weight: 55, stability: 55, spin: 65, control: 60, bounce: 50, precision: 55 },
+  { id: "demo-7", name: "Cell", slug: "demo-cell", franchise: "dbz", imageUrl: "/tazos/dbz/dbz-cell.svg", attack: 75, defense: 65, resistance: 60, weight: 60, stability: 58, spin: 55, control: 50, bounce: 45, precision: 50 },
 ]
 
-type TazoCard = { id: string; name: string; slug: string; franchise: string; imageUrl: string | null; attack: number; defense: number; spin: number; weight: number; aura: number; control: number }
+type TazoCard = { id: string; name: string; slug: string; franchise: string; imageUrl: string | null; attack: number; defense: number; resistance: number; weight: number; stability: number; spin: number; control: number; bounce: number; precision: number }
 
 export default function BattleView() {
   const { t } = useI18n()
@@ -71,10 +71,13 @@ export default function BattleView() {
                 imageUrl: t.imageUrl as string || null,
                 attack: t.attack as number,
                 defense: t.defense as number,
-                spin: t.spin as number,
+                resistance: (t as any).resistance || 50,
                 weight: (t as any).weight || 50,
-                aura: (t as any).aura || 50,
-                control: (t as any).control || 50,
+                stability: (t as any).stability || 50,
+                spin: t.spin as number,
+                control: t.control as number,
+                bounce: (t as any).bounce || 50,
+                precision: (t as any).precision || 50,
               }))
             }
           }
@@ -102,10 +105,13 @@ export default function BattleView() {
             imageUrl: t.imageUrl as string || null,
             attack: t.attack as number,
             defense: t.defense as number,
-            spin: t.spin as number,
+            resistance: (t as any).resistance || 50,
             weight: (t as any).weight || 50,
-            aura: (t as any).aura || 50,
-            control: (t as any).control || 50,
+            stability: (t as any).stability || 50,
+            spin: t.spin as number,
+            control: t.control as number,
+            bounce: (t as any).bounce || 50,
+            precision: (t as any).precision || 50,
           }))
           setOpponentTazos(selected.length >= 5 ? selected : DEMO_TAZOS)
         } else {

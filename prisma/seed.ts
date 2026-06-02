@@ -15,10 +15,13 @@ function genStats() {
   return {
     attack: randRange(35, 85),
     defense: randRange(30, 80),
-    spin: randRange(25, 75),
+    resistance: randRange(30, 80),
     weight: randRange(30, 80),
-    aura: randRange(20, 70),
+    stability: randRange(30, 80),
+    spin: randRange(25, 75),
     control: randRange(30, 80),
+    bounce: randRange(25, 75),
+    precision: randRange(30, 80),
   }
 }
 

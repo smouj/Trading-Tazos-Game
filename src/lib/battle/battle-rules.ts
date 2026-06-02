@@ -38,15 +38,26 @@ export function calculateLaunchSpeed(power: number, throwerStats: TazoBattleStat
 }
 
 export function calculateAccuracyError(
-  power: number,
   horizontalAccuracy: number,
   verticalAccuracy: number,
+  power: number,
   throwerStats: TazoBattleStats
 ): number {
-  const baseError = (1 - power) * 15 + power * 40 // more power = more error
-  const aimError = ((1 - horizontalAccuracy) + (1 - verticalAccuracy)) * 20
-  const precisionBonus = throwerStats.precision * 0.15
-  return Math.max(0, baseError + aimError - precisionBonus)
+  // Spec formula:
+  // baseError = (1-horizontalAccuracy)*0.4 + (1-verticalAccuracy)*0.4 + powerAccuracyPenalty
+  // statCorrection = precision*0.003 + control*0.003
+  // finalError = max(0, baseError - statCorrection)
+  const powerAccuracyPenalty = power * 0.35
+  const baseError =
+    (1 - horizontalAccuracy) * 0.4 +
+    (1 - verticalAccuracy) * 0.4 +
+    powerAccuracyPenalty
+
+  const statCorrection =
+    throwerStats.precision * 0.003 +
+    throwerStats.control * 0.003
+
+  return Math.max(0, baseError - statCorrection)
 }
 
 export function calculateSpin(power: number, throwerStats: TazoBattleStats): number {
@@ -63,25 +74,21 @@ export function calculateLaunchAngle(aimX: number, aimY: number, accuracyError: 
 
 export function calculateImpactPower(
   throwerStats: TazoBattleStats,
-  throwPower: number,
-  launchSpeed: number,
-  angleBonus: number,
-  precisionBonus: number
+  throwPower: number
 ): number {
+  const power = throwPower * 100
   return (
-    throwerStats.attack * 0.45 +
+    throwerStats.attack * 0.35 +
     throwerStats.weight * 0.2 +
-    throwerStats.spin * 0.15 +
-    throwPower * 35 +
-    angleBonus +
-    precisionBonus
+    throwerStats.spin * 0.1 +
+    power * 0.35
   )
 }
 
 export function calculateDefensePower(targetStats: TazoBattleStats): number {
   return (
-    targetStats.defense * 0.35 +
-    targetStats.resistance * 0.35 +
+    targetStats.defense * 0.3 +
+    targetStats.resistance * 0.3 +
     targetStats.weight * 0.15 +
     targetStats.stability * 0.25
   )
@@ -141,12 +148,11 @@ export function calculateCollisionCost(outcome: ImpactOutcome): number {
 }
 
 export function calculateReboundEnergy(
-  initialEnergy: number,
+  previousEnergy: number,
   collisionCost: number,
   throwerStats: TazoBattleStats
 ): number {
-  const bounceBonus = throwerStats.bounce * 0.15
-  return Math.max(0, initialEnergy - collisionCost + bounceBonus)
+  return Math.max(0, previousEnergy - collisionCost + throwerStats.bounce * 0.05)
 }
 
 // ---- Position Updates ----

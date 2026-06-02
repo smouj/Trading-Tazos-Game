@@ -12,8 +12,11 @@ import {
   Shield,
   RotateCw,
   Weight,
-  Sparkles,
   Target,
+  Activity,
+  Crosshair,
+  Waves,
+  Zap,
   ChevronDown,
   ChevronUp,
 } from 'lucide-react'
@@ -64,10 +67,13 @@ interface TazoEditorProps {
 const STAT_CONFIG = [
   { key: 'attack' as const, label: 'Attack', icon: Sword, color: 'text-red-500' },
   { key: 'defense' as const, label: 'Defense', icon: Shield, color: 'text-blue-500' },
-  { key: 'spin' as const, label: 'Spin', icon: RotateCw, color: 'text-green-500' },
+  { key: 'resistance' as const, label: 'Resistance', icon: Activity, color: 'text-indigo-500' },
   { key: 'weight' as const, label: 'Weight', icon: Weight, color: 'text-amber-500' },
-  { key: 'aura' as const, label: 'Aura', icon: Sparkles, color: 'text-purple-500' },
+  { key: 'stability' as const, label: 'Stability', icon: Waves, color: 'text-teal-500' },
+  { key: 'spin' as const, label: 'Spin', icon: RotateCw, color: 'text-green-500' },
   { key: 'control' as const, label: 'Control', icon: Target, color: 'text-cyan-500' },
+  { key: 'bounce' as const, label: 'Bounce', icon: Zap, color: 'text-orange-500' },
+  { key: 'precision' as const, label: 'Precision', icon: Crosshair, color: 'text-sky-500' },
 ]
 
 export function TazoEditor({ tazo, onClose, onSave, onDelete }: TazoEditorProps) {
@@ -84,10 +90,14 @@ export function TazoEditor({ tazo, onClose, onSave, onDelete }: TazoEditorProps)
     skillDesc: tazo.skillDesc || '',
     attack: tazo.attack,
     defense: tazo.defense,
-    spin: tazo.spin,
+    resistance: tazo.resistance,
     weight: tazo.weight,
-    aura: tazo.aura,
+    stability: tazo.stability,
+    spin: tazo.spin,
     control: tazo.control,
+    bounce: tazo.bounce,
+    precision: tazo.precision,
+    role: tazo.role || '',
     evolutionFrom: tazo.evolutionFrom || '',
     evolutionTo: tazo.evolutionTo || '',
     transformStage: tazo.transformStage || '',
@@ -131,10 +141,14 @@ export function TazoEditor({ tazo, onClose, onSave, onDelete }: TazoEditorProps)
       form.skillDesc !== (tazo.skillDesc || '') ||
       form.attack !== tazo.attack ||
       form.defense !== tazo.defense ||
-      form.spin !== tazo.spin ||
+      form.resistance !== tazo.resistance ||
       form.weight !== tazo.weight ||
-      form.aura !== tazo.aura ||
+      form.stability !== tazo.stability ||
+      form.spin !== tazo.spin ||
       form.control !== tazo.control ||
+      form.bounce !== tazo.bounce ||
+      form.precision !== tazo.precision ||
+      form.role !== (tazo.role || '') ||
       form.evolutionFrom !== (tazo.evolutionFrom || '') ||
       form.evolutionTo !== (tazo.evolutionTo || '') ||
       form.transformStage !== (tazo.transformStage || '') ||
@@ -216,10 +230,14 @@ export function TazoEditor({ tazo, onClose, onSave, onDelete }: TazoEditorProps)
           skillDesc: form.skillDesc || null,
           attack: form.attack,
           defense: form.defense,
-          spin: form.spin,
+          resistance: form.resistance,
           weight: form.weight,
-          aura: form.aura,
+          stability: form.stability,
+          spin: form.spin,
           control: form.control,
+          bounce: form.bounce,
+          precision: form.precision,
+          role: form.role || null,
           evolutionFrom: form.evolutionFrom || null,
           evolutionTo: form.evolutionTo || null,
           transformStage: form.transformStage || null,

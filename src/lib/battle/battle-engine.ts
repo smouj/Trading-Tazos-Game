@@ -79,19 +79,29 @@ export interface BattleState {
 
 // ---- Engine Functions ----
 
+type BattleInputTazo = {
+  id: string
+  name: string
+  slug: string
+  franchise: string
+  imageUrl: string | null
+  attack: number
+  defense: number
+  resistance: number
+  weight: number
+  stability: number
+  spin: number
+  control: number
+  bounce: number
+  precision: number
+  role?: string | null
+  stackable?: boolean
+  maxStackOn?: number
+}
+
 export function createBattleState(
-  playerTazos: Array<{
-    id: string; name: string; slug: string; franchise: string
-    imageUrl: string | null
-    attack: number; defense: number; spin: number
-    weight: number; aura: number; control: number
-  }>,
-  opponentTazos: Array<{
-    id: string; name: string; slug: string; franchise: string
-    imageUrl: string | null
-    attack: number; defense: number; spin: number
-    weight: number; aura: number; control: number
-  }>,
+  playerTazos: BattleInputTazo[],
+  opponentTazos: BattleInputTazo[],
   options?: {
     arena?: Partial<ArenaConfig>
     gameMode?: Partial<GameModeConfig>
@@ -104,7 +114,7 @@ export function createBattleState(
   const rng = new SeededRNG(seed)
 
   function buildFieldTazo(
-    t: typeof playerTazos[0],
+    t: BattleInputTazo,
     owner: "player" | "opponent",
     fieldIndex: number
   ): BattleFieldTazo {
@@ -117,6 +127,9 @@ export function createBattleState(
       slug: t.slug,
       franchise: t.franchise,
       imageUrl: t.imageUrl,
+      role: t.role,
+      stackable: t.stackable ?? true,
+      maxStackOn: t.maxStackOn ?? 1,
       stats,
       state: "on_field",
       physics: {
@@ -280,9 +293,9 @@ export function executeThrow(state: BattleState): BattleState {
   // Calculate throw parameters
   const launchSpeed = calculateLaunchSpeed(aim.powerValue, thrower.stats)
   const accuracyError = calculateAccuracyError(
-    aim.powerValue,
     aim.horizontalAccuracy,
     aim.verticalAccuracy,
+    aim.powerValue,
     thrower.stats
   )
   const spin = calculateSpin(aim.powerValue, thrower.stats)
@@ -346,9 +359,8 @@ export function executeThrow(state: BattleState): BattleState {
       )
 
       const impactPower = calculateImpactPower(
-        thrower.stats, aim.powerValue, launchSpeed,
-        impactPoint === "edge" ? 15 : impactPoint === "side" ? 8 : 0,
-        thrower.stats.precision * 0.1
+        thrower.stats,
+        aim.powerValue
       )
       const defensePower = calculateDefensePower(target.stats)
 

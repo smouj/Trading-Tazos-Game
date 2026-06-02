@@ -23,10 +23,13 @@ const FRANCHISE_STRIP_TEXT: Record<string, string> = {
 const STAT_CONFIG = [
   { key: 'attack' as const, label: 'ATK', color: '#EF4444' },
   { key: 'defense' as const, label: 'DEF', color: '#3B82F6' },
-  { key: 'spin' as const, label: 'SPN', color: '#10B981' },
+  { key: 'resistance' as const, label: 'RES', color: '#6366F1' },
   { key: 'weight' as const, label: 'WGT', color: '#F59E0B' },
-  { key: 'aura' as const, label: 'AUR', color: '#8B5CF6' },
+  { key: 'stability' as const, label: 'STA', color: '#14B8A6' },
+  { key: 'spin' as const, label: 'SPN', color: '#10B981' },
   { key: 'control' as const, label: 'CTR', color: '#EC4899' },
+  { key: 'bounce' as const, label: 'BNC', color: '#F97316' },
+  { key: 'precision' as const, label: 'PRC', color: '#06B6D4' },
 ]
 
 const RARITY_ORDER: Record<Rarity, number> = {

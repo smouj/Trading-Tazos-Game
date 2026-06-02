@@ -77,13 +77,23 @@ model Tazo {
   transformStage String?
   transformOf    String?
 
-  // Stats
-  attack   Int @default(50)
-  defense  Int @default(50)
-  spin     Int @default(50)
-  weight   Int @default(50)
-  aura     Int @default(50)
-  control  Int @default(50)
+  // Battle Stats (9-stat system)
+  attack    Int @default(50)  // Potencia ofensiva al lanzar
+  defense   Int @default(50)  // Capacidad de resistir impactos
+  resistance Int @default(50) // Dificultad para ser volteado
+  weight    Int @default(50)  // Peso fisico; afecta daño, empuje y estabilidad
+  stability Int @default(50)  // Evita vuelcos, desplazamientos y salidas
+  spin      Int @default(50)  // Mantiene giro y energia tras caer
+  control   Int @default(50)  // Reduce error del lanzamiento
+  bounce    Int @default(50)  // Mejora rebotes y golpes encadenados
+  precision Int @default(50)  // Mejora punteria y reduce desviacion
+
+  // Role
+  role      String?  // attacker, tank, technical, bouncer, heavy, light, balanced, special
+
+  // Stacking
+  stackable   Boolean @default(true)
+  maxStackOn  Int     @default(1)  // Max tazos this can support on top
 
   // Game state
   isOwned      Boolean  @default(false)

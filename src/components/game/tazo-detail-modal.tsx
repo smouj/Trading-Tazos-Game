@@ -25,10 +25,13 @@ const FRANCHISE_COLORS: Record<string, { from: string; to: string; text: string;
 const STAT_CONFIG = [
   { key: 'attack' as const, label: 'ATK', color: '#E3350D', icon: '⚔️', bgColor: '#E3350D15' },
   { key: 'defense' as const, label: 'DEF', color: '#3B4CCA', icon: '🛡️', bgColor: '#3B4CCA15' },
-  { key: 'spin' as const, label: 'SPIN', color: '#78C850', icon: '🌀', bgColor: '#78C85015' },
+  { key: 'resistance' as const, label: 'RESIST', color: '#6366F1', icon: '◆', bgColor: '#6366F115' },
   { key: 'weight' as const, label: 'WEIGHT', color: '#FFCC00', icon: '⚖️', bgColor: '#FFCC0015' },
-  { key: 'aura' as const, label: 'AURA', color: '#A855F7', icon: '✨', bgColor: '#A855F715' },
+  { key: 'stability' as const, label: 'STABLE', color: '#14B8A6', icon: '▰', bgColor: '#14B8A615' },
+  { key: 'spin' as const, label: 'SPIN', color: '#78C850', icon: '🌀', bgColor: '#78C85015' },
   { key: 'control' as const, label: 'CONTROL', color: '#EC4899', icon: '🎯', bgColor: '#EC489915' },
+  { key: 'bounce' as const, label: 'BOUNCE', color: '#F97316', icon: '↯', bgColor: '#F9731615' },
+  { key: 'precision' as const, label: 'PRECISE', color: '#06B6D4', icon: '+', bgColor: '#06B6D415' },
 ]
 
 const RARITY_STARS: Record<Rarity, string> = {
@@ -114,7 +117,16 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: 
   const isWorn = tazo.condition === 'worn'
   const totalBattles = tazo.battleWins + tazo.battleLosses
   const winRate = totalBattles > 0 ? Math.round((tazo.battleWins / totalBattles) * 100) : 0
-  const totalStats = tazo.attack + tazo.defense + tazo.spin + tazo.weight + tazo.aura + tazo.control
+  const totalStats =
+    tazo.attack +
+    tazo.defense +
+    tazo.resistance +
+    tazo.weight +
+    tazo.stability +
+    tazo.spin +
+    tazo.control +
+    tazo.bounce +
+    tazo.precision
 
   let circleBorderClass = ''
   if (isHolo) circleBorderClass = 'holo-border'

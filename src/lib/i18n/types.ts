@@ -139,7 +139,11 @@ export interface Dictionary {
   tazo_defense: string
   tazo_spin: string
   tazo_weight: string
-  tazo_aura: string
+  tazo_resistance: string
+  tazo_stability: string
+  tazo_bounce: string
+  tazo_precision: string
+  tazo_role: string
   tazo_control: string
   tazo_close: string
   tazo_owned: string

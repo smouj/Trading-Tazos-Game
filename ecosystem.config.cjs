@@ -32,5 +32,26 @@ module.exports = {
       args: '"MedaClaw Arena archived — domain now serves TTG"',
       autorestart: false,
     },
+    // WebSocket Multiplayer Server
+    {
+      name: "ttg-ws",
+      script: "bun",
+      args: "run src/server/ws-server.ts",
+      cwd: "/home/smouj/apps/ttg/Trading-Tazos-Game",
+      env: {
+        JWT_SECRET: proces…CRET || "***",
+        WS_PORT: "3001",
+        WS_HOST: "0.0.0.0",
+      },
+      instances: 1,
+      exec_mode: "fork",
+      autorestart: true,
+      watch: false,
+      max_memory_restart: "150M",
+      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
+      error_file: "/home/smouj/.pm2/logs/ttg-ws-error.log",
+      out_file: "/home/smouj/.pm2/logs/ttg-ws-out.log",
+      merge_logs: true,
+    },
   ],
 }

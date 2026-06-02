@@ -140,6 +140,9 @@ export interface BattleFieldTazo {
   slug: string
   franchise: string
   imageUrl: string | null
+  role?: string | null
+  stackable: boolean
+  maxStackOn: number
   stats: TazoBattleStats
   state: TazoBattleState
   physics: TazoPhysicsState
@@ -219,49 +222,108 @@ export const DEFAULT_GAME_MODE: GameModeConfig = {
   pointsPerFlip: 1,
 }
 
-// ---- Stats derived from existing Tazo schema ----
+// ---- Stats derived from DB tazo (no aura — 9 direct stats) ----
 export function deriveBattleStats(tazo: {
   attack: number
   defense: number
-  spin: number
+  resistance: number
   weight: number
-  aura: number
+  stability: number
+  spin: number
   control: number
+  bounce: number
+  precision: number
 }): TazoBattleStats {
   return {
     attack: tazo.attack,
     defense: tazo.defense,
-    resistance: Math.round((tazo.defense * 0.7 + tazo.weight * 0.3)),
+    resistance: tazo.resistance,
     weight: tazo.weight,
-    stability: Math.round((tazo.defense * 0.5 + tazo.weight * 0.3 + tazo.control * 0.2)),
+    stability: tazo.stability,
     spin: tazo.spin,
     control: tazo.control,
-    bounce: Math.round((tazo.spin * 0.6 + tazo.aura * 0.4)),
-    precision: Math.round((tazo.control * 0.7 + tazo.aura * 0.3)),
+    bounce: tazo.bounce,
+    precision: tazo.precision,
   }
 }
 
-// ---- Combat role derived from stats ----
-export type TazoRole = "attacker" | "tank" | "technical" | "rebounder" | "heavy" | "light" | "holographic" | "legendary"
+// ---- Combat role ----
+export type TazoRole = "attacker" | "tank" | "technical" | "bouncer" | "heavy" | "light" | "balanced" | "special"
 
 export function deriveTazoRole(stats: TazoBattleStats): TazoRole {
-  if (stats.attack >= 80 && stats.defense >= 80) return "legendary"
   if (stats.attack >= 75) return "attacker"
-  if (stats.defense >= 75 && stats.resistance >= 70) return "tank"
-  if (stats.bounce >= 70 && stats.spin >= 65) return "rebounder"
+  if (stats.defense >= 70 && stats.resistance >= 65) return "tank"
+  if (stats.bounce >= 70 && stats.spin >= 60) return "bouncer"
   if (stats.weight >= 70) return "heavy"
-  if (stats.precision >= 70 && stats.control >= 70) return "technical"
+  if (stats.precision >= 70 && stats.control >= 65) return "technical"
   if (stats.weight <= 35) return "light"
-  return "technical"
+  if (stats.attack >= 60 && stats.defense >= 60) return "special"
+  return "balanced"
 }
 
+// ---- Battle Score ----
+export interface BattleScore {
+  captures: number
+  comboCaptures: number
+  precisionBonus: number
+  fieldControl: number
+  penalties: number
+  total: number
+}
+
+// ---- Stacking Rules ----
+export const STACKING_RULES = {
+  canManualPlaceOnTop: false,
+  canPhysicsStack: true,
+  maxStackHeight: 3,
+  stackInstabilityPerLevel: 0.15,
+  heavyPushThroughStack: 0.3,
+} as const
+
+// ---- Placement Penalty ----
+export interface PlacementPenalty {
+  pendingTazoId: string
+  controllerPlayerId: "player" | "opponent"
+  validArea: "inside_arena"
+  canPlaceOnTop: false
+}
+
+// ---- Horizontal Aim State ----
+export interface HorizontalAimState {
+  value: number  // 0-1
+  speed: number
+  direction: 1 | -1
+  accuracy: number  // 0-1
+}
+
+// ---- Vertical Aim State ----
+export interface VerticalAimState {
+  value: number  // 0-1
+  speed: number
+  direction: 1 | -1
+  accuracy: number  // 0-1
+}
+
+// ---- Power Charge State ----
+export interface PowerChargeState {
+  circleRadius: number
+  minRadius: number
+  maxRadius: number
+  power: number  // 0-1
+  accuracyPenalty: number
+}
+
+// ---- Impact Point ----
+export type ImpactPoint = "center" | "edge" | "side" | "glancing" | "stack_hit"
+
+// ---- Role Labels ----
 export const ROLE_LABELS: Record<TazoRole, string> = {
   attacker: "Attacker",
   tank: "Tank",
   technical: "Technical",
-  rebounder: "Rebounder",
+  bouncer: "Bouncer",
   heavy: "Heavy",
   light: "Light",
-  holographic: "Holographic",
-  legendary: "Legendary",
+  balanced: "Balanced",
+  special: "Special",
 }

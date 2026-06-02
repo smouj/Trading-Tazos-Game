@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Tazo, Rarity, TazoCondition, RARITY_CONFIG, CONDITION_CONFIG } from '@/lib/game/types'
-import { Trophy, Swords, Shield, Wind, Weight, Sparkles, Target, Star, TrendingUp, Package, CheckCircle, XCircle, Zap } from 'lucide-react'
+import { Trophy, Swords, Shield, Wind, Weight, Target, Star, TrendingUp, Package, CheckCircle, XCircle, Zap, Activity, Crosshair, Waves } from 'lucide-react'
 
 interface StatsData {
   totalTazos: number
@@ -50,10 +50,13 @@ const CONDITION_COLORS: Record<string, string> = {
 const STAT_ICONS = [
   { key: 'attack', label: 'Strongest Attack', icon: Swords, color: '#E3350D' },
   { key: 'defense', label: 'Best Defense', icon: Shield, color: '#3B4CCA' },
-  { key: 'spin', label: 'Top Spin', icon: Wind, color: '#78C850' },
+  { key: 'resistance', label: 'Best Resistance', icon: Activity, color: '#6366F1' },
   { key: 'weight', label: 'Heaviest', icon: Weight, color: '#FF6B00' },
-  { key: 'aura', label: 'Highest Aura', icon: Sparkles, color: '#A855F7' },
+  { key: 'stability', label: 'Best Stability', icon: Waves, color: '#14B8A6' },
+  { key: 'spin', label: 'Top Spin', icon: Wind, color: '#78C850' },
   { key: 'control', label: 'Best Control', icon: Target, color: '#00A1E9' },
+  { key: 'bounce', label: 'Best Bounce', icon: Zap, color: '#F97316' },
+  { key: 'precision', label: 'Best Precision', icon: Crosshair, color: '#06B6D4' },
 ]
 
 export default function StatsPanel({ refreshKey }: StatsPanelProps) {
@@ -78,7 +81,7 @@ export default function StatsPanel({ refreshKey }: StatsPanelProps) {
         const allTazos: Tazo[] = tazosData.tazos || []
         const tops: Record<string, Tazo> = {}
         for (const statConfig of STAT_ICONS) {
-          const key = statConfig.key as keyof Pick<Tazo, 'attack' | 'defense' | 'spin' | 'weight' | 'aura' | 'control'>
+          const key = statConfig.key as keyof Pick<Tazo, 'attack' | 'defense' | 'resistance' | 'weight' | 'stability' | 'spin' | 'control' | 'bounce' | 'precision'>
           const sorted = [...allTazos].sort((a, b) => b[key] - a[key])
           if (sorted.length > 0) {
             tops[key] = sorted[0]

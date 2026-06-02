@@ -29,10 +29,16 @@ export interface Tazo {
   transformOf: string | null
   attack: number
   defense: number
-  spin: number
+  resistance: number
   weight: number
-  aura: number
+  stability: number
+  spin: number
   control: number
+  bounce: number
+  precision: number
+  role?: string | null
+  stackable?: boolean
+  maxStackOn?: number
   isOwned: boolean
   battleWins: number
   battleLosses: number
@@ -121,7 +127,7 @@ export const CONDITION_CONFIG: Record<TazoCondition, { label: string; color: str
   good: { label: "Good", color: "text-green-600", icon: "👍", effect: "Normal stats" },
   used: { label: "Used", color: "text-yellow-600", icon: "🔄", effect: "-10% control" },
   worn: { label: "Worn", color: "text-orange-600", icon: "⚔️", effect: "-20% spin, +15% veteran bonus" },
-  holo: { label: "Holographic", color: "text-cyan-600", icon: "🌈", effect: "+30% aura" },
+  holo: { label: "Holographic", color: "text-cyan-600", icon: "🌈", effect: "+30% precision" },
   metallic: { label: "Metallic", color: "text-slate-600", icon: "🛡️", effect: "+25% weight" },
 }
 

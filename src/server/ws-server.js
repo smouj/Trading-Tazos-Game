@@ -8,6 +8,33 @@
 
 const { Server: WebSocketServer } = require("ws")
 const crypto = require("crypto")
+const fs = require("fs")
+const path = require("path")
+
+// Load .env from project root (no dotenv dependency needed)
+function loadEnv() {
+  const envPath = path.join(__dirname, "..", "..", ".env")
+  try {
+    const content = fs.readFileSync(envPath, "utf8")
+    for (const line of content.split("\n")) {
+      const trimmed = line.trim()
+      if (!trimmed || trimmed.startsWith("#")) continue
+      const eqIdx = trimmed.indexOf("=")
+      if (eqIdx === -1) continue
+      const key = trimmed.substring(0, eqIdx).trim()
+      let value = trimmed.substring(eqIdx + 1).trim()
+      // Strip surrounding quotes
+      if ((value.startsWith('"') && value.endsWith('"')) ||
+          (value.startsWith("'") && value.endsWith("'"))) {
+        value = value.slice(1, -1)
+      }
+      if (!process.env[key]) process.env[key] = value
+    }
+  } catch (_) {
+    // .env file optional in production if env vars are set by PM2
+  }
+}
+loadEnv()
 
 const JWT_SECRET = process.env.JWT_SECRET || "***"
 const PORT = parseInt(process.env.WS_PORT || "3001")

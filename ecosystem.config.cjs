@@ -38,7 +38,6 @@ module.exports = {
       script: "src/server/ws-server.js",
       cwd: "/home/smouj/apps/ttg/Trading-Tazos-Game",
       env: {
-        JWT_SECRET: process.env.JWT_SECRET || "***",
         WS_PORT: "3001",
         WS_HOST: "0.0.0.0",
       },

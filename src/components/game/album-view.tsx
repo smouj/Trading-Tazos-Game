@@ -15,7 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Search, Filter, Grid3X3, LayoutGrid, BookOpen, Star, ArrowUpDown } from 'lucide-react'
+import { Search, Filter, Grid3X3, LayoutGrid, BookOpen, Star, ArrowUpDown, Package } from 'lucide-react'
+import { useAuth } from '@/lib/auth-context'
 
 interface AlbumViewProps {
   onStatsUpdate?: () => void
@@ -31,6 +32,7 @@ const FRANCHISE_MAG_COLORS: Record<string, { activeBg: string; activeText: strin
 type GridSize = 'compact' | 'normal'
 
 export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
+  const { user, token } = useAuth()
   const [tazos, setTazos] = useState<Tazo[]>([])
   const [franchises, setFranchises] = useState<Franchise[]>([])
   const [loading, setLoading] = useState(true)
@@ -86,16 +88,39 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
     return () => clearTimeout(timer)
   }, [fetchTazos, search])
 
-  // Toggle owned
+  // Toggle owned — use collection API when authenticated, old toggle fallback
   const handleToggleOwned = async (tazo: Tazo) => {
     try {
-      const res = await fetch(`/api/tazos/${tazo.id}/toggle-owned`, { method: 'PUT' })
-      const data = await res.json()
-      if (data.tazo) {
-        setTazos(prev => prev.map(t => t.id === tazo.id ? { ...t, isOwned: !t.isOwned } : t))
-        setSelectedTazo(prev => prev?.id === tazo.id ? { ...prev, isOwned: !prev.isOwned } : prev)
-        onStatsUpdate?.()
+      if (user && token) {
+        if (tazo.isOwned) {
+          const colRes = await fetch(`/api/collection?franchise=${encodeURIComponent(tazo.franchise?.slug || '')}&limit=200`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          if (colRes.ok) {
+            const colData = await colRes.json()
+            const match = colData.items?.find((i: { tazo: { id: string } }) => i.tazo.id === tazo.id)
+            if (match) {
+              await fetch("/api/collection", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ userTazoId: match.id }),
+              })
+            }
+          }
+        } else {
+          await fetch("/api/collection", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ tazoId: tazo.id }),
+          })
+        }
+      } else {
+        const res = await fetch(`/api/tazos/${tazo.id}/toggle-owned`, { method: 'PUT' })
+        await res.json()
       }
+      setTazos(prev => prev.map(t => t.id === tazo.id ? { ...t, isOwned: !t.isOwned } : t))
+      setSelectedTazo(prev => prev?.id === tazo.id ? { ...prev, isOwned: !prev.isOwned } : prev)
+      onStatsUpdate?.()
     } catch (err) {
       console.error('Failed to toggle owned:', err)
     }

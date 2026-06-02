@@ -34,6 +34,9 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    // Seed welcome pack (fire-and-forget — non-blocking)
+    seedWelcomePack(user.id)
+
     const token = generateToken({
       id: user.id,
       email: user.email,
@@ -55,5 +58,43 @@ export async function POST(request: NextRequest) {
     if (error instanceof Response) throw error
     console.error("Register error:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
+}
+
+/** Seed welcome tazos and a starter deck for new users */
+async function seedWelcomePack(userId: string) {
+  try {
+    // Pick 10 random tazos (balanced across franchises)
+    const [pkm, dbz, digi] = await Promise.all([
+      db.tazo.findMany({ where: { franchise: { slug: "pokemon" } }, take: 4, orderBy: { attack: "desc" } }),
+      db.tazo.findMany({ where: { franchise: { slug: "dragon-ball-z" } }, take: 3, orderBy: { attack: "desc" } }),
+      db.tazo.findMany({ where: { franchise: { slug: "digimon" } }, take: 3, orderBy: { attack: "desc" } }),
+    ])
+    const welcomeTazos = [...pkm, ...dbz, ...digi]
+
+    // Add to user's collection
+    for (const tazo of welcomeTazos) {
+      await db.userTazo.create({
+        data: { userId, tazoId: tazo.id, quantity: 1 },
+      })
+    }
+
+    // Create starter deck with first 7
+    const deckTazos = welcomeTazos.slice(0, 7)
+    await db.deck.create({
+      data: {
+        userId,
+        name: "Starter Squad",
+        isActive: true,
+        deckTazos: {
+          create: deckTazos.map((t) => ({ tazoId: t.id })),
+        },
+      },
+    })
+
+    console.log(`Welcome pack seeded for user ${userId}: ${welcomeTazos.length} tazos + 1 deck`)
+  } catch (err) {
+    console.error("Welcome pack seed error:", err)
+    // Non-fatal — user can still play without welcome pack
   }
 }

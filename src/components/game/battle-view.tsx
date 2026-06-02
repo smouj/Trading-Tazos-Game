@@ -7,6 +7,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react"
 import { useI18n } from "@/lib/i18n"
+import { useAuth } from "@/lib/auth-context"
 import {
   createBattleState, startTurn, selectThrower,
   setHorizontalAim, setVerticalAim, setPower, executeThrow,
@@ -19,57 +20,107 @@ import BattleEventLog from "./battle/battle-event-log"
 import BattleResultPanel from "./battle/battle-result-panel"
 import {
   Swords, Play, RotateCcw, ChevronRight,
-  Zap, Shield, Star, Disc3,
+  Zap, Shield, Star, Disc3, LogIn,
 } from "lucide-react"
+import Link from "next/link"
 
-// ---- Sample opponent tazos (hardcoded for now) ----
-const OPPONENT_TAZOS = [
-  { id: "opp-1", name: "Pikachu", slug: "opp-pikachu", franchise: "pokemon", imageUrl: "/tazos/pokemon/pokemon-pikachu.svg", attack: 45, defense: 40, spin: 55, weight: 35, aura: 55, control: 50 },
-  { id: "opp-2", name: "Gengar", slug: "opp-gengar", franchise: "pokemon", imageUrl: "/tazos/pokemon/pokemon-gengar.svg", attack: 65, defense: 60, spin: 45, weight: 40, aura: 70, control: 55 },
-  { id: "opp-3", name: "Greymon", slug: "opp-greymon", franchise: "digimon", imageUrl: "/tazos/digimon/digimon-greymon.svg", attack: 55, defense: 50, spin: 45, weight: 55, aura: 45, control: 40 },
-  { id: "opp-4", name: "Angemon", slug: "opp-angemon", franchise: "digimon", imageUrl: "/tazos/digimon/digimon-angemon.svg", attack: 70, defense: 55, spin: 50, weight: 45, aura: 75, control: 60 },
-  { id: "opp-5", name: "Vegeta", slug: "opp-vegeta", franchise: "dbz", imageUrl: "/tazos/dbz/dbz-vegeta.svg", attack: 60, defense: 45, spin: 50, weight: 50, aura: 60, control: 45 },
-  { id: "opp-6", name: "Goku SSJ", slug: "opp-goku-ssj", franchise: "dbz", imageUrl: "/tazos/dbz/dbz-goku-ssj.svg", attack: 80, defense: 55, spin: 65, weight: 55, aura: 85, control: 60 },
-  { id: "opp-7", name: "Cell", slug: "opp-cell", franchise: "dbz", imageUrl: "/tazos/dbz/dbz-cell.svg", attack: 75, defense: 65, spin: 55, weight: 60, aura: 70, control: 50 },
+// ---- Demo tazos (for unauthenticated users) ----
+const DEMO_TAZOS = [
+  { id: "demo-1", name: "Pikachu", slug: "demo-pikachu", franchise: "pokemon", imageUrl: "/tazos/pokemon/pokemon-pikachu.svg", attack: 45, defense: 40, spin: 55, weight: 35, aura: 55, control: 50 },
+  { id: "demo-2", name: "Gengar", slug: "demo-gengar", franchise: "pokemon", imageUrl: "/tazos/pokemon/pokemon-gengar.svg", attack: 65, defense: 60, spin: 45, weight: 40, aura: 70, control: 55 },
+  { id: "demo-3", name: "Greymon", slug: "demo-greymon", franchise: "digimon", imageUrl: "/tazos/digimon/digimon-greymon.svg", attack: 55, defense: 50, spin: 45, weight: 55, aura: 45, control: 40 },
+  { id: "demo-4", name: "Angemon", slug: "demo-angemon", franchise: "digimon", imageUrl: "/tazos/digimon/digimon-angemon.svg", attack: 70, defense: 55, spin: 50, weight: 45, aura: 75, control: 60 },
+  { id: "demo-5", name: "Vegeta", slug: "demo-vegeta", franchise: "dbz", imageUrl: "/tazos/dbz/dbz-vegeta.svg", attack: 60, defense: 45, spin: 50, weight: 50, aura: 60, control: 45 },
+  { id: "demo-6", name: "Goku SSJ", slug: "demo-goku-ssj", franchise: "dbz", imageUrl: "/tazos/dbz/dbz-goku-ssj.svg", attack: 80, defense: 55, spin: 65, weight: 55, aura: 85, control: 60 },
+  { id: "demo-7", name: "Cell", slug: "demo-cell", franchise: "dbz", imageUrl: "/tazos/dbz/dbz-cell.svg", attack: 75, defense: 65, spin: 55, weight: 60, aura: 70, control: 50 },
 ]
+
+type TazoCard = { id: string; name: string; slug: string; franchise: string; imageUrl: string | null; attack: number; defense: number; spin: number; weight: number; aura: number; control: number }
 
 export default function BattleView() {
   const { t } = useI18n()
-  const [playerTazos, setPlayerTazos] = useState<Array<typeof OPPONENT_TAZOS[0]>>([])
+  const { user, token } = useAuth()
+  const [playerTazos, setPlayerTazos] = useState<TazoCard[]>([])
+  const [opponentTazos, setOpponentTazos] = useState<TazoCard[]>([])
   const [loading, setLoading] = useState(true)
   const [battleState, setBattleState] = useState<BattleState | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [capturedIds, setCapturedIds] = useState<string[]>([])
+  const [savingCaptures, setSavingCaptures] = useState(false)
 
-  // ---- Load player tazos ----
+  // ---- Load tazos: active deck (auth) or demo (guest) ----
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch("/api/tazos?owned=true&sortBy=attack&sortOrder=desc")
-        if (!res.ok) throw new Error("Failed to load tazos")
-        const data = await res.json()
-        if (data.tazos && data.tazos.length >= 5) {
-          setPlayerTazos(data.tazos.slice(0, 10).map((t: Record<string, unknown>) => ({
+        let myTazos: TazoCard[] = []
+
+        if (user && token) {
+          // Authenticated: load active deck
+          const deckRes = await fetch("/api/decks", {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          if (deckRes.ok) {
+            const deckData = await deckRes.json()
+            const activeDeck = deckData.decks?.find((d: { isActive: boolean }) => d.isActive)
+            if (activeDeck && activeDeck.tazos?.length >= 5) {
+              myTazos = activeDeck.tazos.map((t: Record<string, unknown>) => ({
+                id: t.id as string,
+                name: (t.name || t.displayName || "?") as string,
+                slug: (t.slug || "") as string,
+                franchise: (t.franchiseSlug || "pokemon") as string,
+                imageUrl: t.imageUrl as string || null,
+                attack: t.attack as number,
+                defense: t.defense as number,
+                spin: t.spin as number,
+                weight: (t as any).weight || 50,
+                aura: (t as any).aura || 50,
+                control: (t as any).control || 50,
+              }))
+            }
+          }
+        }
+
+        // Fallback to demo if no deck or not authenticated
+        if (myTazos.length < 5) {
+          myTazos = DEMO_TAZOS
+        }
+
+        setPlayerTazos(myTazos)
+
+        // Generate AI opponent from API (random cross-franchise tazos)
+        const oppRes = await fetch("/api/tazos?sortBy=attack&sortOrder=desc&limit=20")
+        if (oppRes.ok) {
+          const oppData = await oppRes.json()
+          const pool = (oppData.tazos || [])
+            .filter((t: Record<string, unknown>) => !myTazos.some(mt => mt.id === t.id))
+          const shuffled = pool.sort(() => Math.random() - 0.5)
+          const selected = shuffled.slice(0, 7).map((t: Record<string, unknown>) => ({
             id: t.id as string,
-            name: t.name as string,
+            name: (t.name || t.displayName || "?") as string,
             slug: t.slug as string,
-            franchise: (t.franchise as { slug?: string })?.slug || "pokemon",
+            franchise: ((t.franchise as { slug?: string })?.slug || "pokemon") as string,
             imageUrl: t.imageUrl as string || null,
             attack: t.attack as number,
             defense: t.defense as number,
             spin: t.spin as number,
-            weight: t.weight as number,
-            aura: t.aura as number,
-            control: t.control as number,
-          })))
+            weight: (t as any).weight || 50,
+            aura: (t as any).aura || 50,
+            control: (t as any).control || 50,
+          }))
+          setOpponentTazos(selected.length >= 5 ? selected : DEMO_TAZOS)
+        } else {
+          setOpponentTazos(DEMO_TAZOS)
         }
       } catch (err) {
         console.error("Failed to load tazos:", err)
+        setPlayerTazos(DEMO_TAZOS)
+        setOpponentTazos(DEMO_TAZOS)
       } finally {
         setLoading(false)
       }
     }
     load()
-  }, [])
+  }, [user, token])
 
   // ---- Start battle ----
   const startBattle = useCallback(() => {
@@ -78,11 +129,15 @@ export default function BattleView() {
       return
     }
     setError(null)
-    const state = createBattleState(playerTazos, OPPONENT_TAZOS, {
+    const state = createBattleState(playerTazos, opponentTazos, {
       arena: { radius: 250, centerX: 300, centerY: 300 },
     })
+    // Track captured opponent tazos for collection saving
+    const oppLookup = new Map(opponentTazos.map(t => [t.id, t]))
+    setCapturedIds([])
+    // We'll track captures via battle events
     setBattleState(startTurn(state))
-  }, [playerTazos, t.battle_need_5_tazos])
+  }, [playerTazos, opponentTazos, t.battle_need_5_tazos])
 
   // ---- Phase handlers ----
   const handleSelectThrower = useCallback((tazoId: string) => {
@@ -119,6 +174,7 @@ export default function BattleView() {
   }, [battleState])
 
   const handleRematch = useCallback(() => {
+    setCapturedIds([])
     startBattle()
   }, [startBattle])
 
@@ -191,6 +247,21 @@ export default function BattleView() {
             {playerTazos.length} {t.battle_owned_tazos}
             {playerTazos.length < 5 && ` ${t.battle_need_5_suffix}`}
           </p>
+          {!user && (
+            <div className="mt-3 p-3 bg-purple-50 border-2 border-purple-200 rounded-lg inline-block">
+              <LogIn className="w-4 h-4 inline mr-1 text-purple-500" />
+              <Link href="/login" className="text-sm font-semibold text-purple-600 hover:text-purple-800 underline">
+                {t.auth_login}
+              </Link>
+              <span className="text-xs text-purple-400 mx-1">{t.auth_no_account}</span>
+              <Link href="/register" className="text-sm font-semibold text-purple-600 hover:text-purple-800 underline">
+                {t.auth_register}
+              </Link>
+              <p className="text-[10px] text-purple-400 mt-1">
+                {t.auth_register_subtitle}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Start button */}
@@ -210,6 +281,28 @@ export default function BattleView() {
 
   // ---- Battle finished ----
   if (battleState.phase === "battle_finished" && battleState.finalResult) {
+    // Collect captured opponent tazo IDs from battle result
+    const playerCapturedList = battleState.finalResult.playerCaptures ?? battleState.player.captured ?? []
+    const playerCaptures: { id: string; side?: string }[] = Array.isArray(playerCapturedList) ? playerCapturedList : []
+    const captureTazoIds = playerCaptures
+      .filter((c) => c.side === "opponent" || opponentTazos.some(o => o.id === c.id))
+      .map((c: { id: string }) => c.id)
+
+    const handleSaveCaptures = async () => {
+      if (!token || captureTazoIds.length === 0) return
+      setSavingCaptures(true)
+      for (const tazoId of captureTazoIds) {
+        try {
+          await fetch("/api/collection", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ tazoId }),
+          })
+        } catch { /* continue on error */ }
+      }
+      setSavingCaptures(false)
+      setCapturedIds(captureTazoIds)
+    }
     return (
       <div className="max-w-md mx-auto space-y-4">
         <BattleResultPanel
@@ -218,6 +311,35 @@ export default function BattleView() {
           opponentName={t.battle_rival}
           onRematch={handleRematch}
         />
+        {/* Save captured tazos to collection */}
+        {user && captureTazoIds.length > 0 && capturedIds.length < captureTazoIds.length && (
+          <div className="text-center">
+            <button
+              onClick={handleSaveCaptures}
+              disabled={savingCaptures}
+              className="px-6 py-3 font-black text-sm uppercase tracking-wider bg-[#22C55E] text-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50"
+            >
+              {savingCaptures ? t.common_loading : `+${captureTazoIds.length} ${t.battle_captured} ${t.collection_total}`}
+            </button>
+          </div>
+        )}
+        {capturedIds.length > 0 && (
+          <div className="text-center">
+            <span className="inline-block px-3 py-1 bg-green-100 border-2 border-green-300 rounded text-xs font-bold text-green-700">
+              {capturedIds.length} {t.battle_captured_suffix}
+            </span>
+          </div>
+        )}
+        {!user && captureTazoIds.length > 0 && (
+          <div className="text-center p-3 bg-purple-50 border-2 border-purple-200 rounded-lg">
+            <p className="text-sm font-semibold text-purple-700">
+              {captureTazoIds.length} {t.battle_captured_suffix}
+            </p>
+            <Link href="/login" className="text-xs text-purple-500 hover:text-purple-700 underline">
+              {t.auth_login} {t.auth_register_subtitle}
+            </Link>
+          </div>
+        )}
         <BattleEventLog turns={battleState.turns} />
       </div>
     )

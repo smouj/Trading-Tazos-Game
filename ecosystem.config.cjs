@@ -35,11 +35,10 @@ module.exports = {
     // WebSocket Multiplayer Server
     {
       name: "ttg-ws",
-      script: "bun",
-      args: "run src/server/ws-server.ts",
+      script: "src/server/ws-server.js",
       cwd: "/home/smouj/apps/ttg/Trading-Tazos-Game",
       env: {
-        JWT_SECRET: proces…CRET || "***",
+        JWT_SECRET: process.env.JWT_SECRET || "***",
         WS_PORT: "3001",
         WS_HOST: "0.0.0.0",
       },
@@ -48,7 +47,6 @@ module.exports = {
       autorestart: true,
       watch: false,
       max_memory_restart: "150M",
-      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       error_file: "/home/smouj/.pm2/logs/ttg-ws-error.log",
       out_file: "/home/smouj/.pm2/logs/ttg-ws-out.log",
       merge_logs: true,

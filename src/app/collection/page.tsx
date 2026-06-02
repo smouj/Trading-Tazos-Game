@@ -22,7 +22,14 @@ interface CollectionItem {
     franchiseSlug: string
     attack: number
     defense: number
+    resistance: number
+    weight: number
+    stability: number
     spin: number
+    control: number
+    bounce: number
+    precision: number
+    role?: string | null
   }
 }
 
@@ -141,12 +148,12 @@ export default function CollectionPage() {
                 </div>
                 {/* Mini stats */}
                 <div className="flex gap-1">
-                  {["attack", "defense", "spin"].map((stat) => (
+                  {["attack", "defense", "precision"].map((stat) => (
                     <span
                       key={stat}
                       className="text-[9px] bg-zinc-800 text-zinc-400 px-1 py-0.5 rounded"
                     >
-                      {(item.tazo as any)[stat]}
+                      {item.tazo[stat as "attack" | "defense" | "precision"]}
                     </span>
                   ))}
                 </div>

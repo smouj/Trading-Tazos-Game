@@ -90,6 +90,14 @@ export async function PATCH(
         franchise: dt.tazo.franchise.name,
         attack: dt.tazo.attack,
         defense: dt.tazo.defense,
+        resistance: dt.tazo.resistance,
+        weight: dt.tazo.weight,
+        stability: dt.tazo.stability,
+        spin: dt.tazo.spin,
+        control: dt.tazo.control,
+        bounce: dt.tazo.bounce,
+        precision: dt.tazo.precision,
+        role: dt.tazo.role,
       })),
     })
   } catch (error) {

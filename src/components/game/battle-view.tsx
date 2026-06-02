@@ -35,7 +35,7 @@ const DEMO_TAZOS = [
   { id: "demo-7", name: "Cell", slug: "demo-cell", franchise: "dbz", imageUrl: "/tazos/dbz/dbz-cell.svg", attack: 75, defense: 65, resistance: 60, weight: 60, stability: 58, spin: 55, control: 50, bounce: 45, precision: 50 },
 ]
 
-type TazoCard = { id: string; name: string; slug: string; franchise: string; imageUrl: string | null; attack: number; defense: number; resistance: number; weight: number; stability: number; spin: number; control: number; bounce: number; precision: number }
+type TazoCard = { id: string; name: string; slug: string; franchise: string; imageUrl: string | null; attack: number; defense: number; resistance: number; weight: number; stability: number; spin: number; control: number; bounce: number; precision: number; role?: string | null; stackable?: boolean; maxStackOn?: number }
 
 export default function BattleView() {
   const { t } = useI18n()
@@ -78,6 +78,9 @@ export default function BattleView() {
                 control: t.control as number,
                 bounce: (t as any).bounce || 50,
                 precision: (t as any).precision || 50,
+                role: (t.role as string) || null,
+                stackable: (t.stackable as boolean) ?? true,
+                maxStackOn: (t.maxStackOn as number) || 1,
               }))
             }
           }
@@ -112,6 +115,9 @@ export default function BattleView() {
             control: t.control as number,
             bounce: (t as any).bounce || 50,
             precision: (t as any).precision || 50,
+            role: (t.role as string) || null,
+            stackable: (t.stackable as boolean) ?? true,
+            maxStackOn: (t.maxStackOn as number) || 1,
           }))
           setOpponentTazos(selected.length >= 5 ? selected : DEMO_TAZOS)
         } else {
@@ -447,7 +453,7 @@ export default function BattleView() {
                           {t.tazo_defense} {tazo.stats.defense}
                         </span>
                         <span className="text-[9px] font-bold px-1 bg-[#F59E0B15] text-[#F59E0B] rounded">
-                          {t.stats_spin} {tazo.stats.bounce}
+                          {t.tazo_bounce} {tazo.stats.bounce}
                         </span>
                       </div>
                     </div>

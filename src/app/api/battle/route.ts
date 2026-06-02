@@ -26,10 +26,14 @@ interface BattleTazo {
   transformOf: string | null
   attack: number
   defense: number
-  spin: number
+  resistance: number
   weight: number
-  aura: number
+  stability: number
+  spin: number
   control: number
+  bounce: number
+  precision: number
+  role: string | null
   hp: number
   currentSpin: number
   ki: number
@@ -58,14 +62,18 @@ function createBattleTazo(raw: {
   transformOf: string | null
   attack: number
   defense: number
-  spin: number
+  resistance: number
   weight: number
-  aura: number
+  stability: number
+  spin: number
   control: number
+  bounce: number
+  precision: number
+  role: string | null
 }): BattleTazo {
   return {
     ...raw,
-    hp: 100 + raw.defense,
+    hp: 100 + raw.defense + Math.floor(raw.resistance * 0.4),
     currentSpin: raw.spin,
     ki: 0,
     typeMultiplier: 1.0,
@@ -211,7 +219,7 @@ function simulateRound(
   for (const tazo of [...playerTazos, ...opponentTazos]) {
     if (tazo.franchise.slug === 'dragon-ball-z') {
       // Charge ki
-      const kiGain = Math.floor(tazo.aura * 0.3) + Math.floor(Math.random() * 10)
+      const kiGain = Math.floor((tazo.precision + tazo.control) * 0.15) + Math.floor(Math.random() * 10)
       tazo.ki += kiGain
       const actor = playerTazos.includes(tazo) ? 'player' : 'opponent'
       events.push({
@@ -227,7 +235,7 @@ function simulateRound(
         tazo.transformActive = true
         tazo.attack += 20
         tazo.defense += 10
-        tazo.aura += 15
+        tazo.precision += 15
         events.push({
           round,
           type: 'transform',
@@ -557,8 +565,12 @@ export async function POST(request: NextRequest) {
       defense: t.defense,
       spin: t.spin,
       weight: t.weight,
-      aura: t.aura,
+      resistance: t.resistance,
+      stability: t.stability,
       control: t.control,
+      bounce: t.bounce,
+      precision: t.precision,
+      role: t.role,
       hp: Math.max(0, t.hp),
       currentSpin: t.currentSpin,
       ki: t.ki,

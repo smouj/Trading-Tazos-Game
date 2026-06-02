@@ -405,7 +405,13 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
                 <SelectItem value="rarity" className="text-[11px] font-bold">Rarity</SelectItem>
                 <SelectItem value="attack" className="text-[11px] font-bold">Attack</SelectItem>
                 <SelectItem value="defense" className="text-[11px] font-bold">Defense</SelectItem>
+                <SelectItem value="resistance" className="text-[11px] font-bold">Resistance</SelectItem>
+                <SelectItem value="weight" className="text-[11px] font-bold">Weight</SelectItem>
+                <SelectItem value="stability" className="text-[11px] font-bold">Stability</SelectItem>
                 <SelectItem value="spin" className="text-[11px] font-bold">Spin</SelectItem>
+                <SelectItem value="control" className="text-[11px] font-bold">Control</SelectItem>
+                <SelectItem value="bounce" className="text-[11px] font-bold">Bounce</SelectItem>
+                <SelectItem value="precision" className="text-[11px] font-bold">Precision</SelectItem>
                 <SelectItem value="number" className="text-[11px] font-bold">Number</SelectItem>
               </SelectContent>
             </Select>

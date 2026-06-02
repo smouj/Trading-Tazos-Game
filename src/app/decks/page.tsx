@@ -14,7 +14,14 @@ interface DeckTazo {
   franchise: string
   attack: number
   defense: number
+  resistance: number
+  weight: number
+  stability: number
   spin: number
+  control: number
+  bounce: number
+  precision: number
+  role?: string | null
 }
 
 interface Deck {

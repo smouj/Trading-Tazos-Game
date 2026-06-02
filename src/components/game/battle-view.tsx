@@ -23,6 +23,7 @@ import {
   Zap, Shield, Star, Disc3, LogIn,
 } from "lucide-react"
 import Link from "next/link"
+import PvPBattlePanel from "./pvp-battle-panel"
 
 // ---- Demo tazos (for unauthenticated users) — 9 stats ----
 const DEMO_TAZOS = [
@@ -40,6 +41,7 @@ type TazoCard = { id: string; name: string; slug: string; franchise: string; ima
 export default function BattleView() {
   const { t } = useI18n()
   const { user, token } = useAuth()
+  const [battleMode, setBattleMode] = useState<"practice" | "online">("practice")
   const [playerTazos, setPlayerTazos] = useState<TazoCard[]>([])
   const [opponentTazos, setOpponentTazos] = useState<TazoCard[]>([])
   const [loading, setLoading] = useState(true)
@@ -368,11 +370,40 @@ export default function BattleView() {
   const isOpponentTurn = battleState.currentPlayerId === "opponent" &&
     (isSelectPhase || isAimPhase || isAnimating)
 
+  // ─── PvP Online mode ────────────────────────────────
+  if (battleMode === "online") {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 p-3 bg-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a]">
+          <button
+            onClick={() => setBattleMode("practice")}
+            className="mag-btn text-[10px] font-black uppercase px-3 py-1.5 border-2 border-[#1a1a1a] bg-zinc-100 text-zinc-500 shadow-[2px_2px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+          >
+            ← {t.common_back || "Back"}
+          </button>
+          <span className="text-xs font-black uppercase tracking-wider text-[#1a1a1a]">Online PvP</span>
+          <span className="ml-auto flex items-center gap-1 text-[10px] font-bold text-green-600">
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" /> LIVE
+          </span>
+        </div>
+        <PvPBattlePanel />
+      </div>
+    )
+  }
+
+  // ─── Local Practice mode ─────────────────────────────
   return (
     <div className="space-y-4">
       {/* Header bar */}
       <div className="flex items-center justify-between p-3 bg-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a]">
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setBattleMode("online")}
+            className="mag-btn flex items-center gap-1 text-[10px] font-black uppercase px-2.5 py-1 border-2 border-[#1a1a1a] bg-[#FFCC00] text-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all mr-2"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+            Online
+          </button>
           <Swords className="w-5 h-5 text-[#E3350D]" />
           <span className="font-black text-sm uppercase tracking-wider text-[#1a1a1a]">
             {t.battle_turn} {battleState.turnNumber}

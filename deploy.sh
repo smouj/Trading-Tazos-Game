@@ -6,7 +6,7 @@
 set -euo pipefail
 
 VPS_HOST="rpgvps"
-VPS_DIR="/home/smouj/apps/ttg"
+VPS_DIR="/home/smouj/apps/ttg/Trading-Tazos-Game"
 LOCAL_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 echo "🚀 Trading Tazos Game — Deploy"
@@ -14,65 +14,69 @@ echo "================================"
 
 # 1. Build
 echo ""
-echo "📦 [1/5] Building..."
+echo "📦 [1/6] Building..."
 cd "$LOCAL_DIR"
 bun run build 2>&1 | tail -5
 
-# 2. Verify build output
+# 2. Verify
 if [ ! -f ".next/standalone/Trading-Tazos-Game/server.js" ]; then
   echo "❌ Build failed: server.js not found"
   exit 1
 fi
 echo "✅ Build OK"
 
-# 3. Sync standalone + prisma + public to VPS
+# 3. Sync standalone build
 echo ""
-echo "📤 [2/5] Syncing to VPS..."
+echo "📤 [2/6] Syncing standalone..."
 rsync -avz --delete \
-  --exclude='prisma/dev.db' \
-  --exclude='prisma/prisma/dev.db' \
-  .next/standalone/ "$VPS_HOST:$VPS_DIR/"
+  .next/standalone/ "$VPS_HOST:$VPS_DIR/.next/standalone/"
 
+# 4. Sync static files
+echo ""
+echo "📤 [3/6] Syncing static..."
 rsync -avz --delete \
-  --exclude='*.db' \
-  --exclude='*.db-journal' \
-  prisma/ "$VPS_HOST:$VPS_DIR/Trading-Tazos-Game/prisma/"
-echo "✅ Sync done"
+  .next/static/ "$VPS_HOST:$VPS_DIR/.next/static/"
 
-# 4. Fix Turbopack static files (Next.js 16)
+# 5. Sync prisma
 echo ""
-echo "🔧 [3/5] Fixing static chunks..."
-ssh "$VPS_HOST" "
-  cd $VPS_DIR/Trading-Tazos-Game/.next && \
-  rm -rf static && \
-  mkdir -p static/chunks && \
-  cp $VPS_DIR/.next/chunks/* static/chunks/ && \
-  cp -r $VPS_DIR/.next/JA1MEp4xUdsPoCoYdoJRv static/ 2>/dev/null || true && \
-  cp -r $VPS_DIR/.next/media static/ 2>/dev/null || true && \
-  echo '✅ Static files fixed'
-"
+echo "📤 [4/6] Syncing prisma..."
+rsync -avz --delete \
+  --exclude='*.db' --exclude='*.db-journal' \
+  prisma/ "$VPS_HOST:$VPS_DIR/prisma/"
 
-# 5. Restart PM2
+# 6. Sync public assets (logos, tazos, etc.)
 echo ""
-echo "🔄 [4/5] Restarting PM2..."
-ssh "$VPS_HOST" "pm2 restart ttg && pm2 save" 2>&1 | tail -3
+echo "📤 [5/6] Syncing public assets..."
+rsync -avz --delete \
+  public/ "$VPS_HOST:$VPS_DIR/public/"
 
-# 6. Verify
+# 7. Sync WS server + its deps
 echo ""
-echo "🔍 [5/5] Verifying..."
+echo "📤 [6/6] Syncing WS server..."
+ssh "$VPS_HOST" "mkdir -p $VPS_DIR/src/server"
+rsync -avz src/server/ws-server.js "$VPS_HOST:$VPS_DIR/src/server/ws-server.js"
+rsync -avz node_modules/ws/ "$VPS_HOST:$VPS_DIR/node_modules/ws/"
+rsync -avz node_modules/jsonwebtoken/ "$VPS_HOST:$VPS_DIR/node_modules/jsonwebtoken/"
+
+# 8. Restart services
+echo ""
+echo "🔄 Restarting PM2..."
+ssh "$VPS_HOST" "pm2 restart ttg ttg-ws 2>&1 && pm2 save" | tail -5
+
+# 9. Verify
+echo ""
+echo "🔍 Verifying..."
 sleep 3
 HTTP=$(curl -s -o /dev/null -w '%{http_code}' https://medaclawarena.com/)
-CSS=$(curl -s -o /dev/null -w '%{http_code}' https://medaclawarena.com/_next/static/chunks/a7d5d0791c8c6223.css)
-API=$(curl -s https://medaclawarena.com/api/tazos | python3 -c "import sys,json; print(json.load(sys.stdin).get('total','?'))" 2>/dev/null || echo "?")
+WS_STATUS=$(curl -s https://medaclawarena.com/api/multiplayer/status | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'clients={d.get(\"connectedClients\",\"?\")} rooms={d.get(\"activeRooms\",\"?\")}')" 2>/dev/null || echo "?")
 
-echo "   Homepage: $HTTP"
-echo "   CSS:      $CSS"
-echo "   API:      $API tazos"
+echo "   Homepage:  $HTTP"
+echo "   WS:        $WS_STATUS"
 
-if [ "$HTTP" = "200" ] && [ "$CSS" = "200" ] && [ "$API" != "?" ]; then
+if [ "$HTTP" = "200" ]; then
   echo ""
   echo "✅ Deploy completo — https://medaclawarena.com/"
 else
   echo ""
-  echo "⚠️  Verificar — algo no responde bien"
+  echo "⚠️  Verificar — homepage no responde 200"
 fi

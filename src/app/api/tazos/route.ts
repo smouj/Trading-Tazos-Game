@@ -1,69 +1,54 @@
-import { db } from '@/lib/db'
-import { NextRequest, NextResponse } from 'next/server'
+import { db } from "@/lib/db"
+import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
 
-    const franchise = searchParams.get('franchise')
-    const collection = searchParams.get('collection')
-    const rarity = searchParams.get('rarity')
-    const condition = searchParams.get('condition')
-    const combatType = searchParams.get('combatType')
-    const owned = searchParams.get('owned')
-    const search = searchParams.get('search')
-    const sortBy = searchParams.get('sortBy') || 'name'
-    const sortOrder = searchParams.get('sortOrder') || 'asc'
+    const franchise = searchParams.get("franchise")
+    const collection = searchParams.get("collection")
+    const rarity = searchParams.get("rarity")
+    const condition = searchParams.get("condition")
+    const category = searchParams.get("category")
+    const variant = searchParams.get("variant")
+    const sourceStatus = searchParams.get("sourceStatus")
+    const owned = searchParams.get("owned")
+    const search = searchParams.get("search")
+    const sortBy = searchParams.get("sortBy") || "number"
+    const sortOrder = searchParams.get("sortOrder") || "asc"
 
     const where: Record<string, unknown> = {}
 
-    if (franchise) {
-      where.franchise = { slug: franchise }
-    }
-    if (collection) {
-      where.collection = { slug: collection }
-    }
-    if (rarity) {
-      where.rarity = rarity
-    }
-    if (condition) {
-      where.condition = condition
-    }
-    if (combatType) {
-      where.combatType = combatType
-    }
-    if (owned !== null && owned !== '') {
-      where.isOwned = owned === 'true'
-    }
-    if (search) {
-      where.name = { contains: search }
-    }
+    if (franchise) where.franchise = { slug: franchise }
+    if (collection) where.collection = { slug: collection }
+    if (rarity) where.rarity = rarity
+    if (condition) where.condition = condition
+    if (category) where.category = category
+    if (variant) where.variant = variant
+    if (sourceStatus) where.sourceStatus = sourceStatus
+    if (owned !== null && owned !== "") where.isOwned = owned === "true"
+    if (search) where.name = { contains: search }
 
     const orderBy: Record<string, string> = {}
-    if (['name', 'rarity', 'condition', 'attack', 'defense', 'spin', 'weight', 'aura', 'control', 'createdAt'].includes(sortBy)) {
-      orderBy[sortBy] = sortOrder === 'desc' ? 'desc' : 'asc'
+    const allowedSorts = ["name", "number", "rarity", "condition", "category", "sourceStatus", "attack", "defense", "spin", "weight", "aura", "control", "createdAt"]
+    if (allowedSorts.includes(sortBy)) {
+      orderBy[sortBy] = sortOrder === "desc" ? "desc" : "asc"
     } else {
-      orderBy.name = 'asc'
+      orderBy.number = "asc"
     }
 
     const total = await db.tazo.count({ where })
 
     const tazos = await db.tazo.findMany({
       where,
-      include: {
-        franchise: true,
-        collection: true,
-      },
+      include: { franchise: true, collection: true },
       orderBy,
     })
 
     return NextResponse.json({ tazos, total })
   } catch (error) {
-    console.error('Error fetching tazos:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch tazos' },
-      { status: 500 }
-    )
+    console.error("Error fetching tazos:", error)
+    return NextResponse.json({ error: "Failed to fetch tazos" }, { status: 500 })
   }
 }
 
@@ -74,21 +59,26 @@ export async function POST(request: NextRequest) {
     const tazo = await db.tazo.create({
       data: {
         name: body.name,
-        slug: body.slug,
+        displayName: body.displayName || body.name,
+        slug: body.slug || `tazo-${Date.now()}`,
         franchiseId: body.franchiseId,
         collectionId: body.collectionId,
-        printedNumber: body.printedNumber,
-        condition: body.condition || 'good',
-        physicalType: body.physicalType || 'cardboard',
-        combatType: body.combatType,
-        rarity: body.rarity || 'common',
-        imageUrl: body.imageUrl,
-        skill: body.skill,
-        skillDesc: body.skillDesc,
-        evolutionFrom: body.evolutionFrom,
-        evolutionTo: body.evolutionTo,
-        transformStage: body.transformStage,
-        transformOf: body.transformOf,
+        number: body.number || "",
+        variant: body.variant || null,
+        category: body.category || null,
+        manufacturer: body.manufacturer || null,
+        country: body.country || null,
+        sourceStatus: body.sourceStatus || "pending_visual_check",
+        condition: body.condition || "good",
+        physicalType: body.physicalType || "cardboard",
+        rarity: body.rarity || "common",
+        imageUrl: body.imageUrl || null,
+        skill: body.skill || null,
+        skillDesc: body.skillDesc || null,
+        evolutionFrom: body.evolutionFrom || null,
+        evolutionTo: body.evolutionTo || null,
+        transformStage: body.transformStage || null,
+        transformOf: body.transformOf || null,
         attack: body.attack ?? 50,
         defense: body.defense ?? 50,
         spin: body.spin ?? 50,
@@ -97,18 +87,12 @@ export async function POST(request: NextRequest) {
         control: body.control ?? 50,
         isOwned: body.isOwned ?? false,
       },
-      include: {
-        franchise: true,
-        collection: true,
-      },
+      include: { franchise: true, collection: true },
     })
 
     return NextResponse.json({ tazo }, { status: 201 })
   } catch (error) {
-    console.error('Error creating tazo:', error)
-    return NextResponse.json(
-      { error: 'Failed to create tazo' },
-      { status: 500 }
-    )
+    console.error("Error creating tazo:", error)
+    return NextResponse.json({ error: "Failed to create tazo" }, { status: 500 })
   }
 }

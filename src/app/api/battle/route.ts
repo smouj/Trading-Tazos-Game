@@ -15,7 +15,8 @@ const TYPE_ADVANTAGES: Record<string, string[]> = {
 
 interface BattleTazo {
   id: string
-  name: string
+  name: string | null
+  displayName: string | null
   franchise: { name: string; slug: string; mechanic?: string | null }
   collectionId: string
   combatType: string | null
@@ -46,8 +47,9 @@ interface BattleEvent {
 
 function createBattleTazo(raw: {
   id: string
-  name: string
-  franchise: { name: string; slug: string; mechanic?: string | null }
+  name: string | null
+  displayName: string | null
+  franchise: { name: string; slug: string; mechanic?: string | null; color?: string; icon?: string | null; description?: string | null; id?: string; createdAt?: Date; updatedAt?: Date }
   collectionId: string
   combatType: string | null
   evolutionFrom: string | null

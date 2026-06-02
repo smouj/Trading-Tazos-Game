@@ -1,7 +1,7 @@
 /**
- * TTG Tazo Image Generator - SVG edition
- * Generates professional circular disc SVG images for all 62 tazos.
- * SVGs are natively supported by <img> tags in all modern browsers.
+ * TTG Tazo Image Generator — Real Collections Edition
+ * Generates SVG disc images for Pokémon Tazos 1 (51), DBZ Matutano (118+),
+ * and Digimon Magic Box (150 pending).
  */
 import { existsSync, mkdirSync, writeFileSync } from "fs"
 import { join } from "path"
@@ -12,18 +12,24 @@ for (const d of ["pokemon", "digimon", "dbz"]) {
 }
 
 interface TazoDef {
-  name: string; slug: string; franchise: "pokemon" | "digimon" | "dbz"
-  number: string; rarity: string; skill: string
+  slug: string
+  name: string | null
+  number: string
+  franchise: "pokemon" | "digimon" | "dragon-ball-z"
+  category?: string
+  sourceStatus: string
 }
 
 const FC = {
-  pokemon: { colors: ["#FFCB05", "#FF8C00"], accent: "#E3350D", ring: "#FFCB05" },
-  digimon: { colors: ["#00A1E9", "#0057B7"], accent: "#1E90FF", ring: "#00A1E9" },
-  dbz: { colors: ["#FF6B00", "#CC4400"], accent: "#FFD700", ring: "#FF6B00" },
+  pokemon: { colors: ["#FFCB05", "#FF8C00"], accent: "#E3350D", ring: "#FFCB05", label: "POK\u00c9MON TAZOS 1" },
+  "dragon-ball-z": { colors: ["#FF6B00", "#CC4400"], accent: "#FFD700", ring: "#FF6B00", label: "DBZ MATUTANO 1995" },
+  digimon: { colors: ["#00A1E9", "#0057B7"], accent: "#1E90FF", ring: "#00A1E9", label: "DIGIMON MAGIC BOX 2000" },
 }
 
-const RGLOW: Record<string, string> = {
-  common: "#9CA3AF", uncommon: "#22C55E", rare: "#3B82F6", ultra: "#A855F7", legendary: "#F59E0B",
+const STATUS_COLORS: Record<string, string> = {
+  verified: "#22C55E",
+  partial: "#F59E0B",
+  pending_visual_check: "#9CA3AF",
 }
 
 function esc(s: string): string {
@@ -33,8 +39,7 @@ function esc(s: string): string {
 function buildSvg(t: TazoDef): string {
   const cfg = FC[t.franchise]
   const W = 400, H = 400, cx = 200, cy = 200, r = 180
-  const glow = RGLOW[t.rarity]
-  const sid = t.slug.replace(/-/g, "")
+  const sid = t.slug.replace(/[^a-zA-Z0-9]/g, "")
 
   let dots = ""
   for (let i = 0; i < 8; i++) {
@@ -42,27 +47,15 @@ function buildSvg(t: TazoDef): string {
     dots += `<circle cx="${cx + Math.round(Math.cos(a) * (r - 12))}" cy="${cy + Math.round(Math.sin(a) * (r - 12))}" r="3" fill="white" opacity="0.4"/>`
   }
 
-  let bgGlow = ""
-  let glowRing = ""
-  let stars = ""
+  const isPending = t.sourceStatus === "pending_visual_check"
+  const initial = t.name ? t.name.charAt(0) : "?"
+  const displayName = t.name || `#${t.number}`
+  const fsize = displayName.length > 12 ? 44 : displayName.length > 8 ? 56 : 72
 
-  if (t.rarity === "legendary") {
-    bgGlow = `<circle cx="${cx}" cy="${cy}" r="${r + 20}" fill="url(#gl${sid})"/>`
-    glowRing = `<circle cx="${cx}" cy="${cy}" r="${r + 14}" fill="none" stroke="${glow}" stroke-width="5" opacity="0.4"/>`
-    stars = `<text x="${cx}" y="${cy - r + 35}" text-anchor="middle" font-size="24" fill="${glow}" font-weight="bold">\u2605\u2605\u2605\u2605\u2605</text>`
-  } else if (t.rarity === "ultra") {
-    bgGlow = `<circle cx="${cx}" cy="${cy}" r="${r + 18}" fill="url(#gl${sid})"/>`
-    glowRing = `<circle cx="${cx}" cy="${cy}" r="${r + 10}" fill="none" stroke="${glow}" stroke-width="3" opacity="0.3"/>`
-    stars = `<text x="${cx}" y="${cy - r + 35}" text-anchor="middle" font-size="18" fill="${glow}" font-weight="bold">\u2605\u2605\u2605\u2605</text>`
-  } else if (t.rarity === "rare") {
-    bgGlow = `<circle cx="${cx}" cy="${cy}" r="${r + 16}" fill="url(#gl${sid})"/>`
-    stars = `<text x="${cx}" y="${cy - r + 35}" text-anchor="middle" font-size="18" fill="${glow}" font-weight="bold">\u2605\u2605\u2605</text>`
-  } else if (t.rarity === "uncommon") {
-    stars = `<text x="${cx}" y="${cy - r + 35}" text-anchor="middle" font-size="18" fill="${glow}" font-weight="bold">\u2605\u2605</text>`
-  }
-
-  const flabel = t.franchise === "pokemon" ? "POK\u00c9MON" : t.franchise === "digimon" ? "DIGIMON" : "DRAGON BALL Z"
-  const fsize = t.name.length > 10 ? 60 : t.name.length > 7 ? 72 : 90
+  // Category badge
+  const catLabel = t.category
+    ? t.category.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())
+    : ""
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
   <defs>
@@ -71,101 +64,138 @@ function buildSvg(t: TazoDef): string {
       <stop offset="60%" stop-color="${cfg.colors[0]}" stop-opacity="0.6"/>
       <stop offset="100%" stop-color="${cfg.colors[1]}" stop-opacity="0.85"/>
     </radialGradient>
-    <radialGradient id="gl${sid}" cx="50%" cy="50%" r="50%">
-      <stop offset="70%" stop-color="${glow}" stop-opacity="0.15"/>
-      <stop offset="100%" stop-color="${glow}" stop-opacity="0"/>
-    </radialGradient>
     <filter id="sh${sid}">
       <feDropShadow dx="3" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="0.35"/>
     </filter>
   </defs>
-  ${bgGlow}
-  ${glowRing}
   <circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#g${sid})" filter="url(#sh${sid})" stroke="${cfg.ring}" stroke-width="4"/>
   <circle cx="${cx}" cy="${cy}" r="${r - 12}" fill="none" stroke="white" stroke-width="2" opacity="0.5"/>
   <circle cx="${cx}" cy="${cy}" r="${r - 20}" fill="none" stroke="white" stroke-width="1.5" opacity="0.3"/>
   <path d="M ${cx - r + 30} ${cy} A ${r - 30} ${r - 30} 0 0 1 ${cx + r - 30} ${cy}" fill="none" stroke="white" stroke-width="6" opacity="0.2" stroke-linecap="round"/>
   ${dots}
-  <text x="${cx}" y="${cy + 10}" text-anchor="middle" dominant-baseline="middle" font-family="Arial Black,Impact,sans-serif" font-size="${fsize}" font-weight="900" fill="white" stroke="#1a1a1a" stroke-width="3" paint-order="stroke fill" letter-spacing="2">${esc(t.name.charAt(0))}</text>
-  <rect x="${cx - 30}" y="${cy + r - 55}" width="60" height="28" rx="14" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+  <text x="${cx}" y="${cy + 12}" text-anchor="middle" dominant-baseline="middle" font-family="Arial Black,Impact,sans-serif" font-size="${fsize}" font-weight="900" fill="white" stroke="#1a1a1a" stroke-width="3" paint-order="stroke fill" letter-spacing="2">${esc(initial)}</text>
+  <rect x="${cx - 36}" y="${cy + r - 55}" width="72" height="28" rx="14" fill="white" stroke="#1a1a1a" stroke-width="2"/>
   <text x="${cx}" y="${cy + r - 33}" text-anchor="middle" dominant-baseline="middle" font-family="Arial Black,Courier New,monospace" font-size="16" font-weight="900" fill="#1a1a1a">#${esc(t.number)}</text>
-  ${stars}
-  <path d="M ${cx - 100} ${cy + r - 42} A 100 100 0 0 0 ${cx + 100} ${cy + r - 42}" fill="none" stroke="${cfg.accent}" stroke-width="3" opacity="0.7"/>
-  <text x="${cx}" y="${cy + r - 10}" text-anchor="middle" dominant-baseline="middle" font-family="Arial,sans-serif" font-size="11" font-weight="700" fill="#1a1a1a" opacity="0.8">${esc(t.skill)}</text>
-  <text x="${cx}" y="28" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="13" font-weight="900" fill="white" stroke="#1a1a1a" stroke-width="1" opacity="0.9" letter-spacing="3" paint-order="stroke fill">${flabel}</text>
+  ${catLabel ? `<text x="${cx}" y="${cy - r + 35}" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="10" font-weight="900" fill="white" stroke="#1a1a1a" stroke-width="1" paint-order="stroke fill" letter-spacing="1">${esc(catLabel)}</text>` : ""}
+  ${isPending ? `<text x="${cx}" y="${cy + r - 10}" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" font-weight="700" fill="${STATUS_COLORS.pending_visual_check}" opacity="0.9">PENDING CHECK</text>` : ""}
+  <text x="${cx}" y="28" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="11" font-weight="900" fill="white" stroke="#1a1a1a" stroke-width="1" opacity="0.9" letter-spacing="2" paint-order="stroke fill">${cfg.label}</text>
 </svg>`
 }
 
-const TAZOS = [
-  { name:"Pikachu",slug:"pokemon-pikachu",franchise:"pokemon" as const,number:"001",rarity:"common",skill:"Thunder Jolt" },
-  { name:"Charmander",slug:"pokemon-charmander",franchise:"pokemon" as const,number:"004",rarity:"common",skill:"Ember Spin" },
-  { name:"Charmeleon",slug:"pokemon-charmeleon",franchise:"pokemon" as const,number:"005",rarity:"uncommon",skill:"Flame Burst" },
-  { name:"Charizard",slug:"pokemon-charizard",franchise:"pokemon" as const,number:"006",rarity:"rare",skill:"Inferno Vortex" },
-  { name:"Bulbasaur",slug:"pokemon-bulbasaur",franchise:"pokemon" as const,number:"001",rarity:"common",skill:"Vine Whip" },
-  { name:"Squirtle",slug:"pokemon-squirtle",franchise:"pokemon" as const,number:"007",rarity:"common",skill:"Aqua Jet" },
-  { name:"Mewtwo",slug:"pokemon-mewtwo",franchise:"pokemon" as const,number:"150",rarity:"ultra",skill:"Psystrike" },
-  { name:"Gengar",slug:"pokemon-gengar",franchise:"pokemon" as const,number:"094",rarity:"rare",skill:"Shadow Ball" },
-  { name:"Eevee",slug:"pokemon-eevee",franchise:"pokemon" as const,number:"133",rarity:"uncommon",skill:"Quick Attack" },
-  { name:"Jigglypuff",slug:"pokemon-jigglypuff",franchise:"pokemon" as const,number:"039",rarity:"common",skill:"Sing" },
-  { name:"Snorlax",slug:"pokemon-snorlax",franchise:"pokemon" as const,number:"143",rarity:"uncommon",skill:"Body Slam" },
-  { name:"Gyarados",slug:"pokemon-gyarados",franchise:"pokemon" as const,number:"130",rarity:"rare",skill:"Hydro Storm" },
-  { name:"Mew",slug:"pokemon-mew",franchise:"pokemon" as const,number:"151",rarity:"legendary",skill:"Aura Sphere" },
-  { name:"Dragonite",slug:"pokemon-dragonite",franchise:"pokemon" as const,number:"149",rarity:"rare",skill:"Dragon Rush" },
-  { name:"Togepi",slug:"pokemon-togepi",franchise:"pokemon" as const,number:"175",rarity:"common",skill:"Metronome" },
-  { name:"Umbreon",slug:"pokemon-umbreon",franchise:"pokemon" as const,number:"197",rarity:"uncommon",skill:"Moonlight" },
-  { name:"Ampharos",slug:"pokemon-ampharos",franchise:"pokemon" as const,number:"181",rarity:"uncommon",skill:"Thunder Punch" },
-  { name:"Scizor",slug:"pokemon-scizor",franchise:"pokemon" as const,number:"212",rarity:"rare",skill:"Bullet Punch" },
-  { name:"Chikorita",slug:"pokemon-chikorita",franchise:"pokemon" as const,number:"152",rarity:"common",skill:"Razor Leaf" },
-  { name:"Cyndaquil",slug:"pokemon-cyndaquil",franchise:"pokemon" as const,number:"155",rarity:"common",skill:"Flame Wheel" },
-  { name:"Totodile",slug:"pokemon-totodile",franchise:"pokemon" as const,number:"158",rarity:"common",skill:"Water Gun" },
-  { name:"Espeon",slug:"pokemon-espeon",franchise:"pokemon" as const,number:"196",rarity:"uncommon",skill:"Morning Sun" },
-  { name:"Agumon",slug:"digimon-agumon",franchise:"digimon" as const,number:"001",rarity:"common",skill:"Pepper Breath" },
-  { name:"Greymon",slug:"digimon-greymon",franchise:"digimon" as const,number:"002",rarity:"uncommon",skill:"Nova Blast" },
-  { name:"MetalGreymon",slug:"digimon-metalgreymon",franchise:"digimon" as const,number:"003",rarity:"rare",skill:"Giga Destroyer" },
-  { name:"WarGreymon",slug:"digimon-wargreymon",franchise:"digimon" as const,number:"004",rarity:"ultra",skill:"Terra Force" },
-  { name:"Gabumon",slug:"digimon-gabumon",franchise:"digimon" as const,number:"005",rarity:"common",skill:"Blue Blaster" },
-  { name:"Garurumon",slug:"digimon-garurumon",franchise:"digimon" as const,number:"006",rarity:"uncommon",skill:"Howling Blaster" },
-  { name:"Patamon",slug:"digimon-patamon",franchise:"digimon" as const,number:"007",rarity:"common",skill:"Boom Bubble" },
-  { name:"Angemon",slug:"digimon-angemon",franchise:"digimon" as const,number:"008",rarity:"rare",skill:"Hand of Fate" },
-  { name:"Devimon",slug:"digimon-devimon",franchise:"digimon" as const,number:"009",rarity:"uncommon",skill:"Death Claw" },
-  { name:"Myotismon",slug:"digimon-myotismon",franchise:"digimon" as const,number:"010",rarity:"ultra",skill:"Night Raid" },
-  { name:"Gatomon",slug:"digimon-gatomon",franchise:"digimon" as const,number:"011",rarity:"common",skill:"Lightning Paw" },
-  { name:"Angewomon",slug:"digimon-angewomon",franchise:"digimon" as const,number:"012",rarity:"rare",skill:"Celestial Arrow" },
-  { name:"Tentomon",slug:"digimon-tentomon",franchise:"digimon" as const,number:"013",rarity:"common",skill:"Super Shocker" },
-  { name:"Kabuterimon",slug:"digimon-kabuterimon",franchise:"digimon" as const,number:"014",rarity:"uncommon",skill:"Electro Shocker" },
-  { name:"Piedmon",slug:"digimon-piedmon",franchise:"digimon" as const,number:"015",rarity:"legendary",skill:"Trump Sword" },
-  { name:"MetalGarurumon",slug:"digimon-metalgarurumon",franchise:"digimon" as const,number:"016",rarity:"ultra",skill:"Ice Wolf Claw" },
-  { name:"WereGarurumon",slug:"digimon-weregarurumon",franchise:"digimon" as const,number:"017",rarity:"rare",skill:"Wolf Claw" },
-  { name:"Machinedramon",slug:"digimon-machinedramon",franchise:"digimon" as const,number:"018",rarity:"ultra",skill:"Giga Cannon" },
-  { name:"Biyomon",slug:"digimon-biyomon",franchise:"digimon" as const,number:"019",rarity:"common",skill:"Spiral Twister" },
-  { name:"Birdramon",slug:"digimon-birdramon",franchise:"digimon" as const,number:"020",rarity:"uncommon",skill:"Meteor Wing" },
-  { name:"Goku",slug:"dbz-goku",franchise:"dbz" as const,number:"001",rarity:"uncommon",skill:"Kamehameha" },
-  { name:"Goku SSJ",slug:"dbz-goku-ssj",franchise:"dbz" as const,number:"002",rarity:"rare",skill:"Super Kamehameha" },
-  { name:"Vegeta",slug:"dbz-vegeta",franchise:"dbz" as const,number:"003",rarity:"uncommon",skill:"Galick Gun" },
-  { name:"Vegeta SSJ",slug:"dbz-vegeta-ssj",franchise:"dbz" as const,number:"004",rarity:"rare",skill:"Final Flash" },
-  { name:"Gohan",slug:"dbz-gohan",franchise:"dbz" as const,number:"005",rarity:"common",skill:"Masenko" },
-  { name:"Piccolo",slug:"dbz-piccolo",franchise:"dbz" as const,number:"006",rarity:"uncommon",skill:"Special Beam Cannon" },
-  { name:"Krillin",slug:"dbz-krillin",franchise:"dbz" as const,number:"007",rarity:"common",skill:"Destructo Disc" },
-  { name:"Raditz",slug:"dbz-raditz",franchise:"dbz" as const,number:"008",rarity:"common",skill:"Double Sunday" },
-  { name:"Nappa",slug:"dbz-nappa",franchise:"dbz" as const,number:"009",rarity:"uncommon",skill:"Break Cannon" },
-  { name:"Frieza",slug:"dbz-frieza",franchise:"dbz" as const,number:"010",rarity:"ultra",skill:"Death Beam" },
-  { name:"Cell",slug:"dbz-cell",franchise:"dbz" as const,number:"011",rarity:"ultra",skill:"Kamehameha" },
-  { name:"Trunks",slug:"dbz-trunks",franchise:"dbz" as const,number:"012",rarity:"uncommon",skill:"Burning Attack" },
-  { name:"Trunks SSJ",slug:"dbz-trunks-ssj",franchise:"dbz" as const,number:"013",rarity:"rare",skill:"Heat Dome Attack" },
-  { name:"Majin Buu",slug:"dbz-majin-buu",franchise:"dbz" as const,number:"014",rarity:"legendary",skill:"Candy Beam" },
-  { name:"Broly",slug:"dbz-broly",franchise:"dbz" as const,number:"015",rarity:"ultra",skill:"Eraser Cannon" },
-  { name:"Broly LSSJ",slug:"dbz-broly-lssj",franchise:"dbz" as const,number:"016",rarity:"legendary",skill:"Omega Blaster" },
-  { name:"Android 17",slug:"dbz-android-17",franchise:"dbz" as const,number:"017",rarity:"uncommon",skill:"Android Barrier" },
-  { name:"Android 18",slug:"dbz-android-18",franchise:"dbz" as const,number:"018",rarity:"uncommon",skill:"Power Blitz" },
-  { name:"Tien",slug:"dbz-tien",franchise:"dbz" as const,number:"019",rarity:"common",skill:"Tri-Beam" },
-  { name:"Gohan SSJ2",slug:"dbz-gohan-ssj2",franchise:"dbz" as const,number:"020",rarity:"rare",skill:"Father-Son Kamehameha" },
+const TAZOS: TazoDef[] = [
+  // --- Pokémon Tazos 1 #1-51 ---
+  ...[
+    "1|Bulbasaur","2|Charmander","3|Squirtle","4|Metapod","5|Weedle",
+    "6|Pidgeotto","7|Rattata","8|Spearow","9|Arbok","10|Pikachu",
+    "11|Raichu","12|NidoranF","13|Nidorina","14|Vulpix","15|Jigglypuff",
+    "16|Golbat","17|Oddish","18|Paras","19|Venonat","20|Diglett",
+    "21|Meowth","22|Psyduck","23|Mankey","24|Growlithe","25|Poliwag",
+    "26|Kadabra","27|Machamp","28|Bellsprout","29|Tentacool","30|Geodude",
+    "31|Ponyta","32|Slowpoke","33|Magnemite","34|Grimer","35|Gastly",
+    "36|Drowzee","37|Krabby","38|Voltorb","39|Exeggcute","40|Cubone",
+    "41|Koffing","42|Rhydon","43|Horsea","44|Goldeen","45|Staryu",
+    "46|Magikarp","47|Eevee","48|Omanyte","49|Kabuto","50|Dragonair","51|Ash",
+  ].map(s => {
+    const [n, name] = s.split("|")
+    return { slug: `pokemon-t1-${n}`, name, number: n, franchise: "pokemon" as const, sourceStatus: "verified" }
+  }),
+
+  // --- DBZ Tazos Normales #1-10 ---
+  ...[
+    "1|Freezer","2|Recoome","3|Ginyu","4|Burter","5|Dodoria",
+    "6|Ghourd","7|Saibaman","8|A-19","9|Spopovich","10|Yamu",
+  ].map(s => {
+    const [n, name] = s.split("|")
+    return { slug: `dbz-t-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "tazos", sourceStatus: "verified" }
+  }),
+
+  // --- DBZ Supertazos Voladores #11-30 ---
+  ...[
+    "11|Babidi","12|Piccolo Jr","13|Spopovitch","14|Son Goku","15|Gotten y Trunks",
+    "16|Yakon","17|Satan","18|Videl","19|Pui-Pui","20|Kibito",
+    "21|Kaio-Shin","22|Celula Jr","23|Son Gohan","24|Kaito","25|A-16",
+    "26|Chi-Chi","27|A-18","28|Freezer","29|Yamu","30|Bulma",
+  ].map(s => {
+    const [n, name] = s.split("|")
+    return { slug: `dbz-sv-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "supertazos_voladores", sourceStatus: "verified" }
+  }),
+
+  // --- DBZ Supertazos Octogonales #31-50 ---
+  ...[
+    "31|Celula 1F","32|Pui-Pui","33|Celula 2F","34|Yakon","35|A-16",
+    "36|King Cold","37|Celula 3F","38|Dabura","39|Majin Boo","40|Babidi",
+    "41|Vegeta","42|Videl","43|Son Gotten","44|Trunks","45|Piccolo Junior",
+    "46|Son Goku","47|Kaio-Shin","48|Son Gohan","49|Kibito","50|Kaito",
+  ].map(s => {
+    const [n, name] = s.split("|")
+    return { slug: `dbz-so-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "supertazos_octogonales", sourceStatus: "verified" }
+  }),
+
+  // --- DBZ Megatazos Redondos #51-70 ---
+  ...[
+    "51|Son Goku","52|Vegeta","53|Son Gohan","54|Son Gotten","55|Trunks",
+    "56|Piccolo Jr","57|Celula","58|Majin Boo","59|Babidi","60|Dabura",
+    "61|Kibito","62|Satan","63|Shin Sama","64|Kaio-Shin","65|Videl",
+    "66|Bulma","67|Krilin","68|Mutenroshi","69|Pui-Pui","70|Kaito",
+  ].map(s => {
+    const [n, name] = s.split("|")
+    return { slug: `dbz-mr-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "megatazos", sourceStatus: "partial" }
+  }),
+
+  // --- DBZ Megatazos Octogonales #51-70 ---
+  ...[
+    "51|Son Goku","52|Vegeta","53|Son Gohan","54|Son Gotten","55|Trunks",
+    "56|Piccolo Jr","57|Celula","58|Majin Boo","59|Babidi","60|Dabura",
+    "61|Kibito","62|Satan","63|Shin Sama","64|Kaio-Shin","65|Videl",
+    "66|Bulma","67|Krilin","68|Mutenroshi","69|Pui-Pui","70|Kaito",
+  ].map(s => {
+    const [n, name] = s.split("|")
+    return { slug: `dbz-mo-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "megatazos", sourceStatus: "partial" }
+  }),
+
+  // --- DBZ Holo 3D Ranura Derecha #1-10 ---
+  ...[
+    "1|Celula","2|Son Goku","3|Son Gohan","4|Son Gotten","5|Gotten y Trunks",
+    "6|Vegeta","7|Majin Boo","8|Dabura","9|Goku","10|Celula y Trunks",
+  ].map(s => {
+    const [n, name] = s.split("|")
+    return { slug: `dbz-hr-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "holo_3d", sourceStatus: "verified" }
+  }),
+
+  // --- DBZ Holo 3D Ranura Izquierda #1-10 ---
+  ...[
+    "1|Celula","2|Son Goku","3|Son Gohan","4|Son Gotten","5|Gotten y Trunks",
+    "6|Vegeta","7|Majin Boo","8|Dabura","9|Goku","10|Celula y Trunks",
+  ].map(s => {
+    const [n, name] = s.split("|")
+    return { slug: `dbz-hl-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "holo_3d", sourceStatus: "verified" }
+  }),
+
+  // --- DBZ Mastertazos ---
+  { slug: "dbz-master-master-a18", name: "A-18", number: "MASTER-A18", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
+  { slug: "dbz-master-master-a18-gold", name: "A-18 Dorado", number: "MASTER-A18-GOLD", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
+  { slug: "dbz-master-master-a18-black", name: "A-18 B.Negro", number: "MASTER-A18-BLACK", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
+  { slug: "dbz-master-master-freezer", name: "Freezer", number: "MASTER-FREEZER", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
+  { slug: "dbz-master-master-goku", name: "Goku", number: "MASTER-GOKU", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
+  { slug: "dbz-master-master-shenron", name: "Shenron", number: "MASTER-SHENRON", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
+  { slug: "dbz-master-master-shenron-black", name: "Shenron B.Negro", number: "MASTER-SHENRON-BLACK", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
+  { slug: "dbz-master-master-vegeta", name: "Vegeta", number: "MASTER-VEGETA", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
 ]
+
+for (let i = 1; i <= 150; i++) {
+  const n = String(i)
+  TAZOS.push({
+    slug: `digimon-mb-${n}`, name: null, number: n,
+    franchise: "digimon", category: "caps", sourceStatus: "pending_visual_check",
+  })
+}
 
 let generated = 0, skipped = 0
 for (const tazo of TAZOS) {
-  const outPath = join(OUT_DIR, tazo.franchise, `${tazo.slug}.svg`)
+  const dirName = tazo.franchise === "dragon-ball-z" ? "dbz" : tazo.franchise
+  const outPath = join(OUT_DIR, dirName, `${tazo.slug}.svg`)
   if (existsSync(outPath)) { skipped++; continue }
   writeFileSync(outPath, buildSvg(tazo), "utf-8")
   generated++
 }
-console.log(`Generated ${generated} SVG tazos, ${skipped} already existed. Total: ${TAZOS.length}`)
+console.log(`Generated ${generated} SVGs, ${skipped} already existed. Total: ${TAZOS.length}`)

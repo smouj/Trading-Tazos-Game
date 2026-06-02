@@ -1,126 +1,135 @@
-// Game types for Tazos Legends Arena
+// ============================================================
+// Trading Tazos Game — Game Types
+// Real-world verified tazo collections from Spain.
+// ============================================================
 
 export interface Tazo {
-  id: string;
-  name: string;
-  slug: string;
-  franchiseId: string;
-  collectionId: string;
-  printedNumber: string | null;
-  condition: TazoCondition;
-  physicalType: PhysicalType;
-  combatType: string | null;
-  rarity: Rarity;
-  imageUrl: string | null;
-  skill: string | null;
-  skillDesc: string | null;
-  evolutionFrom: string | null;
-  evolutionTo: string | null;
-  transformStage: string | null;
-  transformOf: string | null;
-  attack: number;
-  defense: number;
-  spin: number;
-  weight: number;
-  aura: number;
-  control: number;
-  isOwned: boolean;
-  battleWins: number;
-  battleLosses: number;
-  franchise?: Franchise;
-  collection?: Collection;
-  createdAt: string;
-  updatedAt: string;
+  id: string
+  name: string | null
+  displayName: string | null
+  slug: string
+  franchiseId: string
+  collectionId: string
+  number: string
+  variant: string | null
+  category: string | null
+  manufacturer: string | null
+  country: string | null
+  sourceStatus: SourceStatus
+  combatType: string | null
+  condition: TazoCondition
+  physicalType: PhysicalType
+  rarity: Rarity
+  imageUrl: string | null
+  skill: string | null
+  skillDesc: string | null
+  evolutionFrom: string | null
+  evolutionTo: string | null
+  transformStage: string | null
+  transformOf: string | null
+  attack: number
+  defense: number
+  spin: number
+  weight: number
+  aura: number
+  control: number
+  isOwned: boolean
+  battleWins: number
+  battleLosses: number
+  franchise?: Franchise
+  collection?: Collection
+  createdAt: string
+  updatedAt: string
 }
 
 export interface Franchise {
-  id: string;
-  name: string;
-  slug: string;
-  color: string;
-  icon: string | null;
-  description: string | null;
-  mechanic: string | null;
-  collections?: Collection[];
-  tazos?: Tazo[];
+  id: string
+  name: string
+  slug: string
+  color: string
+  icon: string | null
+  description: string | null
+  mechanic: string | null
+  collections?: Collection[]
+  tazos?: Tazo[]
 }
 
 export interface Collection {
-  id: string;
-  name: string;
-  slug: string;
-  franchiseId: string;
-  franchise?: Franchise;
-  year: number | null;
-  totalTazos: number;
-  description: string | null;
-  tazos?: Tazo[];
+  id: string
+  name: string
+  slug: string
+  franchiseId: string
+  franchise?: Franchise
+  year: number | null
+  totalTazos: number
+  description: string | null
+  manufacturer: string | null
+  country: string | null
+  tazos?: Tazo[]
 }
 
-export interface BattleResult {
-  winner: 'player' | 'opponent' | 'draw';
-  victoryType: 'knockout' | 'ring-out' | 'spin-out' | 'combo' | null;
-  rounds: number;
-  battleLog: BattleEvent[];
-  playerTazos: BattleTazo[];
-  opponentTazos: BattleTazo[];
+// ---- Source Status ----
+export type SourceStatus = "verified" | "partial" | "pending_visual_check"
+
+export const SOURCE_STATUS_CONFIG: Record<SourceStatus, { label: string; color: string; bg: string }> = {
+  verified: { label: "Verified", color: "text-emerald-600", bg: "bg-emerald-100" },
+  partial: { label: "Partial", color: "text-amber-600", bg: "bg-amber-100" },
+  pending_visual_check: { label: "Pending Visual Check", color: "text-gray-500", bg: "bg-gray-100" },
 }
 
-export interface BattleEvent {
-  round: number;
-  type: 'collision' | 'spin_decay' | 'ring_out' | 'knockout' | 'type_advantage' | 'evolution' | 'transform' | 'skill' | 'combo';
-  description: string;
-  actorId?: string;
-  targetId?: string;
-  damage?: number;
+// ---- Legacy combat types (for compatibility) ----
+export const POKEMON_TYPES = ["fire", "water", "grass", "electric", "psychic", "ghost", "dragon", "normal"] as const
+export const DIGIMON_TYPES = ["vaccine", "virus", "data"] as const
+export const DBZ_TYPES = ["saiyan", "namekian", "android", "majin", "frieza"] as const
+
+// ---- DBZ Categories ----
+export const DBZ_CATEGORIES = [
+  "tazos",
+  "supertazos_voladores",
+  "supertazos_octogonales",
+  "megatazos",
+  "holo_3d",
+  "mastertazos",
+] as const
+
+export type DbzCategory = (typeof DBZ_CATEGORIES)[number]
+
+export const DBZ_CATEGORY_CONFIG: Record<DbzCategory, { label: string; description: string }> = {
+  tazos: { label: "Tazos", description: "Serie base, 5 puntas, #1-10" },
+  supertazos_voladores: { label: "Supertazos Voladores", description: "Con muescas para lanzar, #11-30" },
+  supertazos_octogonales: { label: "Supertazos Octogonales", description: "8 puntas, #31-50" },
+  megatazos: { label: "Megatazos", description: "Tamaño grande, #51-70" },
+  holo_3d: { label: "Holo 3D", description: "Lenticulares, #1-10" },
+  mastertazos: { label: "Mastertazos", description: "Edición especial coleccionista" },
 }
 
-export interface BattleTazo extends Tazo {
-  currentHp: number;
-  maxHp: number;
-  currentSpin: number;
-  maxSpin: number;
-  kiCharge?: number;
-  isEvolved?: boolean;
-  isTransformed?: boolean;
-}
-
-export type TazoCondition = 'mint' | 'good' | 'used' | 'worn' | 'holo' | 'metallic';
-export type PhysicalType = 'cardboard' | 'plastic' | 'metal' | 'holo';
-export type Rarity = 'common' | 'uncommon' | 'rare' | 'ultra' | 'legendary';
+// ---- Legacy Types (kept for compatibility) ----
+export type TazoCondition = "mint" | "good" | "used" | "worn" | "holo" | "metallic"
+export type PhysicalType = "cardboard" | "plastic" | "metal" | "holo"
+export type Rarity = "common" | "uncommon" | "rare" | "ultra" | "legendary"
 
 export const RARITY_CONFIG: Record<Rarity, { label: string; color: string; bgColor: string; borderColor: string }> = {
-  common: { label: 'Common', color: 'text-gray-600', bgColor: 'bg-gray-100', borderColor: 'border-gray-300' },
-  uncommon: { label: 'Uncommon', color: 'text-green-600', bgColor: 'bg-green-100', borderColor: 'border-green-300' },
-  rare: { label: 'Rare', color: 'text-blue-600', bgColor: 'bg-blue-100', borderColor: 'border-blue-300' },
-  ultra: { label: 'Ultra', color: 'text-purple-600', bgColor: 'bg-purple-100', borderColor: 'border-purple-300' },
-  legendary: { label: 'Legendary', color: 'text-amber-600', bgColor: 'bg-amber-100', borderColor: 'border-amber-400' },
-};
+  common: { label: "Common", color: "text-gray-600", bgColor: "bg-gray-100", borderColor: "border-gray-300" },
+  uncommon: { label: "Uncommon", color: "text-green-600", bgColor: "bg-green-100", borderColor: "border-green-300" },
+  rare: { label: "Rare", color: "text-blue-600", bgColor: "bg-blue-100", borderColor: "border-blue-300" },
+  ultra: { label: "Ultra", color: "text-purple-600", bgColor: "bg-purple-100", borderColor: "border-purple-300" },
+  legendary: { label: "Legendary", color: "text-amber-600", bgColor: "bg-amber-100", borderColor: "border-amber-400" },
+}
 
 export const CONDITION_CONFIG: Record<TazoCondition, { label: string; color: string; icon: string; effect: string }> = {
-  mint: { label: 'Mint', color: 'text-emerald-600', icon: '✨', effect: '+20% collection value' },
-  good: { label: 'Good', color: 'text-green-600', icon: '👍', effect: 'Normal stats' },
-  used: { label: 'Used', color: 'text-yellow-600', icon: '🔄', effect: '-10% control' },
-  worn: { label: 'Worn', color: 'text-orange-600', icon: '⚔️', effect: '-20% spin, +15% veteran bonus' },
-  holo: { label: 'Holographic', color: 'text-cyan-600', icon: '🌈', effect: '+30% aura' },
-  metallic: { label: 'Metallic', color: 'text-slate-600', icon: '🛡️', effect: '+25% weight' },
-};
+  mint: { label: "Mint", color: "text-emerald-600", icon: "✨", effect: "+20% collection value" },
+  good: { label: "Good", color: "text-green-600", icon: "👍", effect: "Normal stats" },
+  used: { label: "Used", color: "text-yellow-600", icon: "🔄", effect: "-10% control" },
+  worn: { label: "Worn", color: "text-orange-600", icon: "⚔️", effect: "-20% spin, +15% veteran bonus" },
+  holo: { label: "Holographic", color: "text-cyan-600", icon: "🌈", effect: "+30% aura" },
+  metallic: { label: "Metallic", color: "text-slate-600", icon: "🛡️", effect: "+25% weight" },
+}
 
 export const PHYSICAL_TYPE_CONFIG: Record<PhysicalType, { label: string; color: string }> = {
-  cardboard: { label: 'Cardboard', color: 'text-amber-700' },
-  plastic: { label: 'Plastic', color: 'text-blue-600' },
-  metal: { label: 'Metal', color: 'text-slate-600' },
-  holo: { label: 'Holo', color: 'text-cyan-500' },
-};
+  cardboard: { label: "Cardboard", color: "text-amber-700" },
+  plastic: { label: "Plastic", color: "text-blue-600" },
+  metal: { label: "Metal", color: "text-slate-600" },
+  holo: { label: "Holo", color: "text-cyan-500" },
+}
 
-export const FRANCHISE_SLUGS = {
-  pokemon: 'pokemon',
-  digimon: 'digimon',
-  dbz: 'dbz',
-} as const;
-
-export const POKEMON_TYPES = ['fire', 'water', 'grass', 'electric', 'psychic', 'ghost', 'dragon', 'normal'] as const;
-export const DIGIMON_TYPES = ['vaccine', 'virus', 'data'] as const;
-export const DBZ_TYPES = ['saiyan', 'namekian', 'android', 'majin', 'frieza'] as const;
-
-export type GameView = 'album' | 'battle' | 'scanner' | 'stats';
+export type GameView = "album" | "battle" | "scanner" | "stats"

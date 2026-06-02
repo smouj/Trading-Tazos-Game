@@ -50,7 +50,7 @@ export async function PUT(
         ...(body.slug !== undefined && { slug: body.slug }),
         ...(body.franchiseId !== undefined && { franchiseId: body.franchiseId }),
         ...(body.collectionId !== undefined && { collectionId: body.collectionId }),
-        ...(body.printedNumber !== undefined && { printedNumber: body.printedNumber }),
+        ...(body.number !== undefined && { number: body.number }),
         ...(body.condition !== undefined && { condition: body.condition }),
         ...(body.physicalType !== undefined && { physicalType: body.physicalType }),
         ...(body.combatType !== undefined && { combatType: body.combatType }),

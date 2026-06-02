@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
           `tazo-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         franchiseId: (tazoData.franchiseId as string) || '',
         collectionId: (tazoData.collectionId as string) || '',
-        printedNumber: (tazoData.printedNumber as string) || null,
+        number: (tazoData.number as string) || undefined,
         condition: (tazoData.condition as string) || 'good',
         physicalType: (tazoData.physicalType as string) || 'cardboard',
         combatType: (tazoData.combatType as string) || null,

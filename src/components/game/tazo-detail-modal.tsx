@@ -136,7 +136,7 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: 
         }}
       >
         <DialogHeader className="sr-only">
-          <DialogTitle>{tazo.name}</DialogTitle>
+          <DialogTitle>{tazo.displayName || tazo.name || "?"}</DialogTitle>
         </DialogHeader>
 
         {/* ===== MAGAZINE CENTERFOLD LAYOUT ===== */}
@@ -182,7 +182,7 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: 
               color: 'white',
             }}
           >
-            {tazo.name}
+            {tazo.displayName || tazo.name || "?"}
           </h2>
 
           {/* Rarity stars row */}
@@ -255,7 +255,7 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: 
                 {tazo.imageUrl ? (
                   <img
                     src={tazo.imageUrl}
-                    alt={tazo.name}
+                    alt={tazo.displayName || tazo.name || "?"}
                     className="w-full h-full object-cover rounded-full"
                   />
                 ) : (
@@ -267,14 +267,14 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: 
                         textShadow: `0 0 24px ${franchiseColors.from}50, 2px 2px 0px #1a1a1a`,
                       }}
                     >
-                      {tazo.name.charAt(0)}
+                      {tazo.displayName || tazo.name || "?".charAt(0)}
                     </span>
-                    {tazo.printedNumber && (
+                    {tazo.number && (
                       <span
                         className="text-xs font-black mt-1 px-2 py-0.5 bg-black/20 rounded-full"
                         style={{ color: 'white' }}
                       >
-                        #{tazo.printedNumber}
+                        #{tazo.number}
                       </span>
                     )}
                   </>
@@ -292,7 +292,7 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: 
             {/* Speech Bubble with flavor quote */}
             <div className="mt-3 speech-bubble text-center max-w-[260px]">
               <span className="mag-stroke-sm" style={{ color: franchiseColors.text, WebkitTextStroke: '0.5px #1a1a1a' }}>
-                &ldquo;{getFlavorQuote(franchiseSlug, tazo.name)}&rdquo;
+                &ldquo;{getFlavorQuote(franchiseSlug, tazo.displayName || tazo.name || "?")}&rdquo;
               </span>
             </div>
           </div>
@@ -471,10 +471,10 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: 
                       textShadow: '1px 1px 0px #1a1a1a',
                     }}
                   >
-                    {tazo.name.charAt(0)}
+                    {tazo.displayName || tazo.name || "?".charAt(0)}
                   </div>
                   <span className="text-[9px] font-black uppercase" style={{ color: franchiseColors.text }}>
-                    {tazo.name}
+                    {tazo.displayName || tazo.name || "?"}
                   </span>
                 </div>
                 {tazo.evolutionTo && (
@@ -556,7 +556,7 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: 
                       textShadow: '1px 1px 0px #1a1a1a',
                     }}
                   >
-                    {tazo.name.charAt(0)}
+                    {tazo.displayName || tazo.name || "?".charAt(0)}
                   </div>
                   {tazo.transformStage && (
                     <span

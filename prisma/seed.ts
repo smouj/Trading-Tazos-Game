@@ -1,1252 +1,493 @@
-import { db } from '@/lib/db'
+// ============================================================
+// Trading Tazos Game — Seed
+// Real-world verified Spanish tazo collections.
+// Pokémon Tazos 1 (51), DBZ Matutano (105+variants), Digimon Magic Box (150 pending)
+// ============================================================
 
-// Helper to generate random stats within a range
+import { db } from "@/lib/db"
+
+// ---- Helpers ----
 function randRange(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-// Stat generators by rarity
-function generateStats(rarity: string) {
-  const ranges: Record<string, [number, number]> = {
-    common: [30, 50],
-    uncommon: [40, 60],
-    rare: [50, 75],
-    ultra: [65, 85],
-    legendary: [80, 99],
-  }
-  const [min, max] = ranges[rarity] || [30, 50]
+function genStats() {
   return {
-    attack: randRange(min, max),
-    defense: randRange(min, max),
-    spin: randRange(min, max),
-    weight: randRange(min, max),
-    aura: randRange(min, max),
-    control: randRange(min, max),
+    attack: randRange(35, 85),
+    defense: randRange(30, 80),
+    spin: randRange(25, 75),
+    weight: randRange(30, 80),
+    aura: randRange(20, 70),
+    control: randRange(30, 80),
   }
 }
 
 async function main() {
-  console.log('🌱 Seeding database...')
+  console.log("🌱 Seeding Trading Tazos Game — Real Collections...\n")
 
-  // Clean existing data
+  // Clean
   await db.tazo.deleteMany()
   await db.collection.deleteMany()
   await db.franchise.deleteMany()
-  console.log('🧹 Cleaned existing data')
+  console.log("🧹 Cleaned existing data\n")
 
-  // ==========================================
+  // ============================================================
   // FRANCHISES
-  // ==========================================
-  const franchises = await Promise.all([
-    db.franchise.create({
-      data: {
-        name: 'Pokémon',
-        slug: 'pokemon',
-        color: '#FFCB05',
-        icon: '⚡',
-        description: 'Gotta catch \'em all! The original monster-collecting franchise with hundreds of unique creatures.',
-        mechanic: 'Elemental type advantages - Fire beats Grass, Water beats Fire, Grass beats Water, Electric beats Water',
-      },
-    }),
-    db.franchise.create({
-      data: {
-        name: 'Digimon',
-        slug: 'digimon',
-        color: '#00A1E9',
-        icon: '🦖',
-        description: 'Digital Monsters from the Digital World! Evolve your partners through bonds of friendship.',
-        mechanic: 'Digievolution - Link tazos of the same evolutionary line to power up',
-      },
-    }),
-    db.franchise.create({
-      data: {
-        name: 'Dragon Ball Z',
-        slug: 'dbz',
-        color: '#FF6B00',
-        icon: '🔥',
-        description: 'The legendary anime of super-powered warriors defending Earth from cosmic threats.',
-        mechanic: 'Ki Charge & Transformation - Charge ki through battle, transform with multiple tazos of same character',
-      },
-    }),
-  ])
+  // ============================================================
+  const pokemon = await db.franchise.create({
+    data: {
+      name: "Pokémon", slug: "pokemon", color: "#FFCB05", icon: "⚡",
+      description: "Pokémon Tazos — ediciones españolas de Matutano, 2000-2001.",
+      mechanic: "Colección numerada #1-51 con arte original de la serie.",
+    },
+  })
 
-  const [pokemon, digimon, dbz] = franchises
-  console.log(`✅ Created ${franchises.length} franchises`)
+  const dbz = await db.franchise.create({
+    data: {
+      name: "Dragon Ball Z", slug: "dragon-ball-z", color: "#FF6B00", icon: "🔥",
+      description: "Dragon Ball Z Tazos — Matutano España 1995. 105 tazos en 7 categorías.",
+      mechanic: "7 categorías: Tazos, Supertazos voladores, Supertazos octogonales, Megatazos, Holo 3D, Mastertazos.",
+    },
+  })
 
-  // ==========================================
+  const digimon = await db.franchise.create({
+    data: {
+      name: "Digimon", slug: "digimon", color: "#00A1E9", icon: "🦖",
+      description: "Digimon Digital Monsters — Magic Box 2000. Colección de 150 caps.",
+      mechanic: "Colección verificada pero pendiente de checklist visual completo.",
+    },
+  })
+
+  console.log(`✅ 3 franchises\n`)
+
+  // ============================================================
   // COLLECTIONS
-  // ==========================================
-  const collections = await Promise.all([
-    // Pokémon collections
-    db.collection.create({
+  // ============================================================
+  const pokemonTazos1 = await db.collection.create({
+    data: {
+      name: "Pokémon Tazos 1", slug: "pokemon-tazos-1",
+      franchiseId: pokemon.id, year: 2000, totalTazos: 51,
+      manufacturer: "Matutano", country: "España",
+      description: "La colección original de 51 tazos Pokémon lanzada en España. Numeración verificada del #1 al #51.",
+    },
+  })
+
+  const dbzTazos = await db.collection.create({
+    data: {
+      name: "Dragon Ball Z Tazos", slug: "dbz-matutano-1995",
+      franchiseId: dbz.id, year: 1995, totalTazos: 105,
+      manufacturer: "Matutano", country: "España",
+      description: "Colección completa de 105 tazos DBZ agrupados en 7 categorías: Tazos (1-10), Supertazos voladores (11-30), Supertazos octogonales (31-50), Megatazos (51-70), Holo 3D (1-10), y Mastertazos.",
+    },
+  })
+
+  const digimonMagicBox = await db.collection.create({
+    data: {
+      name: "Digimon Digital Monsters", slug: "digimon-magic-box-2000",
+      franchiseId: digimon.id, year: 2000, totalTazos: 150,
+      manufacturer: "Magic Box", country: "España / Europa",
+      description: "Colección de 150 caps Digimon. Colección verificada. Nombres individuales pendientes de checklist visual.",
+    },
+  })
+
+  console.log(`✅ 3 collections\n`)
+
+  // ============================================================
+  // POKÉMON TAZOS 1 — #1-51 (VERIFIED)
+  // ============================================================
+  const pokemonTazosData = [
+    { n: "1",  name: "Bulbasaur" },
+    { n: "2",  name: "Charmander" },
+    { n: "3",  name: "Squirtle" },
+    { n: "4",  name: "Metapod" },
+    { n: "5",  name: "Weedle" },
+    { n: "6",  name: "Pidgeotto" },
+    { n: "7",  name: "Rattata" },
+    { n: "8",  name: "Spearow" },
+    { n: "9",  name: "Arbok" },
+    { n: "10", name: "Pikachu" },
+    { n: "11", name: "Raichu" },
+    { n: "12", name: "Nidoran♀" },
+    { n: "13", name: "Nidorina" },
+    { n: "14", name: "Vulpix" },
+    { n: "15", name: "Jigglypuff" },
+    { n: "16", name: "Golbat" },
+    { n: "17", name: "Oddish" },
+    { n: "18", name: "Paras" },
+    { n: "19", name: "Venonat" },
+    { n: "20", name: "Diglett" },
+    { n: "21", name: "Meowth" },
+    { n: "22", name: "Psyduck" },
+    { n: "23", name: "Mankey" },
+    { n: "24", name: "Growlithe" },
+    { n: "25", name: "Poliwag" },
+    { n: "26", name: "Kadabra" },
+    { n: "27", name: "Machamp" },
+    { n: "28", name: "Bellsprout" },
+    { n: "29", name: "Tentacool" },
+    { n: "30", name: "Geodude" },
+    { n: "31", name: "Ponyta" },
+    { n: "32", name: "Slowpoke" },
+    { n: "33", name: "Magnemite" },
+    { n: "34", name: "Grimer" },
+    { n: "35", name: "Gastly" },
+    { n: "36", name: "Drowzee" },
+    { n: "37", name: "Krabby" },
+    { n: "38", name: "Voltorb" },
+    { n: "39", name: "Exeggcute" },
+    { n: "40", name: "Cubone" },
+    { n: "41", name: "Koffing" },
+    { n: "42", name: "Rhydon" },
+    { n: "43", name: "Horsea" },
+    { n: "44", name: "Goldeen" },
+    { n: "45", name: "Staryu" },
+    { n: "46", name: "Magikarp" },
+    { n: "47", name: "Eevee" },
+    { n: "48", name: "Omanyte" },
+    { n: "49", name: "Kabuto" },
+    { n: "50", name: "Dragonair" },
+    { n: "51", name: "Ash" },
+  ]
+
+  console.log(`📦 Inserting ${pokemonTazosData.length} Pokémon Tazos 1...`)
+
+  // Mark some as owned (random ~30%)
+  const ownedPokemonIds = new Set(
+    Array.from({ length: pokemonTazosData.length }, (_, i) => i)
+      .filter(() => Math.random() < 0.3)
+      .map(i => pokemonTazosData[i].n)
+  )
+
+  for (const t of pokemonTazosData) {
+    const slug = `pokemon-t1-${t.n}`
+    await db.tazo.create({
       data: {
-        name: 'Kanto Classics',
-        slug: 'pokemon-kanto-classics',
-        franchiseId: pokemon.id,
-        year: 1999,
-        totalTazos: 12,
-        description: 'The original 151 Pokémon from the Kanto region. Relive the nostalgia of the very first generation!',
+        name: t.name, displayName: t.name, slug,
+        franchiseId: pokemon.id, collectionId: pokemonTazos1.id,
+        number: t.n, variant: null, category: "tazos",
+        manufacturer: "Matutano", country: "España",
+        sourceStatus: "verified",
+        physicalType: "cardboard", rarity: "common",
+        imageUrl: `/tazos/pokemon/${slug}.svg`,
+        isOwned: ownedPokemonIds.has(t.n),
+        ...genStats(),
       },
-    }),
-    db.collection.create({
-      data: {
-        name: 'Johto Journeys',
-        slug: 'pokemon-johto-journeys',
-        franchiseId: pokemon.id,
-        year: 2000,
-        totalTazos: 10,
-        description: 'Explore the Johto region with new discoveries and legendary encounters.',
-      },
-    }),
-    // Digimon collections
-    db.collection.create({
-      data: {
-        name: 'Adventure Series',
-        slug: 'digimon-adventure-series',
-        franchiseId: digimon.id,
-        year: 2000,
-        totalTazos: 10,
-        description: 'The DigiDestined and their partner Digimon from the original Adventure series.',
-      },
-    }),
-    db.collection.create({
-      data: {
-        name: 'Digital Monsters',
-        slug: 'digimon-digital-monsters',
-        franchiseId: digimon.id,
-        year: 2001,
-        totalTazos: 10,
-        description: 'Powerful Ultimate and Mega level Digimon from across the Digital World.',
-      },
-    }),
-    // DBZ collections
-    db.collection.create({
-      data: {
-        name: 'Saiyan Saga',
-        slug: 'dbz-saiyan-saga',
-        franchiseId: dbz.id,
-        year: 2000,
-        totalTazos: 10,
-        description: 'The arrival of the Saiyans and the battle for Earth begins.',
-      },
-    }),
-    db.collection.create({
-      data: {
-        name: 'Cell Games',
-        slug: 'dbz-cell-games',
-        franchiseId: dbz.id,
-        year: 2001,
-        totalTazos: 10,
-        description: 'The Cell Games tournament and the rise of legendary warriors.',
-      },
-    }),
-  ])
-
-  const [kantoClassics, johtoJourneys, adventureSeries, digitalMonsters, saiyanSaga, cellGames] = collections
-  console.log(`✅ Created ${collections.length} collections`)
-
-  // ==========================================
-  // TAZOS
-  // ==========================================
-
-  // --- Pokémon Kanto Classics (12 tazos) ---
-  const kantoTazos = [
-    {
-      name: 'Pikachu',
-      slug: 'pokemon-pikachu',
-      franchiseId: pokemon.id,
-      collectionId: kantoClassics.id,
-      printedNumber: '001',
-      condition: 'mint',
-      physicalType: 'cardboard',
-      combatType: 'electric',
-      rarity: 'common',
-      imageUrl: '/tazos/pokemon/pokemon-pikachu.svg',
-      skill: 'Thunder Jolt',
-      skillDesc: 'A quick jolt of electricity that stuns the opponent on impact.',
-      isOwned: true,
-      ...generateStats('common'),
-    },
-    {
-      name: 'Charmander',
-      slug: 'pokemon-charmander',
-      franchiseId: pokemon.id,
-      collectionId: kantoClassics.id,
-      printedNumber: '004',
-      condition: 'good',
-      physicalType: 'cardboard',
-      combatType: 'fire',
-      rarity: 'common',
-      imageUrl: '/tazos/pokemon/pokemon-charmander.svg',
-      skill: 'Ember Spin',
-      skillDesc: 'Spins while releasing embers that ignite the battlefield.',
-      evolutionTo: 'pokemon-charmeleon',
-      isOwned: true,
-      ...generateStats('common'),
-    },
-    {
-      name: 'Charmeleon',
-      slug: 'pokemon-charmeleon',
-      franchiseId: pokemon.id,
-      collectionId: kantoClassics.id,
-      printedNumber: '005',
-      condition: 'good',
-      physicalType: 'plastic',
-      combatType: 'fire',
-      rarity: 'uncommon',
-      imageUrl: '/tazos/pokemon/pokemon-charmeleon.svg',
-      skill: 'Flame Burst',
-      skillDesc: 'Unleashes a concentrated burst of flame upon landing.',
-      evolutionFrom: 'pokemon-charmander',
-      evolutionTo: 'pokemon-charizard',
-      isOwned: false,
-      ...generateStats('uncommon'),
-    },
-    {
-      name: 'Charizard',
-      slug: 'pokemon-charizard',
-      franchiseId: pokemon.id,
-      collectionId: kantoClassics.id,
-      printedNumber: '006',
-      condition: 'holo',
-      physicalType: 'holo',
-      combatType: 'fire',
-      rarity: 'rare',
-      imageUrl: '/tazos/pokemon/pokemon-charizard.svg',
-      skill: 'Inferno Vortex',
-      skillDesc: 'Creates a devastating fire vortex that engulfs opposing tazos.',
-      evolutionFrom: 'pokemon-charmeleon',
-      isOwned: true,
-      ...generateStats('rare'),
-    },
-    {
-      name: 'Bulbasaur',
-      slug: 'pokemon-bulbasaur',
-      franchiseId: pokemon.id,
-      collectionId: kantoClassics.id,
-      printedNumber: '001',
-      condition: 'mint',
-      physicalType: 'cardboard',
-      combatType: 'grass',
-      rarity: 'common',
-      imageUrl: '/tazos/pokemon/pokemon-bulbasaur.svg',
-      skill: 'Vine Whip',
-      skillDesc: 'Lashes out with vines that knock opponents off balance.',
-      isOwned: true,
-      ...generateStats('common'),
-    },
-    {
-      name: 'Squirtle',
-      slug: 'pokemon-squirtle',
-      franchiseId: pokemon.id,
-      collectionId: kantoClassics.id,
-      printedNumber: '007',
-      condition: 'good',
-      physicalType: 'cardboard',
-      combatType: 'water',
-      rarity: 'common',
-      imageUrl: '/tazos/pokemon/pokemon-squirtle.svg',
-      skill: 'Aqua Jet',
-      skillDesc: 'Rushes forward with a jet of water for a quick strike.',
-      isOwned: false,
-      ...generateStats('common'),
-    },
-    {
-      name: 'Mewtwo',
-      slug: 'pokemon-mewtwo',
-      franchiseId: pokemon.id,
-      collectionId: kantoClassics.id,
-      printedNumber: '150',
-      condition: 'mint',
-      physicalType: 'metal',
-      combatType: 'psychic',
-      rarity: 'ultra',
-      imageUrl: '/tazos/pokemon/pokemon-mewtwo.svg',
-      skill: 'Psystrike',
-      skillDesc: 'A devastating psychic attack that shatters the opponent\'s defenses.',
-      isOwned: false,
-      ...generateStats('ultra'),
-    },
-    {
-      name: 'Gengar',
-      slug: 'pokemon-gengar',
-      franchiseId: pokemon.id,
-      collectionId: kantoClassics.id,
-      printedNumber: '094',
-      condition: 'good',
-      physicalType: 'plastic',
-      combatType: 'ghost',
-      rarity: 'rare',
-      imageUrl: '/tazos/pokemon/pokemon-gengar.svg',
-      skill: 'Shadow Ball',
-      skillDesc: 'Hurls a shadowy blob that saps the opponent\'s energy.',
-      isOwned: true,
-      ...generateStats('rare'),
-    },
-    {
-      name: 'Eevee',
-      slug: 'pokemon-eevee',
-      franchiseId: pokemon.id,
-      collectionId: kantoClassics.id,
-      printedNumber: '133',
-      condition: 'mint',
-      physicalType: 'cardboard',
-      combatType: 'normal',
-      rarity: 'uncommon',
-      imageUrl: '/tazos/pokemon/pokemon-eevee.svg',
-      skill: 'Quick Attack',
-      skillDesc: 'Dashes forward with blinding speed for a first strike.',
-      isOwned: true,
-      ...generateStats('uncommon'),
-    },
-    {
-      name: 'Jigglypuff',
-      slug: 'pokemon-jigglypuff',
-      franchiseId: pokemon.id,
-      collectionId: kantoClassics.id,
-      printedNumber: '039',
-      condition: 'used',
-      physicalType: 'cardboard',
-      combatType: 'normal',
-      rarity: 'common',
-      imageUrl: '/tazos/pokemon/pokemon-jigglypuff.svg',
-      skill: 'Sing',
-      skillDesc: 'Puts the opposing tazo to sleep, skipping their next turn.',
-      isOwned: false,
-      ...generateStats('common'),
-    },
-    {
-      name: 'Snorlax',
-      slug: 'pokemon-snorlax',
-      franchiseId: pokemon.id,
-      collectionId: kantoClassics.id,
-      printedNumber: '143',
-      condition: 'good',
-      physicalType: 'plastic',
-      combatType: 'normal',
-      rarity: 'uncommon',
-      imageUrl: '/tazos/pokemon/pokemon-snorlax.svg',
-      skill: 'Body Slam',
-      skillDesc: 'Crushes the opponent with massive weight on impact.',
-      isOwned: false,
-      ...generateStats('uncommon'),
-    },
-    {
-      name: 'Gyarados',
-      slug: 'pokemon-gyarados',
-      franchiseId: pokemon.id,
-      collectionId: kantoClassics.id,
-      printedNumber: '130',
-      condition: 'holo',
-      physicalType: 'holo',
-      combatType: 'water',
-      rarity: 'rare',
-      imageUrl: '/tazos/pokemon/pokemon-gyarados.svg',
-      skill: 'Hydro Storm',
-      skillDesc: 'Unleashes a devastating water storm that sweeps away all foes.',
-      isOwned: true,
-      ...generateStats('rare'),
-    },
-  ]
-
-  // --- Pokémon Johto Journeys (10 tazos) ---
-  const johtoTazos = [
-    {
-      name: 'Mew',
-      slug: 'pokemon-mew',
-      franchiseId: pokemon.id,
-      collectionId: johtoJourneys.id,
-      printedNumber: '151',
-      condition: 'mint',
-      physicalType: 'metal',
-      combatType: 'psychic',
-      rarity: 'legendary',
-      imageUrl: '/tazos/pokemon/pokemon-mew.svg',
-      skill: 'Aura Sphere',
-      skillDesc: 'Fires an unerring sphere of aura energy that never misses.',
-      isOwned: false,
-      ...generateStats('legendary'),
-    },
-    {
-      name: 'Dragonite',
-      slug: 'pokemon-dragonite',
-      franchiseId: pokemon.id,
-      collectionId: johtoJourneys.id,
-      printedNumber: '149',
-      condition: 'good',
-      physicalType: 'holo',
-      combatType: 'dragon',
-      rarity: 'rare',
-      imageUrl: '/tazos/pokemon/pokemon-dragonite.svg',
-      skill: 'Dragon Rush',
-      skillDesc: 'Charges with dragon energy for a devastating impact.',
-      isOwned: true,
-      ...generateStats('rare'),
-    },
-    {
-      name: 'Togepi',
-      slug: 'pokemon-togepi',
-      franchiseId: pokemon.id,
-      collectionId: johtoJourneys.id,
-      printedNumber: '175',
-      condition: 'mint',
-      physicalType: 'cardboard',
-      combatType: 'normal',
-      rarity: 'common',
-      imageUrl: '/tazos/pokemon/pokemon-togepi.svg',
-      skill: 'Metronome',
-      skillDesc: 'Randomly triggers one of many possible moves with unpredictable effects.',
-      isOwned: true,
-      ...generateStats('common'),
-    },
-    {
-      name: 'Umbreon',
-      slug: 'pokemon-umbreon',
-      franchiseId: pokemon.id,
-      collectionId: johtoJourneys.id,
-      printedNumber: '197',
-      condition: 'good',
-      physicalType: 'plastic',
-      combatType: 'dark',
-      rarity: 'uncommon',
-      imageUrl: '/tazos/pokemon/pokemon-umbreon.svg',
-      skill: 'Moonlight',
-      skillDesc: 'Absorbs moonlight to restore defense and boost aura.',
-      evolutionFrom: 'pokemon-eevee',
-      isOwned: false,
-      ...generateStats('uncommon'),
-    },
-    {
-      name: 'Ampharos',
-      slug: 'pokemon-ampharos',
-      franchiseId: pokemon.id,
-      collectionId: johtoJourneys.id,
-      printedNumber: '181',
-      condition: 'good',
-      physicalType: 'plastic',
-      combatType: 'electric',
-      rarity: 'uncommon',
-      imageUrl: '/tazos/pokemon/pokemon-ampharos.svg',
-      skill: 'Thunder Punch',
-      skillDesc: 'A lightning-charged punch that electrifies on contact.',
-      isOwned: false,
-      ...generateStats('uncommon'),
-    },
-    {
-      name: 'Scizor',
-      slug: 'pokemon-scizor',
-      franchiseId: pokemon.id,
-      collectionId: johtoJourneys.id,
-      printedNumber: '212',
-      condition: 'good',
-      physicalType: 'plastic',
-      combatType: 'steel',
-      rarity: 'rare',
-      imageUrl: '/tazos/pokemon/pokemon-scizor.svg',
-      skill: 'Bullet Punch',
-      skillDesc: 'Strikes with metal pincers faster than the eye can follow.',
-      isOwned: true,
-      ...generateStats('rare'),
-    },
-    {
-      name: 'Chikorita',
-      slug: 'pokemon-chikorita',
-      franchiseId: pokemon.id,
-      collectionId: johtoJourneys.id,
-      printedNumber: '152',
-      condition: 'mint',
-      physicalType: 'cardboard',
-      combatType: 'grass',
-      rarity: 'common',
-      imageUrl: '/tazos/pokemon/pokemon-chikorita.svg',
-      skill: 'Razor Leaf',
-      skillDesc: 'Launches sharp leaves that cut through the opponent\'s spin.',
-      isOwned: false,
-      ...generateStats('common'),
-    },
-    {
-      name: 'Cyndaquil',
-      slug: 'pokemon-cyndaquil',
-      franchiseId: pokemon.id,
-      collectionId: johtoJourneys.id,
-      printedNumber: '155',
-      condition: 'good',
-      physicalType: 'cardboard',
-      combatType: 'fire',
-      rarity: 'common',
-      imageUrl: '/tazos/pokemon/pokemon-cyndaquil.svg',
-      skill: 'Flame Wheel',
-      skillDesc: 'Envelops itself in fire and rolls toward the opponent.',
-      isOwned: false,
-      ...generateStats('common'),
-    },
-    {
-      name: 'Totodile',
-      slug: 'pokemon-totodile',
-      franchiseId: pokemon.id,
-      collectionId: johtoJourneys.id,
-      printedNumber: '158',
-      condition: 'mint',
-      physicalType: 'cardboard',
-      combatType: 'water',
-      rarity: 'common',
-      imageUrl: '/tazos/pokemon/pokemon-totodile.svg',
-      skill: 'Water Gun',
-      skillDesc: 'Shoots a precise jet of water to destabilize the opponent.',
-      isOwned: true,
-      ...generateStats('common'),
-    },
-    {
-      name: 'Espeon',
-      slug: 'pokemon-espeon',
-      franchiseId: pokemon.id,
-      collectionId: johtoJourneys.id,
-      printedNumber: '196',
-      condition: 'good',
-      physicalType: 'plastic',
-      combatType: 'psychic',
-      rarity: 'uncommon',
-      imageUrl: '/tazos/pokemon/pokemon-espeon.svg',
-      skill: 'Morning Sun',
-      skillDesc: 'Harnesses sunlight to boost control and see through opponent moves.',
-      evolutionFrom: 'pokemon-eevee',
-      isOwned: false,
-      ...generateStats('uncommon'),
-    },
-  ]
-
-  // --- Digimon Adventure Series (10 tazos) ---
-  const adventureTazos = [
-    {
-      name: 'Agumon',
-      slug: 'digimon-agumon',
-      franchiseId: digimon.id,
-      collectionId: adventureSeries.id,
-      printedNumber: '001',
-      condition: 'good',
-      physicalType: 'cardboard',
-      combatType: 'vaccine',
-      rarity: 'common',
-      imageUrl: '/tazos/digimon/digimon-agumon.svg',
-      skill: 'Pepper Breath',
-      skillDesc: 'Spits a small fireball that ignites on contact with the opponent.',
-      evolutionTo: 'digimon-greymon',
-      isOwned: true,
-      ...generateStats('common'),
-    },
-    {
-      name: 'Greymon',
-      slug: 'digimon-greymon',
-      franchiseId: digimon.id,
-      collectionId: adventureSeries.id,
-      printedNumber: '002',
-      condition: 'good',
-      physicalType: 'plastic',
-      combatType: 'vaccine',
-      rarity: 'uncommon',
-      imageUrl: '/tazos/digimon/digimon-greymon.svg',
-      skill: 'Nova Blast',
-      skillDesc: 'Fires a massive fireball that engulfs the entire battlefield.',
-      evolutionFrom: 'digimon-agumon',
-      evolutionTo: 'digimon-metalgreymon',
-      isOwned: false,
-      ...generateStats('uncommon'),
-    },
-    {
-      name: 'MetalGreymon',
-      slug: 'digimon-metalgreymon',
-      franchiseId: digimon.id,
-      collectionId: adventureSeries.id,
-      printedNumber: '003',
-      condition: 'holo',
-      physicalType: 'holo',
-      combatType: 'vaccine',
-      rarity: 'rare',
-      imageUrl: '/tazos/digimon/digimon-metalgreymon.svg',
-      skill: 'Giga Destroyer',
-      skillDesc: 'Launches organic missiles from its metallic arm for devastating damage.',
-      evolutionFrom: 'digimon-greymon',
-      evolutionTo: 'digimon-wargreymon',
-      isOwned: true,
-      ...generateStats('rare'),
-    },
-    {
-      name: 'WarGreymon',
-      slug: 'digimon-wargreymon',
-      franchiseId: digimon.id,
-      collectionId: adventureSeries.id,
-      printedNumber: '004',
-      condition: 'mint',
-      physicalType: 'metal',
-      combatType: 'vaccine',
-      rarity: 'ultra',
-      imageUrl: '/tazos/digimon/digimon-wargreymon.svg',
-      skill: 'Terra Force',
-      skillDesc: 'Gathers the planet\'s energy into a devastating sphere of destruction.',
-      evolutionFrom: 'digimon-metalgreymon',
-      isOwned: false,
-      ...generateStats('ultra'),
-    },
-    {
-      name: 'Gabumon',
-      slug: 'digimon-gabumon',
-      franchiseId: digimon.id,
-      collectionId: adventureSeries.id,
-      printedNumber: '005',
-      condition: 'good',
-      physicalType: 'cardboard',
-      combatType: 'vaccine',
-      rarity: 'common',
-      imageUrl: '/tazos/digimon/digimon-gabumon.svg',
-      skill: 'Blue Blaster',
-      skillDesc: 'Fires a blue blast of compressed energy at the opponent.',
-      evolutionTo: 'digimon-garurumon',
-      isOwned: true,
-      ...generateStats('common'),
-    },
-    {
-      name: 'Garurumon',
-      slug: 'digimon-garurumon',
-      franchiseId: digimon.id,
-      collectionId: adventureSeries.id,
-      printedNumber: '006',
-      condition: 'good',
-      physicalType: 'plastic',
-      combatType: 'vaccine',
-      rarity: 'uncommon',
-      imageUrl: '/tazos/digimon/digimon-garurumon.svg',
-      skill: 'Howling Blaster',
-      skillDesc: 'Howls and unleashes a freezing blast of arctic energy.',
-      evolutionFrom: 'digimon-gabumon',
-      isOwned: false,
-      ...generateStats('uncommon'),
-    },
-    {
-      name: 'Patamon',
-      slug: 'digimon-patamon',
-      franchiseId: digimon.id,
-      collectionId: adventureSeries.id,
-      printedNumber: '007',
-      condition: 'mint',
-      physicalType: 'cardboard',
-      combatType: 'vaccine',
-      rarity: 'common',
-      imageUrl: '/tazos/digimon/digimon-patamon.svg',
-      skill: 'Boom Bubble',
-      skillDesc: 'Inhales air and releases an explosive bubble upon impact.',
-      evolutionTo: 'digimon-angemon',
-      isOwned: true,
-      ...generateStats('common'),
-    },
-    {
-      name: 'Angemon',
-      slug: 'digimon-angemon',
-      franchiseId: digimon.id,
-      collectionId: adventureSeries.id,
-      printedNumber: '008',
-      condition: 'holo',
-      physicalType: 'holo',
-      combatType: 'vaccine',
-      rarity: 'rare',
-      imageUrl: '/tazos/digimon/digimon-angemon.svg',
-      skill: 'Hand of Fate',
-      skillDesc: 'Unleashes a golden ray of divine energy that purifies evil.',
-      evolutionFrom: 'digimon-patamon',
-      isOwned: false,
-      ...generateStats('rare'),
-    },
-    {
-      name: 'Devimon',
-      slug: 'digimon-devimon',
-      franchiseId: digimon.id,
-      collectionId: adventureSeries.id,
-      printedNumber: '009',
-      condition: 'good',
-      physicalType: 'plastic',
-      combatType: 'virus',
-      rarity: 'uncommon',
-      imageUrl: '/tazos/digimon/digimon-devimon.svg',
-      skill: 'Death Claw',
-      skillDesc: 'Stretches its dark claws to drain the opponent\'s life force.',
-      isOwned: false,
-      ...generateStats('uncommon'),
-    },
-    {
-      name: 'Myotismon',
-      slug: 'digimon-myotismon',
-      franchiseId: digimon.id,
-      collectionId: adventureSeries.id,
-      printedNumber: '010',
-      condition: 'holo',
-      physicalType: 'holo',
-      combatType: 'virus',
-      rarity: 'ultra',
-      imageUrl: '/tazos/digimon/digimon-myotismon.svg',
-      skill: 'Night Raid',
-      skillDesc: 'Summons a swarm of bats that overwhelm and devour the opponent\'s energy.',
-      isOwned: true,
-      ...generateStats('ultra'),
-    },
-  ]
-
-  // --- Digimon Digital Monsters (10 tazos) ---
-  const digitalTazos = [
-    {
-      name: 'Gatomon',
-      slug: 'digimon-gatomon',
-      franchiseId: digimon.id,
-      collectionId: digitalMonsters.id,
-      printedNumber: '011',
-      condition: 'mint',
-      physicalType: 'cardboard',
-      combatType: 'vaccine',
-      rarity: 'common',
-      imageUrl: '/tazos/digimon/digimon-gatomon.svg',
-      skill: 'Lightning Paw',
-      skillDesc: 'A lightning-fast paw strike that hits before the opponent can react.',
-      evolutionTo: 'digimon-angewomon',
-      isOwned: false,
-      ...generateStats('common'),
-    },
-    {
-      name: 'Angewomon',
-      slug: 'digimon-angewomon',
-      franchiseId: digimon.id,
-      collectionId: digitalMonsters.id,
-      printedNumber: '012',
-      condition: 'holo',
-      physicalType: 'holo',
-      combatType: 'vaccine',
-      rarity: 'rare',
-      imageUrl: '/tazos/digimon/digimon-angewomon.svg',
-      skill: 'Celestial Arrow',
-      skillDesc: 'Fires a holy arrow that pierces through all dark defenses.',
-      evolutionFrom: 'digimon-gatomon',
-      isOwned: true,
-      ...generateStats('rare'),
-    },
-    {
-      name: 'Tentomon',
-      slug: 'digimon-tentomon',
-      franchiseId: digimon.id,
-      collectionId: digitalMonsters.id,
-      printedNumber: '013',
-      condition: 'good',
-      physicalType: 'cardboard',
-      combatType: 'vaccine',
-      rarity: 'common',
-      imageUrl: '/tazos/digimon/digimon-tentomon.svg',
-      skill: 'Super Shocker',
-      skillDesc: 'Releases an electric shock that short-circuits the opponent.',
-      evolutionTo: 'digimon-kabuterimon',
-      isOwned: true,
-      ...generateStats('common'),
-    },
-    {
-      name: 'Kabuterimon',
-      slug: 'digimon-kabuterimon',
-      franchiseId: digimon.id,
-      collectionId: digitalMonsters.id,
-      printedNumber: '014',
-      condition: 'good',
-      physicalType: 'plastic',
-      combatType: 'vaccine',
-      rarity: 'uncommon',
-      imageUrl: '/tazos/digimon/digimon-kabuterimon.svg',
-      skill: 'Electro Shocker',
-      skillDesc: 'Fires a massive bolt of electricity that paralyzes on impact.',
-      evolutionFrom: 'digimon-tentomon',
-      isOwned: false,
-      ...generateStats('uncommon'),
-    },
-    {
-      name: 'Piedmon',
-      slug: 'digimon-piedmon',
-      franchiseId: digimon.id,
-      collectionId: digitalMonsters.id,
-      printedNumber: '015',
-      condition: 'mint',
-      physicalType: 'metal',
-      combatType: 'virus',
-      rarity: 'legendary',
-      imageUrl: '/tazos/digimon/digimon-piedmon.svg',
-      skill: 'Trump Sword',
-      skillDesc: 'Throws four enchanted swords that never miss their target.',
-      isOwned: false,
-      ...generateStats('legendary'),
-    },
-    {
-      name: 'MetalGarurumon',
-      slug: 'digimon-metalgarurumon',
-      franchiseId: digimon.id,
-      collectionId: digitalMonsters.id,
-      printedNumber: '016',
-      condition: 'holo',
-      physicalType: 'holo',
-      combatType: 'vaccine',
-      rarity: 'ultra',
-      imageUrl: '/tazos/digimon/digimon-metalgarurumon.svg',
-      skill: 'Ice Wolf Claw',
-      skillDesc: 'Launches absolute zero missiles that freeze everything they touch.',
-      isOwned: false,
-      ...generateStats('ultra'),
-    },
-    {
-      name: 'WereGarurumon',
-      slug: 'digimon-weregarurumon',
-      franchiseId: digimon.id,
-      collectionId: digitalMonsters.id,
-      printedNumber: '017',
-      condition: 'good',
-      physicalType: 'plastic',
-      combatType: 'vaccine',
-      rarity: 'rare',
-      imageUrl: '/tazos/digimon/digimon-weregarurumon.svg',
-      skill: 'Wolf Claw',
-      skillDesc: 'Slashes with razor-sharp claws in a berserker fury.',
-      evolutionFrom: 'digimon-garurumon',
-      isOwned: true,
-      ...generateStats('rare'),
-    },
-    {
-      name: 'Machinedramon',
-      slug: 'digimon-machinedramon',
-      franchiseId: digimon.id,
-      collectionId: digitalMonsters.id,
-      printedNumber: '018',
-      condition: 'good',
-      physicalType: 'metal',
-      combatType: 'virus',
-      rarity: 'ultra',
-      imageUrl: '/tazos/digimon/digimon-machinedramon.svg',
-      skill: 'Giga Cannon',
-      skillDesc: 'Fires devastating energy blasts from both cannons simultaneously.',
-      isOwned: false,
-      ...generateStats('ultra'),
-    },
-    {
-      name: 'Biyomon',
-      slug: 'digimon-biyomon',
-      franchiseId: digimon.id,
-      collectionId: digitalMonsters.id,
-      printedNumber: '019',
-      condition: 'mint',
-      physicalType: 'cardboard',
-      combatType: 'vaccine',
-      rarity: 'common',
-      imageUrl: '/tazos/digimon/digimon-biyomon.svg',
-      skill: 'Spiral Twister',
-      skillDesc: 'Creates a spiraling vortex of fire and wind upon impact.',
-      evolutionTo: 'digimon-birdramon',
-      isOwned: false,
-      ...generateStats('common'),
-    },
-    {
-      name: 'Birdramon',
-      slug: 'digimon-birdramon',
-      franchiseId: digimon.id,
-      collectionId: digitalMonsters.id,
-      printedNumber: '020',
-      condition: 'good',
-      physicalType: 'plastic',
-      combatType: 'vaccine',
-      rarity: 'uncommon',
-      imageUrl: '/tazos/digimon/digimon-birdramon.svg',
-      skill: 'Meteor Wing',
-      skillDesc: 'Dives from above while engulfed in flaming meteor energy.',
-      evolutionFrom: 'digimon-biyomon',
-      isOwned: true,
-      ...generateStats('uncommon'),
-    },
-  ]
-
-  // --- DBZ Saiyan Saga (10 tazos) ---
-  const saiyanTazos = [
-    {
-      name: 'Goku',
-      slug: 'dbz-goku',
-      franchiseId: dbz.id,
-      collectionId: saiyanSaga.id,
-      printedNumber: '001',
-      condition: 'good',
-      physicalType: 'cardboard',
-      combatType: 'saiyan',
-      rarity: 'uncommon',
-      imageUrl: '/tazos/dbz/dbz-goku.svg',
-      skill: 'Kamehameha',
-      skillDesc: 'Unleashes a powerful wave of ki energy that blasts through defenses.',
-      transformStage: 'base',
-      isOwned: true,
-      ...generateStats('uncommon'),
-    },
-    {
-      name: 'Goku SSJ',
-      slug: 'dbz-goku-ssj',
-      franchiseId: dbz.id,
-      collectionId: saiyanSaga.id,
-      printedNumber: '002',
-      condition: 'holo',
-      physicalType: 'holo',
-      combatType: 'saiyan',
-      rarity: 'rare',
-      imageUrl: '/tazos/dbz/dbz-goku-ssj.svg',
-      skill: 'Super Kamehameha',
-      skillDesc: 'An amplified Kamehameha fueled by Super Saiyan power, devastating all in its path.',
-      transformStage: 'ssj',
-      transformOf: 'dbz-goku',
-      isOwned: false,
-      ...generateStats('rare'),
-    },
-    {
-      name: 'Vegeta',
-      slug: 'dbz-vegeta',
-      franchiseId: dbz.id,
-      collectionId: saiyanSaga.id,
-      printedNumber: '003',
-      condition: 'good',
-      physicalType: 'cardboard',
-      combatType: 'saiyan',
-      rarity: 'uncommon',
-      imageUrl: '/tazos/dbz/dbz-vegeta.svg',
-      skill: 'Galick Gun',
-      skillDesc: 'Fires a concentrated beam of purple ki rivaling the Kamehameha.',
-      transformStage: 'base',
-      isOwned: true,
-      ...generateStats('uncommon'),
-    },
-    {
-      name: 'Vegeta SSJ',
-      slug: 'dbz-vegeta-ssj',
-      franchiseId: dbz.id,
-      collectionId: saiyanSaga.id,
-      printedNumber: '004',
-      condition: 'holo',
-      physicalType: 'holo',
-      combatType: 'saiyan',
-      rarity: 'rare',
-      imageUrl: '/tazos/dbz/dbz-vegeta-ssj.svg',
-      skill: 'Final Flash',
-      skillDesc: 'Concentrates massive ki into a devastating golden flash of destruction.',
-      transformStage: 'ssj',
-      transformOf: 'dbz-vegeta',
-      isOwned: false,
-      ...generateStats('rare'),
-    },
-    {
-      name: 'Gohan',
-      slug: 'dbz-gohan',
-      franchiseId: dbz.id,
-      collectionId: saiyanSaga.id,
-      printedNumber: '005',
-      condition: 'mint',
-      physicalType: 'cardboard',
-      combatType: 'saiyan',
-      rarity: 'common',
-      imageUrl: '/tazos/dbz/dbz-gohan.svg',
-      skill: 'Masenko',
-      skillDesc: 'Fires a quick beam of yellow ki energy channeled through the hands.',
-      transformStage: 'base',
-      isOwned: true,
-      ...generateStats('common'),
-    },
-    {
-      name: 'Piccolo',
-      slug: 'dbz-piccolo',
-      franchiseId: dbz.id,
-      collectionId: saiyanSaga.id,
-      printedNumber: '006',
-      condition: 'good',
-      physicalType: 'plastic',
-      combatType: 'namekian',
-      rarity: 'uncommon',
-      imageUrl: '/tazos/dbz/dbz-piccolo.svg',
-      skill: 'Special Beam Cannon',
-      skillDesc: 'Fires a spiraling beam of concentrated ki that drills through any defense.',
-      isOwned: false,
-      ...generateStats('uncommon'),
-    },
-    {
-      name: 'Krillin',
-      slug: 'dbz-krillin',
-      franchiseId: dbz.id,
-      collectionId: saiyanSaga.id,
-      printedNumber: '007',
-      condition: 'used',
-      physicalType: 'cardboard',
-      combatType: 'namekian',
-      rarity: 'common',
-      imageUrl: '/tazos/dbz/dbz-krillin.svg',
-      skill: 'Destructo Disc',
-      skillDesc: 'Throws a razor-sharp disc of ki that can cut through anything.',
-      isOwned: false,
-      ...generateStats('common'),
-    },
-    {
-      name: 'Raditz',
-      slug: 'dbz-raditz',
-      franchiseId: dbz.id,
-      collectionId: saiyanSaga.id,
-      printedNumber: '008',
-      condition: 'good',
-      physicalType: 'cardboard',
-      combatType: 'saiyan',
-      rarity: 'common',
-      imageUrl: '/tazos/dbz/dbz-raditz.svg',
-      skill: 'Double Sunday',
-      skillDesc: 'Fires twin beams of ki from both hands simultaneously.',
-      isOwned: false,
-      ...generateStats('common'),
-    },
-    {
-      name: 'Nappa',
-      slug: 'dbz-nappa',
-      franchiseId: dbz.id,
-      collectionId: saiyanSaga.id,
-      printedNumber: '009',
-      condition: 'good',
-      physicalType: 'plastic',
-      combatType: 'saiyan',
-      rarity: 'uncommon',
-      imageUrl: '/tazos/dbz/dbz-nappa.svg',
-      skill: 'Break Cannon',
-      skillDesc: 'Opens his mouth and fires a devastating ki blast at close range.',
-      isOwned: true,
-      ...generateStats('uncommon'),
-    },
-    {
-      name: 'Frieza',
-      slug: 'dbz-frieza',
-      franchiseId: dbz.id,
-      collectionId: saiyanSaga.id,
-      printedNumber: '010',
-      condition: 'holo',
-      physicalType: 'holo',
-      combatType: 'android',
-      rarity: 'ultra',
-      imageUrl: '/tazos/dbz/dbz-frieza.svg',
-      skill: 'Death Beam',
-      skillDesc: 'Fires a concentrated, piercing beam of ki from the fingertip.',
-      isOwned: false,
-      ...generateStats('ultra'),
-    },
-  ]
-
-  // --- DBZ Cell Games (10 tazos) ---
-  const cellTazos = [
-    {
-      name: 'Cell',
-      slug: 'dbz-cell',
-      franchiseId: dbz.id,
-      collectionId: cellGames.id,
-      printedNumber: '011',
-      condition: 'holo',
-      physicalType: 'holo',
-      combatType: 'android',
-      rarity: 'ultra',
-      imageUrl: '/tazos/dbz/dbz-cell.svg',
-      skill: 'Kamehameha',
-      skillDesc: 'Uses stolen Kamehameha technique with perfect form and devastating power.',
-      isOwned: false,
-      ...generateStats('ultra'),
-    },
-    {
-      name: 'Trunks',
-      slug: 'dbz-trunks',
-      franchiseId: dbz.id,
-      collectionId: cellGames.id,
-      printedNumber: '012',
-      condition: 'good',
-      physicalType: 'cardboard',
-      combatType: 'saiyan',
-      rarity: 'uncommon',
-      imageUrl: '/tazos/dbz/dbz-trunks.svg',
-      skill: 'Burning Attack',
-      skillDesc: 'Performs rapid hand movements before unleashing a fiery ki blast.',
-      transformStage: 'base',
-      isOwned: true,
-      ...generateStats('uncommon'),
-    },
-    {
-      name: 'Trunks SSJ',
-      slug: 'dbz-trunks-ssj',
-      franchiseId: dbz.id,
-      collectionId: cellGames.id,
-      printedNumber: '013',
-      condition: 'holo',
-      physicalType: 'holo',
-      combatType: 'saiyan',
-      rarity: 'rare',
-      imageUrl: '/tazos/dbz/dbz-trunks-ssj.svg',
-      skill: 'Heat Dome Attack',
-      skillDesc: 'Traps the opponent in a dome of scorching ki energy and detonates.',
-      transformStage: 'ssj',
-      transformOf: 'dbz-trunks',
-      isOwned: false,
-      ...generateStats('rare'),
-    },
-    {
-      name: 'Majin Buu',
-      slug: 'dbz-majin-buu',
-      franchiseId: dbz.id,
-      collectionId: cellGames.id,
-      printedNumber: '014',
-      condition: 'mint',
-      physicalType: 'metal',
-      combatType: 'android',
-      rarity: 'legendary',
-      imageUrl: '/tazos/dbz/dbz-majin-buu.svg',
-      skill: 'Candy Beam',
-      skillDesc: 'Transforms the opposing tazo into candy, nullifying its abilities.',
-      isOwned: true,
-      ...generateStats('legendary'),
-    },
-    {
-      name: 'Broly',
-      slug: 'dbz-broly',
-      franchiseId: dbz.id,
-      collectionId: cellGames.id,
-      printedNumber: '015',
-      condition: 'good',
-      physicalType: 'plastic',
-      combatType: 'saiyan',
-      rarity: 'ultra',
-      imageUrl: '/tazos/dbz/dbz-broly.svg',
-      skill: 'Eraser Cannon',
-      skillDesc: 'Fires a massive green sphere of ki that obliterates everything in its path.',
-      transformStage: 'base',
-      isOwned: false,
-      ...generateStats('ultra'),
-    },
-    {
-      name: 'Broly LSSJ',
-      slug: 'dbz-broly-lssj',
-      franchiseId: dbz.id,
-      collectionId: cellGames.id,
-      printedNumber: '016',
-      condition: 'holo',
-      physicalType: 'holo',
-      combatType: 'saiyan',
-      rarity: 'legendary',
-      imageUrl: '/tazos/dbz/dbz-broly-lssj.svg',
-      skill: 'Omega Blaster',
-      skillDesc: 'Unleashes an apocalyptic blast fueled by the Legendary Super Saiyan\'s rage.',
-      transformStage: 'lssj',
-      transformOf: 'dbz-broly',
-      isOwned: false,
-      ...generateStats('legendary'),
-    },
-    {
-      name: 'Android 17',
-      slug: 'dbz-android-17',
-      franchiseId: dbz.id,
-      collectionId: cellGames.id,
-      printedNumber: '017',
-      condition: 'good',
-      physicalType: 'plastic',
-      combatType: 'android',
-      rarity: 'uncommon',
-      imageUrl: '/tazos/dbz/dbz-android-17.svg',
-      skill: 'Android Barrier',
-      skillDesc: 'Creates an impenetrable energy barrier that reflects incoming attacks.',
-      isOwned: true,
-      ...generateStats('uncommon'),
-    },
-    {
-      name: 'Android 18',
-      slug: 'dbz-android-18',
-      franchiseId: dbz.id,
-      collectionId: cellGames.id,
-      printedNumber: '018',
-      condition: 'mint',
-      physicalType: 'plastic',
-      combatType: 'android',
-      rarity: 'uncommon',
-      imageUrl: '/tazos/dbz/dbz-android-18.svg',
-      skill: 'Power Blitz',
-      skillDesc: 'Rapidly fires ki blasts with machine-like precision and speed.',
-      isOwned: false,
-      ...generateStats('uncommon'),
-    },
-    {
-      name: 'Tien',
-      slug: 'dbz-tien',
-      franchiseId: dbz.id,
-      collectionId: cellGames.id,
-      printedNumber: '019',
-      condition: 'used',
-      physicalType: 'cardboard',
-      combatType: 'namekian',
-      rarity: 'common',
-      imageUrl: '/tazos/dbz/dbz-tien.svg',
-      skill: 'Tri-Beam',
-      skillDesc: 'Forms a diamond shape with hands and fires a concentrated energy blast.',
-      isOwned: false,
-      ...generateStats('common'),
-    },
-    {
-      name: 'Gohan SSJ2',
-      slug: 'dbz-gohan-ssj2',
-      franchiseId: dbz.id,
-      collectionId: cellGames.id,
-      printedNumber: '020',
-      condition: 'holo',
-      physicalType: 'holo',
-      combatType: 'saiyan',
-      rarity: 'rare',
-      imageUrl: '/tazos/dbz/dbz-gohan-ssj2.svg',
-      skill: 'Father-Son Kamehameha',
-      skillDesc: 'A combined Kamehameha with the spirit of Goku, unstoppable fury unleashed.',
-      transformStage: 'ssj2',
-      transformOf: 'dbz-gohan',
-      isOwned: true,
-      ...generateStats('rare'),
-    },
-  ]
-
-  // Combine all tazos
-  const allTazos = [
-    ...kantoTazos,
-    ...johtoTazos,
-    ...adventureTazos,
-    ...digitalTazos,
-    ...saiyanTazos,
-    ...cellTazos,
-  ]
-
-  // Create all tazos
-  let createdCount = 0
-  for (const tazoData of allTazos) {
-    await db.tazo.create({ data: tazoData })
-    createdCount++
+    })
   }
 
-  console.log(`✅ Created ${createdCount} tazos`)
+  console.log(`   ✅ ${pokemonTazosData.length} Pokémon tazos\n`)
 
-  // Print summary
-  const ownedCount = allTazos.filter(t => t.isOwned).length
-  console.log(`📊 Summary:`)
-  console.log(`   - Franchises: ${franchises.length}`)
-  console.log(`   - Collections: ${collections.length}`)
-  console.log(`   - Total Tazos: ${allTazos.length}`)
-  console.log(`   - Owned: ${ownedCount} (${Math.round(ownedCount / allTazos.length * 100)}%)`)
-  console.log(`   - Not Owned: ${allTazos.length - ownedCount}`)
+  // ============================================================
+  // DBZ — TAZOS NORMALES #1-10
+  // ============================================================
+  const dbzTazosNormales = [
+    { n: "1",  name: "Freezer" },
+    { n: "2",  name: "Recoome" },
+    { n: "3",  name: "Ginyu" },
+    { n: "4",  name: "Burter" },
+    { n: "5",  name: "Dodoria" },
+    { n: "6",  name: "Ghourd" },
+    { n: "7",  name: "Saibaman" },
+    { n: "8",  name: "A-19" },
+    { n: "9",  name: "Spopovich" },
+    { n: "10", name: "Yamu" },
+  ]
 
-  // Rarity breakdown
-  const rarityBreakdown: Record<string, number> = {}
-  for (const t of allTazos) {
-    rarityBreakdown[t.rarity] = (rarityBreakdown[t.rarity] || 0) + 1
+  console.log(`📦 DBZ Tazos #1-10...`)
+  for (const t of dbzTazosNormales) {
+    const slug = `dbz-t-${t.n}`
+    await db.tazo.create({
+      data: {
+        name: t.name, displayName: t.name, slug,
+        franchiseId: dbz.id, collectionId: dbzTazos.id,
+        number: t.n, category: "tazos",
+        manufacturer: "Matutano", country: "España",
+        sourceStatus: "verified",
+        physicalType: "cardboard", rarity: "common",
+        imageUrl: `/tazos/dbz/${slug}.svg`,
+        ...genStats(),
+      },
+    })
   }
-  console.log(`   - Rarity breakdown:`)
-  for (const [rarity, count] of Object.entries(rarityBreakdown)) {
-    console.log(`     ${rarity}: ${count}`)
-  }
+  console.log(`   ✅ 10 tazos normales\n`)
 
-  console.log('🌱 Seeding complete!')
+  // ============================================================
+  // DBZ — SUPERTAZOS VOLADORES #11-30
+  // ============================================================
+  const dbzSupertazosVoladores = [
+    { n: "11", name: "Babidi" },
+    { n: "12", name: "Piccolo Jr." },
+    { n: "13", name: "Spopovitch" },
+    { n: "14", name: "Son Goku" },
+    { n: "15", name: "Gotten y Trunks" },
+    { n: "16", name: "Yakon" },
+    { n: "17", name: "Satán" },
+    { n: "18", name: "Videl" },
+    { n: "19", name: "Pui-Pui" },
+    { n: "20", name: "Kibito" },
+    { n: "21", name: "Kaio-Shin" },
+    { n: "22", name: "Célula Jr." },
+    { n: "23", name: "Son Gohan" },
+    { n: "24", name: "Kaito" },
+    { n: "25", name: "A-16" },
+    { n: "26", name: "Chi-Chi" },
+    { n: "27", name: "A-18" },
+    { n: "28", name: "Freezer" },
+    { n: "29", name: "Yamu" },
+    { n: "30", name: "Bulma" },
+  ]
+
+  console.log(`📦 DBZ Supertazos Voladores #11-30...`)
+  for (const t of dbzSupertazosVoladores) {
+    const slug = `dbz-sv-${t.n}`
+    await db.tazo.create({
+      data: {
+        name: t.name, displayName: t.name, slug,
+        franchiseId: dbz.id, collectionId: dbzTazos.id,
+        number: t.n, category: "supertazos_voladores",
+        manufacturer: "Matutano", country: "España",
+        sourceStatus: "verified",
+        physicalType: "plastic", rarity: "uncommon",
+        imageUrl: `/tazos/dbz/${slug}.svg`,
+        ...genStats(),
+      },
+    })
+  }
+  console.log(`   ✅ 20 supertazos voladores\n`)
+
+  // ============================================================
+  // DBZ — SUPERTAZOS OCTOGONALES #31-50
+  // ============================================================
+  const dbzSupertazosOctogonales = [
+    { n: "31", name: "Célula 1ª fase" },
+    { n: "32", name: "Pui-Pui" },
+    { n: "33", name: "Célula 2ª fase" },
+    { n: "34", name: "Yakon" },
+    { n: "35", name: "A-16" },
+    { n: "36", name: "King Cold" },
+    { n: "37", name: "Célula 3ª fase" },
+    { n: "38", name: "Dábura" },
+    { n: "39", name: "Majin Boo" },
+    { n: "40", name: "Babidi" },
+    { n: "41", name: "Vegeta" },
+    { n: "42", name: "Videl" },
+    { n: "43", name: "Son Gotten" },
+    { n: "44", name: "Trunks" },
+    { n: "45", name: "Piccolo Junior" },
+    { n: "46", name: "Son Goku" },
+    { n: "47", name: "Kaio-Shin" },
+    { n: "48", name: "Son Gohan" },
+    { n: "49", name: "Kibito" },
+    { n: "50", name: "Kaito" },
+  ]
+
+  console.log(`📦 DBZ Supertazos Octogonales #31-50...`)
+  for (const t of dbzSupertazosOctogonales) {
+    const slug = `dbz-so-${t.n}`
+    await db.tazo.create({
+      data: {
+        name: t.name, displayName: t.name, slug,
+        franchiseId: dbz.id, collectionId: dbzTazos.id,
+        number: t.n, category: "supertazos_octogonales",
+        manufacturer: "Matutano", country: "España",
+        sourceStatus: "verified",
+        physicalType: "plastic", rarity: "uncommon",
+        imageUrl: `/tazos/dbz/${slug}.svg`,
+        ...genStats(),
+      },
+    })
+  }
+  console.log(`   ✅ 20 supertazos octogonales\n`)
+
+  // ============================================================
+  // DBZ — MEGATAZOS #51-70 (REDONDO + OCTOGONAL)
+  // ============================================================
+  const dbzMegatazosNames = [
+    { n: "51", name: "Son Goku" },
+    { n: "52", name: "Vegeta" },
+    { n: "53", name: "Son Gohan" },
+    { n: "54", name: "Son Gotten" },
+    { n: "55", name: "Trunks" },
+    { n: "56", name: "Piccolo Jr." },
+    { n: "57", name: "Célula" },
+    { n: "58", name: "Majin Boo" },
+    { n: "59", name: "Babidi" },
+    { n: "60", name: "Dábura" },
+    { n: "61", name: "Kibito" },
+    { n: "62", name: "Satán" },
+    { n: "63", name: "Shin Sama" },
+    { n: "64", name: "Kaio-Shin" },
+    { n: "65", name: "Videl" },
+    { n: "66", name: "Bulma" },
+    { n: "67", name: "Krilin" },
+    { n: "68", name: "Mutenroshi" },
+    { n: "69", name: "Pui-Pui" },
+    { n: "70", name: "Kaito" },
+  ]
+
+  console.log(`📦 DBZ Megatazos #51-70 (redondos + octogonales)...`)
+  for (const t of dbzMegatazosNames) {
+    // Redondo
+    await db.tazo.create({
+      data: {
+        name: t.name, displayName: `${t.name} (Redondo)`, slug: `dbz-mr-${t.n}`,
+        franchiseId: dbz.id, collectionId: dbzTazos.id,
+        number: t.n, variant: "megatazo_redondo", category: "megatazos",
+        manufacturer: "Matutano", country: "España",
+        sourceStatus: "partial",
+        physicalType: "plastic", rarity: "rare",
+        imageUrl: `/tazos/dbz/dbz-mr-${t.n}.svg`,
+        ...genStats(),
+      },
+    })
+    // Octogonal
+    await db.tazo.create({
+      data: {
+        name: t.name, displayName: `${t.name} (Octogonal)`, slug: `dbz-mo-${t.n}`,
+        franchiseId: dbz.id, collectionId: dbzTazos.id,
+        number: t.n, variant: "megatazo_octogonal", category: "megatazos",
+        manufacturer: "Matutano", country: "España",
+        sourceStatus: "partial",
+        physicalType: "plastic", rarity: "rare",
+        imageUrl: `/tazos/dbz/dbz-mo-${t.n}.svg`,
+        ...genStats(),
+      },
+    })
+  }
+  console.log(`   ✅ 40 megatazos (20 redondos + 20 octogonales)\n`)
+
+  // ============================================================
+  // DBZ — HOLO 3D #1-10 (RANURA DERECHA + IZQUIERDA)
+  // ============================================================
+  const dbzHolo3DNames = [
+    { n: "1",  name: "Célula" },
+    { n: "2",  name: "Son Goku" },
+    { n: "3",  name: "Son Gohan" },
+    { n: "4",  name: "Son Gotten" },
+    { n: "5",  name: "Gotten y Trunks" },
+    { n: "6",  name: "Vegeta" },
+    { n: "7",  name: "Majin Boo" },
+    { n: "8",  name: "Dábura" },
+    { n: "9",  name: "Goku" },
+    { n: "10", name: "Célula y Trunks" },
+  ]
+
+  console.log(`📦 DBZ Holo 3D #1-10 (ranura derecha + izquierda)...`)
+  for (const t of dbzHolo3DNames) {
+    await db.tazo.create({
+      data: {
+        name: t.name, displayName: `${t.name} (Ranura Der.)`, slug: `dbz-hr-${t.n}`,
+        franchiseId: dbz.id, collectionId: dbzTazos.id,
+        number: t.n, variant: "ranura_derecha", category: "holo_3d",
+        manufacturer: "Matutano", country: "España",
+        sourceStatus: "verified",
+        physicalType: "holo", rarity: "ultra",
+        imageUrl: `/tazos/dbz/dbz-hr-${t.n}.svg`,
+        ...genStats(),
+      },
+    })
+    await db.tazo.create({
+      data: {
+        name: t.name, displayName: `${t.name} (Ranura Izq.)`, slug: `dbz-hl-${t.n}`,
+        franchiseId: dbz.id, collectionId: dbzTazos.id,
+        number: t.n, variant: "ranura_izquierda", category: "holo_3d",
+        manufacturer: "Matutano", country: "España",
+        sourceStatus: "verified",
+        physicalType: "holo", rarity: "ultra",
+        imageUrl: `/tazos/dbz/dbz-hl-${t.n}.svg`,
+        ...genStats(),
+      },
+    })
+  }
+  console.log(`   ✅ 20 Holo 3D (10 ranura derecha + 10 izquierda)\n`)
+
+  // ============================================================
+  // DBZ — MASTERTAZOS
+  // ============================================================
+  const dbzMastertazos = [
+    { id: "MASTER-A18",             name: "A-18",           variant: null },
+    { id: "MASTER-A18-GOLD",        name: "A-18 Dorado",    variant: "gold" },
+    { id: "MASTER-A18-BLACK",       name: "A-18 B.Negro",   variant: "black_border" },
+    { id: "MASTER-FREEZER",         name: "Freezer",        variant: null },
+    { id: "MASTER-GOKU",            name: "Goku",           variant: null },
+    { id: "MASTER-SHENRON",         name: "Shenron",        variant: null },
+    { id: "MASTER-SHENRON-BLACK",   name: "Shenron B.Negro",variant: "black_border" },
+    { id: "MASTER-VEGETA",          name: "Vegeta",         variant: null },
+  ]
+
+  console.log(`📦 DBZ Mastertazos...`)
+  for (const t of dbzMastertazos) {
+    const slug = `dbz-master-${t.id.toLowerCase().replace(/-/g, "-")}`
+    await db.tazo.create({
+      data: {
+        name: t.name, displayName: t.name, slug,
+        franchiseId: dbz.id, collectionId: dbzTazos.id,
+        number: t.id, variant: t.variant, category: "mastertazos",
+        manufacturer: "Matutano", country: "España",
+        sourceStatus: "verified",
+        physicalType: "metal", rarity: "legendary",
+        imageUrl: `/tazos/dbz/${slug}.svg`,
+        ...genStats(),
+      },
+    })
+  }
+  console.log(`   ✅ 8 mastertazos\n`)
+
+  // ============================================================
+  // DIGIMON — MAGIC BOX 2000 #1-150 (PENDING VISUAL CHECK)
+  // ============================================================
+  console.log(`📦 Digimon Magic Box 2000 #1-150 (pending visual check)...`)
+
+  for (let i = 1; i <= 150; i++) {
+    const n = String(i)
+    const slug = `digimon-mb-${n}`
+    await db.tazo.create({
+      data: {
+        name: null, displayName: `Digimon #${n}`, slug,
+        franchiseId: digimon.id, collectionId: digimonMagicBox.id,
+        number: n, category: "caps",
+        manufacturer: "Magic Box", country: "España / Europa",
+        sourceStatus: "pending_visual_check",
+        physicalType: "plastic", rarity: "common",
+        imageUrl: `/tazos/digimon/${slug}.svg`,
+        isOwned: false,
+        ...genStats(),
+      },
+    })
+  }
+  console.log(`   ✅ 150 Digimon caps (pending)\n`)
+
+  // ============================================================
+  // SUMMARY
+  // ============================================================
+  const tazoCount = await db.tazo.count()
+  const verifiedCount = await db.tazo.count({ where: { sourceStatus: "verified" } })
+  const partialCount = await db.tazo.count({ where: { sourceStatus: "partial" } })
+  const pendingCount = await db.tazo.count({ where: { sourceStatus: "pending_visual_check" } })
+
+  console.log("═══ SEED COMPLETE ═══")
+  console.log(`   Franchises:  3`)
+  console.log(`   Collections: 3`)
+  console.log(`   Total Tazos: ${tazoCount}`)
+  console.log(`     Verified:            ${verifiedCount}`)
+  console.log(`     Partial:             ${partialCount}`)
+  console.log(`     Pending Visual Check: ${pendingCount}`)
+  console.log()
+  console.log(`   Pokémon Tazos 1:        51 (verified)`  )
+  console.log(`   DBZ Tazos Normales:      10 (verified)`  )
+  console.log(`   DBZ Supertazos Volador:  20 (verified)`  )
+  console.log(`   DBZ Supertazos Octog:    20 (verified)`  )
+  console.log(`   DBZ Megatazos:           40 (partial — 20R + 20O)`)
+  console.log(`   DBZ Holo 3D:             20 (verified — 10D + 10I)`)
+  console.log(`   DBZ Mastertazos:          8 (verified)`  )
+  console.log(`   Digimon Magic Box:      150 (pending)`   )
+  console.log(`                          ———`)
+  console.log(`   TOTAL:                  319 tazos`)
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Seeding failed:', e)
+    console.error("❌ Seeding failed:", e)
     process.exit(1)
   })
   .finally(async () => {

@@ -64,7 +64,7 @@ const DEFAULT_FORM = {
   name: '',
   franchiseId: '',
   collectionId: '',
-  printedNumber: '',
+  number: '',
   condition: 'good' as TazoCondition,
   physicalType: 'cardboard' as PhysicalType,
   combatType: '',
@@ -181,7 +181,7 @@ export function AddTazoDialog({ onCreated }: AddTazoDialogProps) {
           slug,
           franchiseId: form.franchiseId,
           collectionId: form.collectionId,
-          printedNumber: form.printedNumber || null,
+          number: form.number || null,
           condition: form.condition,
           physicalType: form.physicalType,
           combatType: form.combatType || null,
@@ -285,8 +285,8 @@ export function AddTazoDialog({ onCreated }: AddTazoDialogProps) {
               <div className="space-y-1.5">
                 <Label className="text-xs">Printed Number</Label>
                 <Input
-                  value={form.printedNumber}
-                  onChange={(e) => updateField('printedNumber', e.target.value)}
+                  value={form.number}
+                  onChange={(e) => updateField('number', e.target.value)}
                   placeholder="#001"
                   className="h-9 text-sm"
                 />

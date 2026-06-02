@@ -75,7 +75,7 @@ export function TazoEditor({ tazo, onClose, onSave, onDelete }: TazoEditorProps)
     name: tazo.name,
     franchiseId: tazo.franchiseId,
     collectionId: tazo.collectionId,
-    printedNumber: tazo.printedNumber || '',
+    number: tazo.number || '',
     condition: tazo.condition as TazoCondition,
     physicalType: tazo.physicalType as PhysicalType,
     combatType: tazo.combatType || '',
@@ -122,7 +122,7 @@ export function TazoEditor({ tazo, onClose, onSave, onDelete }: TazoEditorProps)
       form.name !== tazo.name ||
       form.franchiseId !== tazo.franchiseId ||
       form.collectionId !== tazo.collectionId ||
-      form.printedNumber !== (tazo.printedNumber || '') ||
+      form.number !== (tazo.number || '') ||
       form.condition !== tazo.condition ||
       form.physicalType !== tazo.physicalType ||
       form.combatType !== (tazo.combatType || '') ||
@@ -207,7 +207,7 @@ export function TazoEditor({ tazo, onClose, onSave, onDelete }: TazoEditorProps)
           name: form.name,
           franchiseId: form.franchiseId,
           collectionId: form.collectionId,
-          printedNumber: form.printedNumber || null,
+          number: form.number || null,
           condition: form.condition,
           physicalType: form.physicalType,
           combatType: form.combatType || null,
@@ -309,8 +309,8 @@ export function TazoEditor({ tazo, onClose, onSave, onDelete }: TazoEditorProps)
             >
               {tazo.imageUrl ? (
                 <img
-                  src={tazo.imageUrl}
-                  alt={form.name}
+                  src={tazo.imageUrl ?? undefined}
+                  alt={form.name ?? ""}
                   className="h-full w-full object-cover"
                 />
               ) : (
@@ -373,7 +373,7 @@ export function TazoEditor({ tazo, onClose, onSave, onDelete }: TazoEditorProps)
               <div className="space-y-1.5">
                 <Label className="text-xs">Name</Label>
                 <Input
-                  value={form.name}
+                  value={form.name ?? ""}
                   onChange={(e) => updateField('name', e.target.value)}
                   placeholder="Tazo name"
                   className="h-8 text-sm"
@@ -421,8 +421,8 @@ export function TazoEditor({ tazo, onClose, onSave, onDelete }: TazoEditorProps)
                 <div className="space-y-1.5">
                   <Label className="text-xs">Printed Number</Label>
                   <Input
-                    value={form.printedNumber}
-                    onChange={(e) => updateField('printedNumber', e.target.value)}
+                    value={form.number ?? ""}
+                    onChange={(e) => updateField('number', e.target.value)}
                     placeholder="#001"
                     className="h-8 text-sm"
                   />

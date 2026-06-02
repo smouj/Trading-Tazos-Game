@@ -381,7 +381,7 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
                 <SelectItem value="attack" className="text-[11px] font-bold">Attack</SelectItem>
                 <SelectItem value="defense" className="text-[11px] font-bold">Defense</SelectItem>
                 <SelectItem value="spin" className="text-[11px] font-bold">Spin</SelectItem>
-                <SelectItem value="printedNumber" className="text-[11px] font-bold">Number</SelectItem>
+                <SelectItem value="number" className="text-[11px] font-bold">Number</SelectItem>
               </SelectContent>
             </Select>
             <button

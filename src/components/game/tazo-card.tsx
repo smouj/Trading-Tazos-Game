@@ -82,7 +82,7 @@ export default function TazoCard({ tazo, onClick }: TazoCardProps) {
       onClick={() => onClick?.(tazo)}
       role="button"
       tabIndex={0}
-      aria-label={`${tazo.name} tazo card`}
+      aria-label={`${tazo.displayName || tazo.name || "..."} tazo card`}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
@@ -135,7 +135,7 @@ export default function TazoCard({ tazo, onClick }: TazoCardProps) {
           {tazo.imageUrl ? (
             <img
               src={tazo.imageUrl}
-              alt={tazo.name}
+              alt={tazo.displayName || tazo.name || "..."}
               className="w-full h-full object-cover rounded-full"
             />
           ) : (
@@ -148,9 +148,9 @@ export default function TazoCard({ tazo, onClick }: TazoCardProps) {
                   paintOrder: 'stroke fill',
                 }}
               >
-                {tazo.name.charAt(0)}
+                {tazo.displayName || tazo.name || "...".charAt(0)}
               </span>
-              {tazo.printedNumber && (
+              {tazo.number && (
                 <span
                   className="text-[8px] sm:text-[9px] font-black mt-0.5 px-1.5 rounded-sm leading-tight"
                   style={{
@@ -159,7 +159,7 @@ export default function TazoCard({ tazo, onClick }: TazoCardProps) {
                     border: '1px solid #1a1a1a',
                   }}
                 >
-                  #{tazo.printedNumber}
+                  #{tazo.number}
                 </span>
               )}
             </>
@@ -194,7 +194,7 @@ export default function TazoCard({ tazo, onClick }: TazoCardProps) {
           className="font-black text-sm sm:text-base leading-tight truncate"
           style={{ color: '#1a1a1a' }}
         >
-          {tazo.name}
+          {tazo.displayName || tazo.name || "..."}
         </p>
         {/* Franchise name on colored strip */}
         <div

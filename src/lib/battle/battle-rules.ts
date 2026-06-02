@@ -322,7 +322,7 @@ export function runPhysicsSimulation(
   return steps
 }
 
-// ---- Description Generator ----
+// ---- Description Generator (Spanish detailed) ----
 
 export function generateTurnDescription(
   throwerName: string,
@@ -330,34 +330,58 @@ export function generateTurnDescription(
   flippedNames: string[],
   capturedNames: string[],
   outOfBounds: boolean,
-  finalState: string
+  finalState: string,
+  collisionEvents?: Array<{ impactPoint: string; impactPower: number; defensePower: number }>,
+  selfFlipped?: boolean,
+  comboCount?: number
 ): string {
   const parts: string[] = []
 
   if (flippedNames.length > 0) {
     if (flippedNames.length === 1) {
-      parts.push(`${throwerName} struck ${flippedNames[0]} and flipped it`)
+      const event = collisionEvents?.[0]
+      if (event?.impactPoint === "edge") {
+        parts.push(`Impacto lateral perfecto. ${flippedNames[0]} se dio la vuelta.`)
+      } else if (event?.impactPoint === "side") {
+        parts.push(`Golpe al borde. ${flippedNames[0]} se volteo por el impacto lateral.`)
+      } else {
+        parts.push(`Golpe directo. ${flippedNames[0]} no resistio el impacto y se volto.`)
+      }
+    } else if (flippedNames.length === 2) {
+      parts.push(`Rebote encadenado. ${throwerName} golpeo 2 tazos en una sola jugada y volto a ${flippedNames.join(" y ")}.`)
     } else {
-      parts.push(`${throwerName} struck and flipped ${flippedNames.length} tazos: ${flippedNames.join(", ")}`)
+      parts.push(`Golpe multiple devastador. ${throwerName} volto ${flippedNames.length} tazos: ${flippedNames.join(", ")}.`)
     }
   } else if (impactedNames.length > 0) {
-    if (impactedNames.length === 1) {
-      parts.push(`${throwerName} hit ${impactedNames[0]} but it held firm`)
+    const event = collisionEvents?.[0]
+    if (event && event.defensePower > event.impactPower * 1.5) {
+      parts.push(`Impacto debil. ${impactedNames[0]} resistio facilmente por su alta defensa.`)
+    } else if (event && event.impactPoint === "center") {
+      parts.push(`Golpe directo. ${impactedNames[0]} resistio el impacto por su defensa.`)
+    } else if (impactedNames.length === 1) {
+      parts.push(`${throwerName} golpeo a ${impactedNames[0]}, pero aguanto firme.`)
     } else {
-      parts.push(`${throwerName} hit ${impactedNames.length} tazos but none flipped`)
+      parts.push(`${throwerName} golpeo ${impactedNames.length} tazos, pero ninguno se volto.`)
     }
+  } else if (selfFlipped) {
+    parts.push(`${throwerName} cayo mal y se volto solo. Queda vulnerable en el campo.`)
   } else {
-    parts.push(`${throwerName} didn't hit any tazo`)
+    parts.push(`${throwerName} no golpeo ningun tazo. Cae en el campo.`)
   }
 
   if (outOfBounds) {
-    parts.push("The tazo flew out of the arena. Opponent will decide where to place it.")
-  } else if (finalState === "on_field") {
-    parts.push("The thrown tazo stays on the field where it landed.")
+    parts.push("Demasiada fuerza. El tazo salio del circulo. El rival decidira donde colocarlo.")
+  } else if (finalState === "on_field" && capturedNames.length === 0 && !selfFlipped) {
+    parts.push("El tazo lanzado se queda en el campo donde cayo.")
   }
 
   if (capturedNames.length > 0) {
-    parts.push(`Captured: ${capturedNames.join(", ")}!`)
+    const names = capturedNames.join(", ")
+    if (comboCount && comboCount >= 2) {
+      parts.push(`COMBO x${comboCount}! Capturo ${names}. ${throwerName} vuelve a la mano con bonus.`)
+    } else {
+      parts.push(`Capturo a ${names}! ${throwerName} vuelve a la mano.`)
+    }
   }
 
   return parts.join(" ")

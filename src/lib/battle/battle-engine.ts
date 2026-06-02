@@ -431,13 +431,24 @@ export function executeThrow(state: BattleState): BattleState {
     stackLevel: stackedOn ? 1 : 0,
   }
 
-  // Generate description
+  // Generate description with full detail
   const impactedNames = impactedTazos.map(id => findTazoById(state, id)?.name ?? "?").filter(Boolean)
   const flippedNames = flippedTazos.map(id => findTazoById(state, id)?.name ?? "?").filter(Boolean)
   const capturedNames = capturedTazos.map(id => findTazoById(state, id)?.name ?? "?").filter(Boolean)
+
+  // Self-flip check: very high power + bad accuracy = thrower can flip itself
+  const selfFlipChance = aim.powerValue * (accuracyError / 100) * 0.15
+  const selfFlipped = !outOfBounds && capturedTazos.length === 0 && state.rng.next() < selfFlipChance
+
+  // Combo bonus: 2+ captures in one throw
+  const comboCount = capturedTazos.length >= 2 ? capturedTazos.length : 0
+
   const description = generateTurnDescription(
     thrower.name, impactedNames, flippedNames, capturedNames,
-    outOfBounds, finalState
+    outOfBounds, finalState,
+    collisionEvents.map(e => ({ impactPoint: e.impactPoint, impactPower: e.impactPower, defensePower: e.defensePower })),
+    selfFlipped,
+    comboCount || undefined
   )
 
   const turn: BattleTurn = {
@@ -471,9 +482,21 @@ export function executeThrow(state: BattleState): BattleState {
       pendingPlacementTazoId: state.selectedTazoId,
       placementController: state.currentPlayerId === "player" ? "opponent" : "player",
     }
-  } else if (finalState === "captured") {
-    // Captured something - thrower returns to hand
-    newState = returnTazoToHand(newState, state.selectedTazoId)
+  } else if (finalState === "captured" || selfFlipped) {
+    // Captured something OR self-flipped — thrower returns to hand (but self-flipped tazo also stays as vulnerable)
+    if (selfFlipped) {
+      // Self-flipped: tazo stays on field flipped (vulnerable)
+      const selfFlippedPhysics: TazoPhysicsState = {
+        ...throwerPhysicsAfter,
+        face: "back",
+        tilt: 90,
+        spinVelocity: aim.powerValue * 30,
+      }
+      newState = placeTazoOnField(newState, state.selectedTazoId, selfFlippedPhysics)
+    } else {
+      newState = returnTazoToHand(newState, state.selectedTazoId)
+      // Combo bonus: if 2+ captures, grant extra energy marker (future: extra turn/points)
+    }
     newState = { ...newState, phase: "turn_end" }
   } else {
     // Stays on field
@@ -519,24 +542,31 @@ export function opponentPlaceTazo(state: BattleState, x: number, y: number): Bat
 }
 
 export function endTurn(state: BattleState): BattleState {
-  // Check win conditions
+  // Check win conditions based on game mode
   const opponentField = state.opponent.field.filter(t => t.state === "on_field")
   const playerField = state.player.field.filter(t => t.state === "on_field")
   const playerHand = state.player.hand.filter(t => t.state === "in_hand")
+  const opponentHand = state.opponent.hand.filter(t => t.state === "in_hand")
 
-  if (opponentField.length === 0) {
+  const playerCaptures = state.player.captured.length
+  const opponentCaptures = state.opponent.captured.length
+  const lastTurn = state.turns[state.turns.length - 1]
+  const lastTurnCombo = lastTurn?.capturedTazos?.length ?? 0
+
+  // Classic / Arena: all opponent tazos captured or no tazos left usable
+  if (opponentField.length === 0 && opponentHand.length === 0) {
     return {
       ...state,
       phase: "battle_finished",
       finalResult: {
         winner: "player",
         victoryType: "all_captured",
-        playerScore: state.player.captured.length,
-        opponentScore: state.opponent.captured.length,
+        playerScore: playerCaptures * 10 + (lastTurnCombo >= 2 ? lastTurnCombo * 5 : 0),
+        opponentScore: opponentCaptures * 10,
         totalTurns: state.turnNumber,
-        playerCaptures: state.player.captured.length,
-        opponentCaptures: state.opponent.captured.length,
-        summary: `Victory! All opponent tazos captured in ${state.turnNumber} turns.`,
+        playerCaptures,
+        opponentCaptures,
+        summary: `Victoria! Todos los tazos rivales capturados en ${state.turnNumber} turnos.`,
       },
     }
   }
@@ -548,12 +578,35 @@ export function endTurn(state: BattleState): BattleState {
       finalResult: {
         winner: "opponent",
         victoryType: "all_captured",
-        playerScore: state.player.captured.length,
-        opponentScore: state.opponent.captured.length,
+        playerScore: playerCaptures * 10,
+        opponentScore: opponentCaptures * 10 + (lastTurnCombo >= 2 ? lastTurnCombo * 5 : 0),
         totalTurns: state.turnNumber,
-        playerCaptures: state.player.captured.length,
-        opponentCaptures: state.opponent.captured.length,
-        summary: `Defeat! All your tazos were captured in ${state.turnNumber} turns.`,
+        playerCaptures,
+        opponentCaptures,
+        summary: `Derrota! Todos tus tazos fueron capturados en ${state.turnNumber} turnos.`,
+      },
+    }
+  }
+
+  // Rounds mode: check max rounds
+  if (state.gameMode.mode === "rounds" && state.gameMode.maxRounds && state.turnNumber >= state.gameMode.maxRounds) {
+    const playerScore = playerCaptures * (state.gameMode.pointsPerCapture ?? 1)
+    const opponentScore = opponentCaptures * (state.gameMode.pointsPerCapture ?? 1)
+    const winner = playerScore > opponentScore ? "player" : opponentScore > playerScore ? "opponent" : "draw"
+    return {
+      ...state,
+      phase: "battle_finished",
+      finalResult: {
+        winner,
+        victoryType: "rounds",
+        playerScore,
+        opponentScore,
+        totalTurns: state.turnNumber,
+        playerCaptures,
+        opponentCaptures,
+        summary: winner === "draw"
+          ? `Empate! ${playerScore}-${opponentScore} tras ${state.turnNumber} turnos.`
+          : `${winner === "player" ? "Victoria" : "Derrota"}! ${playerScore}-${opponentScore} en ${state.turnNumber} turnos.`,
       },
     }
   }

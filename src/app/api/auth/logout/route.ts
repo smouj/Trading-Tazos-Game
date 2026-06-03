@@ -12,7 +12,14 @@ export async function POST() {
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: 0, // Expire immediately
+    maxAge: 0,
+  })
+  response.cookies.set("ttg_session", "", {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 0,
   })
   return response
 }

@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     // If auth came from cookie (no Bearer token), return a fresh token for localStorage sync
     const freshToken = token || generateToken(user)
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       token: freshToken,
       user: {
         id: fullUser.id,
@@ -40,6 +40,17 @@ export async function GET(request: NextRequest) {
         createdAt: fullUser.createdAt,
       },
     })
+
+    // Refresh companion session cookie
+    response.cookies.set("ttg_session", "1", {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+    })
+
+    return response
   } catch (error) {
     if (error instanceof Response) throw error
     console.error("Me error:", error)

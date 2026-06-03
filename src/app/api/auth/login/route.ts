@@ -41,13 +41,22 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Set auth cookie for middleware
+    // Set auth cookie for middleware (httpOnly)
     response.cookies.set("auth_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
       maxAge: 60 * 60 * 24 * 7, // 7 days
+    })
+
+    // Companion cookie for client-side session detection (not httpOnly)
+    response.cookies.set("ttg_session", "1", {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
     })
 
     return response

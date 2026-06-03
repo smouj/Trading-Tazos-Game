@@ -26,21 +26,29 @@ const AuthContext = createContext<AuthState | null>(null)
 
 const TOKEN_KEY = "ttg-token"
 
+/** Check if companion session cookie exists (non-httpOnly, readable by JS) */
+function hasSessionCookie(): boolean {
+  if (typeof document === "undefined") return false
+  return document.cookie.split(";").some((c) => c.trim().startsWith("ttg_session="))
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   // Load token from localStorage on mount.
-  // Fallback: try cookie-based auth (middleware uses auth_token cookie).
+  // If no localStorage token but session cookie exists, try cookie-based auth.
   useEffect(() => {
     const saved = localStorage.getItem(TOKEN_KEY)
     if (saved) {
       setToken(saved)
       fetchMe(saved)
-    } else {
-      // Try cookie-based auth — browser sends auth_token cookie automatically
+    } else if (hasSessionCookie()) {
+      // Session cookie present → try cookie-based auth (browser sends auth_token cookie)
       fetchMe(null)
+    } else {
+      setLoading(false)
     }
   }, [])
 
@@ -48,12 +56,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const headers: Record<string, string> = {}
       if (t) headers["Authorization"] = `Bearer ${t}`
-      const res = await fetch("/api/auth/me", { headers })
+      const res = await fetch("/api/auth/me", { headers, credentials: "include" })
       if (res.ok) {
         const data = await res.json()
         setUser(data.user)
         // Sync localStorage with cookie auth
-        if (!t && data.token) {
+        if (data.token) {
           localStorage.setItem(TOKEN_KEY, data.token)
           setToken(data.token)
         }
@@ -74,6 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
+      credentials: "include",
     })
 
     const data = await res.json()
@@ -91,6 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password, name }),
+      credentials: "include",
     })
 
     const data = await res.json()
@@ -104,8 +114,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const logout = useCallback(() => {
-    // Call logout API to clear httpOnly cookie
-    fetch("/api/auth/logout", { method: "POST" }).catch(() => {})
+    // Call logout API to clear both cookies
+    fetch("/api/auth/logout", { method: "POST", credentials: "include" }).catch(() => {})
     localStorage.removeItem(TOKEN_KEY)
     setToken(null)
     setUser(null)
@@ -115,6 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!token) return
     const res = await fetch("/api/auth/me", {
       headers: { Authorization: `Bearer ${token}` },
+      credentials: "include",
     })
     if (res.ok) {
       const data = await res.json()

@@ -1,16 +1,19 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
+import { Suspense } from "react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
 import { useI18n } from "@/lib/i18n"
 import { Disc3, ArrowRight, Mail, Lock, ArrowLeft } from "lucide-react"
 
-export default function LoginPage() {
+function LoginForm() {
   const { t } = useI18n()
   const { login } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get("redirect") || "/collection"
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -22,7 +25,7 @@ export default function LoginPage() {
     setSubmitting(true)
     try {
       await login(email, password)
-      router.push("/collection")
+      router.push(redirectTo)
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -152,11 +155,19 @@ export default function LoginPage() {
               className="inline-flex items-center gap-1.5 text-xs font-bold text-[#1a1a1a]/50 hover:text-[#1a1a1a] transition-colors uppercase tracking-wider"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              {t.common_back || "Back to Arena"}
+              {t.common_back || "Back"}
             </Link>
           </div>
         </div>
       </main>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   )
 }

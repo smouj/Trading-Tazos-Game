@@ -1,133 +1,206 @@
 // ============================================================
 // Trading Tazos Game — Magazine Page Shell
-// Wraps standalone pages with consistent 90s magazine aesthetic.
-// Every new standalone page MUST use this wrapper.
+// Single source of truth for the 90s magazine masthead + tab bar + footer.
+// Used by ALL pages: main page, shop, quests, leaderboard, download.
 // ============================================================
 "use client"
 
+import { useState, useCallback, useEffect } from "react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
 import { useI18n } from "@/lib/i18n"
+import LanguageSwitcher from "@/components/ui/language-switcher"
 import {
   BookOpen, Swords, Scan, BarChart3, User, LogOut,
-  ShoppingBag, Download, Target, Trophy,
-  Package, Layers, Disc3,
+  ShoppingBag, Download, Target, Trophy, Disc3,
 } from "lucide-react"
+
+type TabId = "album" | "battle" | "scanner" | "stats" | "shop" | "quests" | "leaderboard" | "download"
+
+const NAV_ITEMS: { id: TabId; labelKey?: string; fallbackLabel: string; icon: typeof BookOpen; href: string; external?: boolean }[] = [
+  { id: "album", labelKey: "tabAlbum", fallbackLabel: "Album", icon: BookOpen, href: "/" },
+  { id: "battle", labelKey: "tabBattle", fallbackLabel: "Battle!", icon: Swords, href: "/?tab=battle" },
+  { id: "scanner", labelKey: "tabScanner", fallbackLabel: "Scanner", icon: Scan, href: "/?tab=scanner" },
+  { id: "stats", labelKey: "tabStats", fallbackLabel: "Stats", icon: BarChart3, href: "/?tab=stats" },
+  { id: "shop", fallbackLabel: "Shop", icon: ShoppingBag, href: "/shop", external: true },
+  { id: "quests", fallbackLabel: "Quests", icon: Target, href: "/quests", external: true },
+  { id: "leaderboard", fallbackLabel: "Ranks", icon: Trophy, href: "/leaderboard", external: true },
+  { id: "download", fallbackLabel: "Desktop", icon: Download, href: "/download", external: true },
+]
 
 export default function MagazinePageShell({
   children,
-  showMasthead = true,
-  showFooter = true,
   currentTab,
+  onTabChange,
+  showFooter = true,
 }: {
   children: React.ReactNode
-  showMasthead?: boolean
+  currentTab?: TabId
+  onTabChange?: (tab: TabId) => void
   showFooter?: boolean
-  currentTab?: string
 }) {
   const { t } = useI18n()
   const { user, logout } = useAuth()
+  const [showUserMenu, setShowUserMenu] = useState(false)
 
-  const NAV_ITEMS = [
-    { id: "album", label: t.tabAlbum, icon: BookOpen, href: "/" },
-    { id: "battle", label: t.tabBattle, icon: Swords, href: "/?tab=battle" },
-    { id: "scanner", label: t.tabScanner, icon: Scan, href: "/?tab=scanner" },
-    { id: "stats", label: t.tabStats, icon: BarChart3, href: "/?tab=stats" },
-    { id: "shop", label: "Shop", icon: ShoppingBag, href: "/shop" },
-    { id: "quests", label: "Quests", icon: Target, href: "/quests" },
-    { id: "leaderboard", label: "Ranks", icon: Trophy, href: "/leaderboard" },
-    { id: "download", label: "Desktop", icon: Download, href: "/download" },
-  ]
+  // Close menu on outside click
+  useEffect(() => {
+    if (!showUserMenu) return
+    const handler = () => setShowUserMenu(false)
+    document.addEventListener("click", handler)
+    return () => document.removeEventListener("click", handler)
+  }, [showUserMenu])
 
   return (
     <div className="min-h-screen flex flex-col mag-bg">
-      {/* ===== MASTHEAD ===== */}
-      {showMasthead && (
-        <header className="sticky top-0 z-40 bg-[#FFCC00] border-b-4 border-[#1a1a1a] mag-stripes">
-          {/* Top bar */}
-          <div className="bg-[#1a1a1a] text-white text-center py-1 px-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {!user ? (
-                <>
-                  <Link href="/login" className="text-[10px] sm:text-xs font-bold text-zinc-400 hover:text-[#FFCC00] transition-colors tracking-wider uppercase">
-                    {t.auth_login}
-                  </Link>
-                  <span className="text-zinc-600">|</span>
-                  <Link href="/register" className="text-[10px] sm:text-xs font-bold text-zinc-400 hover:text-[#FFCC00] transition-colors tracking-wider uppercase">
-                    {t.auth_register}
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link href="/" className="text-[10px] sm:text-xs font-bold text-zinc-400 hover:text-[#FFCC00] transition-colors tracking-wider uppercase">
-                    <BookOpen className="w-3 h-3 inline mr-0.5" /> Home
-                  </Link>
-                </>
-              )}
-            </div>
-            {user && (
+      {/* ===== MAGAZINE MASTHEAD ===== */}
+      <header className="sticky top-0 z-40 bg-[#FFCC00] border-b-4 border-[#1a1a1a] mag-stripes">
+        {/* Top bar */}
+        <div className="bg-[#1a1a1a] text-white text-center py-1 px-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {!user ? (
+              <>
+                <Link
+                  href="/login"
+                  className="text-[10px] sm:text-xs font-bold text-zinc-400 hover:text-[#FFCC00] transition-colors tracking-wider uppercase"
+                >
+                  {t.auth_login}
+                </Link>
+                <span className="text-zinc-600">|</span>
+                <Link
+                  href="/register"
+                  className="text-[10px] sm:text-xs font-bold text-purple-400 hover:text-purple-300 transition-colors tracking-wider uppercase"
+                >
+                  {t.auth_register}
+                </Link>
+              </>
+            ) : (
               <div className="relative">
                 <button
-                  onClick={() => {
-                    const menu = document.getElementById("mag-user-menu")
-                    if (menu) menu.classList.toggle("hidden")
-                  }}
-                  className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-zinc-400 hover:text-[#FFCC00] transition-colors tracking-wider uppercase"
+                  onClick={(e) => { e.stopPropagation(); setShowUserMenu(!showUserMenu) }}
+                  className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-[#FFCC00] hover:text-white transition-colors tracking-wider uppercase"
                 >
                   <User className="w-3 h-3" />
                   <span className="hidden sm:inline max-w-[100px] truncate">{user.name}</span>
                 </button>
-                <div
-                  id="mag-user-menu"
-                  className="hidden absolute right-0 top-full mt-1 bg-[#1a1a1a] border-2 border-[#FFCC00] shadow-[4px_4px_0px_#1a1a1a] min-w-[140px] z-50"
-                >
-                  <button
-                    onClick={logout}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-[10px] font-black uppercase tracking-wider text-[#E3350D] hover:bg-[#E3350D]/10 transition-colors"
-                  >
-                    <LogOut className="w-3 h-3" /> {t.auth_logout}
-                  </button>
-                </div>
+                {showUserMenu && (
+                  <div className="absolute left-0 top-full mt-1 z-20 w-44 bg-zinc-900 border-2 border-zinc-700 rounded-lg shadow-xl overflow-hidden">
+                    <button
+                      onClick={() => { logout(); setShowUserMenu(false) }}
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-[#E3350D] hover:bg-red-500/10 transition-colors w-full text-left"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      {t.auth_logout}
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
+          <span className="text-[10px] sm:text-xs font-black tracking-[3px] uppercase text-[#FFCC00]">
+            {t.siteMastheadBadge || "MAGAZINE"}
+          </span>
+          <div className="flex-1 flex justify-end">
+            <LanguageSwitcher />
+          </div>
+        </div>
 
-          {/* Title row */}
-          <div className="text-center py-3 px-4 flex items-center justify-center gap-3">
-            <Disc3 className="w-8 h-8 text-[#1a1a1a] hidden sm:block" />
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-wider text-[#1a1a1a] mag-stroke-sm leading-none">
+        <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
+          {/* Title Row */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Logo */}
+            <div className="relative shrink-0">
+              <img
+                src="/logo/logo-icon-black.png"
+                alt="Trading Tazos Game"
+                className="w-12 h-12 sm:w-16 sm:h-16 drop-shadow-[3px_3px_0px_rgba(26,26,26,0.3)]"
+              />
+            </div>
+
+            {/* Title & Subtitle */}
+            <div className="min-w-0 flex-1">
+              <h1
+                className="text-2xl sm:text-4xl lg:text-5xl font-black leading-none tracking-tight mag-stroke"
+                style={{ WebkitTextStroke: "3px #1a1a1a" }}
+              >
                 {t.siteTitle || "TRADING TAZOS GAME"}
               </h1>
-              <p className="text-[10px] sm:text-xs font-bold text-[#1a1a1a]/60 uppercase tracking-widest mt-0.5">
-                {t.battle_tagline || "Collect. Trade. Battle."}
-              </p>
+              <div className="flex items-baseline gap-2 mt-0.5">
+                <span
+                  className="text-lg sm:text-2xl lg:text-3xl font-black mag-stroke-red leading-none"
+                  style={{ WebkitTextStroke: "2px #1a1a1a" }}
+                >
+                  {t.siteSubtitle || "COLLECT. TRADE. BATTLE."}
+                </span>
+                <span className="hidden sm:inline text-[10px] font-black text-[#1a1a1a] bg-white border-2 border-[#1a1a1a] px-1.5 py-0.5 shadow-[2px_2px_0px_#1a1a1a] uppercase tracking-wider">
+                  {t.siteIssue || "ISSUE #001"}
+                </span>
+              </div>
             </div>
-            <Disc3 className="w-8 h-8 text-[#1a1a1a] hidden sm:block" />
-          </div>
 
-          {/* Tab bar */}
-          <div className="flex items-center justify-center gap-1 px-2 pb-2">
-            {NAV_ITEMS.map((item) => {
-              const isActive = currentTab === item.id
+            {/* Issue info — right side */}
+            <div className="hidden md:flex flex-col items-end gap-1 shrink-0">
+              <div className="speech-bubble text-[10px]">
+                {t.siteTagline || "Throw your tazos, flip your rival's, and conquer the arena!"}
+              </div>
+              <span className="text-[9px] font-bold text-[#1a1a1a]/60">
+                Issue #001 — 2025 Edition
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* ===== TAB BAR ===== */}
+        <nav className="max-w-7xl mx-auto px-4 pb-0" role="tablist" aria-label="Game views">
+          <div className="flex gap-1 sm:gap-2">
+            {NAV_ITEMS.map(({ id, labelKey, fallbackLabel, icon: Icon, href, external }) => {
+              const isActive = currentTab === id
+              const label = (labelKey ? (t as any)[labelKey] : null) || fallbackLabel
+
+              // For external tabs (or all tabs when no onTabChange handler), use Link
+              if (external || !onTabChange) {
+                return (
+                  <Link
+                    key={id}
+                    href={href}
+                    className={`flex items-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 font-black text-[11px] sm:text-xs tracking-wider uppercase transition-all duration-150 ${
+                      isActive
+                        ? "mag-tab mag-tab-active bg-[#FFCC00] text-[#1a1a1a] rounded-t-lg -mb-[1px]"
+                        : "mag-tab bg-white/80 text-[#1a1a1a]/60 rounded-t-lg border-2 border-b-0 border-[#1a1a1a]/20 hover:bg-white hover:text-[#1a1a1a] hover:border-[#1a1a1a]/40"
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <span>{label}</span>
+                  </Link>
+                )
+              }
+
+              // Internal tabs (when onTabChange provided) — use button for client-side nav
               return (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all border-2 border-transparent ${
+                <button
+                  key={id}
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => onTabChange(id)}
+                  className={`flex items-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 font-black text-[11px] sm:text-xs tracking-wider uppercase transition-all duration-150 ${
                     isActive
-                      ? "bg-[#1a1a1a] text-[#FFCC00] border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a]"
-                      : "text-[#1a1a1a]/70 hover:text-[#1a1a1a] hover:bg-[#1a1a1a]/5 hover:border-[#1a1a1a]/20"
+                      ? "mag-tab mag-tab-active bg-[#FFCC00] text-[#1a1a1a] rounded-t-lg -mb-[1px]"
+                      : "mag-tab bg-white/80 text-[#1a1a1a]/60 rounded-t-lg border-2 border-b-0 border-[#1a1a1a]/20 hover:bg-white hover:text-[#1a1a1a] hover:border-[#1a1a1a]/40"
                   }`}
                 >
-                  <item.icon className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">{item.label}</span>
-                </Link>
+                  <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span>{label}</span>
+                  {isActive && (
+                    <span className="hidden sm:inline-flex items-center justify-center text-[8px] bg-[#E3350D] text-white rounded-full w-4 h-4 border border-[#1a1a1a]">
+                      {/* bullet */}
+                    </span>
+                  )}
+                </button>
               )
             })}
           </div>
-        </header>
-      )}
+        </nav>
+      </header>
 
       {/* ===== MAIN CONTENT ===== */}
       <main className="flex-1">
@@ -136,26 +209,31 @@ export default function MagazinePageShell({
 
       {/* ===== FOOTER ===== */}
       {showFooter && (
-        <footer className="bg-[#1a1a1a] border-t-4 border-[#FFCC00] py-6 px-4">
-          <div className="max-w-4xl mx-auto text-center space-y-3">
-            {/* Color dots row */}
-            <div className="flex items-center justify-center gap-2">
-              {["#FFCC00", "#E3350D", "#3B4CCA", "#22C55E", "#F59E0B"].map((c, i) => (
-                <div key={i} className="w-3 h-3 rounded-full" style={{ background: c }} />
+        <footer className="bg-[#E3350D] border-t-4 border-[#1a1a1a] mt-auto">
+          <div className="max-w-7xl mx-auto px-4 py-3">
+            <div className="flex justify-center gap-2 mb-2">
+              {["#FFCC00", "#3B4CCA", "#FF6B00", "#78C850", "#00A1E9"].map((color, i) => (
+                <div
+                  key={i}
+                  className="w-2 h-2 rounded-full border border-[#1a1a1a]/30"
+                  style={{ backgroundColor: color }}
+                />
               ))}
             </div>
-            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
-              &copy; {new Date().getFullYear()} MedaClaw Arena.{" "}
-              <Link href="/LICENSE" className="text-[#FFCC00] hover:text-white">License</Link>{" "}
-              |{" "}
-              <a href="mailto:support@medaclawarena.com" className="text-[#FFCC00] hover:text-white">
-                support@medaclawarena.com
-              </a>
-            </p>
-            <p className="text-[9px] text-zinc-600 tracking-wider">
-              Minimon, Cybermon, and Draco Bell are trademarks of their respective owners.
-              Tazos are original creations designed for the Trading Tazos Game.
-            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-1">
+              <p className="text-[10px] sm:text-xs font-bold text-white tracking-wide">
+                {t.siteTitle || "TRADING TAZOS GAME"} &copy; {new Date().getFullYear()} — {t.siteFooterTribute || "Fan-made collector experience"}
+              </p>
+              <div className="flex items-center gap-2 text-[9px] sm:text-[10px] text-white/60">
+                <a href="https://github.com/smouj/Trading-Tazos-Game/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="hover:text-white underline underline-offset-2">
+                  License
+                </a>
+                <span>|</span>
+                <a href="mailto:support@medaclawarena.com" className="hover:text-white underline underline-offset-2">
+                  support@medaclawarena.com
+                </a>
+              </div>
+            </div>
           </div>
         </footer>
       )}

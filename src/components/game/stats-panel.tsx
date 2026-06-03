@@ -19,15 +19,15 @@ interface StatsPanelProps {
 }
 
 const FRANCHISE_COLORS: Record<string, string> = {
-  Pokémon: '#FFCB05',
-  Digimon: '#00A1E9',
-  'Dragon Ball Z': '#FF6B00',
+  Minimon: '#FFCB05',
+  Cybermon: '#00A1E9',
+  'Draco Bell': '#FF6B00',
 }
 
 const FRANCHISE_DOT_COLORS: Record<string, string> = {
-  Pokémon: '#FFCB05',
-  Digimon: '#00A1E9',
-  'Dragon Ball Z': '#FF6B00',
+  Minimon: '#FFCB05',
+  Cybermon: '#00A1E9',
+  'Draco Bell': '#FF6B00',
 }
 
 const RARITY_COLORS: Record<string, string> = {

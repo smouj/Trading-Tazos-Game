@@ -25,8 +25,8 @@ interface CollectionItem {
 interface CollectionData { items: CollectionItem[]; total: number; franchiseSummary: Record<string, number> }
 
 const FRANCHISE_BANNER: Record<string, string> = {
-  pokemon: "linear-gradient(135deg, #FFCB05, #FF8C00)",
-  digimon: "linear-gradient(135deg, #00A1E9, #0057B7)",
+  minimon: "linear-gradient(135deg, #FFCB05, #FF8C00)",
+  cybermon: "linear-gradient(135deg, #00A1E9, #0057B7)",
   "dragon-ball-z": "linear-gradient(135deg, #FF6B00, #CC4400)",
 }
 
@@ -102,7 +102,7 @@ export default function CollectionPage() {
                     className="text-[10px] font-black text-white px-3 py-0.5 border-2 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a] uppercase tracking-wider"
                     style={{ background: gradient }}
                   >
-                    {slug.replace("dragon-ball-z", "DBZ")} ({count})
+                    {slug.replace("draco-bell", "Draco Bell")} ({count})
                   </span>
                 )
               })}

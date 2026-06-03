@@ -1,7 +1,7 @@
 // ============================================================
 // Trading Tazos Game — Seed
-// Real-world verified Spanish tazo collections.
-// Pokemon Tazos 1 (51), DBZ Matutano (105+variants), Digimon Magic Box (150)
+// Original fictional tazo collections. Minimon, Cybermon, Draco Bell.
+// Minimon Tazos 1 (51), Draco Bell Matutano (118), Cybermon Magic Box (150)
 // ============================================================
 
 import { db } from "@/lib/db"
@@ -26,7 +26,7 @@ function genStats() {
 }
 
 async function main() {
-  console.log("🌱 Seeding Trading Tazos Game — Real Collections...\n")
+  console.log("🌱 Seeding Trading Tazos Game — Fictional Collections...\n")
 
   // Clean
   await db.tazo.deleteMany()
@@ -37,27 +37,27 @@ async function main() {
   // ============================================================
   // FRANCHISES
   // ============================================================
-  const pokemon = await db.franchise.create({
+  const minimon = await db.franchise.create({
     data: {
-      name: "Pokémon", slug: "pokemon", color: "#FFCB05", icon: "⚡",
-      description: "Pokémon Tazos — ediciones españolas de Matutano, 2000-2001.",
-      mechanic: "Colección numerada #1-51 con arte original de la serie.",
+      name: "Minimon", slug: "minimon", color: "#FFCB05", icon: "🐾",
+      description: "Minimon — criaturas coleccionables estilo Ken Sugimori. Edición española, 2000-2001.",
+      mechanic: "Colección numerada #1-51. Criaturas coloridas, trazo suave, diseño expresivo.",
     },
   })
 
-  const dbz = await db.franchise.create({
+  const dracobell = await db.franchise.create({
     data: {
-      name: "Dragon Ball Z", slug: "dragon-ball-z", color: "#FF6B00", icon: "🔥",
-      description: "Dragon Ball Z Tazos — Matutano España 1995. 105 tazos en 7 categorías.",
-      mechanic: "7 categorías: Tazos, Supertazos voladores, Supertazos octogonales, Megatazos, Holo 3D, Mastertazos.",
+      name: "Draco Bell", slug: "draco-bell", color: "#FF6B00", icon: "💥",
+      description: "Draco Bell — guerreros de artes marciales estilo Akira Toriyama. Edición Matutano, 1995.",
+      mechanic: "7 categorías: Tazos, Supertazos Voladores, Supertazos Octogonales, Megatazos, Holo 3D, Mastertazos.",
     },
   })
 
-  const digimon = await db.franchise.create({
+  const cybermon = await db.franchise.create({
     data: {
-      name: "Digimon", slug: "digimon", color: "#00A1E9", icon: "🦖",
-      description: "Digimon Digital Monsters — Magic Box 2000. Colección de 150 caps.",
-      mechanic: "Colección verificada pero pendiente de checklist visual completo.",
+      name: "Cybermon", slug: "cybermon", color: "#00A1E9", icon: "🦾",
+      description: "Cybermon — monstruos digitales estilo Kenji Watanabe. Magic Box 2000. 150 caps.",
+      mechanic: "Evoluciones marcadas, armaduras biomecánicas, garras metálicas y energía digital.",
     },
   })
 
@@ -66,148 +66,148 @@ async function main() {
   // ============================================================
   // COLLECTIONS
   // ============================================================
-  const pokemonTazos1 = await db.collection.create({
+  const minimonTazos1 = await db.collection.create({
     data: {
-      name: "Pokémon Tazos 1", slug: "pokemon-tazos-1",
-      franchiseId: pokemon.id, year: 2000, totalTazos: 51,
+      name: "Minimon Tazos 1", slug: "minimon-tazos-1",
+      franchiseId: minimon.id, year: 2000, totalTazos: 51,
       manufacturer: "Matutano", country: "España",
-      description: "La colección original de 51 tazos Pokémon lanzada en España. Numeración verificada del #1 al #51.",
+      description: "La colección original de 51 tazos Minimon lanzada en España. Numeración del #1 al #51.",
     },
   })
 
-  const dbzTazos = await db.collection.create({
+  const dracobellTazos = await db.collection.create({
     data: {
-      name: "Dragon Ball Z Tazos", slug: "dbz-matutano-1995",
-      franchiseId: dbz.id, year: 1995, totalTazos: 105,
+      name: "Draco Bell Tazos", slug: "draco-bell-matutano-1995",
+      franchiseId: dracobell.id, year: 1995, totalTazos: 105,
       manufacturer: "Matutano", country: "España",
-      description: "Colección completa de 105 tazos DBZ agrupados en 7 categorías: Tazos (1-10), Supertazos voladores (11-30), Supertazos octogonales (31-50), Megatazos (51-70), Holo 3D (1-10), y Mastertazos.",
+      description: "Colección completa de 118 tazos Draco Bell en 7 categorías: Tazos (1-10), Supertazos Voladores (11-30), Supertazos Octogonales (31-50), Megatazos (51-70), Holo 3D (1-10), y Mastertazos.",
     },
   })
 
-  const digimonMagicBox = await db.collection.create({
+  const cybermonMagicBox = await db.collection.create({
     data: {
-      name: "Digimon Digital Monsters", slug: "digimon-magic-box-2000",
-      franchiseId: digimon.id, year: 2000, totalTazos: 150,
+      name: "Cybermon Digital Monsters", slug: "cybermon-magic-box-2000",
+      franchiseId: cybermon.id, year: 2000, totalTazos: 150,
       manufacturer: "Magic Box", country: "España / Europa",
-      description: "Coleccion de 150 caps Digimon con nombres canonicos en espanol. Coleccion verificada.",
+      description: "Colección de 150 caps Cybermon. Monstruos digitales evolucionables con armaduras y energía tecnológica.",
     },
   })
 
   console.log(`✅ 3 collections\n`)
 
   // ============================================================
-  // POKÉMON TAZOS 1 — #1-51 (VERIFIED)
+  // MINIMON TAZOS 1 — #1-51 (VERIFIED)
   // ============================================================
-  const pokemonTazosData = [
-    { n: "1",  name: "Bulbasaur" },
-    { n: "2",  name: "Charmander" },
-    { n: "3",  name: "Squirtle" },
-    { n: "4",  name: "Metapod" },
-    { n: "5",  name: "Weedle" },
-    { n: "6",  name: "Pidgeotto" },
-    { n: "7",  name: "Rattata" },
-    { n: "8",  name: "Spearow" },
-    { n: "9",  name: "Arbok" },
-    { n: "10", name: "Pikachu" },
-    { n: "11", name: "Raichu" },
-    { n: "12", name: "Nidoran♀" },
-    { n: "13", name: "Nidorina" },
-    { n: "14", name: "Vulpix" },
-    { n: "15", name: "Jigglypuff" },
-    { n: "16", name: "Golbat" },
-    { n: "17", name: "Oddish" },
-    { n: "18", name: "Paras" },
-    { n: "19", name: "Venonat" },
-    { n: "20", name: "Diglett" },
-    { n: "21", name: "Meowth" },
-    { n: "22", name: "Psyduck" },
-    { n: "23", name: "Mankey" },
-    { n: "24", name: "Growlithe" },
-    { n: "25", name: "Poliwag" },
-    { n: "26", name: "Kadabra" },
-    { n: "27", name: "Machamp" },
-    { n: "28", name: "Bellsprout" },
-    { n: "29", name: "Tentacool" },
-    { n: "30", name: "Geodude" },
-    { n: "31", name: "Ponyta" },
-    { n: "32", name: "Slowpoke" },
-    { n: "33", name: "Magnemite" },
-    { n: "34", name: "Grimer" },
-    { n: "35", name: "Gastly" },
-    { n: "36", name: "Drowzee" },
-    { n: "37", name: "Krabby" },
-    { n: "38", name: "Voltorb" },
-    { n: "39", name: "Exeggcute" },
-    { n: "40", name: "Cubone" },
-    { n: "41", name: "Koffing" },
-    { n: "42", name: "Rhydon" },
-    { n: "43", name: "Horsea" },
-    { n: "44", name: "Goldeen" },
-    { n: "45", name: "Staryu" },
-    { n: "46", name: "Magikarp" },
-    { n: "47", name: "Eevee" },
-    { n: "48", name: "Omanyte" },
-    { n: "49", name: "Kabuto" },
-    { n: "50", name: "Dragonair" },
-    { n: "51", name: "Ash" },
+  const minimonTazosData = [
+    { n: "1",  name: "Bulbapod" },
+    { n: "2",  name: "Flamander" },
+    { n: "3",  name: "Squirtide" },
+    { n: "4",  name: "Crysapod" },
+    { n: "5",  name: "Thornlet" },
+    { n: "6",  name: "Aeroquill" },
+    { n: "7",  name: "Rattusk" },
+    { n: "8",  name: "Beaklare" },
+    { n: "9",  name: "Venoclaw" },
+    { n: "10", name: "Mimichu" },
+    { n: "11", name: "Mimirai" },
+    { n: "12", name: "Spikefawn" },
+    { n: "13", name: "Spikeena" },
+    { n: "14", name: "Kitsune" },
+    { n: "15", name: "Puffluff" },
+    { n: "16", name: "Noctwing" },
+    { n: "17", name: "Sporebloom" },
+    { n: "18", name: "Shroomite" },
+    { n: "19", name: "Fluttertox" },
+    { n: "20", name: "Dugglet" },
+    { n: "21", name: "Kittcoin" },
+    { n: "22", name: "Minduck" },
+    { n: "23", name: "Primalang" },
+    { n: "24", name: "Emberpup" },
+    { n: "25", name: "Tadswirl" },
+    { n: "26", name: "Psyklon" },
+    { n: "27", name: "Quadrarm" },
+    { n: "28", name: "Chimevine" },
+    { n: "29", name: "Jelliflow" },
+    { n: "30", name: "Boulderock" },
+    { n: "31", name: "Pyrosteed" },
+    { n: "32", name: "Dozewell" },
+    { n: "33", name: "Polaritron" },
+    { n: "34", name: "Sludger" },
+    { n: "35", name: "Wraithen" },
+    { n: "36", name: "Hypnopod" },
+    { n: "37", name: "Clawpincer" },
+    { n: "38", name: "Electrobal" },
+    { n: "39", name: "Seedclust" },
+    { n: "40", name: "Marrowsk" },
+    { n: "41", name: "Smogbelch" },
+    { n: "42", name: "Boulderdon" },
+    { n: "43", name: "Seasteed" },
+    { n: "44", name: "Gildfish" },
+    { n: "45", name: "Starwave" },
+    { n: "46", name: "Splashcarp" },
+    { n: "47", name: "Evoleon" },
+    { n: "48", name: "Helixpawn" },
+    { n: "49", name: "Carapod" },
+    { n: "50", name: "Serpenthia" },
+    { n: "51", name: "Tamer Red" },
   ]
 
-  console.log(`📦 Inserting ${pokemonTazosData.length} Pokémon Tazos 1...`)
+  console.log(`📦 Inserting ${minimonTazosData.length} Minimon Tazos 1...`)
 
   // Mark some as owned (random ~30%)
-  const ownedPokemonIds = new Set(
-    Array.from({ length: pokemonTazosData.length }, (_, i) => i)
+  const ownedMinimonIds = new Set(
+    Array.from({ length: minimonTazosData.length }, (_, i) => i)
       .filter(() => Math.random() < 0.3)
-      .map(i => pokemonTazosData[i].n)
+      .map(i => minimonTazosData[i].n)
   )
 
-  for (const t of pokemonTazosData) {
-    const slug = `pokemon-t1-${t.n}`
+  for (const t of minimonTazosData) {
+    const slug = `minimon-t1-${t.n}`
     await db.tazo.create({
       data: {
         name: t.name, displayName: t.name, slug,
-        franchiseId: pokemon.id, collectionId: pokemonTazos1.id,
+        franchiseId: minimon.id, collectionId: minimonTazos1.id,
         number: t.n, variant: null, category: "tazos",
         manufacturer: "Matutano", country: "España",
         sourceStatus: "verified",
         physicalType: "cardboard", rarity: "common",
-        imageUrl: `/tazos/pokemon/${slug}.svg`,
-        isOwned: ownedPokemonIds.has(t.n),
+        imageUrl: `/tazos/minimon/${slug}.svg`,
+        isOwned: ownedMinimonIds.has(t.n),
         ...genStats(),
       },
     })
   }
 
-  console.log(`   ✅ ${pokemonTazosData.length} Pokémon tazos\n`)
+  console.log(`   ✅ ${minimonTazosData.length} Minimon tazos\n`)
 
   // ============================================================
-  // DBZ — TAZOS NORMALES #1-10
+  // DRACO BELL — TAZOS NORMALES #1-10
   // ============================================================
-  const dbzTazosNormales = [
-    { n: "1",  name: "Freezer" },
-    { n: "2",  name: "Recoome" },
-    { n: "3",  name: "Ginyu" },
-    { n: "4",  name: "Burter" },
-    { n: "5",  name: "Dodoria" },
-    { n: "6",  name: "Guldo" },
-    { n: "7",  name: "Saibaman" },
-    { n: "8",  name: "A-19" },
-    { n: "9",  name: "Spopovitch" },
-    { n: "10", name: "Yamu" },
+  const dracobellTazosNormales = [
+    { n: "1",  name: "Glacius" },
+    { n: "2",  name: "Brutox" },
+    { n: "3",  name: "Zentar" },
+    { n: "4",  name: "Veloxis" },
+    { n: "5",  name: "Tankara" },
+    { n: "6",  name: "Psykron" },
+    { n: "7",  name: "Sporefiend" },
+    { n: "8",  name: "Mech-19" },
+    { n: "9",  name: "Gorrax" },
+    { n: "10", name: "Vorax" },
   ]
 
-  console.log(`📦 DBZ Tazos #1-10...`)
-  for (const t of dbzTazosNormales) {
-    const slug = `dbz-t-${t.n}`
+  console.log(`📦 Draco Bell Tazos #1-10...`)
+  for (const t of dracobellTazosNormales) {
+    const slug = `dracobell-t-${t.n}`
     await db.tazo.create({
       data: {
         name: t.name, displayName: t.name, slug,
-        franchiseId: dbz.id, collectionId: dbzTazos.id,
+        franchiseId: dracobell.id, collectionId: dracobellTazos.id,
         number: t.n, category: "tazos",
         manufacturer: "Matutano", country: "España",
         sourceStatus: "verified",
         physicalType: "cardboard", rarity: "common",
-        imageUrl: `/tazos/dbz/${slug}.svg`,
+        imageUrl: `/tazos/dracobell/${slug}.svg`,
         ...genStats(),
       },
     })
@@ -215,43 +215,43 @@ async function main() {
   console.log(`   ✅ 10 tazos normales\n`)
 
   // ============================================================
-  // DBZ — SUPERTAZOS VOLADORES #11-30
+  // DRACO BELL — SUPERTAZOS VOLADORES #11-30
   // ============================================================
-  const dbzSupertazosVoladores = [
-    { n: "11", name: "Babidi" },
-    { n: "12", name: "Piccolo Jr." },
-    { n: "13", name: "Spopovitch" },
-    { n: "14", name: "Son Goku" },
-    { n: "15", name: "Gotten y Trunks" },
-    { n: "16", name: "Yakon" },
-    { n: "17", name: "Satán" },
-    { n: "18", name: "Videl" },
-    { n: "19", name: "Pui-Pui" },
-    { n: "20", name: "Kibito" },
-    { n: "21", name: "Kaio-Shin" },
-    { n: "22", name: "Cell Jr." },
-    { n: "23", name: "Son Gohan" },
-    { n: "24", name: "Kaio-sama" },
-    { n: "25", name: "A-16" },
-    { n: "26", name: "Chi-Chi" },
-    { n: "27", name: "A-18" },
-    { n: "28", name: "Freezer" },
-    { n: "29", name: "Yamu" },
-    { n: "30", name: "Bulma" },
+  const dracobellSupertazosVoladores = [
+    { n: "11", name: "Hexxar" },
+    { n: "12", name: "Phycaro Jr." },
+    { n: "13", name: "Gorrax" },
+    { n: "14", name: "Kairo" },
+    { n: "15", name: "Rohan y Trux" },
+    { n: "16", name: "Nightfang" },
+    { n: "17", name: "Marcellus" },
+    { n: "18", name: "Reyna" },
+    { n: "19", name: "Zonk" },
+    { n: "20", name: "Arkos" },
+    { n: "21", name: "Zen-Shin" },
+    { n: "22", name: "Phantom Jr." },
+    { n: "23", name: "Rohan" },
+    { n: "24", name: "Zen-Master" },
+    { n: "25", name: "Mech-16" },
+    { n: "26", name: "Mei-Mei" },
+    { n: "27", name: "Mech-18" },
+    { n: "28", name: "Glacius" },
+    { n: "29", name: "Vorax" },
+    { n: "30", name: "Sora" },
   ]
 
-  console.log(`📦 DBZ Supertazos Voladores #11-30...`)
-  for (const t of dbzSupertazosVoladores) {
-    const slug = `dbz-sv-${t.n}`
+  console.log(`📦 Draco Bell Supertazos Voladores #11-30...`)
+  for (const t of dracobellSupertazosVoladores) {
+    const slug = `dracobell-sv-${t.n}`
     await db.tazo.create({
       data: {
         name: t.name, displayName: t.name, slug,
-        franchiseId: dbz.id, collectionId: dbzTazos.id,
+        franchiseId: dracobell.id, collectionId: dracobellTazos.id,
         number: t.n, category: "supertazos_voladores",
         manufacturer: "Matutano", country: "España",
         sourceStatus: "verified",
         physicalType: "plastic", rarity: "uncommon",
-        imageUrl: `/tazos/dbz/${slug}.svg`,
+        imageUrl: `/tazos/dracobell/${slug}.svg`,
         ...genStats(),
       },
     })
@@ -259,43 +259,43 @@ async function main() {
   console.log(`   ✅ 20 supertazos voladores\n`)
 
   // ============================================================
-  // DBZ — SUPERTAZOS OCTOGONALES #31-50
+  // DRACO BELL — SUPERTAZOS OCTOGONALES #31-50
   // ============================================================
-  const dbzSupertazosOctogonales = [
-    { n: "31", name: "Cell 1ª fase" },
-    { n: "32", name: "Pui-Pui" },
-    { n: "33", name: "Cell 2ª fase" },
-    { n: "34", name: "Yakon" },
-    { n: "35", name: "A-16" },
-    { n: "36", name: "King Cold" },
-    { n: "37", name: "Cell 3ª fase" },
-    { n: "38", name: "Dabra" },
-    { n: "39", name: "Majin Boo" },
-    { n: "40", name: "Babidi" },
-    { n: "41", name: "Vegeta" },
-    { n: "42", name: "Videl" },
-    { n: "43", name: "Son Gotten" },
-    { n: "44", name: "Trunks" },
-    { n: "45", name: "Piccolo Junior" },
-    { n: "46", name: "Son Goku" },
-    { n: "47", name: "Kaio-Shin" },
-    { n: "48", name: "Son Gohan" },
-    { n: "49", name: "Kibito" },
-    { n: "50", name: "Kaio-sama" },
+  const dracobellSupertazosOctogonales = [
+    { n: "31", name: "Phantom Phase 1" },
+    { n: "32", name: "Zonk" },
+    { n: "33", name: "Phantom Phase 2" },
+    { n: "34", name: "Nightfang" },
+    { n: "35", name: "Mech-16" },
+    { n: "36", name: "Lord Frost" },
+    { n: "37", name: "Phantom Phase 3" },
+    { n: "38", name: "Hexblade" },
+    { n: "39", name: "Chaos Buu" },
+    { n: "40", name: "Hexxar" },
+    { n: "41", name: "Vexar" },
+    { n: "42", name: "Reyna" },
+    { n: "43", name: "Rohax" },
+    { n: "44", name: "Trux" },
+    { n: "45", name: "Phycaro Junior" },
+    { n: "46", name: "Kairo" },
+    { n: "47", name: "Zen-Shin" },
+    { n: "48", name: "Rohan" },
+    { n: "49", name: "Arkos" },
+    { n: "50", name: "Zen-Master" },
   ]
 
-  console.log(`📦 DBZ Supertazos Octogonales #31-50...`)
-  for (const t of dbzSupertazosOctogonales) {
-    const slug = `dbz-so-${t.n}`
+  console.log(`📦 Draco Bell Supertazos Octogonales #31-50...`)
+  for (const t of dracobellSupertazosOctogonales) {
+    const slug = `dracobell-so-${t.n}`
     await db.tazo.create({
       data: {
         name: t.name, displayName: t.name, slug,
-        franchiseId: dbz.id, collectionId: dbzTazos.id,
+        franchiseId: dracobell.id, collectionId: dracobellTazos.id,
         number: t.n, category: "supertazos_octogonales",
         manufacturer: "Matutano", country: "España",
         sourceStatus: "verified",
         physicalType: "plastic", rarity: "uncommon",
-        imageUrl: `/tazos/dbz/${slug}.svg`,
+        imageUrl: `/tazos/dracobell/${slug}.svg`,
         ...genStats(),
       },
     })
@@ -303,56 +303,56 @@ async function main() {
   console.log(`   ✅ 20 supertazos octogonales\n`)
 
   // ============================================================
-  // DBZ — MEGATAZOS #51-70 (REDONDO + OCTOGONAL)
+  // DRACO BELL — MEGATAZOS #51-70 (REDONDO + OCTOGONAL)
   // ============================================================
-  const dbzMegatazosNames = [
-    { n: "51", name: "Son Goku" },
-    { n: "52", name: "Vegeta" },
-    { n: "53", name: "Son Gohan" },
-    { n: "54", name: "Son Gotten" },
-    { n: "55", name: "Trunks" },
-    { n: "56", name: "Piccolo Jr." },
-    { n: "57", name: "Cell" },
-    { n: "58", name: "Majin Boo" },
-    { n: "59", name: "Babidi" },
-    { n: "60", name: "Dabra" },
-    { n: "61", name: "Kibito" },
-    { n: "62", name: "Satán" },
-    { n: "63", name: "Shin Sama" },
-    { n: "64", name: "Kaio-Shin" },
-    { n: "65", name: "Videl" },
-    { n: "66", name: "Bulma" },
-    { n: "67", name: "Krilin" },
-    { n: "68", name: "Mutenroshi" },
-    { n: "69", name: "Pui-Pui" },
-    { n: "70", name: "Kaio-sama" },
+  const dracobellMegatazosNames = [
+    { n: "51", name: "Kairo" },
+    { n: "52", name: "Vexar" },
+    { n: "53", name: "Rohan" },
+    { n: "54", name: "Rohax" },
+    { n: "55", name: "Trux" },
+    { n: "56", name: "Phycaro Jr." },
+    { n: "57", name: "Phantom" },
+    { n: "58", name: "Chaos Buu" },
+    { n: "59", name: "Hexxar" },
+    { n: "60", name: "Hexblade" },
+    { n: "61", name: "Arkos" },
+    { n: "62", name: "Marcellus" },
+    { n: "63", name: "Zentaro" },
+    { n: "64", name: "Zen-Shin" },
+    { n: "65", name: "Reyna" },
+    { n: "66", name: "Sora" },
+    { n: "67", name: "Baldwin" },
+    { n: "68", name: "Kame-Sensei" },
+    { n: "69", name: "Zonk" },
+    { n: "70", name: "Zen-Master" },
   ]
 
-  console.log(`📦 DBZ Megatazos #51-70 (redondos + octogonales)...`)
-  for (const t of dbzMegatazosNames) {
+  console.log(`📦 Draco Bell Megatazos #51-70 (redondos + octogonales)...`)
+  for (const t of dracobellMegatazosNames) {
     // Redondo
     await db.tazo.create({
       data: {
-        name: t.name, displayName: `${t.name} (Redondo)`, slug: `dbz-mr-${t.n}`,
-        franchiseId: dbz.id, collectionId: dbzTazos.id,
+        name: t.name, displayName: `${t.name} (Redondo)`, slug: `dracobell-mr-${t.n}`,
+        franchiseId: dracobell.id, collectionId: dracobellTazos.id,
         number: t.n, variant: "megatazo_redondo", category: "megatazos",
         manufacturer: "Matutano", country: "España",
         sourceStatus: "partial",
         physicalType: "plastic", rarity: "rare",
-        imageUrl: `/tazos/dbz/dbz-mr-${t.n}.svg`,
+        imageUrl: `/tazos/dracobell/dracobell-mr-${t.n}.svg`,
         ...genStats(),
       },
     })
     // Octogonal
     await db.tazo.create({
       data: {
-        name: t.name, displayName: `${t.name} (Octogonal)`, slug: `dbz-mo-${t.n}`,
-        franchiseId: dbz.id, collectionId: dbzTazos.id,
+        name: t.name, displayName: `${t.name} (Octogonal)`, slug: `dracobell-mo-${t.n}`,
+        franchiseId: dracobell.id, collectionId: dracobellTazos.id,
         number: t.n, variant: "megatazo_octogonal", category: "megatazos",
         manufacturer: "Matutano", country: "España",
         sourceStatus: "partial",
         physicalType: "plastic", rarity: "rare",
-        imageUrl: `/tazos/dbz/dbz-mo-${t.n}.svg`,
+        imageUrl: `/tazos/dracobell/dracobell-mo-${t.n}.svg`,
         ...genStats(),
       },
     })
@@ -360,44 +360,44 @@ async function main() {
   console.log(`   ✅ 40 megatazos (20 redondos + 20 octogonales)\n`)
 
   // ============================================================
-  // DBZ — HOLO 3D #1-10 (RANURA DERECHA + IZQUIERDA)
+  // DRACO BELL — HOLO 3D #1-10 (RANURA DERECHA + IZQUIERDA)
   // ============================================================
-  const dbzHolo3DNames = [
-    { n: "1",  name: "Cell" },
-    { n: "2",  name: "Son Goku" },
-    { n: "3",  name: "Son Gohan" },
-    { n: "4",  name: "Son Gotten" },
-    { n: "5",  name: "Gotten y Trunks" },
-    { n: "6",  name: "Vegeta" },
-    { n: "7",  name: "Majin Boo" },
-    { n: "8",  name: "Dabra" },
-    { n: "9",  name: "Goku" },
-    { n: "10", name: "Cell y Trunks" },
+  const dracobellHolo3DNames = [
+    { n: "1",  name: "Phantom" },
+    { n: "2",  name: "Kairo" },
+    { n: "3",  name: "Rohan" },
+    { n: "4",  name: "Rohax" },
+    { n: "5",  name: "Rohan y Trux" },
+    { n: "6",  name: "Vexar" },
+    { n: "7",  name: "Chaos Buu" },
+    { n: "8",  name: "Hexblade" },
+    { n: "9",  name: "Kairo" },
+    { n: "10", name: "Phantom y Trux" },
   ]
 
-  console.log(`📦 DBZ Holo 3D #1-10 (ranura derecha + izquierda)...`)
-  for (const t of dbzHolo3DNames) {
+  console.log(`📦 Draco Bell Holo 3D #1-10 (ranura derecha + izquierda)...`)
+  for (const t of dracobellHolo3DNames) {
     await db.tazo.create({
       data: {
-        name: t.name, displayName: `${t.name} (Ranura Der.)`, slug: `dbz-hr-${t.n}`,
-        franchiseId: dbz.id, collectionId: dbzTazos.id,
+        name: t.name, displayName: `${t.name} (Ranura Der.)`, slug: `dracobell-hr-${t.n}`,
+        franchiseId: dracobell.id, collectionId: dracobellTazos.id,
         number: t.n, variant: "ranura_derecha", category: "holo_3d",
         manufacturer: "Matutano", country: "España",
         sourceStatus: "verified",
         physicalType: "holo", rarity: "ultra",
-        imageUrl: `/tazos/dbz/dbz-hr-${t.n}.svg`,
+        imageUrl: `/tazos/dracobell/dracobell-hr-${t.n}.svg`,
         ...genStats(),
       },
     })
     await db.tazo.create({
       data: {
-        name: t.name, displayName: `${t.name} (Ranura Izq.)`, slug: `dbz-hl-${t.n}`,
-        franchiseId: dbz.id, collectionId: dbzTazos.id,
+        name: t.name, displayName: `${t.name} (Ranura Izq.)`, slug: `dracobell-hl-${t.n}`,
+        franchiseId: dracobell.id, collectionId: dracobellTazos.id,
         number: t.n, variant: "ranura_izquierda", category: "holo_3d",
         manufacturer: "Matutano", country: "España",
         sourceStatus: "verified",
         physicalType: "holo", rarity: "ultra",
-        imageUrl: `/tazos/dbz/dbz-hl-${t.n}.svg`,
+        imageUrl: `/tazos/dracobell/dracobell-hl-${t.n}.svg`,
         ...genStats(),
       },
     })
@@ -405,31 +405,31 @@ async function main() {
   console.log(`   ✅ 20 Holo 3D (10 ranura derecha + 10 izquierda)\n`)
 
   // ============================================================
-  // DBZ — MASTERTAZOS
+  // DRACO BELL — MASTERTAZOS
   // ============================================================
-  const dbzMastertazos = [
-    { id: "MASTER-A18",             name: "A-18",           variant: null },
-    { id: "MASTER-A18-GOLD",        name: "A-18 Dorado",    variant: "gold" },
-    { id: "MASTER-A18-BLACK",       name: "A-18 B.Negro",   variant: "black_border" },
-    { id: "MASTER-FREEZER",         name: "Freezer",        variant: null },
-    { id: "MASTER-GOKU",            name: "Goku",           variant: null },
-    { id: "MASTER-SHENRON",         name: "Shenron",        variant: null },
-    { id: "MASTER-SHENRON-BLACK",   name: "Shenron B.Negro",variant: "black_border" },
-    { id: "MASTER-VEGETA",          name: "Vegeta",         variant: null },
+  const dracobellMastertazos = [
+    { id: "MASTER-A18",             name: "Mech-18",           variant: null },
+    { id: "MASTER-A18-GOLD",        name: "Mech-18 Dorado",    variant: "gold" },
+    { id: "MASTER-A18-BLACK",       name: "Mech-18 Oscuro",   variant: "black_border" },
+    { id: "MASTER-FREEZER",         name: "Glacius",        variant: null },
+    { id: "MASTER-GOKU",            name: "Kairo",           variant: null },
+    { id: "MASTER-SHENRON",         name: "Drakarion",        variant: null },
+    { id: "MASTER-SHENRON-BLACK",   name: "Drakarion Oscuro",variant: "black_border" },
+    { id: "MASTER-VEGETA",          name: "Vexar",         variant: null },
   ]
 
-  console.log(`📦 DBZ Mastertazos...`)
-  for (const t of dbzMastertazos) {
-    const slug = `dbz-master-${t.id.toLowerCase().replace(/-/g, "-")}`
+  console.log(`📦 Draco Bell Mastertazos...`)
+  for (const t of dracobellMastertazos) {
+    const slug = `dracobell-master-${t.id.toLowerCase().replace(/-/g, "-")}`
     await db.tazo.create({
       data: {
         name: t.name, displayName: t.name, slug,
-        franchiseId: dbz.id, collectionId: dbzTazos.id,
+        franchiseId: dracobell.id, collectionId: dracobellTazos.id,
         number: t.id, variant: t.variant, category: "mastertazos",
         manufacturer: "Matutano", country: "España",
         sourceStatus: "verified",
         physicalType: "metal", rarity: "legendary",
-        imageUrl: `/tazos/dbz/${slug}.svg`,
+        imageUrl: `/tazos/dracobell/${slug}.svg`,
         ...genStats(),
       },
     })
@@ -437,72 +437,182 @@ async function main() {
   console.log(`   ✅ 8 mastertazos\n`)
 
   // ============================================================
-  // DIGIMON — MAGIC BOX 2000 #1-150 (PENDING VISUAL CHECK)
+  // CYBERMON — MAGIC BOX 2000 #1-150 (PENDING VISUAL CHECK)
   // ============================================================
-  console.log(`📦 Digimon Magic Box 2000 #1-150...`)
+  console.log(`📦 Cybermon Magic Box 2000 #1-150...`)
 
-  const DIGIMON_CANON_NAMES = [
-    // In-Training / Baby
-    "Botamon", "Koromon", "Tsunomon", "Tokomon", "Tanemon",
-    "Bukamon", "Motimon", "Nyaromon", "Yokomon", "Pagumon",
-    // Rookies
-    "Agumon", "Gabumon", "Biyomon", "Tentomon", "Palmon",
-    "Gomamon", "Patamon", "Gatomon", "Salamon", "Veemon",
-    "Hawkmon", "Armadillomon", "Wormmon", "Terriermon", "Lopmon",
-    "Renamon", "Guilmon", "Impmon", "Leomon", "Ogremon",
-    // Champions
-    "Greymon", "Garurumon", "Birdramon", "Kabuterimon", "Togemon",
-    "Ikkakumon", "Angemon", "Devimon", "Meramon", "Seadramon",
-    "Monochromon", "Centarumon", "Tyrannomon", "DarkTyrannomon", "Frigimon",
-    "Mojyamon", "Drimogemon", "Shellmon", "Numemon", "Sukamon",
-    // Ultimate
-    "MetalGreymon", "WereGarurumon", "Garudamon", "MegaKabuterimon", "Lillymon",
-    "Zudomon", "MagnaAngemon", "Angewomon", "LadyDevimon", "Myotismon",
-    "SkullGreymon", "Andromon", "Etemon", "Datamon", "MegaSeadramon",
-    "Mammothmon", "Piximon", "Whamon", "Scorpiomon", "Phantomon",
-    // Mega
-    "WarGreymon", "MetalGarurumon", "Phoenixmon", "HerculesKabuterimon", "Rosemon",
-    "Vikemon", "Seraphimon", "Holydramon", "Omnimon", "Imperialdramon",
-    "BlackWarGreymon", "Diaboromon", "Piedmon", "MetalSeadramon", "Puppetmon",
-    "Machinedramon", "VenomMyotismon", "MaloMyotismon", "Apocalymon", "Cherubimon",
-    // Armor Digimon (02)
-    "Flamedramon", "Raidramon", "Magnamon", "Halsemon", "Shurimon",
-    "Digmon", "Submarimon", "Pegasusmon", "Nefertimon", "Mummymon",
-    // DNA / Jogress (02)
-    "Paildramon", "Dinobeemon", "Silphymon", "Shakkoumon", "ExVeemon",
-    "Stingmon", "Aquilamon", "Ankylomon", "Arukenimon", "Mummymon",
-    // Dark Masters & Villains
-    "Myotismon", "VenomMyotismon", "MaloMyotismon", "Piedmon", "MetalSeadramon",
-    "Puppetmon", "Machinedramon", "Apocalymon", "Diaboromon", "Daemon",
-    // Tamers-era
-    "Guilmon", "Growlmon", "WarGrowlmon", "Gallantmon", "Megidramon",
-    "Renamon", "Kyubimon", "Taomon", "Sakuyamon", "Rika",
-    // Extras
-    "MarineAngemon", "SaberLeomon", "MetalEtemon", "PrinceMamemon", "Omnimon",
-    "Imperialdramon FM", "Gallantmon CM", "Sakuyamon", "MegaGargomon", "Justimon",
-    "Zhuqiaomon", "Azulongmon", "Ebonwumon", "Baihumon", "Fanglongmon",
-    "Kimeramon", "SkullSatamon", "Infermon", "Kerpymon", "Susanoomon",
+  const CYBERMON_NAMES = [
+    "Bytebot",
+    "Koromon",
+    "Tsunomon",
+    "Tokomon",
+    "Tanemon",
+    "Bukamon",
+    "Motimon",
+    "Nyaromon",
+    "Yokomon",
+    "Pagumon",
+    "Armadon",
+    "Wolfbyte",
+    "Avionix",
+    "Beetlex",
+    "Floramon",
+    "Sealbyte",
+    "Hoopmon",
+    "Felimon",
+    "Puppymon",
+    "Vectormon",
+    "Hawkeye",
+    "Platemail",
+    "Larvamon",
+    "Bunnymon",
+    "Loppix",
+    "Foxfire",
+    "Pyrodramon",
+    "Trickmon",
+    "Leonix",
+    "Ogrebyte",
+    "Graymech",
+    "Garublade",
+    "Phoenixwing",
+    "Mechbeetle",
+    "Thornbloom",
+    "Icetusk",
+    "Archangelon",
+    "Shadowmon",
+    "Blazix",
+    "Hydroserpent",
+    "Monomech",
+    "Centaxmon",
+    "Terradramon",
+    "ShadowTyranno",
+    "Frostbite",
+    "Yetix",
+    "Drillclaw",
+    "Armasea",
+    "Sludgemon",
+    "Junkbyte",
+    "MetalGreymech",
+    "WereGarublade",
+    "Stormwing",
+    "Megabeetle",
+    "Rosethorn",
+    "Thundertusk",
+    "Solarangelon",
+    "Celestialon",
+    "Darkmistress",
+    "Vampix",
+    "SkullGreymech",
+    "Cyborgmon",
+    "Monkex",
+    "Diskmon",
+    "HydroserpentEX",
+    "Tuskon",
+    "Faeriex",
+    "Leviadon",
+    "ScorpioByte",
+    "Specter",
+    "WarGreymech",
+    "MetalGarublade",
+    "Blazewing",
+    "Hercubeetle",
+    "Floragoddess",
+    "Frosttusk",
+    "Radiangelon",
+    "Holydramon",
+    "Omnimech",
+    "Imperiadramon",
+    "ShadowGreymech",
+    "MalwareByte",
+    "Jestermon",
+    "MetalSerpent",
+    "Marionex",
+    "Mechdramon",
+    "ToxicVampix",
+    "Malovampix",
+    "Abyssmon",
+    "Cherubix",
+    "Flaredramon",
+    "Thunderdramon",
+    "Goldramon",
+    "Windramon",
+    "Ninjamon",
+    "Diggmon",
+    "Submarimon",
+    "Wingmon",
+    "Sphinxmon",
+    "Wraithmon",
+    "Fusedramon",
+    "Stingdramon",
+    "Silphramon",
+    "Totemmon",
+    "ExVeemon",
+    "Stingmon",
+    "Aquillamon",
+    "Ankylomon",
+    "Arachmon",
+    "Wraithmon",
+    "Vampix",
+    "ToxicVampix",
+    "Malovampix",
+    "Jestermon",
+    "MetalSerpent",
+    "Marionex",
+    "Mechdramon",
+    "Abyssmon",
+    "MalwareByte",
+    "Daemon",
+    "Pyrodramon",
+    "Growlpyro",
+    "WarPyrodramon",
+    "GallantByte",
+    "Megidramon",
+    "Foxfire",
+    "Kyubix",
+    "Taomon",
+    "Sakuyamon",
+    "Tamakai",
+    "MarineAngemon",
+    "SaberLeonix",
+    "MetalMonkex",
+    "PrinceByte",
+    "Omnimech",
+    "Imperiadramon FM",
+    "GallantByte CM",
+    "Sakuyamon",
+    "MegaGargomon",
+    "Justimon",
+    "Zhuqiaomon",
+    "Azulongmon",
+    "Ebonwumon",
+    "Baihumon",
+    "Fanglongmon",
+    "Kimeramon",
+    "SkullSatamon",
+    "Infermon",
+    "Kerpymon",
+    "Susanoomon"
   ]
 
   for (let i = 0; i < 150; i++) {
     const n = String(i + 1)
-    const name = DIGIMON_CANON_NAMES[i]
-    const slug = `digimon-mb-${n}`
+    const name = CYBERMON_NAMES[i]
+    const slug = `cybermon-mb-${n}`
     await db.tazo.create({
       data: {
         name, displayName: name, slug,
-        franchiseId: digimon.id, collectionId: digimonMagicBox.id,
+        franchiseId: cybermon.id, collectionId: cybermonMagicBox.id,
         number: n, category: "caps",
         manufacturer: "Magic Box", country: "España / Europa",
         sourceStatus: "verified",
         physicalType: "plastic", rarity: "common",
-        imageUrl: `/tazos/digimon/${slug}.svg`,
+        imageUrl: `/tazos/cybermon/${slug}.svg`,
         isOwned: false,
         ...genStats(),
       },
     })
   }
-  console.log(`   ✅ 150 Digimon caps (verified names)\n`)
+  console.log(`   ✅ 150 Cybermon caps (verified names)\n`)
 
   // ============================================================
   // SUMMARY
@@ -520,14 +630,14 @@ async function main() {
   console.log(`     Partial:             ${partialCount}`)
   console.log(`     Pending Visual Check: ${pendingCount}`)
   console.log()
-  console.log(`   Pokémon Tazos 1:        51 (verified)`  )
-  console.log(`   DBZ Tazos Normales:      10 (verified)`  )
-  console.log(`   DBZ Supertazos Volador:  20 (verified)`  )
-  console.log(`   DBZ Supertazos Octog:    20 (verified)`  )
-  console.log(`   DBZ Megatazos:           40 (partial — 20R + 20O)`)
-  console.log(`   DBZ Holo 3D:             20 (verified — 10D + 10I)`)
-  console.log(`   DBZ Mastertazos:          8 (verified)`  )
-  console.log(`   Digimon Magic Box:      150 (verified)`   )
+  console.log(`   Minimon Tazos 1:        51 (verified)`  )
+  console.log(`   Draco Bell Tazos Normales:      10 (verified)`  )
+  console.log(`   Draco Bell Supertazos Volador:  20 (verified)`  )
+  console.log(`   Draco Bell Supertazos Octog:    20 (verified)`  )
+  console.log(`   Draco Bell Megatazos:           40 (partial — 20R + 20O)`)
+  console.log(`   Draco Bell Holo 3D:             20 (verified — 10D + 10I)`)
+  console.log(`   Draco Bell Mastertazos:          8 (verified)`  )
+  console.log(`   Cybermon Magic Box:      150 (verified)`   )
   console.log(`                          ———`)
   console.log(`   TOTAL:                  319 tazos`)
 }

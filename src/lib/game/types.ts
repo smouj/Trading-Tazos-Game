@@ -84,12 +84,12 @@ export const SOURCE_STATUS_CONFIG: Record<SourceStatus, { label: string; color: 
 }
 
 // ---- Legacy combat types (for compatibility) ----
-export const POKEMON_TYPES = ["fire", "water", "grass", "electric", "psychic", "ghost", "dragon", "normal"] as const
-export const DIGIMON_TYPES = ["vaccine", "virus", "data"] as const
-export const DBZ_TYPES = ["saiyan", "namekian", "android", "majin", "frieza"] as const
+export const MINIMON_TYPES = ["fire", "water", "grass", "electric", "psychic", "ghost", "dragon", "normal"] as const
+export const CYBERMON_TYPES = ["vaccine", "virus", "data"] as const
+export const DRACOBELL_TYPES = ["saiyan", "namekian", "android", "majin", "frieza"] as const
 
-// ---- DBZ Categories ----
-export const DBZ_CATEGORIES = [
+// ---- Draco Bell Categories ----
+export const DRACOBELL_CATEGORIES = [
   "tazos",
   "supertazos_voladores",
   "supertazos_octogonales",
@@ -98,9 +98,9 @@ export const DBZ_CATEGORIES = [
   "mastertazos",
 ] as const
 
-export type DbzCategory = (typeof DBZ_CATEGORIES)[number]
+export type DracoBellCategory = (typeof DRACOBELL_CATEGORIES)[number]
 
-export const DBZ_CATEGORY_CONFIG: Record<DbzCategory, { label: string; description: string }> = {
+export const DRACOBELL_CATEGORY_CONFIG: Record<DracoBellCategory, { label: string; description: string }> = {
   tazos: { label: "Tazos", description: "Serie base, 5 puntas, #1-10" },
   supertazos_voladores: { label: "Supertazos Voladores", description: "Con muescas para lanzar, #11-30" },
   supertazos_octogonales: { label: "Supertazos Octogonales", description: "8 puntas, #31-50" },

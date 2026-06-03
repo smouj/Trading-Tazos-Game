@@ -6,7 +6,7 @@ const fr: Dictionary = {
   siteIssue: "Vol.1",
   siteTagline: "Faut tous les retourner !",
   siteFooterTribute: "Un hommage nostalgique a l'age d'or des tazos",
-  siteFooterTrademark: "Pokemon, Digimon et Dragon Ball Z sont des marques de leurs proprietaires respectifs. Ceci est un hommage de fans.",
+  siteFooterTrademark: "Fan-made tribute. Minimon, Cybermon, and Draco Bell are original fictional IPs for Trading Tazos Game.",
   siteMastheadBadge: "EXCLUSIF — EDITION COLLECTOR",
 
   tabAlbum: "Album",

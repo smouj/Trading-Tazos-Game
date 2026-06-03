@@ -6,7 +6,7 @@ const en: Dictionary = {
   siteIssue: "Vol.1",
   siteTagline: "Gotta flip 'em all!",
   siteFooterTribute: "A nostalgic tribute to the golden age of tazos",
-  siteFooterTrademark: "Pokemon, Digimon & Dragon Ball Z are trademarks of their respective owners. This is a fan-made tribute.",
+  siteFooterTrademark: "Fan-made tribute. Minimon, Cybermon, and Draco Bell are original fictional IPs for Trading Tazos Game.",
   siteMastheadBadge: "EXCLUSIVE — COLLECTOR'S EDITION",
 
   tabAlbum: "Album",

@@ -153,8 +153,8 @@ export default function MagazinePageShell({
               </a>
             </p>
             <p className="text-[9px] text-zinc-600 tracking-wider">
-              Pokemon, Digimon, and Dragon Ball Z are trademarks of their respective owners.
-              Tazos are fan-sourced from verified Spanish collections.
+              Minimon, Cybermon, and Draco Bell are trademarks of their respective owners.
+              Tazos are original creations designed for the Trading Tazos Game.
             </p>
           </div>
         </footer>

@@ -76,12 +76,12 @@ export async function POST(request: NextRequest) {
 async function seedWelcomePack(userId: string) {
   try {
     // Pick 10 random tazos (balanced across franchises)
-    const [pkm, dbz, digi] = await Promise.all([
-      db.tazo.findMany({ where: { franchise: { slug: "pokemon" } }, take: 4, orderBy: { attack: "desc" } }),
+    const [min, drac, cyber] = await Promise.all([
+      db.tazo.findMany({ where: { franchise: { slug: "minimon" } }, take: 4, orderBy: { attack: "desc" } }),
       db.tazo.findMany({ where: { franchise: { slug: "dragon-ball-z" } }, take: 3, orderBy: { attack: "desc" } }),
-      db.tazo.findMany({ where: { franchise: { slug: "digimon" } }, take: 3, orderBy: { attack: "desc" } }),
+      db.tazo.findMany({ where: { franchise: { slug: "cybermon" } }, take: 3, orderBy: { attack: "desc" } }),
     ])
-    const welcomeTazos = [...pkm, ...dbz, ...digi]
+    const welcomeTazos = [...min, ...drac, ...cyber]
 
     // Add to user's collection
     for (const tazo of welcomeTazos) {

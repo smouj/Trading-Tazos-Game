@@ -6,7 +6,7 @@ const ru: Dictionary = {
   siteIssue: "Vol.1",
   siteTagline: "Переверни их всех!",
   siteFooterTribute: "Ностальгическая дань золотой эпохе тазосов",
-  siteFooterTrademark: "Покемон, Дигимон и Dragon Ball Z являются товарными знаками их владельцев. Это фанатская дань уважения.",
+  siteFooterTrademark: "Fan-made tribute. Minimon, Cybermon, and Draco Bell are original fictional IPs for Trading Tazos Game.",
   siteMastheadBadge: "ЭКСКЛЮЗИВ — КОЛЛЕКЦИОННОЕ ИЗДАНИЕ",
 
   tabAlbum: "Альбом",

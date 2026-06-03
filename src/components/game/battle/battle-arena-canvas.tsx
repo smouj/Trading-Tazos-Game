@@ -15,9 +15,9 @@ interface Props {
 }
 
 const COLORS: Record<string, { fill: string; stroke: string }> = {
-  pokemon: { fill: "#FFCB05", stroke: "#E3350D" },
-  digimon: { fill: "#00A1E9", stroke: "#0057B7" },
-  dbz: { fill: "#FF6B00", stroke: "#CC4400" },
+  minimon: { fill: "#FFCB05", stroke: "#E3350D" },
+  cybermon: { fill: "#00A1E9", stroke: "#0057B7" },
+  dracobell: { fill: "#FF6B00", stroke: "#CC4400" },
   default: { fill: "#6366F1", stroke: "#4338CA" },
 }
 

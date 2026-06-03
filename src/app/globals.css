@@ -41,9 +41,9 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --color-pokemon: #FFCB05;
-  --color-digimon: #00A1E9;
-  --color-dbz: #FF6B00;
+  --color-minimon: #FFCB05;
+  --color-cybermon: #00A1E9;
+  --color-dracobell: #FF6B00;
 }
 
 :root {
@@ -408,9 +408,9 @@
 }
 
 /* Franchise color utilities */
-.franchise-pokemon { background: linear-gradient(135deg, #FFCB05, #FF8C00); }
-.franchise-digimon { background: linear-gradient(135deg, #00A1E9, #0057B7); }
-.franchise-dbz { background: linear-gradient(135deg, #FF6B00, #CC4400); }
+.franchise-minimon { background: linear-gradient(135deg, #FFCB05, #FF8C00); }
+.franchise-cybermon { background: linear-gradient(135deg, #00A1E9, #0057B7); }
+.franchise-dracobell { background: linear-gradient(135deg, #FF6B00, #CC4400); }
 
 /* Magazine diagonal stripe pattern */
 .mag-stripes {

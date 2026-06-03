@@ -1,13 +1,13 @@
 /**
  * TTG Tazo Image Generator — Real Collections Edition
- * Generates SVG disc images for Pokémon Tazos 1 (51), DBZ Matutano (118+),
- * and Digimon Magic Box (150 pending).
+ * Generates SVG disc images for Minimon Tazos 1 (51), DBZ Matutano (118+),
+ * and Cybermon Magic Box (150 pending).
  */
 import { existsSync, mkdirSync, writeFileSync } from "fs"
 import { join } from "path"
 
 const OUT_DIR = join(import.meta.dirname, "..", "public", "tazos")
-for (const d of ["pokemon", "digimon", "dbz"]) {
+for (const d of ["minimon", "cybermon", "dracobell"]) {
   mkdirSync(join(OUT_DIR, d), { recursive: true })
 }
 
@@ -15,15 +15,15 @@ interface TazoDef {
   slug: string
   name: string | null
   number: string
-  franchise: "pokemon" | "digimon" | "dragon-ball-z"
+  franchise: "minimon" | "cybermon" | "dragon-ball-z"
   category?: string
   sourceStatus: string
 }
 
 const FC = {
-  pokemon: { colors: ["#FFCB05", "#FF8C00"], accent: "#E3350D", ring: "#FFCB05", label: "POK\u00c9MON TAZOS 1" },
+  minimon: { colors: ["#FFCB05", "#FF8C00"], accent: "#E3350D", ring: "#FFCB05", label: "POK\u00c9MON TAZOS 1" },
   "dragon-ball-z": { colors: ["#FF6B00", "#CC4400"], accent: "#FFD700", ring: "#FF6B00", label: "DBZ MATUTANO 1995" },
-  digimon: { colors: ["#00A1E9", "#0057B7"], accent: "#1E90FF", ring: "#00A1E9", label: "DIGIMON MAGIC BOX 2000" },
+  cybermon: { colors: ["#00A1E9", "#0057B7"], accent: "#1E90FF", ring: "#00A1E9", label: "DIGIMON MAGIC BOX 2000" },
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -83,7 +83,7 @@ function buildSvg(t: TazoDef): string {
 }
 
 const TAZOS: TazoDef[] = [
-  // --- Pokémon Tazos 1 #1-51 ---
+  // --- Minimon Tazos 1 #1-51 ---
   ...[
     "1|Bulbasaur","2|Charmander","3|Squirtle","4|Metapod","5|Weedle",
     "6|Pidgeotto","7|Rattata","8|Spearow","9|Arbok","10|Pikachu",
@@ -97,7 +97,7 @@ const TAZOS: TazoDef[] = [
     "46|Magikarp","47|Eevee","48|Omanyte","49|Kabuto","50|Dragonair","51|Ash",
   ].map(s => {
     const [n, name] = s.split("|")
-    return { slug: `pokemon-t1-${n}`, name, number: n, franchise: "pokemon" as const, sourceStatus: "verified" }
+    return { slug: `minimon-t1-${n}`, name, number: n, franchise: "minimon" as const, sourceStatus: "verified" }
   }),
 
   // --- DBZ Tazos Normales #1-10 ---
@@ -106,7 +106,7 @@ const TAZOS: TazoDef[] = [
     "6|Ghourd","7|Saibaman","8|A-19","9|Spopovich","10|Yamu",
   ].map(s => {
     const [n, name] = s.split("|")
-    return { slug: `dbz-t-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "tazos", sourceStatus: "verified" }
+    return { slug: `dracobell-t-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "tazos", sourceStatus: "verified" }
   }),
 
   // --- DBZ Supertazos Voladores #11-30 ---
@@ -117,7 +117,7 @@ const TAZOS: TazoDef[] = [
     "26|Chi-Chi","27|A-18","28|Freezer","29|Yamu","30|Bulma",
   ].map(s => {
     const [n, name] = s.split("|")
-    return { slug: `dbz-sv-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "supertazos_voladores", sourceStatus: "verified" }
+    return { slug: `dracobell-sv-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "supertazos_voladores", sourceStatus: "verified" }
   }),
 
   // --- DBZ Supertazos Octogonales #31-50 ---
@@ -128,7 +128,7 @@ const TAZOS: TazoDef[] = [
     "46|Son Goku","47|Kaio-Shin","48|Son Gohan","49|Kibito","50|Kaito",
   ].map(s => {
     const [n, name] = s.split("|")
-    return { slug: `dbz-so-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "supertazos_octogonales", sourceStatus: "verified" }
+    return { slug: `dracobell-so-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "supertazos_octogonales", sourceStatus: "verified" }
   }),
 
   // --- DBZ Megatazos Redondos #51-70 ---
@@ -139,7 +139,7 @@ const TAZOS: TazoDef[] = [
     "66|Bulma","67|Krilin","68|Mutenroshi","69|Pui-Pui","70|Kaito",
   ].map(s => {
     const [n, name] = s.split("|")
-    return { slug: `dbz-mr-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "megatazos", sourceStatus: "partial" }
+    return { slug: `dracobell-mr-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "megatazos", sourceStatus: "partial" }
   }),
 
   // --- DBZ Megatazos Octogonales #51-70 ---
@@ -150,7 +150,7 @@ const TAZOS: TazoDef[] = [
     "66|Bulma","67|Krilin","68|Mutenroshi","69|Pui-Pui","70|Kaito",
   ].map(s => {
     const [n, name] = s.split("|")
-    return { slug: `dbz-mo-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "megatazos", sourceStatus: "partial" }
+    return { slug: `dracobell-mo-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "megatazos", sourceStatus: "partial" }
   }),
 
   // --- DBZ Holo 3D Ranura Derecha #1-10 ---
@@ -159,7 +159,7 @@ const TAZOS: TazoDef[] = [
     "6|Vegeta","7|Majin Boo","8|Dabura","9|Goku","10|Celula y Trunks",
   ].map(s => {
     const [n, name] = s.split("|")
-    return { slug: `dbz-hr-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "holo_3d", sourceStatus: "verified" }
+    return { slug: `dracobell-hr-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "holo_3d", sourceStatus: "verified" }
   }),
 
   // --- DBZ Holo 3D Ranura Izquierda #1-10 ---
@@ -168,31 +168,31 @@ const TAZOS: TazoDef[] = [
     "6|Vegeta","7|Majin Boo","8|Dabura","9|Goku","10|Celula y Trunks",
   ].map(s => {
     const [n, name] = s.split("|")
-    return { slug: `dbz-hl-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "holo_3d", sourceStatus: "verified" }
+    return { slug: `dracobell-hl-${n}`, name, number: n, franchise: "dragon-ball-z" as const, category: "holo_3d", sourceStatus: "verified" }
   }),
 
   // --- DBZ Mastertazos ---
-  { slug: "dbz-master-master-a18", name: "A-18", number: "MASTER-A18", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
-  { slug: "dbz-master-master-a18-gold", name: "A-18 Dorado", number: "MASTER-A18-GOLD", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
-  { slug: "dbz-master-master-a18-black", name: "A-18 B.Negro", number: "MASTER-A18-BLACK", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
-  { slug: "dbz-master-master-freezer", name: "Freezer", number: "MASTER-FREEZER", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
-  { slug: "dbz-master-master-goku", name: "Goku", number: "MASTER-GOKU", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
-  { slug: "dbz-master-master-shenron", name: "Shenron", number: "MASTER-SHENRON", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
-  { slug: "dbz-master-master-shenron-black", name: "Shenron B.Negro", number: "MASTER-SHENRON-BLACK", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
-  { slug: "dbz-master-master-vegeta", name: "Vegeta", number: "MASTER-VEGETA", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
+  { slug: "dracobell-master-master-a18", name: "A-18", number: "MASTER-A18", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
+  { slug: "dracobell-master-master-a18-gold", name: "A-18 Dorado", number: "MASTER-A18-GOLD", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
+  { slug: "dracobell-master-master-a18-black", name: "A-18 B.Negro", number: "MASTER-A18-BLACK", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
+  { slug: "dracobell-master-master-freezer", name: "Freezer", number: "MASTER-FREEZER", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
+  { slug: "dracobell-master-master-goku", name: "Goku", number: "MASTER-GOKU", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
+  { slug: "dracobell-master-master-shenron", name: "Shenron", number: "MASTER-SHENRON", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
+  { slug: "dracobell-master-master-shenron-black", name: "Shenron B.Negro", number: "MASTER-SHENRON-BLACK", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
+  { slug: "dracobell-master-master-vegeta", name: "Vegeta", number: "MASTER-VEGETA", franchise: "dragon-ball-z" as const, category: "mastertazos", sourceStatus: "verified" },
 ]
 
 for (let i = 1; i <= 150; i++) {
   const n = String(i)
   TAZOS.push({
-    slug: `digimon-mb-${n}`, name: null, number: n,
-    franchise: "digimon", category: "caps", sourceStatus: "pending_visual_check",
+    slug: `cybermon-mb-${n}`, name: null, number: n,
+    franchise: "cybermon", category: "caps", sourceStatus: "pending_visual_check",
   })
 }
 
 let generated = 0, skipped = 0
 for (const tazo of TAZOS) {
-  const dirName = tazo.franchise === "dragon-ball-z" ? "dbz" : tazo.franchise
+  const dirName = tazo.franchise === "dragon-ball-z" ? "dracobell" : tazo.franchise
   const outPath = join(OUT_DIR, dirName, `${tazo.slug}.svg`)
   if (existsSync(outPath)) { skipped++; continue }
   writeFileSync(outPath, buildSvg(tazo), "utf-8")

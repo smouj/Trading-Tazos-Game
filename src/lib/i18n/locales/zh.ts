@@ -6,7 +6,7 @@ const zh: Dictionary = {
   siteIssue: "Vol.1",
   siteTagline: "全部翻转吧！",
   siteFooterTribute: "对塔佐斯黄金时代的怀旧致敬",
-  siteFooterTrademark: "宝可梦、数码宝贝和龙珠Z是各自所有者的商标。这是粉丝致敬作品。",
+  siteFooterTrademark: "Fan-made tribute. Minimon, Cybermon, and Draco Bell are original fictional IPs for Trading Tazos Game.",
   siteMastheadBadge: "独家 — 收藏家版",
 
   tabAlbum: "专辑",

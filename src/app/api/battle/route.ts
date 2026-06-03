@@ -2,7 +2,7 @@ import { db } from '@/lib/db'
 import { getAuthUser } from '@/lib/auth'
 import { NextRequest, NextResponse } from 'next/server'
 
-// --- Type advantage table for Pokémon-style combat ---
+// --- Type advantage table for Minimon-style combat ---
 const TYPE_ADVANTAGES: Record<string, string[]> = {
   fire: ['grass'],
   water: ['fire'],
@@ -126,7 +126,7 @@ function checkTransform(
   if (!tazo.transformStage || tazo.franchise.slug !== 'dragon-ball-z') {
     return { transformed: false, stage: null }
   }
-  // DBZ: Can transform after charging enough ki (round 3+)
+  // Draco Bell: Can transform after charging enough ki (round 3+)
   if (round >= 3 && tazo.ki >= 30 && !tazo.transformActive) {
     return { transformed: true, stage: tazo.transformStage }
   }
@@ -141,9 +141,9 @@ function simulateRound(
 ): { playerAlive: boolean; opponentAlive: boolean } {
   // --- Franchise-specific mechanics ---
 
-  // 1. Pokémon type advantages
+  // 1. Minimon type advantages
   for (const tazo of playerTazos) {
-    if (tazo.franchise.slug === 'pokemon' && tazo.combatType) {
+    if (tazo.franchise.slug === 'minimon' && tazo.combatType) {
       for (const opp of opponentTazos) {
         if (opp.hp <= 0) continue
         const mult = checkTypeAdvantage(tazo.combatType, opp.combatType)
@@ -170,7 +170,7 @@ function simulateRound(
   }
 
   for (const tazo of opponentTazos) {
-    if (tazo.franchise.slug === 'pokemon' && tazo.combatType) {
+    if (tazo.franchise.slug === 'minimon' && tazo.combatType) {
       for (const pl of playerTazos) {
         if (pl.hp <= 0) continue
         const mult = checkTypeAdvantage(tazo.combatType, pl.combatType)
@@ -189,7 +189,7 @@ function simulateRound(
     }
   }
 
-  // 2. Digimon evolution chain bonus
+  // 2. Cybermon evolution chain bonus
   const playerEvo = checkEvolutionChain(playerTazos)
   if (playerEvo.hasChain) {
     for (const t of playerTazos) {
@@ -198,7 +198,7 @@ function simulateRound(
     events.push({
       round,
       type: 'evolution_boost',
-      description: `Digimon evolution chain detected! Player tazos gain +${playerEvo.bonus} to all stats!`,
+      description: `Cybermon evolution chain detected! Player tazos gain +${playerEvo.bonus} to all stats!`,
       actor: 'player',
     })
   }
@@ -211,12 +211,12 @@ function simulateRound(
     events.push({
       round,
       type: 'evolution_boost',
-      description: `Digimon evolution chain detected! Opponent tazos gain +${opponentEvo.bonus} to all stats!`,
+      description: `Cybermon evolution chain detected! Opponent tazos gain +${opponentEvo.bonus} to all stats!`,
       actor: 'opponent',
     })
   }
 
-  // 3. DBZ transformations & ki charge
+  // 3. Draco Bell transformations & ki charge
   for (const tazo of [...playerTazos, ...opponentTazos]) {
     if (tazo.franchise.slug === 'dragon-ball-z') {
       // Charge ki

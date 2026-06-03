@@ -24,9 +24,9 @@ interface AlbumViewProps {
 
 // Magazine-style franchise chip colors - vibrant, bold, 90s magazine feel
 const FRANCHISE_MAG_COLORS: Record<string, { activeBg: string; activeText: string; inactiveBg: string; inactiveText: string }> = {
-  pokemon: { activeBg: '#FFCC00', activeText: '#1a1a1a', inactiveBg: '#ffffff', inactiveText: '#1a1a1a' },
-  digimon: { activeBg: '#00A1E9', activeText: '#ffffff', inactiveBg: '#ffffff', inactiveText: '#1a1a1a' },
-  dbz: { activeBg: '#FF6B00', activeText: '#1a1a1a', inactiveBg: '#ffffff', inactiveText: '#1a1a1a' },
+  minimon: { activeBg: '#FFCC00', activeText: '#1a1a1a', inactiveBg: '#ffffff', inactiveText: '#1a1a1a' },
+  cybermon: { activeBg: '#00A1E9', activeText: '#ffffff', inactiveBg: '#ffffff', inactiveText: '#1a1a1a' },
+  dracobell: { activeBg: '#FF6B00', activeText: '#1a1a1a', inactiveBg: '#ffffff', inactiveText: '#1a1a1a' },
 }
 
 type GridSize = 'compact' | 'normal'
@@ -259,7 +259,7 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
             ALL
           </button>
           {franchises.map((f) => {
-            const colors = FRANCHISE_MAG_COLORS[f.slug] || FRANCHISE_MAG_COLORS.pokemon
+            const colors = FRANCHISE_MAG_COLORS[f.slug] || FRANCHISE_MAG_COLORS.minimon
             const isActive = selectedFranchise === f.slug
             return (
               <button

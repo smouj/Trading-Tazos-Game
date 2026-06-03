@@ -6,7 +6,7 @@ const it: Dictionary = {
   siteIssue: "Vol.1",
   siteTagline: "Gira che ti passa!",
   siteFooterTribute: "Un tributo nostalgico all'era d'oro dei tazos",
-  siteFooterTrademark: "Pokemon, Digimon e Dragon Ball Z sono marchi dei rispettivi proprietari. Questo e un tributo dei fan.",
+  siteFooterTrademark: "Fan-made tribute. Minimon, Cybermon, and Draco Bell are original fictional IPs for Trading Tazos Game.",
   siteMastheadBadge: "ESCLUSIVO — EDIZIONE DA COLLEZIONE",
 
   tabAlbum: "Album",

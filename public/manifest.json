@@ -1,7 +1,7 @@
 {
   "name": "Trading Tazos Game",
   "short_name": "TTG",
-  "description": "Collect, trade & battle with 319 classic tazos from Pokemon, DBZ and Digimon. Physics arena, PvP, scanner.",
+  "description": "Collect, trade & battle with 319 classic tazos from Minimon, Draco Bell and Digimon. Physics arena, PvP, scanner.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

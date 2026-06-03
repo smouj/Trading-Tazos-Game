@@ -17,7 +17,7 @@ interface DeckTazo {
 interface Deck { id: string; name: string; isActive: boolean; tazoCount: number; tazos: DeckTazo[] }
 
 const FRANCHISE_BORDER: Record<string, string> = {
-  pokemon: "#FFCB05", digimon: "#00A1E9", "dragon-ball-z": "#FF6B00",
+  minimon: "#FFCB05", cybermon: "#00A1E9", "dragon-ball-z": "#FF6B00",
 }
 
 export default function DecksPage() {

@@ -42,9 +42,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import type { Franchise, TazoCondition, PhysicalType, Rarity } from '@/lib/game/types'
 import {
-  POKEMON_TYPES,
-  DIGIMON_TYPES,
-  DBZ_TYPES,
+  MINIMON_TYPES,
+  CYBERMON_TYPES,
+  DRACOBELL_TYPES,
   RARITY_CONFIG,
   CONDITION_CONFIG,
   PHYSICAL_TYPE_CONFIG,
@@ -139,12 +139,12 @@ export function AddTazoDialog({ onCreated }: AddTazoDialogProps) {
       const franchise = franchises.find((f) => f.id === franchiseId)
       if (!franchise) return []
       switch (franchise.slug) {
-        case 'pokemon':
-          return [...POKEMON_TYPES]
-        case 'digimon':
-          return [...DIGIMON_TYPES]
-        case 'dbz':
-          return [...DBZ_TYPES]
+        case 'minimon':
+          return [...MINIMON_TYPES]
+        case 'cybermon':
+          return [...CYBERMON_TYPES]
+        case 'dracobell':
+          return [...DRACOBELL_TYPES]
         default:
           return []
       }
@@ -476,7 +476,7 @@ export function AddTazoDialog({ onCreated }: AddTazoDialogProps) {
                     />
                   </div>
                 </div>
-                {currentFranchiseSlug() === 'dbz' && (
+                {currentFranchiseSlug() === 'dracobell' && (
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
                       <Label className="text-xs">Transform Stage</Label>

@@ -8,19 +8,19 @@ import { join } from "path"
 
 const OUT_DIR = join(import.meta.dirname, "..", "public", "tazos")
 
-for (const d of ["pokemon", "digimon", "dbz"]) {
+for (const d of ["minimon", "cybermon", "dracobell"]) {
   mkdirSync(join(OUT_DIR, d), { recursive: true })
 }
 
 interface TazoDef {
-  name: string; slug: string; franchise: "pokemon" | "digimon" | "dbz"
+  name: string; slug: string; franchise: "minimon" | "cybermon" | "dracobell"
   number: string; rarity: string; skill: string
 }
 
 const FC = {
-  pokemon: { colors: ["#FFCB05", "#FF8C00"], accent: "#E3350D", ring: "#FFCB05" },
-  digimon: { colors: ["#00A1E9", "#0057B7"], accent: "#1E90FF", ring: "#00A1E9" },
-  dbz: { colors: ["#FF6B00", "#CC4400"], accent: "#FFD700", ring: "#FF6B00" },
+  minimon: { colors: ["#FFCB05", "#FF8C00"], accent: "#E3350D", ring: "#FFCB05" },
+  cybermon: { colors: ["#00A1E9", "#0057B7"], accent: "#1E90FF", ring: "#00A1E9" },
+  dracobell: { colors: ["#FF6B00", "#CC4400"], accent: "#FFD700", ring: "#FF6B00" },
 }
 
 const RARITY_GLOW: Record<string, string> = {
@@ -28,68 +28,68 @@ const RARITY_GLOW: Record<string, string> = {
 }
 
 const TAZOS: TazoDef[] = [
-  { name:"Pikachu",slug:"pokemon-pikachu",franchise:"pokemon",number:"001",rarity:"common",skill:"Thunder Jolt" },
-  { name:"Charmander",slug:"pokemon-charmander",franchise:"pokemon",number:"004",rarity:"common",skill:"Ember Spin" },
-  { name:"Charmeleon",slug:"pokemon-charmeleon",franchise:"pokemon",number:"005",rarity:"uncommon",skill:"Flame Burst" },
-  { name:"Charizard",slug:"pokemon-charizard",franchise:"pokemon",number:"006",rarity:"rare",skill:"Inferno Vortex" },
-  { name:"Bulbasaur",slug:"pokemon-bulbasaur",franchise:"pokemon",number:"001",rarity:"common",skill:"Vine Whip" },
-  { name:"Squirtle",slug:"pokemon-squirtle",franchise:"pokemon",number:"007",rarity:"common",skill:"Aqua Jet" },
-  { name:"Mewtwo",slug:"pokemon-mewtwo",franchise:"pokemon",number:"150",rarity:"ultra",skill:"Psystrike" },
-  { name:"Gengar",slug:"pokemon-gengar",franchise:"pokemon",number:"094",rarity:"rare",skill:"Shadow Ball" },
-  { name:"Eevee",slug:"pokemon-eevee",franchise:"pokemon",number:"133",rarity:"uncommon",skill:"Quick Attack" },
-  { name:"Jigglypuff",slug:"pokemon-jigglypuff",franchise:"pokemon",number:"039",rarity:"common",skill:"Sing" },
-  { name:"Snorlax",slug:"pokemon-snorlax",franchise:"pokemon",number:"143",rarity:"uncommon",skill:"Body Slam" },
-  { name:"Gyarados",slug:"pokemon-gyarados",franchise:"pokemon",number:"130",rarity:"rare",skill:"Hydro Storm" },
-  { name:"Mew",slug:"pokemon-mew",franchise:"pokemon",number:"151",rarity:"legendary",skill:"Aura Sphere" },
-  { name:"Dragonite",slug:"pokemon-dragonite",franchise:"pokemon",number:"149",rarity:"rare",skill:"Dragon Rush" },
-  { name:"Togepi",slug:"pokemon-togepi",franchise:"pokemon",number:"175",rarity:"common",skill:"Metronome" },
-  { name:"Umbreon",slug:"pokemon-umbreon",franchise:"pokemon",number:"197",rarity:"uncommon",skill:"Moonlight" },
-  { name:"Ampharos",slug:"pokemon-ampharos",franchise:"pokemon",number:"181",rarity:"uncommon",skill:"Thunder Punch" },
-  { name:"Scizor",slug:"pokemon-scizor",franchise:"pokemon",number:"212",rarity:"rare",skill:"Bullet Punch" },
-  { name:"Chikorita",slug:"pokemon-chikorita",franchise:"pokemon",number:"152",rarity:"common",skill:"Razor Leaf" },
-  { name:"Cyndaquil",slug:"pokemon-cyndaquil",franchise:"pokemon",number:"155",rarity:"common",skill:"Flame Wheel" },
-  { name:"Totodile",slug:"pokemon-totodile",franchise:"pokemon",number:"158",rarity:"common",skill:"Water Gun" },
-  { name:"Espeon",slug:"pokemon-espeon",franchise:"pokemon",number:"196",rarity:"uncommon",skill:"Morning Sun" },
-  { name:"Agumon",slug:"digimon-agumon",franchise:"digimon",number:"001",rarity:"common",skill:"Pepper Breath" },
-  { name:"Greymon",slug:"digimon-greymon",franchise:"digimon",number:"002",rarity:"uncommon",skill:"Nova Blast" },
-  { name:"MetalGreymon",slug:"digimon-metalgreymon",franchise:"digimon",number:"003",rarity:"rare",skill:"Giga Destroyer" },
-  { name:"WarGreymon",slug:"digimon-wargreymon",franchise:"digimon",number:"004",rarity:"ultra",skill:"Terra Force" },
-  { name:"Gabumon",slug:"digimon-gabumon",franchise:"digimon",number:"005",rarity:"common",skill:"Blue Blaster" },
-  { name:"Garurumon",slug:"digimon-garurumon",franchise:"digimon",number:"006",rarity:"uncommon",skill:"Howling Blaster" },
-  { name:"Patamon",slug:"digimon-patamon",franchise:"digimon",number:"007",rarity:"common",skill:"Boom Bubble" },
-  { name:"Angemon",slug:"digimon-angemon",franchise:"digimon",number:"008",rarity:"rare",skill:"Hand of Fate" },
-  { name:"Devimon",slug:"digimon-devimon",franchise:"digimon",number:"009",rarity:"uncommon",skill:"Death Claw" },
-  { name:"Myotismon",slug:"digimon-myotismon",franchise:"digimon",number:"010",rarity:"ultra",skill:"Night Raid" },
-  { name:"Gatomon",slug:"digimon-gatomon",franchise:"digimon",number:"011",rarity:"common",skill:"Lightning Paw" },
-  { name:"Angewomon",slug:"digimon-angewomon",franchise:"digimon",number:"012",rarity:"rare",skill:"Celestial Arrow" },
-  { name:"Tentomon",slug:"digimon-tentomon",franchise:"digimon",number:"013",rarity:"common",skill:"Super Shocker" },
-  { name:"Kabuterimon",slug:"digimon-kabuterimon",franchise:"digimon",number:"014",rarity:"uncommon",skill:"Electro Shocker" },
-  { name:"Piedmon",slug:"digimon-piedmon",franchise:"digimon",number:"015",rarity:"legendary",skill:"Trump Sword" },
-  { name:"MetalGarurumon",slug:"digimon-metalgarurumon",franchise:"digimon",number:"016",rarity:"ultra",skill:"Ice Wolf Claw" },
-  { name:"WereGarurumon",slug:"digimon-weregarurumon",franchise:"digimon",number:"017",rarity:"rare",skill:"Wolf Claw" },
-  { name:"Machinedramon",slug:"digimon-machinedramon",franchise:"digimon",number:"018",rarity:"ultra",skill:"Giga Cannon" },
-  { name:"Biyomon",slug:"digimon-biyomon",franchise:"digimon",number:"019",rarity:"common",skill:"Spiral Twister" },
-  { name:"Birdramon",slug:"digimon-birdramon",franchise:"digimon",number:"020",rarity:"uncommon",skill:"Meteor Wing" },
-  { name:"Goku",slug:"dbz-goku",franchise:"dbz",number:"001",rarity:"uncommon",skill:"Kamehameha" },
-  { name:"Goku SSJ",slug:"dbz-goku-ssj",franchise:"dbz",number:"002",rarity:"rare",skill:"Super Kamehameha" },
-  { name:"Vegeta",slug:"dbz-vegeta",franchise:"dbz",number:"003",rarity:"uncommon",skill:"Galick Gun" },
-  { name:"Vegeta SSJ",slug:"dbz-vegeta-ssj",franchise:"dbz",number:"004",rarity:"rare",skill:"Final Flash" },
-  { name:"Gohan",slug:"dbz-gohan",franchise:"dbz",number:"005",rarity:"common",skill:"Masenko" },
-  { name:"Piccolo",slug:"dbz-piccolo",franchise:"dbz",number:"006",rarity:"uncommon",skill:"Special Beam Cannon" },
-  { name:"Krillin",slug:"dbz-krillin",franchise:"dbz",number:"007",rarity:"common",skill:"Destructo Disc" },
-  { name:"Raditz",slug:"dbz-raditz",franchise:"dbz",number:"008",rarity:"common",skill:"Double Sunday" },
-  { name:"Nappa",slug:"dbz-nappa",franchise:"dbz",number:"009",rarity:"uncommon",skill:"Break Cannon" },
-  { name:"Frieza",slug:"dbz-frieza",franchise:"dbz",number:"010",rarity:"ultra",skill:"Death Beam" },
-  { name:"Cell",slug:"dbz-cell",franchise:"dbz",number:"011",rarity:"ultra",skill:"Kamehameha" },
-  { name:"Trunks",slug:"dbz-trunks",franchise:"dbz",number:"012",rarity:"uncommon",skill:"Burning Attack" },
-  { name:"Trunks SSJ",slug:"dbz-trunks-ssj",franchise:"dbz",number:"013",rarity:"rare",skill:"Heat Dome Attack" },
-  { name:"Majin Buu",slug:"dbz-majin-buu",franchise:"dbz",number:"014",rarity:"legendary",skill:"Candy Beam" },
-  { name:"Broly",slug:"dbz-broly",franchise:"dbz",number:"015",rarity:"ultra",skill:"Eraser Cannon" },
-  { name:"Broly LSSJ",slug:"dbz-broly-lssj",franchise:"dbz",number:"016",rarity:"legendary",skill:"Omega Blaster" },
-  { name:"Android 17",slug:"dbz-android-17",franchise:"dbz",number:"017",rarity:"uncommon",skill:"Android Barrier" },
-  { name:"Android 18",slug:"dbz-android-18",franchise:"dbz",number:"018",rarity:"uncommon",skill:"Power Blitz" },
-  { name:"Tien",slug:"dbz-tien",franchise:"dbz",number:"019",rarity:"common",skill:"Tri-Beam" },
-  { name:"Gohan SSJ2",slug:"dbz-gohan-ssj2",franchise:"dbz",number:"020",rarity:"rare",skill:"Father-Son Kamehameha" },
+  { name:"Pikachu",slug:"minimon-pikachu",franchise:"minimon",number:"001",rarity:"common",skill:"Thunder Jolt" },
+  { name:"Charmander",slug:"minimon-charmander",franchise:"minimon",number:"004",rarity:"common",skill:"Ember Spin" },
+  { name:"Charmeleon",slug:"minimon-charmeleon",franchise:"minimon",number:"005",rarity:"uncommon",skill:"Flame Burst" },
+  { name:"Charizard",slug:"minimon-charizard",franchise:"minimon",number:"006",rarity:"rare",skill:"Inferno Vortex" },
+  { name:"Bulbasaur",slug:"minimon-bulbasaur",franchise:"minimon",number:"001",rarity:"common",skill:"Vine Whip" },
+  { name:"Squirtle",slug:"minimon-squirtle",franchise:"minimon",number:"007",rarity:"common",skill:"Aqua Jet" },
+  { name:"Mewtwo",slug:"minimon-mewtwo",franchise:"minimon",number:"150",rarity:"ultra",skill:"Psystrike" },
+  { name:"Gengar",slug:"minimon-gengar",franchise:"minimon",number:"094",rarity:"rare",skill:"Shadow Ball" },
+  { name:"Eevee",slug:"minimon-eevee",franchise:"minimon",number:"133",rarity:"uncommon",skill:"Quick Attack" },
+  { name:"Jigglypuff",slug:"minimon-jigglypuff",franchise:"minimon",number:"039",rarity:"common",skill:"Sing" },
+  { name:"Snorlax",slug:"minimon-snorlax",franchise:"minimon",number:"143",rarity:"uncommon",skill:"Body Slam" },
+  { name:"Gyarados",slug:"minimon-gyarados",franchise:"minimon",number:"130",rarity:"rare",skill:"Hydro Storm" },
+  { name:"Mew",slug:"minimon-mew",franchise:"minimon",number:"151",rarity:"legendary",skill:"Aura Sphere" },
+  { name:"Dragonite",slug:"minimon-dragonite",franchise:"minimon",number:"149",rarity:"rare",skill:"Dragon Rush" },
+  { name:"Togepi",slug:"minimon-togepi",franchise:"minimon",number:"175",rarity:"common",skill:"Metronome" },
+  { name:"Umbreon",slug:"minimon-umbreon",franchise:"minimon",number:"197",rarity:"uncommon",skill:"Moonlight" },
+  { name:"Ampharos",slug:"minimon-ampharos",franchise:"minimon",number:"181",rarity:"uncommon",skill:"Thunder Punch" },
+  { name:"Scizor",slug:"minimon-scizor",franchise:"minimon",number:"212",rarity:"rare",skill:"Bullet Punch" },
+  { name:"Chikorita",slug:"minimon-chikorita",franchise:"minimon",number:"152",rarity:"common",skill:"Razor Leaf" },
+  { name:"Cyndaquil",slug:"minimon-cyndaquil",franchise:"minimon",number:"155",rarity:"common",skill:"Flame Wheel" },
+  { name:"Totodile",slug:"minimon-totodile",franchise:"minimon",number:"158",rarity:"common",skill:"Water Gun" },
+  { name:"Espeon",slug:"minimon-espeon",franchise:"minimon",number:"196",rarity:"uncommon",skill:"Morning Sun" },
+  { name:"Agumon",slug:"cybermon-agumon",franchise:"cybermon",number:"001",rarity:"common",skill:"Pepper Breath" },
+  { name:"Greymon",slug:"cybermon-greymon",franchise:"cybermon",number:"002",rarity:"uncommon",skill:"Nova Blast" },
+  { name:"MetalGreymon",slug:"cybermon-metalgreymon",franchise:"cybermon",number:"003",rarity:"rare",skill:"Giga Destroyer" },
+  { name:"WarGreymon",slug:"cybermon-wargreymon",franchise:"cybermon",number:"004",rarity:"ultra",skill:"Terra Force" },
+  { name:"Gabumon",slug:"cybermon-gabumon",franchise:"cybermon",number:"005",rarity:"common",skill:"Blue Blaster" },
+  { name:"Garurumon",slug:"cybermon-garurumon",franchise:"cybermon",number:"006",rarity:"uncommon",skill:"Howling Blaster" },
+  { name:"Patamon",slug:"cybermon-patamon",franchise:"cybermon",number:"007",rarity:"common",skill:"Boom Bubble" },
+  { name:"Angemon",slug:"cybermon-angemon",franchise:"cybermon",number:"008",rarity:"rare",skill:"Hand of Fate" },
+  { name:"Devimon",slug:"cybermon-devimon",franchise:"cybermon",number:"009",rarity:"uncommon",skill:"Death Claw" },
+  { name:"Myotismon",slug:"cybermon-myotismon",franchise:"cybermon",number:"010",rarity:"ultra",skill:"Night Raid" },
+  { name:"Gatomon",slug:"cybermon-gatomon",franchise:"cybermon",number:"011",rarity:"common",skill:"Lightning Paw" },
+  { name:"Angewomon",slug:"cybermon-angewomon",franchise:"cybermon",number:"012",rarity:"rare",skill:"Celestial Arrow" },
+  { name:"Tentomon",slug:"cybermon-tentomon",franchise:"cybermon",number:"013",rarity:"common",skill:"Super Shocker" },
+  { name:"Kabuterimon",slug:"cybermon-kabuterimon",franchise:"cybermon",number:"014",rarity:"uncommon",skill:"Electro Shocker" },
+  { name:"Piedmon",slug:"cybermon-piedmon",franchise:"cybermon",number:"015",rarity:"legendary",skill:"Trump Sword" },
+  { name:"MetalGarurumon",slug:"cybermon-metalgarurumon",franchise:"cybermon",number:"016",rarity:"ultra",skill:"Ice Wolf Claw" },
+  { name:"WereGarurumon",slug:"cybermon-weregarurumon",franchise:"cybermon",number:"017",rarity:"rare",skill:"Wolf Claw" },
+  { name:"Machinedramon",slug:"cybermon-machinedramon",franchise:"cybermon",number:"018",rarity:"ultra",skill:"Giga Cannon" },
+  { name:"Biyomon",slug:"cybermon-biyomon",franchise:"cybermon",number:"019",rarity:"common",skill:"Spiral Twister" },
+  { name:"Birdramon",slug:"cybermon-birdramon",franchise:"cybermon",number:"020",rarity:"uncommon",skill:"Meteor Wing" },
+  { name:"Goku",slug:"dracobell-goku",franchise:"dracobell",number:"001",rarity:"uncommon",skill:"Kamehameha" },
+  { name:"Goku SSJ",slug:"dracobell-goku-ssj",franchise:"dracobell",number:"002",rarity:"rare",skill:"Super Kamehameha" },
+  { name:"Vegeta",slug:"dracobell-vegeta",franchise:"dracobell",number:"003",rarity:"uncommon",skill:"Galick Gun" },
+  { name:"Vegeta SSJ",slug:"dracobell-vegeta-ssj",franchise:"dracobell",number:"004",rarity:"rare",skill:"Final Flash" },
+  { name:"Gohan",slug:"dracobell-gohan",franchise:"dracobell",number:"005",rarity:"common",skill:"Masenko" },
+  { name:"Piccolo",slug:"dracobell-piccolo",franchise:"dracobell",number:"006",rarity:"uncommon",skill:"Special Beam Cannon" },
+  { name:"Krillin",slug:"dracobell-krillin",franchise:"dracobell",number:"007",rarity:"common",skill:"Destructo Disc" },
+  { name:"Raditz",slug:"dracobell-raditz",franchise:"dracobell",number:"008",rarity:"common",skill:"Double Sunday" },
+  { name:"Nappa",slug:"dracobell-nappa",franchise:"dracobell",number:"009",rarity:"uncommon",skill:"Break Cannon" },
+  { name:"Frieza",slug:"dracobell-frieza",franchise:"dracobell",number:"010",rarity:"ultra",skill:"Death Beam" },
+  { name:"Cell",slug:"dracobell-cell",franchise:"dracobell",number:"011",rarity:"ultra",skill:"Kamehameha" },
+  { name:"Trunks",slug:"dracobell-trunks",franchise:"dracobell",number:"012",rarity:"uncommon",skill:"Burning Attack" },
+  { name:"Trunks SSJ",slug:"dracobell-trunks-ssj",franchise:"dracobell",number:"013",rarity:"rare",skill:"Heat Dome Attack" },
+  { name:"Majin Buu",slug:"dracobell-majin-buu",franchise:"dracobell",number:"014",rarity:"legendary",skill:"Candy Beam" },
+  { name:"Broly",slug:"dracobell-broly",franchise:"dracobell",number:"015",rarity:"ultra",skill:"Eraser Cannon" },
+  { name:"Broly LSSJ",slug:"dracobell-broly-lssj",franchise:"dracobell",number:"016",rarity:"legendary",skill:"Omega Blaster" },
+  { name:"Android 17",slug:"dracobell-android-17",franchise:"dracobell",number:"017",rarity:"uncommon",skill:"Android Barrier" },
+  { name:"Android 18",slug:"dracobell-android-18",franchise:"dracobell",number:"018",rarity:"uncommon",skill:"Power Blitz" },
+  { name:"Tien",slug:"dracobell-tien",franchise:"dracobell",number:"019",rarity:"common",skill:"Tri-Beam" },
+  { name:"Gohan SSJ2",slug:"dracobell-gohan-ssj2",franchise:"dracobell",number:"020",rarity:"rare",skill:"Father-Son Kamehameha" },
 ]
 
 function buildSvg(t: TazoDef): string {
@@ -133,7 +133,7 @@ function buildSvg(t: TazoDef): string {
     rarityStars = `<text x="${cx}" y="${cy - r + 35}" text-anchor="middle" font-size="18" fill="${glow}" font-weight="bold">&#x2605;&#x2605;</text>`
   }
 
-  const franchiseLabel = t.franchise === "pokemon" ? "POK\u00c9MON" : t.franchise === "digimon" ? "DIGIMON" : "DRAGON BALL Z"
+  const franchiseLabel = t.franchise === "minimon" ? "POK\u00c9MON" : t.franchise === "cybermon" ? "DIGIMON" : "DRAGON BALL Z"
   const fontSize = t.name.length > 10 ? 60 : t.name.length > 7 ? 72 : 90
 
   return `<?xml version="1.0" encoding="UTF-8"?>

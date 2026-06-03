@@ -6,7 +6,7 @@ const ja: Dictionary = {
   siteIssue: "Vol.1",
   siteTagline: "全部ひっくり返せ！",
   siteFooterTribute: "タゾスの黄金時代へのノスタルジックなオマージュ",
-  siteFooterTrademark: "ポケモン、デジモン、ドラゴンボールZは各権利者の商標です。これはファンメイドのトリビュートです。",
+  siteFooterTrademark: "Fan-made tribute. Minimon, Cybermon, and Draco Bell are original fictional IPs for Trading Tazos Game.",
   siteMastheadBadge: "限定 — コレクターズエディション",
 
   tabAlbum: "アルバム",

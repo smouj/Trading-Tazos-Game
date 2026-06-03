@@ -9,15 +9,15 @@ interface TazoCardProps {
 }
 
 const FRANCHISE_COLORS: Record<string, { from: string; to: string; text: string; strip: string }> = {
-  pokemon: { from: '#FFCB05', to: '#FF8C00', text: '#7C2D12', strip: '#FFCB05' },
-  digimon: { from: '#00A1E9', to: '#0057B7', text: '#1E3A5F', strip: '#00A1E9' },
-  dbz: { from: '#FF6B00', to: '#CC4400', text: '#7C2D12', strip: '#FF6B00' },
+  minimon: { from: '#FFCB05', to: '#FF8C00', text: '#7C2D12', strip: '#FFCB05' },
+  cybermon: { from: '#00A1E9', to: '#0057B7', text: '#1E3A5F', strip: '#00A1E9' },
+  dracobell: { from: '#FF6B00', to: '#CC4400', text: '#7C2D12', strip: '#FF6B00' },
 }
 
 const FRANCHISE_STRIP_TEXT: Record<string, string> = {
-  pokemon: '#92400E',
-  digimon: '#FFFFFF',
-  dbz: '#FFFFFF',
+  minimon: '#92400E',
+  cybermon: '#FFFFFF',
+  dracobell: '#FFFFFF',
 }
 
 const STAT_CONFIG = [
@@ -53,8 +53,8 @@ function getRarityStars(rarity: Rarity): string {
 }
 
 export default function TazoCard({ tazo, onClick }: TazoCardProps) {
-  const franchiseSlug = tazo.franchise?.slug || 'pokemon'
-  const franchiseColors = FRANCHISE_COLORS[franchiseSlug] || FRANCHISE_COLORS.pokemon
+  const franchiseSlug = tazo.franchise?.slug || 'minimon'
+  const franchiseColors = FRANCHISE_COLORS[franchiseSlug] || FRANCHISE_COLORS.minimon
   const franchiseStripText = FRANCHISE_STRIP_TEXT[franchiseSlug] || '#1F2937'
   const rarityConfig = RARITY_CONFIG[tazo.rarity as Rarity]
   const conditionConfig = CONDITION_CONFIG[tazo.condition as TazoCondition]

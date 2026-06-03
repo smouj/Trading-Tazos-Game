@@ -374,7 +374,7 @@ export default function BagShopPage() {
           <Scene3D cameraPosition={[0, 0.2, 3]} controls={true} autoRotate={true}>
             <TazoDisc3D
               name={revealedTazo.displayName || revealedTazo.name}
-              franchise={revealedTazo.franchise?.slug || "pokemon"}
+              franchise={revealedTazo.franchise?.slug || "minimon"}
               color={revealedTazo.franchise?.color}
               size={1.2}
               rotationSpeed={0.5}

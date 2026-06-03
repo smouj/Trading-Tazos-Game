@@ -28,9 +28,9 @@ import {
 } from '@/components/ui/select'
 import type { Tazo, Franchise, Collection, TazoCondition, PhysicalType, Rarity } from '@/lib/game/types'
 import {
-  POKEMON_TYPES,
-  DIGIMON_TYPES,
-  DBZ_TYPES,
+  MINIMON_TYPES,
+  CYBERMON_TYPES,
+  DRACOBELL_TYPES,
   RARITY_CONFIG,
   CONDITION_CONFIG,
   PHYSICAL_TYPE_CONFIG,
@@ -362,12 +362,12 @@ export function ScannerView() {
       const franchise = franchises.find((f) => f.id === franchiseId)
       if (!franchise) return []
       switch (franchise.slug) {
-        case 'pokemon':
-          return [...POKEMON_TYPES]
-        case 'digimon':
-          return [...DIGIMON_TYPES]
-        case 'dbz':
-          return [...DBZ_TYPES]
+        case 'minimon':
+          return [...MINIMON_TYPES]
+        case 'cybermon':
+          return [...CYBERMON_TYPES]
+        case 'dracobell':
+          return [...DRACOBELL_TYPES]
         default:
           return []
       }

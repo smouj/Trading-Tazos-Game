@@ -49,9 +49,9 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import type { Tazo, Franchise, Collection, TazoCondition, PhysicalType, Rarity } from '@/lib/game/types'
 import {
-  POKEMON_TYPES,
-  DIGIMON_TYPES,
-  DBZ_TYPES,
+  MINIMON_TYPES,
+  CYBERMON_TYPES,
+  DRACOBELL_TYPES,
   RARITY_CONFIG,
   CONDITION_CONFIG,
   PHYSICAL_TYPE_CONFIG,
@@ -172,12 +172,12 @@ export function TazoEditor({ tazo, onClose, onSave, onDelete }: TazoEditorProps)
       const franchise = franchises.find((f) => f.id === franchiseId)
       if (!franchise) return []
       switch (franchise.slug) {
-        case 'pokemon':
-          return [...POKEMON_TYPES]
-        case 'digimon':
-          return [...DIGIMON_TYPES]
-        case 'dbz':
-          return [...DBZ_TYPES]
+        case 'minimon':
+          return [...MINIMON_TYPES]
+        case 'cybermon':
+          return [...CYBERMON_TYPES]
+        case 'dracobell':
+          return [...DRACOBELL_TYPES]
         default:
           return []
       }
@@ -603,7 +603,7 @@ export function TazoEditor({ tazo, onClose, onSave, onDelete }: TazoEditorProps)
             </CardHeader>
             {showAdvanced && (
               <CardContent className="space-y-3">
-                {/* Evolution fields - for Pokémon & Digimon */}
+                {/* Evolution fields - for Minimon & Cybermon */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <Label className="text-xs">Evolution From</Label>
@@ -625,8 +625,8 @@ export function TazoEditor({ tazo, onClose, onSave, onDelete }: TazoEditorProps)
                   </div>
                 </div>
 
-                {/* Transform fields - for DBZ */}
-                {currentFranchiseSlug() === 'dbz' && (
+                {/* Transform fields - for Draco Bell */}
+                {currentFranchiseSlug() === 'dracobell' && (
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
                       <Label className="text-xs">Transform Stage</Label>

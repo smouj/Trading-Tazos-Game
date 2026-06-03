@@ -25,11 +25,11 @@ import {
 import Link from "next/link"
 
 const DEMO_TAZOS = [
-  { id: "opp-1", name: "Goku SSJ", slug: "opp-goku", franchise: "dbz", imageUrl: "/tazos/dbz/dbz-goku-ssj.svg", attack: 80, defense: 55, resistance: 50, weight: 55, stability: 55, spin: 65, control: 60, bounce: 50, precision: 55, role: "attacker", stackable: false, maxStackOn: 0 },
-  { id: "opp-2", name: "Angemon", slug: "opp-angemon", franchise: "digimon", imageUrl: "/tazos/digimon/digimon-angemon.svg", attack: 70, defense: 55, resistance: 50, weight: 45, stability: 55, spin: 50, control: 60, bounce: 45, precision: 55, role: "technical", stackable: false, maxStackOn: 0 },
-  { id: "opp-3", name: "Pikachu", slug: "opp-pikachu", franchise: "pokemon", imageUrl: "/tazos/pokemon/pokemon-pikachu.svg", attack: 45, defense: 40, resistance: 35, weight: 35, stability: 40, spin: 55, control: 50, bounce: 45, precision: 55, role: "light", stackable: false, maxStackOn: 0 },
-  { id: "opp-4", name: "Greymon", slug: "opp-greymon", franchise: "digimon", imageUrl: "/tazos/digimon/digimon-greymon.svg", attack: 55, defense: 50, resistance: 45, weight: 55, stability: 50, spin: 45, control: 40, bounce: 35, precision: 40, role: "tank", stackable: false, maxStackOn: 0 },
-  { id: "opp-5", name: "Cell", slug: "opp-cell", franchise: "dbz", imageUrl: "/tazos/dbz/dbz-cell.svg", attack: 75, defense: 65, resistance: 60, weight: 60, stability: 58, spin: 55, control: 50, bounce: 45, precision: 50, role: "balanced", stackable: false, maxStackOn: 0 },
+  { id: "opp-1", name: "Kairo SSJ", slug: "opp-kairo", franchise: "dracobell", imageUrl: "/tazos/dracobell/dracobell-kairo-ssj.svg", attack: 80, defense: 55, resistance: 50, weight: 55, stability: 55, spin: 65, control: 60, bounce: 50, precision: 55, role: "attacker", stackable: false, maxStackOn: 0 },
+  { id: "opp-2", name: "Archangelon", slug: "opp-archangelon", franchise: "cybermon", imageUrl: "/tazos/cybermon/cybermon-archangelon.svg", attack: 70, defense: 55, resistance: 50, weight: 45, stability: 55, spin: 50, control: 60, bounce: 45, precision: 55, role: "technical", stackable: false, maxStackOn: 0 },
+  { id: "opp-3", name: "Mimichu", slug: "opp-mimichu", franchise: "minimon", imageUrl: "/tazos/minimon/minimon-mimichu.svg", attack: 45, defense: 40, resistance: 35, weight: 35, stability: 40, spin: 55, control: 50, bounce: 45, precision: 55, role: "light", stackable: false, maxStackOn: 0 },
+  { id: "opp-4", name: "Graymech", slug: "opp-graymech", franchise: "cybermon", imageUrl: "/tazos/cybermon/cybermon-graymech.svg", attack: 55, defense: 50, resistance: 45, weight: 55, stability: 50, spin: 45, control: 40, bounce: 35, precision: 40, role: "tank", stackable: false, maxStackOn: 0 },
+  { id: "opp-5", name: "Phantom", slug: "opp-phantom", franchise: "dracobell", imageUrl: "/tazos/dracobell/dracobell-phantom.svg", attack: 75, defense: 65, resistance: 60, weight: 60, stability: 58, spin: 55, control: 50, bounce: 45, precision: 50, role: "balanced", stackable: false, maxStackOn: 0 },
 ]
 
 type TazoCard = { id: string; name: string; slug: string; franchise: string; imageUrl: string | null; attack: number; defense: number; resistance: number; weight: number; stability: number; spin: number; control: number; bounce: number; precision: number; role?: string | null; stackable?: boolean; maxStackOn?: number }
@@ -60,7 +60,7 @@ export default function PvPBattlePanel() {
             id: dt.tazo.id,
             name: dt.tazo.name,
             slug: dt.tazo.slug,
-            franchise: dt.tazo.franchise?.slug || "pokemon",
+            franchise: dt.tazo.franchise?.slug || "minimon",
             imageUrl: dt.tazo.imageUrl,
             attack: dt.tazo.attack,
             defense: dt.tazo.defense,
@@ -389,8 +389,8 @@ export default function PvPBattlePanel() {
                       <div
                         className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shrink-0 border-2 border-[#1a1a1a]"
                         style={{
-                          background: tazo.franchise === "pokemon" ? "linear-gradient(135deg, #FFCB05, #FF8C00)"
-                            : tazo.franchise === "digimon" ? "linear-gradient(135deg, #00A1E9, #0057B7)"
+                          background: tazo.franchise === "minimon" ? "linear-gradient(135deg, #FFCB05, #FF8C00)"
+                            : tazo.franchise === "cybermon" ? "linear-gradient(135deg, #00A1E9, #0057B7)"
                             : "linear-gradient(135deg, #FF6B00, #CC4400)",
                         }}
                       >

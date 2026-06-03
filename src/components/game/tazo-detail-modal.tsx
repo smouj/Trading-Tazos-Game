@@ -1,6 +1,6 @@
 'use client'
 
-import { Tazo, RARITY_CONFIG, CONDITION_CONFIG, Rarity, TazoCondition, POKEMON_TYPES, DIGIMON_TYPES, DBZ_TYPES } from '@/lib/game/types'
+import { Tazo, RARITY_CONFIG, CONDITION_CONFIG, Rarity, TazoCondition, MINIMON_TYPES, CYBERMON_TYPES, DRACOBELL_TYPES } from '@/lib/game/types'
 import {
   Dialog,
   DialogContent,
@@ -17,9 +17,9 @@ interface TazoDetailModalProps {
 }
 
 const FRANCHISE_COLORS: Record<string, { from: string; to: string; text: string; border: string; banner: string }> = {
-  pokemon: { from: '#FFCB05', to: '#FF8C00', text: '#92400E', border: '#FFCB05', banner: 'linear-gradient(90deg, #FFCB05, #FF8C00)' },
-  digimon: { from: '#00A1E9', to: '#0057B7', text: '#1E3A5F', border: '#00A1E9', banner: 'linear-gradient(90deg, #00A1E9, #0057B7)' },
-  dbz: { from: '#FF6B00', to: '#CC4400', text: '#7C2D12', border: '#FF6B00', banner: 'linear-gradient(90deg, #FF6B00, #CC4400)' },
+  minimon: { from: '#FFCB05', to: '#FF8C00', text: '#92400E', border: '#FFCB05', banner: 'linear-gradient(90deg, #FFCB05, #FF8C00)' },
+  cybermon: { from: '#00A1E9', to: '#0057B7', text: '#1E3A5F', border: '#00A1E9', banner: 'linear-gradient(90deg, #00A1E9, #0057B7)' },
+  dracobell: { from: '#FF6B00', to: '#CC4400', text: '#7C2D12', border: '#FF6B00', banner: 'linear-gradient(90deg, #FF6B00, #CC4400)' },
 }
 
 const STAT_CONFIG = [
@@ -59,8 +59,8 @@ const CONDITION_HEX: Record<TazoCondition, string> = {
   metallic: '#94A3B8',
 }
 
-// Pokémon type advantage table
-const POKEMON_ADVANTAGES: Record<string, string[]> = {
+// Minimon type advantage table
+const MINIMON_ADVANTAGES: Record<string, string[]> = {
   fire: ['grass'],
   water: ['fire'],
   grass: ['water'],
@@ -73,21 +73,21 @@ const POKEMON_ADVANTAGES: Record<string, string[]> = {
 
 // Fun flavor quotes for each franchise
 const FLAVOR_QUOTES: Record<string, string[]> = {
-  pokemon: [
+  minimon: [
     "Gotta spin 'em all!",
     "This one's a real spinner!",
     "Watch out for that type advantage!",
     "A champion in the making!",
     "Pocket power, maximum spin!",
   ],
-  digimon: [
+  cybermon: [
     "Digivolve and spin!",
     "Digital power unleashed!",
-    "This Digimon means business!",
+    "This Cybermon means business!",
     "Spin force: OVER 9000... wait, wrong franchise!",
     "Data never spins this hard!",
   ],
-  dbz: [
+  dracobell: [
     "It's OVER 9000 RPM!",
     "Power level: MAXIMUM SPIN!",
     "This tazo goes Super Saiyan!",
@@ -97,7 +97,7 @@ const FLAVOR_QUOTES: Record<string, string[]> = {
 }
 
 function getFlavorQuote(franchise: string, tazoName: string): string {
-  const quotes = FLAVOR_QUOTES[franchise] || FLAVOR_QUOTES.pokemon
+  const quotes = FLAVOR_QUOTES[franchise] || FLAVOR_QUOTES.minimon
   // Simple hash based on name for consistent quotes
   const hash = tazoName.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)
   return quotes[hash % quotes.length]
@@ -106,8 +106,8 @@ function getFlavorQuote(franchise: string, tazoName: string): string {
 export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: TazoDetailModalProps) {
   if (!tazo) return null
 
-  const franchiseSlug = tazo.franchise?.slug || 'pokemon'
-  const franchiseColors = FRANCHISE_COLORS[franchiseSlug] || FRANCHISE_COLORS.pokemon
+  const franchiseSlug = tazo.franchise?.slug || 'minimon'
+  const franchiseColors = FRANCHISE_COLORS[franchiseSlug] || FRANCHISE_COLORS.minimon
   const rarityConfig = RARITY_CONFIG[tazo.rarity as Rarity]
   const conditionConfig = CONDITION_CONFIG[tazo.condition as TazoCondition]
 
@@ -431,7 +431,7 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: 
           )}
 
           {/* ===== EVOLUTION / TRANSFORM SECTION ===== */}
-          {franchiseSlug === 'digimon' && (tazo.evolutionFrom || tazo.evolutionTo) && (
+          {franchiseSlug === 'cybermon' && (tazo.evolutionFrom || tazo.evolutionTo) && (
             <div
               className="p-3"
               style={{
@@ -515,7 +515,7 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: 
             </div>
           )}
 
-          {franchiseSlug === 'dbz' && (tazo.transformStage || tazo.transformOf) && (
+          {franchiseSlug === 'dracobell' && (tazo.transformStage || tazo.transformOf) && (
             <div
               className="p-3"
               style={{
@@ -583,8 +583,8 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: 
             </div>
           )}
 
-          {/* ===== POKEMON TYPE ADVANTAGE ===== */}
-          {franchiseSlug === 'pokemon' && tazo.combatType && (
+          {/* ===== MINIMON TYPE ADVANTAGE ===== */}
+          {franchiseSlug === 'minimon' && tazo.combatType && (
             <div
               className="p-3"
               style={{
@@ -604,8 +604,8 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: 
                 ⚡ TYPE ADVANTAGES ⚡
               </div>
               <div className="flex flex-wrap gap-1.5 justify-center">
-                {(POKEMON_ADVANTAGES[tazo.combatType] || []).length > 0 ? (
-                  (POKEMON_ADVANTAGES[tazo.combatType] || []).map((type) => (
+                {(MINIMON_ADVANTAGES[tazo.combatType] || []).length > 0 ? (
+                  (MINIMON_ADVANTAGES[tazo.combatType] || []).map((type) => (
                     <span
                       key={type}
                       className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-black uppercase border-2 border-black"

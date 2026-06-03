@@ -166,8 +166,38 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense>
+    <Suspense fallback={<LoginSkeleton />}>
       <LoginForm />
     </Suspense>
+  )
+}
+
+function LoginSkeleton() {
+  return (
+    <div className="min-h-screen flex flex-col mag-bg">
+      <header className="bg-[#FFCC00] border-b-4 border-[#1a1a1a] mag-stripes">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
+          <div className="w-5 h-5 bg-[#1a1a1a]/10 rounded" />
+          <div className="w-10 h-10 bg-[#1a1a1a]/10 rounded" />
+          <div className="h-6 w-24 bg-[#1a1a1a]/10 rounded" />
+        </div>
+      </header>
+      <main className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md space-y-5">
+          <div className="border-3 border-[#1a1a1a] shadow-[6px_6px_0px_#1a1a1a] p-8 bg-white">
+            <div className="text-center mb-6">
+              <div className="inline-block w-32 h-6 bg-[#1a1a1a]/5 rounded" />
+            </div>
+            <div className="space-y-4">
+              <div className="h-3 w-12 bg-[#1a1a1a]/10 rounded" />
+              <div className="h-12 w-full bg-[#1a1a1a]/5 rounded" />
+              <div className="h-3 w-16 bg-[#1a1a1a]/10 rounded" />
+              <div className="h-12 w-full bg-[#1a1a1a]/5 rounded" />
+              <div className="h-12 w-full bg-[#E3350D]/60 rounded" />
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
   )
 }

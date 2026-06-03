@@ -10,7 +10,6 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)](https://www.typescriptlang.org)
 [![Prisma](https://img.shields.io/badge/Prisma-6.x-2D3748?logo=prisma)](https://www.prisma.io)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.x-06B6D4?logo=tailwindcss)](https://tailwindcss.com)
-[![Three.js](https://img.shields.io/badge/Three.js-0.184-000000?logo=threedotjs)](https://threejs.org)
 [![Bun](https://img.shields.io/badge/Bun-1.x-FBF0DF?logo=bun)](https://bun.sh)
 [![License](https://img.shields.io/badge/license-Source_Available-blue)](./LICENSE)
 [![Status](https://img.shields.io/badge/status-Live-brightgreen)](https://medaclawarena.com)
@@ -22,9 +21,9 @@
 
 **Aim. Throw. Flip. Capture. Collect.**
 
-Trading Tazos Game is a browser-based physical tazo (pog) battle game. You don't just compare stats — you physically aim, charge power, and throw tazos into a physics-simulated arena. Built with a 90s Nintendo Power magazine aesthetic, 319 real verified Spanish tazos, 9 combat stats, 8 roles, deterministic battle engine, WebSocket multiplayer, 3D bag shop, quests, leaderboards, and achievements.
+Trading Tazos Game is a browser-based physical tazo (pog) battle game. You don't just compare stats — you physically aim, charge power, and throw tazos into a physics-simulated arena. Built with a 90s Nintendo Power magazine aesthetic, 319 tazos across 3 collections (Minimon, Dracobell, Cybermon), 9 combat stats, 8 roles, a deterministic battle engine, WebSocket PvP multiplayer, and a full progression system.
 
-🌐 **[medaclawarena.com](https://medaclawarena.com)** &nbsp;|&nbsp; 📧 **support@medaclawarena.com** &nbsp;|&nbsp; 📦 **[npm: @trading-tazos-game-cli](https://www.npmjs.com/package/@trading-tazos-game-cli)**
+🌐 **[medaclawarena.com](https://medaclawarena.com)** &nbsp;|&nbsp; 📧 **support@medaclawarena.com**
 
 </div>
 
@@ -34,15 +33,15 @@ Trading Tazos Game is a browser-based physical tazo (pog) battle game. You don't
 
 <div align="center">
 
-| Landing Page | Shop | Quests |
+| Home (Album) | Shop (Auth) | Quests (Auth) |
 |:---:|:---:|:---:|
-| <img src="docs/screenshots/home.png" width="320" alt="Magazine-style landing with masthead and franchise tabs"> | <img src="docs/screenshots/shop.png" width="320" alt="3D chip bag shop with tear animation"> | <img src="docs/screenshots/quests.png" width="320" alt="Daily, weekly, and special quests with progress bars"> |
+| <img src="docs/screenshots/home.png" width="320" alt="Magazine-style landing with masthead and franchise tabs"> | <img src="docs/screenshots/shop.png" width="320" alt="3D chip bag shop with tear animation"> | <img src="docs/screenshots/quests.png" width="320" alt="Daily and weekly quests with progress bars"> |
 
-| Leaderboard | Download | Authentication |
+| Leaderboard | Download | Sign In |
 |:---:|:---:|:---:|
-| <img src="docs/screenshots/leaderboard.png" width="320" alt="Global rankings by credits, tazos, and battles"> | <img src="docs/screenshots/download.png" width="320" alt="Desktop app downloads for Windows, macOS, and Linux"> | <img src="docs/screenshots/login.png" width="320" alt="Magazine-themed login and registration"> |
+| <img src="docs/screenshots/leaderboard.png" width="320" alt="Global rankings by credits, tazos, and battles"> | <img src="docs/screenshots/download.png" width="320" alt="Desktop app downloads for Windows, macOS, Linux"> | <img src="docs/screenshots/login.png" width="320" alt="Magazine-themed login and registration"> |
 
-| Collection | Decks | Battle Arena |
+| Collection (Auth) | Decks (Auth) | Battle Arena |
 |:---:|:---:|:---:|
 | <img src="docs/screenshots/collection.png" width="320" alt="Personal tazo collection with stats"> | <img src="docs/screenshots/decks.png" width="320" alt="Deck builder with active deck management"> | <img src="docs/screenshots/battle.png" width="320" alt="Canvas 2D physics battle with aim controls"> |
 
@@ -52,8 +51,8 @@ Trading Tazos Game is a browser-based physical tazo (pog) battle game. You don't
 
 ## What Makes It Different
 
-> Trading Tazos Game is **not** an auto-battle card game.  
-> It's a game of **physical tazo throwing** — aim, power, physics, chain rebounds, risk, and field control.
+Trading Tazos Game is **not** an auto-battle card game.
+It's a game of **physical tazo throwing** — aim, power, physics, chain rebounds, risk, and field control.
 
 ### Core Game Loop
 
@@ -73,63 +72,68 @@ Trading Tazos Game is a browser-based physical tazo (pog) battle game. You don't
 |---------|--------|
 | Battle Engine | 14-phase deterministic state machine with SeededRNG |
 | Combat Stats | Attack, Defense, Resistance, Weight, Stability, Spin, Control, Bounce, Precision |
-| Tazo Roles | Attacker, Tank, Technical, Bouncer, Heavy, Light, Balanced, Special |
+| Tazo Roles | Attacker, Tank, Technical, Bouncer, Heavy, Light, Balanced, Special (8 roles) |
 | Aim Mechanics | 3-phase minigame: horizontal swing → vertical drop → power charge |
 | Physics | Canvas 2D collision detection, multi-hit chains, self-flip mechanic |
-| Game Modes | Classic (capture all) + Rounds (points scoring) |
-| Risk System | Overpower = may fly out of bounds. Miss = vulnerable on field. |
-| Event Log | Turn-by-turn Spanish battle descriptions |
-| Multiplayer | WebSocket-based PvP matchmaking with JWT auth |
+| Game Modes | Classic (capture all) + Rounds (points scoring per round) |
+| Risk System | Overpower = may fly out of bounds. Miss = vulnerable on field |
+| Event Log | Turn-by-turn Spanish battle descriptions with styled impact messages |
 
 ### Collection & Progression
 | Feature | Detail |
 |---------|--------|
-| Tazo Database | 319 real verified Spanish tazos from Pokemon, DBZ, and Digimon |
-| Personal Collection | Track owned tazos, favorites, acquisition dates |
-| Decks | Build, name, and activate battle decks from your collection |
+| Tazo Database | 319 tazos: 51 Minimon, 118 Dracobell, 150 Cybermon |
+| Personal Collection | Track owned tazos, mark favorites, view acquisition dates |
+| Decks | Build, name, and activate battle decks (5 tazos each) |
 | Welcome Pack | 10 starter tazos + pre-built deck on registration |
 | Stats Panel | Collection completion %, franchise breakdown, rarity distribution |
 
 ### Economy & Shop
 | Feature | Detail |
 |---------|--------|
-| 3D Bag Shop | Buy potato chip bags with credits, 3D tear animation, tazo reveal |
-| Bag Types | Standard (50cr), Premium (150cr), Mega (400cr) with rare boosts |
-| Credit System | Earn via battles (+30), daily login (+25), quests (+50-200) |
+| 3D Bag Shop | Buy tazo bags with credits, tear them open with 3D animation, reveal what you got |
+| Bag Types | Standard (50cr), Premium (150cr), Mega (400cr) with rare boost multipliers |
+| Credit System | Earn via battles (+30), daily login (+25), quests (+50–200) |
 | Rarity System | 5 tiers: Common, Uncommon, Rare, Ultra-Rare, Legendary |
-| Weighted Drops | Rare boost multiplier per bag type (1x/2x/3x) |
+| Weighted Drops | Rare boost multiplier per bag type (1× / 2× / 3×) |
 
 ### Quests & Achievements
 | Feature | Detail |
 |---------|--------|
-| Quests | 17 quests across 4 categories: Beginner, Daily, Weekly, Special |
-| Achievements | 18 achievements with 4 tiers: Bronze → Silver → Gold → Platinum |
-| Leaderboards | Global rankings by credits, tazo count, or battle wins |
-| Progress Tracking | Per-quest progress bars, per-achievement unlock tracking |
+| Quests | 17 quests: Beginner, Daily, Weekly, and Special categories |
+| Achievements | 18 achievements: Bronze → Silver → Gold → Platinum |
+| Leaderboards | Global rankings by credits, tazos collected, or battle wins |
+| Progress Tracking | Per-quest progress bars + per-achievement unlock tracking |
+
+### Multiplayer
+| Feature | Detail |
+|---------|--------|
+| PvP Battles | Real-time WebSocket matchmaking with JWT auth |
+| Room System | Private battle rooms between two players |
+| Match Events | Live turn-by-turn event log synced to both clients |
 
 ### Platform
 | Feature | Detail |
 |---------|--------|
-| Web | Full Next.js app at medaclawarena.com |
-| PWA | Installable on mobile/desktop with manifest.json and offline support |
-| Desktop | Electron app for Windows, macOS, Linux (launcher with splash screen) |
-| CLI | npm package `@trading-tazos-game-cli` with 5 commands |
+| Web | Full Next.js 16 app at [medaclawarena.com](https://medaclawarena.com) |
+| PWA | Installable on mobile and desktop with manifest.json |
+| Desktop | Electron app for Windows, macOS, Linux ([v0.3.0](https://github.com/smouj/Trading-Tazos-Game/releases/tag/v0.3.0)) |
 | i18n | 10 languages: EN, ES, PT, DE, FR, IT, JA, KO, ZH, RU |
 | SEO | JSON-LD VideoGame schema, sitemap.xml, robots.txt, hreflang alternates |
 | Security | CSP + HSTS + X-Frame-Options + httpOnly auth cookies |
 
 ---
 
-## Real Collections
+## Collections
 
-| Franchise | Collection | Year | Tazos | Categories |
-|-----------|-----------|------|-------|-------------|
-| Pokemon | Pokemon Tazos 1 (Matutano) | 2000 | 51 | Tazos, Supertazos Voladores |
-| Dragon Ball Z | DBZ Matutano | 1995 | 118 | 7 categories (Tazos, Megatazos, Supertazos Octogonales, Mastertazos, Holo 3D, Caps, Gold) |
-| Digimon | Magic Box 2000 | 2000 | 150 | Tazos, Megatazos, Supertazos Voladores |
-| **TOTAL** | | | **319** | |
+| # | Collection | Origin | Tazos |
+|:--:|-----------|--------|:-----:|
+| 1 | **Minimon** — inspired by Pokémon Tazos 1 (Matutano, 2000) | Spain | 51 |
+| 2 | **Dracobell** — inspired by Dragon Ball Z (Matutano, 1995) | Spain | 118 |
+| 3 | **Cybermon** — inspired by Digimon Magic Box (2000) | Spain | 150 |
+| | | **Total** | **319** |
 
-All tazo names, numbers, variants, and categories verified against original Spanish collections. Each tazo has 9 balanced combat stats, a role, and evolutive relationships (pre-evolution, evolution, transformation stage).
+All 319 tazos verified against original Spanish physical collections. Each tazo has 9 balanced combat stats, a tactical role, and evolutive relationships (pre-evolution, evolution, transformation stage). Names have been minimally tweaked to avoid IP conflicts while staying instantly recognizable.
 
 ---
 
@@ -147,14 +151,14 @@ All tazo names, numbers, variants, and categories verified against original Span
 | Bounce | BNC | Improves rebounds and chained multi-hits |
 | Precision | PRC | Improves aim and reduces horizontal/vertical error |
 
-### Throw Risk/Reward
+### Throw Risk / Reward
 
 | Power Level | Circle Size | Impact | Accuracy | Risk |
 |:-----------:|:-----------:|:------:|:--------:|------|
-| Low | Large | Weak | High | Safe — won't fly out |
+| Low | Large | Weak | High | Safe — stays in bounds |
 | Medium | Medium | Balanced | Normal | Standard risk |
 | High | Small | Strong | Low | May scatter unpredictably |
-| Maximum | Tiny | Devastating | Very Low | High chance of self-flip or out-of-bounds |
+| Maximum | Tiny | Devastating | Very Low | High chance of self-flip or flying out |
 
 ---
 
@@ -163,20 +167,18 @@ All tazo names, numbers, variants, and categories verified against original Span
 | Layer | Technology |
 |-------|-----------|
 | Framework | Next.js 16.1 (App Router, Server Components, Turbopack) |
-| Language | TypeScript 5.x (strict mode, 0 type errors) |
-| Styling | Tailwind CSS 4 + custom magazine theme system (THEME.md) |
+| Language | TypeScript 5.x (strict mode) |
+| Styling | Tailwind CSS 4 + custom magazine theme system ([THEME.md](./THEME.md)) |
 | UI Components | shadcn/ui (Radix primitives) + Lucide React icons |
 | 3D Rendering | Three.js + @react-three/fiber + @react-three/drei |
 | Battle Graphics | HTML5 Canvas 2D with deterministic physics |
 | ORM | Prisma 6.x (12 models, automated migrations) |
-| Database | SQLite (zero-config, portable, 360KB with 319 tazos) |
+| Database | SQLite (zero-config, portable, 360 KB with 319 tazos) |
 | Auth | JWT (jsonwebtoken) + bcryptjs (12 rounds) + httpOnly cookies |
-| Multiplayer | WebSocket (ws@7.5.10) with JWT auth and room system |
-| Desktop | Electron with splash screen, system tray, single-instance lock |
+| Multiplayer | WebSocket (ws) with JWT auth and room system |
+| Desktop | Electron with animated splash, system tray, single-instance lock |
 | Runtime | Bun (build) + Node.js 22 (production) |
-| Deploy | PM2 + Caddy (HTTPS, gzip, CSP, HSTS, WebSocket proxy) |
 | Monitoring | Plausible Analytics (self-hosted) |
-| Design System | THEME.md — 90s magazine aesthetic with documented tokens |
 
 ---
 
@@ -185,84 +187,62 @@ All tazo names, numbers, variants, and categories verified against original Span
 ```
 Trading-Tazos-Game/
 ├── prisma/
-│   ├── schema.prisma              # 12 models: User, Franchise, Collection, Tazo,
-│   │                              #   UserTazo, Deck, DeckTazo, BattleRecord,
-│   │                              #   BagPurchase, CreditTransaction, Quest,
-│   │                              #   UserQuest, Achievement, UserAchievement
-│   ├── seed.ts                    # 319 real verified tazos
-│   └── seed-quests.ts             # 17 quests + 18 achievements
+│   ├── schema.prisma        # 12 models + automated migrations
+│   ├── seed.ts              # 319 tazos (seed data)
+│   └── seed-quests.ts       # 17 quests + 18 achievements
 ├── src/
-│   ├── middleware.ts              # Auth route protection (collection, decks, quests, shop)
+│   ├── middleware.ts         # Auth route protection
 │   ├── app/
-│   │   ├── page.tsx               # Landing (magazine masthead + franchise tabs)
-│   │   ├── layout.tsx             # Root layout (SEO, PWA, JSON-LD, i18n)
-│   │   ├── collection/            # Personal tazo collection
-│   │   ├── decks/                 # Deck builder
-│   │   ├── shop/                  # 3D bag shop (select → open → reveal)
-│   │   ├── quests/                # Quest system (daily, weekly, special)
-│   │   ├── leaderboard/           # Global rankings (credits, tazos, battles)
-│   │   ├── download/              # Desktop app downloads
-│   │   ├── login/ + register/     # Auth pages
-│   │   └── api/
-│   │       ├── auth/              # login, register, me, logout
-│   │       ├── bags/              # buy, open
-│   │       ├── credits/           # balance, earn
-│   │       ├── quests/            # list, claim
-│   │       ├── leaderboard/       # global rankings
-│   │       ├── achievements/      # list + progress
-│   │       ├── battle/            # Battle simulation
-│   │       ├── decks/             # CRUD + activate
-│   │       ├── collection/        # CRUD user tazos
-│   │       ├── tazos/             # Public catalog + detail
-│   │       ├── franchises/        # Franchise metadata
-│   │       ├── stats/             # Global stats
-│   │       ├── multiplayer/       # WebSocket status
-│   │       └── scanner/           # Photo upload + crop + detect
-│   ├── components/
-│   │   └── game/
-│   │       ├── battle/            # arena-canvas, launch-control, event-log, result-panel
-│   │       ├── 3d/                # tazo-disc-3d, chip-bag-3d, scene-3d
-│   │       ├── battle-view.tsx    # Full battle experience (practice + PvP)
-│   │       ├── pvp-battle-panel.tsx  # WebSocket multiplayer battle
-│   │       ├── album-view.tsx     # Filterable tazo grid
-│   │       ├── tazo-card.tsx      # Individual tazo display
-│   │       ├── tazo-detail-modal.tsx  # Full detail with 9 stats
-│   │       ├── stats-panel.tsx    # Collection analytics
-│   │       └── scanner-view.tsx   # Photo upload + tazo detection
+│   │   ├── page.tsx          # Home (album + 8-tab masthead)
+│   │   ├── layout.tsx        # Root layout (SEO, PWA, JSON-LD, i18n)
+│   │   ├── collection/       # Personal tazo collection
+│   │   ├── decks/            # Deck builder + active deck switcher
+│   │   ├── shop/             # 3D bag shop (buy → open → reveal)
+│   │   ├── quests/           # Quest system (daily, weekly, special)
+│   │   ├── leaderboard/      # Global rankings
+│   │   ├── download/         # Desktop app downloads
+│   │   ├── login/            # Auth pages
+│   │   ├── register/         #
+│   │   └── api/              # 14 REST API route groups
+│   ├── components/game/
+│   │   ├── battle/           # Arena canvas, launch controls, event log, results
+│   │   ├── 3d/               # 3D tazo discs, chip bags, scenes
+│   │   ├── album-view.tsx    # Filterable tazo grid (4 tabs)
+│   │   ├── tazo-card.tsx     # Individual tazo display
+│   │   ├── tazo-detail-modal.tsx  # 9-stat detail + evolutive info
+│   │   ├── stats-panel.tsx   # Collection analytics
+│   │   └── scanner-view.tsx  # Upload → crop → detect physical tazo
 │   └── lib/
-│       ├── battle/                # 14-phase deterministic engine (4 files, 1355 lines)
-│       │   ├── battle-engine.ts   # State machine
-│       │   ├── battle-rules.ts    # Physics, collisions, impacts
-│       │   ├── battle-scoring.ts  # Points, captures, penalties
-│       │   └── battle-types.ts    # TypeScript interfaces
-│       ├── i18n/                  # 10-language system with auto-detection
-│       ├── auth.ts                # JWT + bcrypt helpers + cookie extraction
-│       ├── auth-context.tsx        # AuthProvider + useAuth React hook
-│       ├── multiplayer.ts         # WebSocket client with auto-reconnect
-│       └── db.ts                  # Prisma client singleton
+│       ├── battle/           # 14-phase deterministic engine
+│       ├── i18n/             # 10-language system with auto-detection
+│       ├── auth.ts           # JWT + bcrypt helpers
+│       ├── auth-context.tsx  # AuthProvider + useAuth hook
+│       ├── multiplayer.ts    # WebSocket client (auto-reconnect)
+│       └── db.ts             # Prisma client singleton
 ├── electron/
-│   └── main.js                    # Electron main process (splash, tray, single-instance)
-├── server/
-│   └── ws-server.js               # WebSocket server (native crypto JWT, zero ext deps)
+│   └── main.js               # Electron main process
+├── src/server/
+│   └── ws-server.js          # Standalone WebSocket server
 ├── public/
-│   ├── logo/                      # 6 official logo variants + 4 social banners
-│   ├── tazos/                     # Generated SVG tazo disc images
-│   ├── manifest.json              # PWA manifest
-│   ├── robots.txt                 # SEO + AI crawler rules
-│   └── sitemap.xml                # 7 URLs with hreflang alternates
-├── THEME.md                       # Design system spec (colors, typography, components)
-├── deploy.sh                      # Build → rsync → distDir sync → PM2 restart → verify
-├── ecosystem.config.cjs           # PM2 process configuration
-└── package.json                   # Bun + Node scripts + Electron build config
+│   ├── logo/                 # 6 logo variants + social banners
+│   ├── manifest.json         # PWA manifest
+│   ├── robots.txt            # SEO + AI crawler rules
+│   └── sitemap.xml           # 7 URLs with hreflang alternates
+├── THEME.md                  # Design system spec (colors, typography, components)
+├── electron-builder.yml      # Desktop app build config
+├── build-electron.sh         # Electron build script
+└── package.json
 ```
+
+> **Note:** Device-specific config files (`deploy.sh`, `ecosystem.config.cjs`, `Caddyfile`, `.zscripts/`) are excluded from the public repo. Template versions are available for self-hosting: [`deploy.example.sh`](./deploy.example.sh), [`Caddyfile.example`](./Caddyfile.example), [`ecosystem.config.ci.example.cjs`](./ecosystem.config.ci.example.cjs).
 
 ---
 
 ## Getting Started
 
 ### Prerequisites
-- [Bun](https://bun.sh) 1.x or Node.js 22+
-- SQLite (included — zero external DB setup)
+- [Bun](https://bun.sh) 1.x (or Node.js 22+)
+- SQLite (bundled — no external DB needed)
 
 ### Install & Run
 
@@ -271,7 +251,7 @@ git clone https://github.com/smouj/Trading-Tazos-Game.git
 cd Trading-Tazos-Game
 
 bun install                              # Dependencies
-cp .env.example .env                     # Configure JWT_SECRET
+cp .env.example .env                     # Set your JWT_SECRET
 bunx prisma db push                      # Create database
 bun run seed                             # 319 tazos + 17 quests + 18 achievements
 
@@ -289,129 +269,124 @@ NEXT_PUBLIC_BASE_URL=http://localhost:3000
 
 ---
 
-## Deploy
+## Deployment
 
-### Production (medaclawarena.com)
+The live app runs at **[medaclawarena.com](https://medaclawarena.com)** using PM2 + Caddy on a VPS. See [`deploy.example.sh`](./deploy.example.sh) for the annotated deploy pipeline and [`Caddyfile.example`](./Caddyfile.example) for the reverse-proxy configuration.
 
-```bash
-./deploy.sh
-```
-
-**What it does**: Builds the Next.js standalone output, syncs to VPS via rsync, fixes distDir mismatch, sets DATABASE_URL to absolute path, excludes DB files from overwrite, restarts PM2, and verifies all pages return 200.
-
-### Architecture
+### Production Architecture
 
 ```
 medaclawarena.com
-  └── Caddy (TLS, gzip, CSP, HSTS, /ws* → WebSocket)
-      ├── PM2 `ttg`        (fork, :3000)  — Next.js server
-      └── PM2 `ttg-ws`     (fork, :3001)  — WebSocket server
-```
-
-### PM2
-
-```bash
-ssh your-vps "pm2 status"                        # All processes
-ssh your-vps "pm2 logs ttg --lines 50"           # App logs
-ssh your-vps "pm2 restart ttg ttg-ws"            # Restart both
+  └── Caddy (TLS 1.3, gzip, CSP, HSTS, WebSocket upgrade)
+      ├── PM2 `ttg`     (fork, :3000) — Next.js standalone server
+      └── PM2 `ttg-ws`  (fork, :3001) — WebSocket battle server
 ```
 
 ---
 
 ## i18n — 10 Languages
 
-Detects language from `navigator.languages` / `Accept-Language` header and persists in `localStorage`.
+Detects language from `navigator.languages` / `Accept-Language` header, persists in `localStorage`.
 
-| Code | Language | Coverage |
-|:----:|----------|:--------:|
-| EN | English | 100% |
-| ES | Spanish | 100% |
-| PT | Portuguese | 100% |
-| DE | German | 100% |
-| FR | French | 100% |
-| IT | Italian | 100% |
-| JA | Japanese | 100% |
-| KO | Korean | 100% |
-| ZH | Chinese | 100% |
-| RU | Russian | 100% |
+| Code | Language    | Coverage |
+|:----:|-------------|:--------:|
+|  EN  | English     | 100%     |
+|  ES  | Spanish     | 100%     |
+|  PT  | Portuguese  | 100%     |
+|  DE  | German      | 100%     |
+|  FR  | French      | 100%     |
+|  IT  | Italian     | 100%     |
+|  JA  | Japanese    | 100%     |
+|  KO  | Korean      | 100%     |
+|  ZH  | Chinese     | 100%     |
+|  RU  | Russian     | 100%     |
 
 ---
 
 ## Design System
 
-The game uses a **90s Nintendo Power / Pokemon Magazine** aesthetic specified in [`THEME.md`](./THEME.md). Every visual element follows a documented design system with:
+The game uses a **90s Nintendo Power / Pokémon Magazine** aesthetic specified in [`THEME.md`](./THEME.md). Every visual element follows a documented design system:
 
-- 12-token color palette (FFCC00 yellow, E3350D red, 3B4CCA blue)
+- 12-token color palette (`#FFCC00` yellow, `#E3350D` red, `#3B4CCA` blue, ...)
 - 7-level typography hierarchy (all `font-black` + `uppercase`)
 - 4-level border + shadow system on `#1a1a1a`
-- 30+ documented CSS utility classes (mag-card, mag-btn, mag-stroke, mag-bg)
+- 30+ documented CSS utility classes (`mag-card`, `mag-btn`, `mag-stroke`, `mag-bg`, ...)
 - Component anatomy diagrams for cards, buttons, page shells
-- 15 anti-pattern rules (no emojis, no grays, no rounded-xl, no Tailwind shadows)
+- 15 anti-pattern rules (no emojis, no grays, no `rounded-xl`, no default Tailwind shadows)
 
 ---
 
-## npm CLI
+## Desktop App
 
-```bash
-npm install -g @trading-tazos-game-cli
-ttg search pikachu          # Search tazo database
-ttg stats                   # Global stats
-ttg top --sort credits      # Leaderboard
-ttg battle                  # Simulate a battle
-ttg info                    # Version + server info
-```
+Linux installers are available on the [Releases page](https://github.com/smouj/Trading-Tazos-Game/releases). Windows and macOS builds run via GitHub Actions on tag push.
+
+| Platform | Format | Status |
+|----------|--------|--------|
+| Linux | AppImage, .deb | ✅ Available |
+| Windows | .exe (NSIS) | 🚧 Coming via CI |
+| macOS | .dmg, .zip | 🚧 Coming via CI |
 
 ---
 
 ## Disclaimer
 
-This is a fan-made tribute project. Pokemon, Digimon, and Dragon Ball Z are trademarks of their respective owners. No copyrighted assets are included — all tazo images are original generated SVGs based on verified Spanish physical collections.
+**This is an original game built on verified physical collection data.** Tazo names have been minimally tweaked to avoid intellectual property conflicts with the franchises that inspired the original physical tazos (Pokémon, Dragon Ball, Digimon). No copyrighted images, audio, or brand assets are included — all tazo visuals are original generated SVGs. The game's engine, design, styling, and codebase are original work.
+
+---
+
+## License
+
+**Source Available License v1.0** — see [LICENSE](./LICENSE) for full terms.
+
+- ✅ Personal use, modification, and self-hosting
+- ✅ Contributions welcome (grant license back)
+- ❌ Commercial redistribution without permission
+- ❌ Selling the software or offering it as a service
 
 ---
 
 ## Changelog
 
-### v0.3.0 — 3D Shop + PWA + Quests + Leaderboards (Jun 2026)
-- 3D chip bag shop with tear animation and rarity drops
-- Credit economy (battles +30cr, daily +25cr, quests +50-200cr)
-- 17 quests across beginner, daily, weekly, and special categories
-- 18 achievements with 4-tier progression (bronze → platinum)
-- Global leaderboards by credits, tazos, and battles
-- Middleware with httpOnly auth cookies and route protection
+### v0.3.0 — 3D Shop + Quests + Desktop App (Jun 2026)
+- 3D chip bag shop with tear animation and rarity-based drops
+- Credit economy: battles +30cr, daily login +25cr, quests +50–200cr
+- 17 quests across 4 categories with progress tracking
+- 18 achievements with 4-tier progression (Bronze → Platinum)
+- Global leaderboards: credits, tazos collected, battle wins
+- Auth middleware with httpOnly cookies and login redirect
 - PWA manifest, installable, offline-ready
-- Electron desktop launcher with animated splash and system tray
-- SEO overhaul: JSON-LD VideoGame, sitemap.xml, robots.txt, hreflang
-- Design system spec (THEME.md) with documented tokens and anti-patterns
-- Custom favicon (3 sizes) and 6 logo variants
-- WebSocket multiplayer with JWT auth and room system
-- npm CLI package `@trading-tazos-game-cli` (5 commands)
-- Source Available License v1.0
+- Electron desktop launcher: animated splash, system tray, single-instance
+- Linux installers: .AppImage + .deb
+- SEO: JSON-LD VideoGame schema, sitemap.xml, robots.txt, hreflang
+- Design system spec ([THEME.md](./THEME.md)) with documented tokens
+- WebSocket multiplayer: JWT auth, room system, live event sync
+- Security: CSP, HSTS, X-Frame-Options, httpOnly auth cookies
+- Page-specific metadata with unique titles per route
 
 ### v0.2.3 — Auth & Deck System
-- JWT authentication with bcrypt password hashing
+- JWT authentication with bcrypt password hashing (12 rounds)
 - Personal tazo collection per user with favorites
-- Deck builder with active deck switching
-- Battle loads user's active deck for combat
-- Welcome pack (10 tazos + starter deck) on registration
-- Multiplayer WebSocket server with native crypto JWT
+- Deck builder with active deck switching (5 tazos per deck)
+- Welcome pack: 10 starter tazos + pre-built deck on registration
+- WebSocket multiplayer server with native crypto JWT
 
 ### v0.2.0 — Battle Engine v2
-- 9-stat combat system (attack, defense, resistance, weight, stability, spin, control, bounce, precision)
-- 8 tazo roles (attacker, tank, technical, bouncer, heavy, light, balanced, special)
-- Self-flip mechanic (high power + bad accuracy = you flip yourself)
-- Combo bonus (2+ captures in one throw = extra points)
+- 9-stat combat system: Attack, Defense, Resistance, Weight, Stability, Spin, Control, Bounce, Precision
+- 8 tazo roles with unique stat distributions
+- Self-flip mechanic: overpower = you flip yourself
+- Combo bonus: 2+ captures in one throw = extra points
 - Rounds game mode with points scoring
-- Canonical names for all 319 tazos (Spanish + Japanese context corrections)
-- i18n system with 10 languages and auto-detection
+- i18n: 10 languages with auto-detection
+- Canonical franchise naming (Minimon, Dracobell, Cybermon)
 
 ### v0.1.0 — Initial Launch
-- 319 real verified Spanish tazos across 3 franchises
+- 319 verified Spanish tazos across 3 collections
 - Canvas 2D battle arena with physics simulation
 - 14-phase deterministic battle engine with SeededRNG
-- Magazine-themed UI (Nintendo Power 90s aesthetic)
+- 90s Nintendo Power magazine aesthetic
 - Filterable album with franchise, collection, category, and rarity filters
 - Photo scanner for physical tazo detection
-- 3D tazo disc rendering with Three.js / R3F
+- 3D tazo disc rendering (Three.js / R3F)
 
 ---
 

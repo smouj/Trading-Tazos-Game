@@ -91,3 +91,7 @@ deploy.sh
 .zscripts/
 # worklog — development notes
 worklog.md
+
+# agent-ctx — AI agent task prompts (internal)
+# agent-ctx — AI agent task prompts (internal)
+agent-ctx/

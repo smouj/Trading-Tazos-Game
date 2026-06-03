@@ -8,6 +8,7 @@ const zh: Dictionary = {
   siteFooterTribute: "对塔佐斯黄金时代的怀旧致敬",
   siteFooterTrademark: "Fan-made tribute. Minimon, Cybermon, and Dracobell are original fictional IPs for Trading Tazos Game.",
   siteMastheadBadge: "独家 — 收藏家版",
+  nav_dashboard: "仪表板",
 
   tabAlbum: "专辑",
   tabBattle: "对战！",

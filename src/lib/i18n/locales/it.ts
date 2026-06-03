@@ -8,6 +8,7 @@ const it: Dictionary = {
   siteFooterTribute: "Un tributo nostalgico all'era d'oro dei tazos",
   siteFooterTrademark: "Fan-made tribute. Minimon, Cybermon, and Dracobell are original fictional IPs for Trading Tazos Game.",
   siteMastheadBadge: "ESCLUSIVO — EDIZIONE DA COLLEZIONE",
+  nav_dashboard: "Dashboard",
 
   tabAlbum: "Album",
   tabBattle: "Battaglia!",

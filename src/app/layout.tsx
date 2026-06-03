@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   description: SITE_DESC,
   keywords: [
     "tazos", "pogs", "trading tazos game", "ttg", "medaclawarena",
-    "minimon tazos", "draco bell tazos", "cybermon tazos",
+    "minimon tazos", "dracobell tazos", "cybermon tazos",
     "collectible game", "physics battle", "digital album", "scanner",
     "multiplayer battle", "pvp tazos", "trading card game",
     "90s collectibles", "nostalgia game",

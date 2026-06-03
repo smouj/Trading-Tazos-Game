@@ -15,9 +15,9 @@ export function middleware(req: NextRequest) {
   const token = req.cookies.get("auth_token")?.value
   const { pathname } = req.nextUrl
 
-  // Redirect authenticated users away from login/register
+  // Redirect authenticated users away from login/register → dashboard
   if (AUTH_PAGES.includes(pathname) && token) {
-    return NextResponse.redirect(new URL("/", req.url))
+    return NextResponse.redirect(new URL("/app", req.url))
   }
 
   // Redirect unauthenticated users away from protected pages

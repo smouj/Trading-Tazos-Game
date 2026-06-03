@@ -27,7 +27,7 @@ export default function RegisterPage() {
     setSubmitting(true)
     try {
       await register(email, password, name)
-      router.push("/collection")
+      router.push("/app")
     } catch (err: any) {
       setError(err.message)
     } finally {

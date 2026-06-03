@@ -2,8 +2,10 @@
 
 import { Suspense, useState } from "react"
 import Link from "next/link"
-import { Menu, X } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { Menu, X, LogOut, LayoutDashboard } from "lucide-react"
 import { useI18n } from "@/lib/i18n"
+import { useAuth } from "@/lib/auth-context"
 import LanguageSwitcher from "@/components/ui/language-switcher"
 
 const navItems = [
@@ -24,7 +26,15 @@ function safeLabel(t: Record<string, unknown>, key: string, fallback: string): s
 function HeaderContent() {
   const { t } = useI18n()
   const tt = t as unknown as Record<string, unknown>
+  const { user, loading, logout } = useAuth()
+  const router = useRouter()
   const [open, setOpen] = useState(false)
+
+  const handleLogout = () => {
+    logout()
+    router.push("/")
+    setOpen(false)
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-[#FFCC00] border-b-4 border-[#1a1a1a] mag-stripes">
@@ -56,21 +66,46 @@ function HeaderContent() {
             ))}
           </nav>
 
-          {/* Auth buttons — visible on all screen sizes */}
+          {/* Auth buttons — auth-aware: logged-in → Dashboard, logged-out → Sign In */}
           <div className="flex items-center gap-2 ml-auto lg:ml-3">
             <LanguageSwitcher />
-            <Link
-              href="/login"
-              className="mag-btn bg-white text-[#1a1a1a] px-3 sm:px-4 py-2 text-[11px] xs:text-xs font-black uppercase tracking-wider whitespace-nowrap"
-            >
-              {safeLabel(tt, "auth_login", "Sign In")}
-            </Link>
-            <Link
-              href="/register"
-              className="mag-btn bg-[#E3350D] text-white px-3 sm:px-4 py-2 text-[11px] xs:text-xs font-black uppercase tracking-wider whitespace-nowrap hidden sm:inline-flex"
-            >
-              {safeLabel(tt, "auth_register", "Register")}
-            </Link>
+            {!loading && user ? (
+              <>
+                <span className="hidden sm:inline text-[11px] font-black uppercase tracking-wider text-[#1a1a1a]">
+                  {user.displayName || user.name}
+                </span>
+                <Link
+                  href="/app"
+                  className="mag-btn bg-[#3B4CCA] text-white px-3 sm:px-4 py-2 text-[11px] font-black uppercase tracking-wider whitespace-nowrap flex items-center gap-1.5"
+                >
+                  <LayoutDashboard className="w-3.5 h-3.5" />
+                  {safeLabel(tt, "nav_dashboard", "Dashboard")}
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="mag-btn bg-white text-[#1a1a1a] px-2.5 py-2 text-[11px] font-black uppercase tracking-wider whitespace-nowrap hidden sm:inline-flex items-center gap-1"
+                  title="Log out"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="mag-btn bg-white text-[#1a1a1a] px-3 sm:px-4 py-2 text-[11px] font-black uppercase tracking-wider whitespace-nowrap"
+                >
+                  {safeLabel(tt, "auth_login", "Sign In")}
+                </Link>
+                <Link
+                  href="/register"
+                  className="mag-btn bg-[#E3350D] text-white px-3 sm:px-4 py-2 text-[11px] font-black uppercase tracking-wider whitespace-nowrap hidden sm:inline-flex"
+                >
+                  {safeLabel(tt, "auth_register", "Register")}
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile hamburger */}
@@ -100,20 +135,43 @@ function HeaderContent() {
               ))}
             </nav>
             <div className="grid grid-cols-2 gap-2 mt-3">
-              <Link
-                href="/login"
-                onClick={() => setOpen(false)}
-                className="mag-btn bg-white text-[#1a1a1a] px-3 py-2.5 text-sm font-black uppercase text-center"
-              >
-                {safeLabel(tt, "auth_login", "Sign In")}
-              </Link>
-              <Link
-                href="/register"
-                onClick={() => setOpen(false)}
-                className="mag-btn bg-[#E3350D] text-white px-3 py-2.5 text-sm font-black uppercase text-center"
-              >
-                {safeLabel(tt, "auth_register", "Register")}
-              </Link>
+              {!loading && user ? (
+                <>
+                  <Link
+                    href="/app"
+                    onClick={() => setOpen(false)}
+                    className="mag-btn bg-[#3B4CCA] text-white px-3 py-2.5 text-sm font-black uppercase text-center flex items-center justify-center gap-1.5"
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    {safeLabel(tt, "nav_dashboard", "Dashboard")}
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="mag-btn bg-white text-[#1a1a1a] px-3 py-2.5 text-sm font-black uppercase text-center flex items-center justify-center gap-1.5"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Log Out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={() => setOpen(false)}
+                    className="mag-btn bg-white text-[#1a1a1a] px-3 py-2.5 text-sm font-black uppercase text-center"
+                  >
+                    {safeLabel(tt, "auth_login", "Sign In")}
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setOpen(false)}
+                    className="mag-btn bg-[#E3350D] text-white px-3 py-2.5 text-sm font-black uppercase text-center"
+                  >
+                    {safeLabel(tt, "auth_register", "Register")}
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}

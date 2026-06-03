@@ -27,6 +27,9 @@ export interface Dictionary {
   siteFooterTrademark: string
   siteMastheadBadge: string
 
+  // Nav
+  nav_dashboard: string
+
   // Tabs
   tabAlbum: string
   tabBattle: string

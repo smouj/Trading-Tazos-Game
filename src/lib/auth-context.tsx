@@ -38,17 +38,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   // Load token from localStorage on mount.
-  // If no localStorage token but session cookie exists, try cookie-based auth.
+  // Fallback 1: check companion session cookie → try cookie-based auth.
+  // Fallback 2: always attempt cookie-based auth as last resort (auth_token is sent automatically).
   useEffect(() => {
     const saved = localStorage.getItem(TOKEN_KEY)
     if (saved) {
       setToken(saved)
       fetchMe(saved)
-    } else if (hasSessionCookie()) {
-      // Session cookie present → try cookie-based auth (browser sends auth_token cookie)
-      fetchMe(null)
     } else {
-      setLoading(false)
+      // Always attempt cookie auth — browser sends auth_token cookie if present
+      fetchMe(null)
     }
   }, [])
 

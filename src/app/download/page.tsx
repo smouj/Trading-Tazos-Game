@@ -3,6 +3,7 @@
 import { Download, Monitor, Apple, Terminal, Github, ExternalLink, ArrowLeft, Globe, Smartphone, Gamepad2 } from "lucide-react"
 import Link from "next/link"
 import { useI18n } from "@/lib/i18n"
+import MagazinePageShell from "@/components/magazine-page-shell"
 
 const OS_CARDS = [
   {
@@ -39,6 +40,7 @@ export default function DownloadPage() {
   const { t } = useI18n()
 
   return (
+    <MagazinePageShell currentTab="download">
     <div className="min-h-screen flex flex-col mag-bg">
       {/* Magazine masthead */}
       <header className="bg-[#E3350D] border-b-4 border-[#1a1a1a] mag-stripes">
@@ -200,5 +202,6 @@ export default function DownloadPage() {
         </div>
       </footer>
     </div>
+    </MagazinePageShell>
   )
 }

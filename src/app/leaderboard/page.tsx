@@ -1,14 +1,14 @@
 // ============================================================
 // Trading Tazos Game — Leaderboard Page
-// Global rankings with magazine theme. Sort by credits/tazos/battles.
+// Wrapped in MagazinePageShell for consistent 90s magazine aesthetic.
 // ============================================================
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { useI18n } from "@/lib/i18n"
-import Link from "next/link"
-import { Trophy, Coins, Package, Swords, ArrowLeft, ArrowUp, ArrowDown, Loader2, Medal, Crown, Star } from "lucide-react"
+import MagazinePageShell from "@/components/magazine-page-shell"
+import { Trophy, Coins, Package, Swords, ArrowLeft, ArrowUp, Loader2, Medal, Crown, Star } from "lucide-react"
 
 interface LeaderboardEntry {
   rank: number
@@ -57,16 +57,13 @@ export default function LeaderboardPage() {
   const displayName = (e: LeaderboardEntry) => e.displayName || e.name || "???"
 
   return (
+    <MagazinePageShell currentTab="stats">
     <div className="max-w-3xl mx-auto py-8 px-4 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <Link href="/" className="mag-btn text-xs font-black uppercase px-3 py-1.5 border-2 border-[#1a1a1a] bg-white shadow-[2px_2px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
-          <ArrowLeft className="w-3 h-3 inline mr-1" /> Back
-        </Link>
-        <h1 className="text-xl font-black uppercase tracking-wider text-[#1a1a1a] flex items-center gap-2">
+      <div className="text-center">
+        <h1 className="text-xl font-black uppercase tracking-wider text-[#1a1a1a] flex items-center justify-center gap-2">
           <Trophy className="w-6 h-6 text-[#F59E0B]" /> LEADERBOARD
         </h1>
-        <div className="w-20" /> {/* Spacer */}
       </div>
 
       {/* Sort tabs */}
@@ -195,5 +192,6 @@ export default function LeaderboardPage() {
         </div>
       )}
     </div>
+    </MagazinePageShell>
   )
 }

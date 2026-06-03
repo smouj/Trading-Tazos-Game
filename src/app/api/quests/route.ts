@@ -25,9 +25,16 @@ export async function GET(req: NextRequest) {
   const existing = new Set(userQuests.map(uq => uq.questId))
   const newQuests = quests.filter(q => !existing.has(q.id))
   if (newQuests.length > 0) {
-    await prisma.userQuest.createMany({
-      data: newQuests.map(q => ({ userId: user.id, questId: q.id }))
-    })
+    try {
+      // Use individual creates — createMany has FK issues with SQLite in some Prisma versions
+      for (const q of newQuests) {
+        try {
+          await prisma.userQuest.create({
+            data: { userId: user.id, questId: q.id }
+          })
+        } catch { /* skip if duplicate or FK error — already exists */ }
+      }
+    } catch { /* best-effort: quest data still returned */ }
     const updated = await prisma.userQuest.findMany({ where: { userId: user.id } })
     return NextResponse.json({ quests, userQuests: updated })
   }

@@ -328,6 +328,26 @@ Linux installers are available on the [Releases page](https://github.com/smouj/T
 
 ---
 
+## CLI
+
+```bash
+npm install -g @trading-tazos-game/cli
+```
+
+Search, inspect, and battle tazos from your terminal:
+
+```bash
+tazos search bulbasaur     # Search the tazo database
+tazos info charizardé       # Full stats breakdown
+tazos stats                 # Collection statistics
+tazos top --stat attack     # Leaderboard by any stat
+tazos battle --seed 42      # Simulate a physics battle
+```
+
+🔗 [npm package](https://www.npmjs.com/package/@trading-tazos-game/cli) &nbsp;|&nbsp; 📦 [CLI repo](https://github.com/smouj/trading-tazos-game-cli)
+
+---
+
 ## Disclaimer
 
 **This is an original game built on verified physical collection data.** Tazo names have been minimally tweaked to avoid intellectual property conflicts with the franchises that inspired the original physical tazos (Pokémon, Dragon Ball, Digimon). No copyrighted images, audio, or brand assets are included — all tazo visuals are original generated SVGs. The game's engine, design, styling, and codebase are original work.

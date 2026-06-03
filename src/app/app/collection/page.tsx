@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
 import { useI18n } from "@/lib/i18n"
-import { Package, ArrowLeft, Star, Swords, Shield, Target } from "lucide-react"
+import { Package, Star, Swords, Shield, Target } from "lucide-react"
 
 interface CollectionItem {
   id: string
@@ -71,47 +71,37 @@ export default function CollectionPage() {
   }
 
   return (
-    
-    <div className="min-h-screen flex flex-col mag-bg">
-      {/* Magazine masthead */}
-      <header className="bg-[#FFCC00] border-b-4 border-[#1a1a1a] mag-stripes">
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="text-[#1a1a1a] hover:opacity-70">
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <h1 className="text-xl sm:text-2xl font-black text-[#1a1a1a] uppercase tracking-tight mag-stroke-sm">
-              {t.collection_title}
-            </h1>
-            {data && (
-              <span className="ml-auto inline-block bg-white text-[#E3350D] text-sm font-black px-3 py-1 border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a]">
-                {data.total} {t.collection_total}
+    <div className="max-w-7xl mx-auto w-full px-3 sm:px-4 py-4 sm:py-6 space-y-4">
+      {/* Header bar */}
+      <div className="flex items-center gap-4 flex-wrap">
+        <h2 className="text-lg sm:text-xl font-black text-[#1a1a1a] uppercase tracking-wider flex items-center gap-2">
+          <Package className="w-5 h-5 text-[#FFCC00]" />
+          {t.collection_title}
+        </h2>
+        {data && (
+          <span className="ml-auto inline-block bg-white text-[#E3350D] text-sm font-black px-3 py-1 border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a]">
+            {data.total} {t.collection_total}
+          </span>
+        )}
+      </div>
+
+      {/* Franchise summary chips */}
+      {data?.franchiseSummary && Object.keys(data.franchiseSummary).length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {Object.entries(data.franchiseSummary).map(([slug, count]) => {
+            const gradient = FRANCHISE_BANNER[slug] || "#1a1a1a"
+            return (
+              <span
+                key={slug}
+                className="text-[10px] font-black text-white px-3 py-0.5 border-2 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a] uppercase tracking-wider"
+                style={{ background: gradient }}
+              >
+                {slug.charAt(0).toUpperCase() + slug.slice(1)} ({count})
               </span>
-            )}
-          </div>
-
-          {/* Franchise summary chips */}
-          {data?.franchiseSummary && Object.keys(data.franchiseSummary).length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
-              {Object.entries(data.franchiseSummary).map(([slug, count]) => {
-                const gradient = FRANCHISE_BANNER[slug] || "#1a1a1a"
-                return (
-                  <span
-                    key={slug}
-                    className="text-[10px] font-black text-white px-3 py-0.5 border-2 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a] uppercase tracking-wider"
-                    style={{ background: gradient }}
-                  >
-                    {slug.charAt(0).toUpperCase() + slug.slice(1)} ({count})
-                  </span>
-                )
-              })}
-            </div>
-          )}
+            )
+          })}
         </div>
-      </header>
-
-      {/* Grid */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-6">
+      )}
         {data && data.items.length > 0 ? (
           <div
             className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 p-3"
@@ -189,8 +179,6 @@ export default function CollectionPage() {
             </Link>
           </div>
         )}
-      </main>
     </div>
-    
   )
 }

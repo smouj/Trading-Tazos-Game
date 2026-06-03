@@ -31,26 +31,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // Load token from localStorage on mount
+  // Load token from localStorage on mount.
+  // Fallback: try cookie-based auth (middleware uses auth_token cookie).
   useEffect(() => {
     const saved = localStorage.getItem(TOKEN_KEY)
     if (saved) {
       setToken(saved)
       fetchMe(saved)
     } else {
-      setLoading(false)
+      // Try cookie-based auth — browser sends auth_token cookie automatically
+      fetchMe(null)
     }
   }, [])
 
-  const fetchMe = async (t: string) => {
+  const fetchMe = async (t: string | null) => {
     try {
-      const res = await fetch("/api/auth/me", {
-        headers: { Authorization: `Bearer ${t}` },
-      })
+      const headers: Record<string, string> = {}
+      if (t) headers["Authorization"] = `Bearer ${t}`
+      const res = await fetch("/api/auth/me", { headers })
       if (res.ok) {
         const data = await res.json()
         setUser(data.user)
-      } else {
+        // Sync localStorage with cookie auth
+        if (!t && data.token) {
+          localStorage.setItem(TOKEN_KEY, data.token)
+          setToken(data.token)
+        }
+      } else if (t) {
+        // Only clear localStorage if we explicitly had a stored token that failed
         localStorage.removeItem(TOKEN_KEY)
         setToken(null)
       }

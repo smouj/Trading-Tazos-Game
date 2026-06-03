@@ -29,6 +29,8 @@ export interface Dictionary {
 
   // Nav
   nav_dashboard: string
+  nav_play_now: string
+  nav_back_to_home: string
 
   // Tabs
   tabAlbum: string

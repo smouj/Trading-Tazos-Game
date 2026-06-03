@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
 import { useI18n } from "@/lib/i18n"
-import { Layers, Plus, Trash2, Star, ArrowLeft, Swords, Shield, Zap } from "lucide-react"
+import { Layers, Plus, Trash2, Star, Swords, Shield, Zap } from "lucide-react"
 
 interface DeckTazo {
   id: string; name: string; displayName: string; imageUrl: string; franchise: string
@@ -91,28 +91,21 @@ export default function DecksPage() {
   }
 
   return (
-    
-    <div className="min-h-screen flex flex-col mag-bg">
-      {/* Magazine masthead */}
-      <header className="bg-[#3B4CCA] border-b-4 border-[#1a1a1a] mag-stripes">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
-          <Link href="/" className="text-white hover:opacity-70">
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <h1 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight mag-stroke-sm">
-            {t.decks_title}
-          </h1>
-          <button
-            onClick={() => setShowCreate(!showCreate)}
-            className="ml-auto mag-btn bg-[#FFCC00] text-[#1a1a1a] flex items-center gap-1.5 px-4 py-2 text-xs font-black uppercase tracking-wider"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            {t.decks_create}
-          </button>
-        </div>
-      </header>
-
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-6">
+    <div className="max-w-7xl mx-auto w-full px-3 sm:px-4 py-4 sm:py-6 space-y-4">
+      {/* Header bar */}
+      <div className="flex items-center gap-4 flex-wrap">
+        <h2 className="text-lg sm:text-xl font-black text-[#1a1a1a] uppercase tracking-wider flex items-center gap-2">
+          <Layers className="w-5 h-5 text-[#3B4CCA]" />
+          {t.decks_title}
+        </h2>
+        <button
+          onClick={() => setShowCreate(!showCreate)}
+          className="ml-auto mag-btn bg-[#3B4CCA] text-white flex items-center gap-1.5 px-4 py-2 text-xs font-black uppercase tracking-wider"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          {t.decks_create}
+        </button>
+      </div>
         {/* Create form */}
         {showCreate && (
           <div className="mb-6 border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] p-4" style={{ background: "white" }}>
@@ -250,8 +243,6 @@ export default function DecksPage() {
             </button>
           </div>
         ) : null}
-      </main>
     </div>
-    
   )
 }

@@ -76,10 +76,10 @@ function HeaderContent() {
                 </span>
                 <Link
                   href="/app"
-                  className="mag-btn bg-[#3B4CCA] text-white px-3 sm:px-4 py-2 text-[11px] font-black uppercase tracking-wider whitespace-nowrap flex items-center gap-1.5"
+                  className="mag-btn bg-[#E3350D] text-white px-3 sm:px-4 py-2 text-[11px] font-black uppercase tracking-wider whitespace-nowrap flex items-center gap-1.5"
                 >
                   <LayoutDashboard className="w-3.5 h-3.5" />
-                  {safeLabel(tt, "nav_dashboard", "Dashboard")}
+                  {safeLabel(tt, "nav_play_now", "Play Now")}
                 </Link>
                 <button
                   type="button"
@@ -140,10 +140,10 @@ function HeaderContent() {
                   <Link
                     href="/app"
                     onClick={() => setOpen(false)}
-                    className="mag-btn bg-[#3B4CCA] text-white px-3 py-2.5 text-sm font-black uppercase text-center flex items-center justify-center gap-1.5"
+                    className="mag-btn bg-[#E3350D] text-white px-3 py-2.5 text-sm font-black uppercase text-center flex items-center justify-center gap-1.5"
                   >
                     <LayoutDashboard className="w-4 h-4" />
-                    {safeLabel(tt, "nav_dashboard", "Dashboard")}
+                    {safeLabel(tt, "nav_play_now", "Play Now")}
                   </Link>
                   <button
                     type="button"

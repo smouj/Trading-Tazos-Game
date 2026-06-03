@@ -7,7 +7,7 @@ import { useState, useEffect, useCallback } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { useI18n } from "@/lib/i18n"
 import { Trophy, Coins, Package, Swords, ArrowLeft, ArrowUp, Loader2, Medal, Crown, Star } from "lucide-react"
-import MagazinePageShell from "@/components/magazine-page-shell"
+import PublicPageShell from "@/components/layout/public-page-shell"
 
 interface LeaderboardEntry {
   rank: number
@@ -56,7 +56,7 @@ export default function LeaderboardPage() {
   const displayName = (e: LeaderboardEntry) => e.displayName || e.name || "???"
 
   return (
-    <MagazinePageShell currentTab="leaderboard">
+    <PublicPageShell>
     <div className="max-w-3xl mx-auto py-8 px-4 space-y-6">
       {/* Header */}
       <div className="text-center">
@@ -191,6 +191,6 @@ export default function LeaderboardPage() {
         </div>
       )}
     </div>
-    </MagazinePageShell>
+    </PublicPageShell>
   )
 }

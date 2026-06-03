@@ -6,7 +6,7 @@
 
 import { NextRequest, NextResponse } from "next/server"
 import { getAuthUser } from "@/lib/auth"
-import { db as prisma } from "@/lib/db"
+import { db as prisma, isoNow } from "@/lib/db"
 
 // ─── GET: List quests ───────────────────────────────────────
 export async function GET(req: NextRequest) {
@@ -28,16 +28,18 @@ export async function GET(req: NextRequest) {
   }
 
   // Auto-create userQuest records for any quests user hasn't seen
+  // Uses raw SQL to avoid Prisma @default(now()) SQLite ms-timestamp bug
   const existing = new Set(userQuests.map(uq => uq.questId))
   const newQuests = quests.filter(q => !existing.has(q.id))
   if (newQuests.length > 0) {
-    const now = new Date().toISOString()
+    const now = isoNow()
     for (const q of newQuests) {
       try {
-        await prisma.userQuest.create({
-          data: { userId: user.id, questId: q.id, createdAt: now, updatedAt: now }
-        })
-      } catch { /* skip duplicate */ }
+        await prisma.$executeRawUnsafe(
+          `INSERT OR IGNORE INTO UserQuest (id, userId, questId, progress, completed, claimed, createdAt, updatedAt) VALUES (?, ?, ?, 0, 0, 0, ?, ?)`,
+          `${user.id}_${q.id}`, user.id, q.id, now, now
+        )
+      } catch { /* skip if already exists */ }
     }
     try {
       userQuests = await prisma.userQuest.findMany({ where: { userId: user.id } })

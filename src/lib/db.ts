@@ -7,7 +7,12 @@ const globalForPrisma = globalThis as unknown as {
 export const db =
   globalForPrisma.prisma ??
   new PrismaClient({
-    log: ['query'],
+    log: process.env.NODE_ENV === 'production' ? [] : ['query'],
   })
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = db
+
+/** Helper: current ISO timestamp for explicit DateTime values (avoids SQLite ms-timestamp bug) */
+export function isoNow(): string {
+  return new Date().toISOString()
+}

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { hashPassword, generateToken } from "@/lib/auth"
-import { db } from "@/lib/db"
+import { db, isoNow } from "@/lib/db"
 
 export async function POST(request: NextRequest) {
   try {
@@ -75,7 +75,8 @@ export async function POST(request: NextRequest) {
 /** Seed welcome tazos and a starter deck for new users */
 async function seedWelcomePack(userId: string) {
   try {
-    const now = new Date().toISOString()
+    const now = isoNow()
+    
 
     // Pick 10 random tazos (balanced across franchises)
     const [min, drac, cyber] = await Promise.all([

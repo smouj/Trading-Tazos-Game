@@ -1,44 +1,49 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import Link from "next/link"
 import { Menu, X } from "lucide-react"
 import { useI18n } from "@/lib/i18n"
 import LanguageSwitcher from "@/components/ui/language-switcher"
 
 const navItems = [
-  { href: "/how-to-play", key: "nav_how_to_play", fallback: "How to Play" },
-  { href: "/collections", key: "nav_collections", fallback: "Collections" },
-  { href: "/tazos", key: "nav_tazos", fallback: "Tazos" },
-  { href: "/leaderboard", key: "nav_leaderboard", fallback: "Leaderboard" },
-  { href: "/download", key: "nav_download", fallback: "Download" },
-  { href: "/faq", key: "nav_faq", fallback: "FAQ" },
+  { href: "/how-to-play", fallback: "How to Play" },
+  { href: "/collections", fallback: "Collections" },
+  { href: "/tazos", fallback: "Tazos" },
+  { href: "/leaderboard", fallback: "Leaderboard" },
+  { href: "/download", fallback: "Download" },
+  { href: "/faq", fallback: "FAQ" },
 ]
 
-function label(t: Record<string, string>, key: string, fallback: string) {
-  return t[key] || fallback
+// Safe accessor: language detection may fail during SSR first paint
+function safeLabel(t: Record<string, unknown>, key: string, fallback: string): string {
+  const val = t[key]
+  return typeof val === "string" && val.length > 0 ? val : fallback
 }
 
-export default function PublicHeader() {
+function HeaderContent() {
   const { t } = useI18n()
+  const tt = t as unknown as Record<string, unknown>
   const [open, setOpen] = useState(false)
 
   return (
     <header className="sticky top-0 z-50 bg-[#FFCC00] border-b-4 border-[#1a1a1a] mag-stripes">
       <div className="max-w-7xl mx-auto px-4 py-3">
         <div className="flex items-center gap-4">
-          <Link href="/" className="flex items-center gap-3 min-w-0" onClick={() => setOpen(false)}>
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-3 min-w-0 shrink-0" onClick={() => setOpen(false)}>
             <img src="/logo/logo-icon-black.png" alt="Trading Tazos Game" className="w-12 h-12 drop-shadow-[3px_3px_0px_rgba(26,26,26,0.3)]" />
-            <div className="min-w-0">
+            <div className="min-w-0 hidden sm:block">
               <p className="text-xl sm:text-2xl font-black leading-none uppercase text-[#1a1a1a] truncate">
-                {t.siteTitle || "TRADING TAZOS GAME"}
+                {safeLabel(tt, "siteTitle", "TRADING TAZOS GAME")}
               </p>
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#E3350D]">
-                {t.siteMastheadBadge || "Collector's Edition"}
+                {safeLabel(tt, "siteMastheadBadge", "COLLECTOR'S EDITION")}
               </p>
             </div>
           </Link>
 
+          {/* Desktop nav */}
           <nav className="hidden lg:flex items-center gap-1 ml-auto">
             {navItems.map((item) => (
               <Link
@@ -46,24 +51,32 @@ export default function PublicHeader() {
                 href={item.href}
                 className="px-3 py-2 text-[11px] font-black uppercase tracking-wider text-[#1a1a1a] hover:bg-white border-2 border-transparent hover:border-[#1a1a1a] hover:shadow-[2px_2px_0px_#1a1a1a] transition-all"
               >
-                {label(t as unknown as Record<string, string>, item.key, item.fallback)}
+                {item.fallback}
               </Link>
             ))}
           </nav>
 
-          <div className="hidden sm:flex items-center gap-2 ml-auto lg:ml-3">
+          {/* Auth buttons — visible on all screen sizes */}
+          <div className="flex items-center gap-2 ml-auto lg:ml-3">
             <LanguageSwitcher />
-            <Link href="/login" className="mag-btn bg-white text-[#1a1a1a] px-4 py-2 text-xs font-black uppercase tracking-wider">
-              {t.auth_login}
+            <Link
+              href="/login"
+              className="mag-btn bg-white text-[#1a1a1a] px-3 sm:px-4 py-2 text-[11px] xs:text-xs font-black uppercase tracking-wider whitespace-nowrap"
+            >
+              {safeLabel(tt, "auth_login", "Sign In")}
             </Link>
-            <Link href="/register" className="mag-btn bg-[#E3350D] text-white px-4 py-2 text-xs font-black uppercase tracking-wider">
-              {t.auth_register}
+            <Link
+              href="/register"
+              className="mag-btn bg-[#E3350D] text-white px-3 sm:px-4 py-2 text-[11px] xs:text-xs font-black uppercase tracking-wider whitespace-nowrap hidden sm:inline-flex"
+            >
+              {safeLabel(tt, "auth_register", "Register")}
             </Link>
           </div>
 
+          {/* Mobile hamburger */}
           <button
             type="button"
-            className="sm:hidden ml-auto border-3 border-[#1a1a1a] bg-white p-2 shadow-[2px_2px_0px_#1a1a1a]"
+            className="lg:hidden border-3 border-[#1a1a1a] bg-white p-2 shadow-[2px_2px_0px_#1a1a1a] shrink-0"
             aria-label="Open menu"
             onClick={() => setOpen((value) => !value)}
           >
@@ -71,26 +84,66 @@ export default function PublicHeader() {
           </button>
         </div>
 
+        {/* Mobile dropdown menu */}
         {open && (
-          <div className="sm:hidden mt-3 border-3 border-[#1a1a1a] bg-white shadow-[4px_4px_0px_#1a1a1a] p-3">
+          <div className="lg:hidden mt-3 border-3 border-[#1a1a1a] bg-white shadow-[4px_4px_0px_#1a1a1a] p-3">
             <nav className="grid gap-1">
               {navItems.map((item) => (
-                <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className="px-3 py-2 text-sm font-black uppercase text-[#1a1a1a] hover:bg-[#FFCC00]">
-                  {label(t as unknown as Record<string, string>, item.key, item.fallback)}
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className="px-3 py-2.5 text-sm font-black uppercase text-[#1a1a1a] hover:bg-[#FFCC00]"
+                >
+                  {item.fallback}
                 </Link>
               ))}
             </nav>
             <div className="grid grid-cols-2 gap-2 mt-3">
-              <Link href="/login" onClick={() => setOpen(false)} className="mag-btn bg-white text-[#1a1a1a] px-3 py-2 text-xs font-black uppercase text-center">
-                {t.auth_login}
+              <Link
+                href="/login"
+                onClick={() => setOpen(false)}
+                className="mag-btn bg-white text-[#1a1a1a] px-3 py-2.5 text-sm font-black uppercase text-center"
+              >
+                {safeLabel(tt, "auth_login", "Sign In")}
               </Link>
-              <Link href="/register" onClick={() => setOpen(false)} className="mag-btn bg-[#E3350D] text-white px-3 py-2 text-xs font-black uppercase text-center">
-                {t.auth_register}
+              <Link
+                href="/register"
+                onClick={() => setOpen(false)}
+                className="mag-btn bg-[#E3350D] text-white px-3 py-2.5 text-sm font-black uppercase text-center"
+              >
+                {safeLabel(tt, "auth_register", "Register")}
               </Link>
             </div>
           </div>
         )}
       </div>
     </header>
+  )
+}
+
+function HeaderSkeleton() {
+  return (
+    <header className="sticky top-0 z-50 bg-[#FFCC00] border-b-4 border-[#1a1a1a] mag-stripes">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
+        <div className="w-12 h-12 bg-[#1a1a1a]/10 rounded" />
+        <div className="hidden sm:block">
+          <div className="h-6 w-48 bg-[#1a1a1a]/10 rounded mb-1" />
+          <div className="h-3 w-32 bg-[#1a1a1a]/10 rounded" />
+        </div>
+        <div className="flex items-center gap-2 ml-auto">
+          <div className="h-8 w-14 bg-[#1a1a1a]/10 rounded" />
+          <div className="h-8 w-20 bg-[#1a1a1a]/10 rounded" />
+        </div>
+      </div>
+    </header>
+  )
+}
+
+export default function PublicHeader() {
+  return (
+    <Suspense fallback={<HeaderSkeleton />}>
+      <HeaderContent />
+    </Suspense>
   )
 }

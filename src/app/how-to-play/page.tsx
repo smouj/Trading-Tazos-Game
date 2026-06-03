@@ -27,7 +27,7 @@ export default function HowToPlayPage() {
               <h2 className="text-xl font-black uppercase text-[#1a1a1a]">Build Your Collection</h2>
             </div>
             <p className="text-sm font-bold text-[#1a1a1a]/60 leading-relaxed">
-              Collect tazos by opening potato chip bags in the <Link href="/shop" className="text-[#E3350D] underline underline-offset-4">Tazo Shop</Link>. Use credits earned from battles, daily logins, and quests. Each bag type has different rarity chances. You can also scan physical tazos with the Scanner tool to add them to your digital collection.
+              Collect tazos by opening potato chip bags in the <Link href="/app/shop" className="text-[#E3350D] underline underline-offset-4">Tazo Shop</Link>. Use credits earned from battles, daily logins, and quests. Each bag type has different rarity chances. You can also scan physical tazos with the Scanner tool to add them to your digital collection.
             </p>
           </section>
 
@@ -38,7 +38,7 @@ export default function HowToPlayPage() {
               <h2 className="text-xl font-black uppercase text-[#1a1a1a]">Build Your Deck</h2>
             </div>
             <p className="text-sm font-bold text-[#1a1a1a]/60 leading-relaxed">
-              Go to your <Link href="/decks" className="text-[#E3350D] underline underline-offset-4">Decks</Link> and choose 5 tazos for battle. Balance 8 roles (Attacker, Tank, Technical, Bouncer, Heavy, Light, Balanced, Special) with 9 stats (Attack, Defense, Resistance, Weight, Stability, Spin, Control, Bounce, Precision). The right deck composition wins battles.
+              Go to your <Link href="/app/decks" className="text-[#E3350D] underline underline-offset-4">Decks</Link> and choose 5 tazos for battle. Balance 8 roles (Attacker, Tank, Technical, Bouncer, Heavy, Light, Balanced, Special) with 9 stats (Attack, Defense, Resistance, Weight, Stability, Spin, Control, Bounce, Precision). The right deck composition wins battles.
             </p>
           </section>
 

@@ -61,7 +61,7 @@
     {
       "name": "Shop",
       "short_name": "Shop",
-      "url": "/shop"
+      "url": "/app/shop"
     }
   ],
   "related_applications": [

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
 import { useI18n } from "@/lib/i18n"
-import MagazinePageShell from "@/components/magazine-page-shell"
 import { Layers, Plus, Trash2, Star, ArrowLeft, Swords, Shield, Zap } from "lucide-react"
 
 interface DeckTazo {
@@ -92,7 +91,7 @@ export default function DecksPage() {
   }
 
   return (
-    <MagazinePageShell currentTab="layers">
+    
     <div className="min-h-screen flex flex-col mag-bg">
       {/* Magazine masthead */}
       <header className="bg-[#3B4CCA] border-b-4 border-[#1a1a1a] mag-stripes">
@@ -253,6 +252,6 @@ export default function DecksPage() {
         ) : null}
       </main>
     </div>
-    </MagazinePageShell>
+    
   )
 }

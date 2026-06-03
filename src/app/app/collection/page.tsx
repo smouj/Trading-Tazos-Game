@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
 import { useI18n } from "@/lib/i18n"
-import MagazinePageShell from "@/components/magazine-page-shell"
 import { Package, ArrowLeft, Star, Swords, Shield, Target } from "lucide-react"
 
 interface CollectionItem {
@@ -72,7 +71,7 @@ export default function CollectionPage() {
   }
 
   return (
-    <MagazinePageShell currentTab="package">
+    
     <div className="min-h-screen flex flex-col mag-bg">
       {/* Magazine masthead */}
       <header className="bg-[#FFCC00] border-b-4 border-[#1a1a1a] mag-stripes">
@@ -192,6 +191,6 @@ export default function CollectionPage() {
         )}
       </main>
     </div>
-    </MagazinePageShell>
+    
   )
 }

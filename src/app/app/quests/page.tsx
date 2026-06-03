@@ -1,14 +1,12 @@
 // ============================================================
 // Trading Tazos Game — Quests Page
 // Daily, Weekly, Special quests with progress tracking.
-// Wrapped in MagazinePageShell for consistent masthead + tabs.
 // ============================================================
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { useI18n } from "@/lib/i18n"
-import MagazinePageShell from "@/components/magazine-page-shell"
 import {
   Target, Swords, ShoppingBag, Package, Layers, Crosshair,
   Star, Sparkles, BookOpen, Coins, Gift,
@@ -108,7 +106,7 @@ export default function QuestsPage() {
 
   if (!user) {
     return (
-      <MagazinePageShell currentTab="quests">
+      
         <div className="max-w-2xl mx-auto py-20 text-center space-y-6">
           <Target className="w-16 h-16 mx-auto text-zinc-400" />
           <h1 className="text-2xl font-black uppercase tracking-wider text-[#1a1a1a]">QUESTS</h1>
@@ -117,12 +115,12 @@ export default function QuestsPage() {
             {t.auth_login}
           </a>
         </div>
-      </MagazinePageShell>
+      
     )
   }
 
   return (
-    <MagazinePageShell currentTab="quests">
+    
       <div className="max-w-4xl mx-auto py-6 px-4 space-y-6">
         {/* Credits display */}
         <div className="flex items-center justify-between flex-wrap gap-3">
@@ -278,6 +276,6 @@ export default function QuestsPage() {
           </div>
         )}
       </div>
-    </MagazinePageShell>
+    
   )
 }

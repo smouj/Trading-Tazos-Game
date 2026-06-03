@@ -29,8 +29,8 @@
   <url><loc>https://medaclawarena.com/disclaimer</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
 
   <!-- App pages (protected) -->
-  <url><loc>https://medaclawarena.com/shop</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://medaclawarena.com/quests</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://medaclawarena.com/collection</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://medaclawarena.com/decks</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://medaclawarena.com/app/shop</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://medaclawarena.com/app/quests</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://medaclawarena.com/app/collection</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://medaclawarena.com/app/decks</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
 </urlset>

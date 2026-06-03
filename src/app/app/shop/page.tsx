@@ -1,7 +1,6 @@
 // ============================================================
 // Trading Tazos Game — Bag Shop Page
 // Buy potato chip bags with credits, open them in 3D.
-// Wrapped in MagazinePageShell for consistent masthead + tabs.
 // ============================================================
 "use client"
 
@@ -10,7 +9,6 @@ import { useI18n } from "@/lib/i18n"
 import { useAuth } from "@/lib/auth-context"
 import dynamic from "next/dynamic"
 import Link from "next/link"
-import MagazinePageShell from "@/components/magazine-page-shell"
 import { ShoppingBag, Coins, Zap, Star, Gift, Loader2, X, Sparkles, Crosshair, Trophy, Calendar, Check, ShoppingCart } from "lucide-react"
 
 // Dynamic 3D imports (no SSR)
@@ -199,7 +197,6 @@ export default function BagShopPage() {
   // ── Guest ──
   if (!user) {
     return (
-      <MagazinePageShell currentTab="shop">
         <div className="max-w-2xl mx-auto py-20 text-center space-y-6">
           <ShoppingBag className="w-16 h-16 mx-auto text-zinc-400" />
           <h1 className="text-2xl font-black uppercase tracking-wider text-[#1a1a1a]">
@@ -210,14 +207,12 @@ export default function BagShopPage() {
             {t.auth_login}
           </Link>
         </div>
-      </MagazinePageShell>
     )
   }
 
   // ── Select stage ──
   if (stage === "select") {
     return (
-      <MagazinePageShell currentTab="shop">
         <div className="max-w-4xl mx-auto py-6 px-4 space-y-6">
           {/* Header row */}
           <div className="flex items-center justify-between flex-wrap gap-3">
@@ -309,14 +304,12 @@ export default function BagShopPage() {
             </ul>
           </div>
         </div>
-      </MagazinePageShell>
     )
   }
 
   // ── Opening stage ──
   if (stage === "opening") {
     return (
-      <MagazinePageShell currentTab="shop">
         <div className="max-w-2xl mx-auto py-12 px-4 text-center space-y-6">
           <h2 className="text-xl font-black uppercase tracking-wider text-[#1a1a1a]">
             Opening {selectedBag.name}...
@@ -350,7 +343,6 @@ export default function BagShopPage() {
             />
           </div>
         </div>
-      </MagazinePageShell>
     )
   }
 
@@ -360,7 +352,6 @@ export default function BagShopPage() {
     const rarityLabel = RARITY_LABELS[revealedTazo.rarity] || revealedTazo.rarity
 
     return (
-      <MagazinePageShell currentTab="shop">
         <div className="max-w-2xl mx-auto py-8 px-4 space-y-6 text-center">
           <div className="flex items-center justify-center gap-2">
             <Sparkles className="w-5 h-5 text-[#F59E0B]" />
@@ -437,14 +428,13 @@ export default function BagShopPage() {
               <ShoppingBag className="w-4 h-4 inline mr-1" /> Buy Another
             </button>
             <Link
-              href="/collection"
+              href="/app/collection"
               className="mag-btn px-6 py-3 font-black text-sm uppercase bg-[#3B4CCA] text-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
             >
               View Collection
             </Link>
           </div>
         </div>
-      </MagazinePageShell>
     )
   }
 

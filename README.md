@@ -11,13 +11,15 @@
 [![Prisma](https://img.shields.io/badge/Prisma-6.x-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.x-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Bun](https://img.shields.io/badge/Bun-1.x-FBF0DF?logo=bun&logoColor=black)](https://bun.sh)
-[![License](https://img.shields.io/badge/license-Private-red)](./LICENSE)
-[![Status](https://img.shields.io/badge/status-Active-brightgreen)](https://medaclawarena.com)
+[![License](https://img.shields.io/badge/license-Source_Available-blue)](./LICENSE)
+[![Status](https://img.shields.io/badge/status-Live-brightgreen)](https://medaclawarena.com)
+[![PWA](https://img.shields.io/badge/PWA-Ready-5A0FC8?logo=pwa&logoColor=white)](https://medaclawarena.com/manifest.json)
 [![i18n](https://img.shields.io/badge/i18n-10_languages-8B5CF6)](./src/lib/i18n/locales/)
+[![Version](https://img.shields.io/badge/version-v0.3.0-FFCC00)](https://github.com/smouj/Trading-Tazos-Game/releases)
 
 <br/>
 
-**A skill-based physical tazo (pog) battle game with real-time physics, aim mechanics, and 319 real verified Spanish tazos across 3 legendary franchises.**
+**A skill-based physical tazo (pog) battle game with real-time physics, aim mechanics, 9 combat stats, and 319 verified tazos from Pokemon, Dragon Ball Z, and Digimon. Play in your browser, install as PWA, or download for desktop.**
 
 🌐 **[medaclawarena.com](https://medaclawarena.com)** &nbsp;|&nbsp; 📧 **support@medaclawarena.com**
 
@@ -279,7 +281,19 @@ This is a fan-made tribute project. Pokémon, Digimon, and Dragon Ball Z are tra
 
 ## 📝 Changelog
 
-### v0.3.0 — Auth & Deck System
+### v0.3.0 — 3D Shop + PWA + Credits + SEO (Jun 2026)
+- 🎮 Play in browser, PWA, or desktop app
+- 🥔 3D chip bag shop — buy bags, open them in 3D, reveal tazos
+- 💰 Credit economy — earn 30cr per battle win, daily bonus
+- 🛒 Navbar shop link + user dropdown integration
+- 🔍 SEO overhaul — JSON-LD VideoGame schema, sitemap, robots.txt
+- 📱 PWA — manifest.json, installable, offline-ready
+- 🖼️ Custom favicon (3 sizes: 32/180/192)
+- ⚖️ LICENSE — Source Available License v1.0
+- 🧹 GitHub cleanup — removed .env, skills/ (300+ files)
+- 🏷️ Battle credits API — +30 credits on win (JWT authenticated)
+
+### v0.2.3 — Auth & Deck System
 - ✅ JWT auth with bcrypt password hashing
 - ✅ Personal tazo collection per user
 - ✅ Deck builder with activate/delete

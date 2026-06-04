@@ -214,11 +214,17 @@ export default function BagShopPage() {
   if (stage === "select") {
     return (
         <div className="max-w-4xl mx-auto py-6 px-4 space-y-6">
-          {/* Header row */}
-          <div className="flex items-center justify-between flex-wrap gap-3">
-            <h2 className="text-lg font-black uppercase tracking-wider text-[#1a1a1a] flex items-center gap-2">
-              <ShoppingCart className="w-5 h-5 text-[#E3350D]" /> {t.shop_title || "Tazo Shop"}
-            </h2>
+          {/* ═══════════════════════════════════════════ */}
+          {/* MAGAZINE BANNER STRIP                      */}
+          {/* ═══════════════════════════════════════════ */}
+          <div className="mag-card-yellow rounded-none px-4 py-3 flex flex-wrap items-center gap-3" style={{ borderBottom: "4px solid #1a1a1a" }}>
+            <div className="flex items-center gap-1.5">
+              <ShoppingCart className="w-5 h-5 text-[#E3350D]" />
+              <span className="text-sm font-black text-[#1a1a1a] tracking-tight uppercase">
+                {t.shop_title || "Tazo Shop"}
+              </span>
+            </div>
+            <div className="w-px h-5 bg-[#1a1a1a]/30" />
             {creditDisplay}
           </div>
 

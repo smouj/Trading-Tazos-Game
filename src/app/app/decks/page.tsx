@@ -70,37 +70,46 @@ export default function DecksPage() {
 
   if (loading || fetching) {
     return (
-      <div className="min-h-screen flex items-center justify-center mag-bg">
-        <div className="mag-spinner w-12 h-12 rounded-full border-4 border-[#FFCC00] border-t-[#E3350D]" />
+      <div className="flex items-center justify-center py-20">
+        <div className="mag-spinner w-10 h-10 rounded-full border-4 border-[#FFCC00] border-t-[#E3350D]" />
       </div>
     )
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4 mag-bg">
-        <div className="text-center space-y-5">
-          <Layers className="w-16 h-16 text-[#1a1a1a]/20 mx-auto" />
-          <p className="font-bold text-sm text-[#1a1a1a]/50 uppercase tracking-wider">{t.auth_login_subtitle}</p>
-          <Link href="/login" className="inline-block py-3 px-8 mag-btn bg-[#E3350D] text-white text-sm font-black uppercase tracking-widest">
-            {t.auth_login}
-          </Link>
-        </div>
+      <div className="py-20 text-center space-y-5">
+        <Layers className="w-14 h-14 text-[#1a1a1a]/15 mx-auto" />
+        <p className="font-black text-sm text-[#1a1a1a]/40 uppercase tracking-wider">{t.auth_login_subtitle}</p>
+        <Link href="/login" className="inline-block py-3 px-8 mag-btn bg-[#E3350D] text-white text-xs font-black uppercase tracking-widest">
+          {t.auth_login}
+        </Link>
       </div>
     )
   }
 
   return (
     <div className="max-w-7xl mx-auto w-full px-3 sm:px-4 py-4 sm:py-6 space-y-4">
-      {/* Header bar */}
-      <div className="flex items-center gap-4 flex-wrap">
-        <h2 className="text-lg sm:text-xl font-black text-[#1a1a1a] uppercase tracking-wider flex items-center gap-2">
+      {/* ═══════════════════════════════════════════ */}
+      {/* MAGAZINE BANNER STRIP                      */}
+      {/* ═══════════════════════════════════════════ */}
+      <div
+        className="mag-card-yellow rounded-none px-4 py-3 flex flex-wrap items-center gap-3"
+        style={{ borderBottom: "4px solid #1a1a1a" }}
+      >
+        <div className="flex items-center gap-1.5">
           <Layers className="w-5 h-5 text-[#3B4CCA]" />
-          {t.decks_title}
-        </h2>
+          <span className="text-sm font-black text-[#1a1a1a] tracking-tight uppercase">
+            {t.decks_title}
+          </span>
+        </div>
+        <div className="w-px h-5 bg-[#1a1a1a]/30" />
+        <span className="text-sm font-black text-[#3B4CCA] tracking-tight">
+          {decks.length} DECKS
+        </span>
         <button
           onClick={() => setShowCreate(!showCreate)}
-          className="ml-auto mag-btn bg-[#3B4CCA] text-white flex items-center gap-1.5 px-4 py-2 text-xs font-black uppercase tracking-wider"
+          className="ml-auto mag-btn bg-[#3B4CCA] text-white flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider"
         >
           <Plus className="w-3.5 h-3.5" />
           {t.decks_create}

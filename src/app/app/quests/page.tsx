@@ -122,19 +122,26 @@ export default function QuestsPage() {
   return (
     
       <div className="max-w-4xl mx-auto py-6 px-4 space-y-6">
-        {/* Credits display */}
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <h2 className="text-lg font-black uppercase tracking-wider text-[#1a1a1a] flex items-center gap-2">
-            <Target className="w-5 h-5 text-[#E3350D]" /> QUESTS
-          </h2>
-          <div className="flex items-center gap-2 px-4 py-2 bg-[#FFCC00] border-3 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a]">
-            <Coins className="w-5 h-5 text-[#1a1a1a]" />
-            <span className="font-black text-sm text-[#1a1a1a]">{credits}</span>
+        {/* ═══════════════════════════════════════════ */}
+        {/* MAGAZINE BANNER STRIP                      */}
+        {/* ═══════════════════════════════════════════ */}
+        <div className="mag-card-yellow rounded-none px-4 py-3 flex flex-wrap items-center gap-3" style={{ borderBottom: "4px solid #1a1a1a" }}>
+          <div className="flex items-center gap-1.5">
+            <Target className="w-5 h-5 text-[#E3350D]" />
+            <span className="text-sm font-black text-[#1a1a1a] tracking-tight uppercase">QUESTS</span>
+          </div>
+          <div className="w-px h-5 bg-[#1a1a1a]/30" />
+          <span className="text-sm font-black text-[#22C55E] tracking-tight">
+            {completed}/{quests.length} COMPLETED
+          </span>
+          <div className="flex items-center gap-1.5 ml-auto px-3 py-1.5 bg-white border-2 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a]">
+            <Coins className="w-4 h-4 text-[#F59E0B]" />
+            <span className="font-black text-xs text-[#1a1a1a]">{credits}</span>
           </div>
         </div>
 
         {/* Progress bar */}
-        <div className="mag-card bg-white p-4">
+        <div className="border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] p-4" style={{ background: "white" }}>
           <div className="flex items-center justify-between mb-2">
             <span className="font-black text-xs uppercase tracking-wider text-[#1a1a1a]">
               {completed}/{quests.length} QUESTS COMPLETED

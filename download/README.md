@@ -1,21 +1,22 @@
 # Trading Tazos Game — Desktop Downloads
 
-Linux Electron builds are available on the [GitHub Releases page](https://github.com/smouj/Trading-Tazos-Game/releases).
+Desktop installers for Windows, macOS, and Linux are available on the [GitHub Releases page](https://github.com/smouj/Trading-Tazos-Game/releases).
 
-## Current Release: v0.3.0
+## Current Release: v0.3.1
 
 | Platform | Format | Status |
 |----------|--------|--------|
 | Linux | AppImage (.AppImage) | ✅ Available |
 | Linux | Debian/Ubuntu (.deb) | ✅ Available |
-| Windows | .exe (NSIS) | 🚧 Planned |
-| macOS | .dmg / .zip | 🚧 Planned |
+| Windows | .exe (NSIS Installer) | ✅ Available |
+| macOS | .dmg (Apple Silicon + Intel) | ✅ Available |
+| macOS | .zip (Apple Silicon + Intel) | ✅ Available |
 
 ## System Requirements
 
 - **Linux**: x86_64, glibc 2.28+, 4 GB RAM, 200 MB disk
-- **Windows**: Windows 10/11 (x64), 4 GB RAM, 200 MB disk (planned)
-- **macOS**: macOS 12+ (Intel/Apple Silicon), 4 GB RAM, 200 MB disk (planned)
+- **Windows**: Windows 10/11 (x64), 4 GB RAM, 200 MB disk
+- **macOS**: macOS 12+ (Intel/Apple Silicon), 4 GB RAM, 200 MB disk
 
 ## Play Instantly
 

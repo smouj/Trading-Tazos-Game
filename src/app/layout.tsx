@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import I18nClientWrapper from "@/components/i18n-client-wrapper";
 import AuthProviderComponent from "@/components/auth-provider";
+import ScrollReveal from "@/components/scroll-reveal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -122,6 +123,7 @@ export default function RootLayout({
       >
         <I18nClientWrapper>
           <AuthProviderComponent>
+            <ScrollReveal />
             {children}
           </AuthProviderComponent>
         </I18nClientWrapper>

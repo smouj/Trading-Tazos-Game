@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
+import { version } from "@/../package.json"
 
 export const dynamic = "force-dynamic"
 
@@ -12,7 +13,7 @@ export async function GET() {
     return NextResponse.json({
       status: "ok",
       service: "trading-tazos-game",
-      version: process.env.npm_package_version ?? "0.3.0",
+      version,
       db: "ok",
       responseMs: Date.now() - startedAt,
       timestamp: new Date().toISOString(),

@@ -9,30 +9,37 @@ const RELEASES_URL = `${GITHUB_URL}/releases`
 const RELEASE_TAG = "v0.3.1"
 const RELEASE_VER = "0.3.1"
 
-// Linux is built and available now
-// Windows/macOS are built via GitHub Actions (coming in next release)
 const DOWNLOADS = [
   {
     id: "windows",
     icon: Monitor,
     color: "#00A4EF",
     label: "Windows",
-    badge: "Building...",
-    badgeColor: "#F59E0B",
+    badge: "Available",
+    badgeColor: "#22C55E",
     exe: ".exe",
     url: `${RELEASES_URL}/tag/${RELEASE_TAG}`,
-    available: false,
+    available: true,
+    formats: [
+      { label: ".exe Installer", path: `trading-tazos-game-${RELEASE_VER}-win-x64.exe` },
+    ],
   },
   {
     id: "mac",
     icon: Apple,
     color: "#1a1a1a",
     label: "macOS",
-    badge: "Building...",
-    badgeColor: "#F59E0B",
+    badge: "Available",
+    badgeColor: "#22C55E",
     exe: ".dmg",
     url: `${RELEASES_URL}/tag/${RELEASE_TAG}`,
-    available: false,
+    available: true,
+    formats: [
+      { label: ".dmg (Apple Silicon)", path: `trading-tazos-game-${RELEASE_VER}-mac-arm64.dmg` },
+      { label: ".dmg (Intel)", path: `trading-tazos-game-${RELEASE_VER}-mac-x64.dmg` },
+      { label: ".zip (Apple Silicon)", path: `trading-tazos-game-${RELEASE_VER}-mac-arm64.zip` },
+      { label: ".zip (Intel)", path: `trading-tazos-game-${RELEASE_VER}-mac-x64.zip` },
+    ],
   },
   {
     id: "linux",
@@ -45,7 +52,7 @@ const DOWNLOADS = [
     url: `${RELEASES_URL}/tag/${RELEASE_TAG}`,
     available: true,
     formats: [
-      { label: ".AppImage", path: `trading-tazos-game-${RELEASE_VER}-linux-x86_64.AppImage` },
+      { label: ".AppImage (Portable)", path: `trading-tazos-game-${RELEASE_VER}-linux-x86_64.AppImage` },
       { label: ".deb (Ubuntu/Debian)", path: `trading-tazos-game-${RELEASE_VER}-linux-amd64.deb` },
     ],
   },
@@ -82,10 +89,10 @@ export default function DownloadPage() {
             <div>
               <h3 className="font-black text-sm uppercase tracking-wider text-[#1a1a1a]">Desktop App</h3>
               <p className="text-[10px] font-bold text-zinc-500 mt-1">
-                Linux is available now. Windows and macOS builds are planned for a later release.
+                Available for Windows, macOS, and Linux. Download the installer for your platform.
               </p>
             </div>
-            <span className="absolute top-2 right-2 px-2 py-0.5 text-[8px] font-black bg-[#22C55E] text-white uppercase rounded">Linux</span>
+            <span className="absolute top-2 right-2 px-2 py-0.5 text-[8px] font-black bg-[#22C55E] text-white uppercase rounded">All platforms</span>
           </div>
 
           {/* PWA */}
@@ -106,8 +113,8 @@ export default function DownloadPage() {
         {/* ─── Intro ─── */}
         <div className="mag-card p-6">
           <p className="text-sm font-bold text-[#1a1a1a] leading-relaxed">
-            Download Trading Tazos Game for Linux, or play instantly in your browser. Windows and macOS packages are
-            listed for roadmap clarity and will be enabled when release artifacts are available.
+            Download Trading Tazos Game for your desktop. Available on Windows, macOS, and Linux — or play instantly in your browser at{" "}
+            <a href="/" className="underline text-[#3B4CCA]">medaclawarena.com</a>.
           </p>
         </div>
 

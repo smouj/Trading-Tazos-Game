@@ -7,16 +7,15 @@
 //
 // Usage:
 //   node artgen/scripts/generate-ttg-art.mjs <creature-id> [variants]
-//
-// Examples:
-//   node artgen/scripts/generate-ttg-art.mjs minimon-001 4
-//   node artgen/scripts/generate-ttg-art.mjs dracobell-001 2
 //   node artgen/scripts/generate-ttg-art.mjs --list
 //   node artgen/scripts/generate-ttg-art.mjs --line minimon
 //
+// Multi-backend: auto-detects OpenRouter > XAI > OpenAI.
+// Set PROVIDER in .env to force: openrouter | xai | openai
+//
 // Prerequisites:
 //   npm install openai dotenv
-//   cp .env.example .env  (add OPENAI_API_KEY)
+//   Set at least one: OPENROUTER_API_KEY, XAI_API_KEY, or OPENAI_API_KEY
 // ============================================================
 
 import fs from "node:fs/promises"
@@ -30,10 +29,37 @@ const OUTPUT_DIR = path.join(ARTGEN_DIR, "output")
 const CREATURES_PATH = path.join(ARTGEN_DIR, "creatures.json")
 const STYLES_DIR = path.join(ARTGEN_DIR, "styles")
 
-// ─── Configuration ────────────────────────────────────────
-const IMAGE_MODEL = process.env.IMAGE_MODEL || "gpt-image-2"
-const IMAGE_SIZE = process.env.IMAGE_SIZE || "1024x1024"
-const IMAGE_QUALITY = process.env.IMAGE_QUALITY || "high"
+// ─── Backend Configuration ────────────────────────────────
+// Priority: explicit PROVIDER env → OpenRouter → XAI → OpenAI
+const BACKENDS = {
+  openrouter: {
+    name: "OpenRouter",
+    baseURL: "https://openrouter.ai/api/v1",
+    apiKeyEnv: "OPENROUTER_API_KEY",
+    defaultModel: process.env.IMAGE_MODEL || "google/gemini-3.1-flash-image-preview",
+    defaultSize: "1024x1024",
+    // OpenRouter uses OpenAI-compatible API
+    extraHeaders: (key) => ({
+      "HTTP-Referer": "https://github.com/smouj/Trading-Tazos-Game",
+      "X-Title": "TTG ArtGen",
+    }),
+  },
+  xai: {
+    name: "xAI Grok",
+    baseURL: "https://api.x.ai/v1",
+    apiKeyEnv: "XAI_API_KEY",
+    defaultModel: "grok-imagine-image",
+    defaultSize: "1024x1024",
+  },
+  openai: {
+    name: "OpenAI",
+    baseURL: "https://api.openai.com/v1",
+    apiKeyEnv: "OPENAI_API_KEY",
+    defaultModel: "gpt-image-2",
+    defaultSize: "1024x1024",
+    extraBody: () => ({ quality: process.env.IMAGE_QUALITY || "high" }),
+  },
+}
 
 // ─── Banned terms (avoid IP contamination) ────────────────
 const BANNED_TERMS = [
@@ -110,9 +136,82 @@ function buildPrompt(creature, style) {
   return prompt
 }
 
-// ─── Main generator ───────────────────────────────────────
+// ─── Backend detection ────────────────────────────────────
 
-async function generateImage({ creature, style, variant = 1, openai }) {
+function detectBackend() {
+  const forced = process.env.PROVIDER
+  if (forced && BACKENDS[forced]) {
+    const cfg = BACKENDS[forced]
+    if (!process.env[cfg.apiKeyEnv]) {
+      throw new Error(
+        `Provider "${forced}" requires ${cfg.apiKeyEnv}. Set it in .env or your environment.`
+      )
+    }
+    return forced
+  }
+
+  // Auto-detect: first available
+  for (const [key, cfg] of Object.entries(BACKENDS)) {
+    if (process.env[cfg.apiKeyEnv]) {
+      return key
+    }
+  }
+
+  throw new Error(
+    "No image generation API key found.\n" +
+    "Set one of: OPENROUTER_API_KEY, XAI_API_KEY, or OPENAI_API_KEY\n" +
+    "Or add to .env:\n" +
+    "  OPENROUTER_API_KEY=sk-or-v1-...\n" +
+    "  PROVIDER=openrouter"
+  )
+}
+
+// ─── Image generation per backend ─────────────────────────
+
+async function generateViaOpenAI({ prompt, client, model, size }) {
+  const extraBody = BACKENDS.openai.extraBody?.() || {}
+  const result = await client.images.generate({
+    model,
+    prompt,
+    size,
+    n: 1,
+    response_format: "b64_json",
+    ...extraBody,
+  })
+  const b64 = result.data?.[0]?.b64_json
+  if (!b64) throw new Error("No b64_json in response. Model may not support this format.")
+  return Buffer.from(b64, "base64")
+}
+
+async function generateViaOpenRouter({ prompt, client, model, size }) {
+  // OpenRouter is OpenAI-compatible
+  return await generateViaOpenAI({ prompt, client, model, size })
+}
+
+async function generateViaXAI({ prompt, client, model, size }) {
+  // xAI also OpenAI-compatible (mostly)
+  // For grok-imagine-image, we need to use b64_json response format
+  const result = await client.images.generate({
+    model,
+    prompt,
+    size,
+    n: 1,
+    response_format: "b64_json",
+  })
+  const b64 = result.data?.[0]?.b64_json
+  if (!b64) throw new Error("No b64_json in response.")
+  return Buffer.from(b64, "base64")
+}
+
+const GENERATORS = {
+  openai: generateViaOpenAI,
+  openrouter: generateViaOpenRouter,
+  xai: generateViaXAI,
+}
+
+// ─── Generate one variant ─────────────────────────────────
+
+async function generateImage({ creature, style, variant = 1, client, backend, model, size }) {
   const prompt = buildPrompt(creature, style)
 
   const outputFolder = path.join(
@@ -129,32 +228,23 @@ async function generateImage({ creature, style, variant = 1, openai }) {
   const metadataPath = path.join(outputFolder, `${creature.id}-v${variantStr}.json`)
 
   console.log(`\n🎨 Generating ${creature.id} (${creature.name}) — variant ${variant}/${process.env._VARIANTS || variant}`)
-  console.log(`   Line:  ${creature.line}`)
-  console.log(`   Style: ${style.styleName}`)
-  console.log(`   Model: ${IMAGE_MODEL} @ ${IMAGE_SIZE}`)
+  console.log(`   Line:    ${creature.line}`)
+  console.log(`   Style:   ${style.styleName}`)
+  console.log(`   Backend: ${BACKENDS[backend].name}`)
+  console.log(`   Model:   ${model} @ ${size}`)
 
-  const result = await openai.images.generate({
-    model: IMAGE_MODEL,
-    prompt,
-    size: IMAGE_SIZE,
-    quality: IMAGE_QUALITY,
-    n: 1,
-    response_format: "b64_json",
-  })
+  const generate = GENERATORS[backend]
+  const imageBuffer = await generate({ prompt, client, model, size })
 
-  const imageBase64 = result.data?.[0]?.b64_json
-  if (!imageBase64) {
-    throw new Error("No image returned from API. Check API key, model availability, or prompt safety filters.")
-  }
-
-  await fs.writeFile(imagePath, Buffer.from(imageBase64, "base64"))
+  await fs.writeFile(imagePath, imageBuffer)
 
   const metadata = {
     generationId,
     createdAt: new Date().toISOString(),
-    model: IMAGE_MODEL,
-    size: IMAGE_SIZE,
-    quality: IMAGE_QUALITY,
+    backend,
+    provider: BACKENDS[backend].name,
+    model,
+    size,
     status: "draft",
     variant,
     creature: {
@@ -223,7 +313,39 @@ async function main() {
     return
   }
 
-  // Load OpenAI (lazy — only needed for actual generation)
+  if (flag === "--backends" || flag === "-B") {
+    console.log("\n📡 Available backends:\n")
+    for (const [key, cfg] of Object.entries(BACKENDS)) {
+      const available = !!process.env[cfg.apiKeyEnv]
+      console.log(`  ${available ? "✅" : "❌"} ${cfg.name.padEnd(12)} ${key.padEnd(12)} ${cfg.apiKeyEnv}=${available ? "***" : "(not set)"}`)
+    }
+    console.log(`\n  Default model for active backend: ${BACKENDS[detectBackend()].defaultModel}`)
+    return
+  }
+
+  // ─── Load .env ──────────────────────────────────────
+  try {
+    const dotenv = await import("dotenv")
+    dotenv.config()
+  } catch {
+    // dotenv is optional if env vars are set elsewhere
+  }
+
+  // ─── Detect backend ─────────────────────────────────
+  let backend, backendCfg
+  try {
+    backend = detectBackend()
+    backendCfg = BACKENDS[backend]
+  } catch (err) {
+    console.error("❌", err.message)
+    process.exit(1)
+  }
+
+  const apiKey = process.env[backendCfg.apiKeyEnv]
+  const model = process.env.IMAGE_MODEL || backendCfg.defaultModel
+  const size = process.env.IMAGE_SIZE || backendCfg.defaultSize
+
+  // ─── Load OpenAI client (works for all OpenAI-compatible backends) ──
   let OpenAI
   try {
     const mod = await import("openai")
@@ -233,26 +355,25 @@ async function main() {
     process.exit(1)
   }
 
-  // Load .env
-  try {
-    const dotenv = await import("dotenv")
-    dotenv.config()
-  } catch {
-    // dotenv is optional if env vars are set elsewhere
+  const clientConfig = {
+    apiKey,
+    baseURL: backendCfg.baseURL,
   }
 
-  if (!process.env.OPENAI_API_KEY) {
-    console.error("❌ OPENAI_API_KEY is not set. Add it to .env or your environment.")
-    process.exit(1)
+  // Inject extra headers (e.g. OpenRouter needs HTTP-Referer)
+  if (backendCfg.extraHeaders) {
+    clientConfig.defaultHeaders = backendCfg.extraHeaders(apiKey)
   }
 
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  const client = new OpenAI(clientConfig)
 
+  // ─── Parse arguments ────────────────────────────────
   const selectedId = process.argv[2]
   if (!selectedId) {
     console.error("Usage: node generate-ttg-art.mjs <creature-id> [variants]")
     console.error("       node generate-ttg-art.mjs --list")
     console.error("       node generate-ttg-art.mjs --line <name>")
+    console.error("       node generate-ttg-art.mjs --backends")
     process.exit(1)
   }
 
@@ -278,16 +399,17 @@ async function main() {
   console.log(`\n🖌️  ttg-artgen — Trading Tazos Game Art Generator`)
   console.log(`   Creature: ${creature.id} — ${creature.name}`)
   console.log(`   Variants: ${variants}`)
-  console.log(`   Model:    ${IMAGE_MODEL}`)
-  console.log(`   Size:     ${IMAGE_SIZE}`)
-  console.log(`   Quality:  ${IMAGE_QUALITY}`)
+  console.log(`   Backend:  ${backendCfg.name}`)
+  console.log(`   Model:    ${model}`)
+  console.log(`   Size:     ${size}`)
 
   const results = []
   for (let v = 1; v <= variants; v++) {
     try {
-      const result = await generateImage({ creature, style, variant: v, openai })
+      const result = await generateImage({
+        creature, style, variant: v, client, backend, model, size
+      })
       results.push(result)
-      // Small delay between variants to avoid rate limits
       if (v < variants) {
         console.log(`   ⏳ Waiting 2s before next variant...`)
         await new Promise((r) => setTimeout(r, 2000))

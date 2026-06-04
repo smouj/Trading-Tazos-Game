@@ -39,17 +39,17 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 py-16 sm:py-24 lg:py-32 relative z-10">
           <div className="grid lg:grid-cols-2 gap-10 items-center">
             <div>
-              <p className="inline-block bg-[#E3350D] text-white text-xs font-black uppercase px-3 py-1 border-2 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] mb-5 tracking-[0.15em]">
+              <p className="inline-block bg-[#E3350D] text-white text-xs font-black uppercase px-3 py-1 border-2 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] mb-5 tracking-[0.15em] mag-enter-up-1">
                 Free to Play — Browser & Desktop
               </p>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.05] text-[#1a1a1a] mb-5">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.05] text-[#1a1a1a] mb-5 mag-enter-up-2">
                 Aim. Throw.<br />
                 <span className="text-[#E3350D]">Flip.</span> Capture.
               </h1>
-              <p className="text-base sm:text-lg font-bold text-[#1a1a1a]/70 max-w-lg mb-8">
+              <p className="text-base sm:text-lg font-bold text-[#1a1a1a]/70 max-w-lg mb-8 mag-enter-up-3">
                 319 classic tazos. 9 combat stats. Real-time physics arena. This is <strong>not</strong> an auto-battle card game — you physically aim, charge power, and throw your tazos.
               </p>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-3 mag-enter-up-4">
                 <Link
                   href="/register"
                   className="mag-btn inline-block bg-[#E3350D] text-white border-2 border-[#1a1a1a] px-8 py-4 text-sm font-black uppercase tracking-wider shadow-[6px_6px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_#1a1a1a] transition-all"
@@ -64,7 +64,7 @@ export default function LandingPage() {
                 </Link>
               </div>
             </div>
-            <div className="hidden lg:flex items-center justify-center">
+            <div className="hidden lg:flex items-center justify-center mag-enter-up-5">
               <div className="relative w-80 h-80">
                 <div className="absolute inset-0 bg-[#1a1a1a] border-4 border-[#1a1a1a] shadow-[8px_8px_0px_#1a1a1a] rounded-full flex items-center justify-center">
                   <div className="text-center">

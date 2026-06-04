@@ -48,45 +48,50 @@ export default function BattleArenaCanvas({ state, highlightId, onArenaClick, in
 
     ctx.clearRect(0, 0, W, H)
 
-    // Background
-    ctx.fillStyle = "#1a1a2e"
+    // Background — magazine cream
+    ctx.fillStyle = "#fffbe6"
     ctx.fillRect(0, 0, W, H)
+
+    // Magazine halftone dots background
+    ctx.fillStyle = "#1a1a1a08"
+    for (let dx = 0; dx < W; dx += 6) {
+      for (let dy = 0; dy < H; dy += 6) {
+        ctx.beginPath()
+        ctx.arc(dx, dy, 0.8, 0, Math.PI * 2)
+        ctx.fill()
+      }
+    }
 
     ctx.save()
     ctx.translate(offsetX, offsetY)
     ctx.scale(scale, scale)
 
-    // Arena outer ring
+    // Arena outer ring — magazine black border
     ctx.beginPath()
-    ctx.arc(arena.centerX, arena.centerY, arena.radius + 8, 0, Math.PI * 2)
-    ctx.fillStyle = "#2d2d44"
+    ctx.arc(arena.centerX, arena.centerY, arena.radius + 12, 0, Math.PI * 2)
+    ctx.fillStyle = "#1a1a1a"
     ctx.fill()
 
-    // Arena circle
+    ctx.beginPath()
+    ctx.arc(arena.centerX, arena.centerY, arena.radius + 10, 0, Math.PI * 2)
+    ctx.fillStyle = "#FFCC00"
+    ctx.fill()
+
+    // Arena field — white with subtle tint
     ctx.beginPath()
     ctx.arc(arena.centerX, arena.centerY, arena.radius, 0, Math.PI * 2)
-    ctx.fillStyle = "#16213e"
+    ctx.fillStyle = "#ffffff"
     ctx.fill()
-    ctx.strokeStyle = "#3d3d5c"
-    ctx.lineWidth = 3
+    ctx.strokeStyle = "#1a1a1a"
+    ctx.lineWidth = 4
     ctx.stroke()
 
-    // Center crosshair
-    ctx.beginPath()
-    ctx.moveTo(arena.centerX - 15, arena.centerY)
-    ctx.lineTo(arena.centerX + 15, arena.centerY)
-    ctx.moveTo(arena.centerX, arena.centerY - 15)
-    ctx.lineTo(arena.centerX, arena.centerY + 15)
-    ctx.strokeStyle = "#ffffff22"
-    ctx.lineWidth = 1
-    ctx.stroke()
-
-    // Inner ring
+    // Inner guide ring
     ctx.beginPath()
     ctx.arc(arena.centerX, arena.centerY, arena.radius * 0.3, 0, Math.PI * 2)
-    ctx.strokeStyle = "#ffffff11"
-    ctx.lineWidth = 1
-    ctx.setLineDash([4, 8])
+    ctx.strokeStyle = "#1a1a1a15"
+    ctx.lineWidth = 2
+    ctx.setLineDash([6, 10])
     ctx.stroke()
     ctx.setLineDash([])
 
@@ -122,7 +127,7 @@ export default function BattleArenaCanvas({ state, highlightId, onArenaClick, in
           lastTurn.throwResult.finalX,
           lastTurn.throwResult.finalY,
         )
-        ctx.strokeStyle = lastTurn.playerId === "player" ? "#FFCB0588" : "#E3350D88"
+        ctx.strokeStyle = lastTurn.playerId === "player" ? "#FFCC00" : "#E3350D"
         ctx.lineWidth = 3
         ctx.setLineDash([8, 4])
         ctx.stroke()
@@ -266,14 +271,14 @@ function drawTazoOnField(
     ctx.setLineDash([])
   }
 
-  // Owner indicator
+  // Owner indicator — magazine palette
   if (tazo.owner === "player") {
     ctx.beginPath()
     ctx.arc(x + radius * 0.7, y - radius * 0.7, 6, 0, Math.PI * 2)
-    ctx.fillStyle = "#3B82F6"
+    ctx.fillStyle = "#3B4CCA"
     ctx.fill()
     ctx.strokeStyle = "white"
-    ctx.lineWidth = 1
+    ctx.lineWidth = 1.5
     ctx.stroke()
   } else {
     ctx.beginPath()
@@ -281,7 +286,7 @@ function drawTazoOnField(
     ctx.fillStyle = "#E3350D"
     ctx.fill()
     ctx.strokeStyle = "white"
-    ctx.lineWidth = 1
+    ctx.lineWidth = 1.5
     ctx.stroke()
   }
 }

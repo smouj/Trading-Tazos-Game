@@ -16,7 +16,15 @@ export default function SettingsPage() {
     return (
       <div className="max-w-md mx-auto py-20 text-center space-y-4">
         <Shield className="w-12 h-12 mx-auto text-zinc-300" />
-        <p className="text-sm font-bold text-zinc-400 uppercase">{t.auth_login} to view settings</p>
+        <p className="text-sm font-bold text-zinc-400 uppercase">
+          {t.auth_login || "Sign In"} to view settings
+        </p>
+        <a
+          href={`/login?redirect=${encodeURIComponent("/app/settings")}`}
+          className="mag-btn inline-block bg-[#E3350D] text-white px-8 py-3 text-sm font-black uppercase tracking-wider"
+        >
+          {t.auth_login || "Sign In"}
+        </a>
       </div>
     )
   }

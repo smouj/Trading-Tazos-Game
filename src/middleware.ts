@@ -38,22 +38,36 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL(LEGACY_PAGES[pathname], req.url), 308)
   }
 
-  // /app/* — entire dashboard requires authentication
+  // /app/* — entire dashboard requires valid (non-expired) authentication
   if (pathname.startsWith("/app/")) {
-    if (!token) {
+    if (!token || isJwtExpired(token)) {
       const loginUrl = new URL("/login", req.url)
       loginUrl.searchParams.set("redirect", pathname)
-      return NextResponse.redirect(loginUrl)
+      const res = NextResponse.redirect(loginUrl)
+      // Clear stale cookie so client doesn't think it's authed
+      res.cookies.delete("auth_token")
+      res.cookies.delete("ttg_session")
+      return res
     }
     return NextResponse.next()
   }
 
   // Redirect authenticated users away from login/register → dashboard
-  if (AUTH_PAGES.includes(pathname) && token) {
+  if (AUTH_PAGES.includes(pathname) && token && !isJwtExpired(token)) {
     return NextResponse.redirect(new URL("/app/album", req.url))
   }
 
   return NextResponse.next()
+}
+
+/** Check if JWT payload has expired (no signature verification needed — API routes handle that) */
+function isJwtExpired(token: string): boolean {
+  try {
+    const payload = JSON.parse(Buffer.from(token.split(".")[1], "base64").toString("utf8"))
+    return payload.exp ? Date.now() / 1000 > payload.exp : true
+  } catch {
+    return true
+  }
 }
 
 export const config = {

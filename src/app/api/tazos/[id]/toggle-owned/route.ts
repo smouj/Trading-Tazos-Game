@@ -8,13 +8,16 @@ export async function PUT(
   try {
     const { id } = await params
 
-    const existing = await db.tazo.findUnique({ where: { id } })
+    let existing = await db.tazo.findUnique({ where: { id } })
+    if (!existing) {
+      existing = await db.tazo.findFirst({ where: { number: id } })
+    }
     if (!existing) {
       return NextResponse.json({ error: 'Tazo not found' }, { status: 404 })
     }
 
     const tazo = await db.tazo.update({
-      where: { id },
+      where: { id: existing.id },
       data: { isOwned: !existing.isOwned },
       include: {
         franchise: true,

@@ -8,13 +8,25 @@ export async function GET(
   try {
     const { id } = await params
 
-    const tazo = await db.tazo.findUnique({
+    // Try UUID first, then fall back to number-based lookup
+    let tazo = await db.tazo.findUnique({
       where: { id },
       include: {
         franchise: true,
         collection: true,
       },
     })
+
+    if (!tazo) {
+      // Try by number (allows /api/tazos/1 instead of /api/tazos/<uuid>)
+      tazo = await db.tazo.findFirst({
+        where: { number: id },
+        include: {
+          franchise: true,
+          collection: true,
+        },
+      })
+    }
 
     if (!tazo) {
       return NextResponse.json({ error: 'Tazo not found' }, { status: 404 })
@@ -38,13 +50,16 @@ export async function PUT(
     const { id } = await params
     const body = await request.json()
 
-    const existing = await db.tazo.findUnique({ where: { id } })
+    let existing = await db.tazo.findUnique({ where: { id } })
+    if (!existing) {
+      existing = await db.tazo.findFirst({ where: { number: id } })
+    }
     if (!existing) {
       return NextResponse.json({ error: 'Tazo not found' }, { status: 404 })
     }
 
     const tazo = await db.tazo.update({
-      where: { id },
+      where: { id: existing.id },
       data: {
         ...(body.name !== undefined && { name: body.name }),
         ...(body.slug !== undefined && { slug: body.slug }),
@@ -99,12 +114,15 @@ export async function DELETE(
   try {
     const { id } = await params
 
-    const existing = await db.tazo.findUnique({ where: { id } })
+    let existing = await db.tazo.findUnique({ where: { id } })
+    if (!existing) {
+      existing = await db.tazo.findFirst({ where: { number: id } })
+    }
     if (!existing) {
       return NextResponse.json({ error: 'Tazo not found' }, { status: 404 })
     }
 
-    await db.tazo.delete({ where: { id } })
+    await db.tazo.delete({ where: { id: existing.id } })
 
     return NextResponse.json({ success: true })
   } catch (error) {

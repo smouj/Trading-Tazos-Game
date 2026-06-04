@@ -27,7 +27,7 @@ mac:
       arch: [x64, arm64]
     - target: zip
       arch: [x64, arm64]
-  icon: assets/icon-512.png
+  icon: icon-512.png
   artifactName: "${name}-${version}-mac-${arch}.${ext}"
 
 dmg:
@@ -40,14 +40,14 @@ win:
       arch: [x64]
     - target: portable
       arch: [x64]
-  icon: assets/icon-256.png
+  icon: icon-256.png
   artifactName: "${name}-${version}-win-${arch}.${ext}"
 
 nsis:
   oneClick: false
   perMachine: false
   allowToChangeInstallationDirectory: true
-  installerIcon: assets/icon-256.png
+  installerIcon: icon-256.png
   createDesktopShortcut: true
   createStartMenuShortcut: true
   shortcutName: "Trading Tazos Game"
@@ -60,7 +60,7 @@ linux:
     - target: deb
       arch: [x64]
   category: Game
-  icon: assets/icon-256.png
+  icon: icon-256.png
   artifactName: "${name}-${version}-linux-${arch}.${ext}"
   maintainer: "support@medaclawarena.com"
 

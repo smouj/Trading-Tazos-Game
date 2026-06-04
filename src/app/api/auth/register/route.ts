@@ -95,10 +95,10 @@ async function seedWelcomePack(userId: string) {
     ])
     const welcomeTazos = [...min, ...drac, ...cyber]
 
-    // Add to user's collection (explicit timestamps to avoid SQLite ms-timestamp bug)
+    // Add to user's collection
     for (const tazo of welcomeTazos) {
       await db.userTazo.create({
-        data: { userId, tazoId: tazo.id, quantity: 1, createdAt: now, updatedAt: now },
+        data: { userId, tazoId: tazo.id, quantity: 1 },
       })
     }
 
@@ -112,7 +112,7 @@ async function seedWelcomePack(userId: string) {
         createdAt: now,
         updatedAt: now,
         deckTazos: {
-          create: deckTazos.map((t) => ({ tazoId: t.id, createdAt: now, updatedAt: now })),
+          create: deckTazos.map((t) => ({ tazoId: t.id })),
         },
       },
     })

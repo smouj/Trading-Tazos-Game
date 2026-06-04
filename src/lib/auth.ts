@@ -14,7 +14,14 @@ export interface AuthUser {
 }
 
 export function generateToken(user: AuthUser): string {
-  return jwt.sign(user, JWT_SECRET, { expiresIn: TOKEN_EXPIRY })
+  const payload: AuthUser = {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    displayName: user.displayName,
+    avatarUrl: user.avatarUrl,
+  }
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: TOKEN_EXPIRY })
 }
 
 export function verifyToken(token: string): AuthUser | null {

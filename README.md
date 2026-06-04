@@ -124,7 +124,17 @@ It's a game of **physical tazo throwing** — aim, power, physics, chain rebound
 | Desktop | Electron app for Windows, macOS, Linux ([v0.3.0](https://github.com/smouj/Trading-Tazos-Game/releases/tag/v0.3.0)) |
 | i18n | 10 languages: EN, ES, PT, DE, FR, IT, JA, KO, ZH, RU |
 | SEO | JSON-LD VideoGame schema, sitemap.xml, robots.txt, hreflang alternates |
-| Security | CSP + HSTS + X-Frame-Options + httpOnly auth cookies |
+| Security | CSP + HSTS + X-Frame-Options + dual cookie auth |
+
+### Auth & User System
+| Feature | Detail |
+|---------|--------|
+| Authentication | JWT + bcryptjs (12 rounds) with httpOnly + companion cookies |
+| Session Detection | `/api/auth/ping` cookie check + localStorage Bearer token sync |
+| Route Protection | Middleware guards `/app/*` → redirects to `/login?redirect=...` |
+| User Profile | `/app/settings` — profile card, collection stats, logout |
+| Auth-Aware Headers | Landing shows "Play Now" when logged in, dashboard shows Logout |
+| 2-Shell System | PublicPageShell (landing/SEO) + MagazinePageShell (dashboard) |
 
 ---
 
@@ -195,29 +205,34 @@ Trading-Tazos-Game/
 │   ├── seed.ts              # 319 tazos (seed data)
 │   └── seed-quests.ts       # 17 quests + 18 achievements
 ├── src/
-│   ├── middleware.ts         # Auth route protection
+│   ├── middleware.ts         # Auth route protection + legacy redirects
 │   ├── app/
 │   │   ├── page.tsx          # Landing page (hero, collections, CTAs)
 │   │   ├── layout.tsx        # Root layout (SEO, PWA, JSON-LD, i18n)
-│   │   ├── app/              # 🎮 Game tabs (album, battle, scanner, stats)
-│   │   ├── collection/       # Personal tazo collection
-│   │   ├── decks/            # Deck builder + active deck switcher
-│   │   ├── shop/             # 3D bag shop (buy → open → reveal)
-│   │   ├── quests/           # Quest system (daily, weekly, special)
-│   │   ├── leaderboard/      # Global rankings
-│   │   ├── download/         # Desktop app downloads
+│   │   ├── app/              # 🎮 Dashboard (auth-protected, MagazinePageShell)
+│   │   │   ├── album/        # Tazo album — filterable grid
+│   │   │   ├── battle/       # Canvas 2D physics battle arena
+│   │   │   ├── scanner/      # Physical tazo scanner
+│   │   │   ├── stats/        # Collection stats & analytics
+│   │   │   ├── shop/         # 3D bag shop (buy → open → reveal)
+│   │   │   ├── quests/       # Quest system (daily, weekly, special)
+│   │   │   ├── collection/   # Personal tazo collection
+│   │   │   ├── decks/        # Deck builder + active deck switcher
+│   │   │   └── settings/     # User profile & settings
 │   │   ├── how-to-play/      # Public SEO page — game guide
 │   │   ├── battle-system/    # Public SEO page — combat mechanics
 │   │   ├── collections/      # Public SEO pages — franchise showcases
 │   │   ├── tazos/            # Public catalog + rarity tiers
 │   │   ├── faq/              # Public FAQ page
+│   │   ├── leaderboard/      # Global rankings (public)
+│   │   ├── download/         # Desktop app downloads (public)
 │   │   ├── terms/            # Legal pages
 │   │   ├── privacy/          #
 │   │   ├── cookies/          #
 │   │   ├── disclaimer/       #
 │   │   ├── login/            # Auth pages
 │   │   ├── register/         #
-│   │   └── api/              # 14 REST API route groups
+│   │   └── api/              # 15 REST API route groups
 │   ├── components/game/
 │   │   ├── battle/           # Arena canvas, launch controls, event log, results
 │   │   ├── 3d/               # 3D tazo discs, chip bags, scenes
@@ -382,25 +397,28 @@ tazos battle --seed 42      # Simulate a physics battle
 ## Changelog
 
 ### v0.3.0 — 3D Shop + Quests + Desktop App + Public SEO (Jun 2026)
+- **Dashboard**: 9 tabs under `/app/*` (album, battle, scanner, stats, shop, quests, collection, decks, settings)
+- **Auth**: Dual cookie system (httpOnly + companion), `/api/auth/ping` endpoint, auto session detection
+- **2-shell architecture**: PublicPageShell (landing/SEO) + MagazinePageShell (dashboard, 9 tabs, no scrollbar)
+- **Auth-aware headers**: Landing shows "Play Now" when logged in, dashboard shows Logout + Back to Home
+- **Settings page**: `/app/settings` with profile card, stats, and logout
 - 13 public SEO pages: landing, how-to-play, battle-system, collections, tazos, FAQ
 - 4 legal pages: terms, privacy, cookies, disclaimer
-- 2-shell architecture: PublicHeader (SEO/legal) + MagazinePageShell (game/auth)
-- 4 game tabs in `/app?tab=...` (album, battle, scanner, stats) with legacy redirects
-- Auth middleware with httpOnly cookies and login redirect
 - 3D chip bag shop with tear animation and rarity-based drops
 - Credit economy: battles +30cr, daily login +25cr, quests +50–200cr
 - 17 quests across 4 categories with progress tracking
 - 18 achievements with 4-tier progression (Bronze → Platinum)
 - Global leaderboards: credits, tazos collected, battle wins
-- Auth middleware with httpOnly cookies and login redirect
+- Auth middleware with httpOnly cookies, login redirect, 8 legacy URL redirects
 - PWA manifest, installable, offline-ready
 - Electron desktop launcher: animated splash, system tray, single-instance
 - Linux installers: .AppImage + .deb
 - SEO: JSON-LD VideoGame schema, sitemap.xml, robots.txt, hreflang
 - Design system spec ([THEME.md](./THEME.md)) with documented tokens
 - WebSocket multiplayer: JWT auth, room system, live event sync
-- Security: CSP, HSTS, X-Frame-Options, httpOnly auth cookies
+- Security: CSP, HSTS, X-Frame-Options, dual cookie auth
 - Page-specific metadata with unique titles per route
+- i18n: 10 languages with 250+ translated keys
 
 ### v0.2.3 — Auth & Deck System
 - JWT authentication with bcrypt password hashing (12 rounds)

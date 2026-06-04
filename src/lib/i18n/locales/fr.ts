@@ -7,6 +7,7 @@ const fr: Dictionary = {
   siteTagline: "Faut tous les retourner !",
   siteFooterTribute: "Un hommage nostalgique a l'age d'or des tazos",
   siteFooterTrademark: "Fan-made tribute. Minimon, Cybermon, and Dracobell are original fictional IPs for Trading Tazos Game.",
+  settings_title: "Paramètres",
   siteMastheadBadge: "EXCLUSIF — EDITION COLLECTOR",
   nav_dashboard: "Tableau de bord",
   nav_play_now: "Jouer",

@@ -11,10 +11,10 @@ import { useI18n } from "@/lib/i18n"
 import LanguageSwitcher from "@/components/ui/language-switcher"
 import {
   BookOpen, Swords, Scan, BarChart3, ShoppingBag,
-  Target, Disc3, Layers, LogOut, Home,
+  Target, Disc3, Layers, LogOut, Home, Settings,
 } from "lucide-react"
 
-type TabId = "album" | "battle" | "scanner" | "stats" | "shop" | "quests" | "collection" | "decks"
+type TabId = "album" | "battle" | "scanner" | "stats" | "shop" | "quests" | "collection" | "decks" | "settings"
 
 const NAV_ITEMS: { id: TabId; labelKey?: string; fallbackLabel: string; icon: typeof BookOpen; href: string }[] = [
   { id: "album", labelKey: "tabAlbum", fallbackLabel: "Album", icon: BookOpen, href: "/app/album" },
@@ -25,6 +25,7 @@ const NAV_ITEMS: { id: TabId; labelKey?: string; fallbackLabel: string; icon: ty
   { id: "quests", fallbackLabel: "Quests", icon: Target, href: "/app/quests" },
   { id: "collection", fallbackLabel: "Collection", icon: Disc3, href: "/app/collection" },
   { id: "decks", fallbackLabel: "Decks", icon: Layers, href: "/app/decks" },
+  { id: "settings", fallbackLabel: "Settings", icon: Settings, href: "/app/settings" },
 ]
 
 export default function MagazinePageShell({
@@ -59,22 +60,17 @@ export default function MagazinePageShell({
             {t.siteMastheadBadge || "MAGAZINE"}
           </span>
 
-          {/* Right: user area */}
-          <div className="flex items-center gap-3">
+          {/* Right: user area — always visible */}
+          <div className="flex items-center gap-2 sm:gap-3">
             <LanguageSwitcher />
             {!loading && user ? (
-              <div className="flex items-center gap-2">
-                <span className="hidden sm:inline text-[10px] sm:text-xs font-bold text-[#FFCC00] max-w-[120px] truncate">
-                  {user.displayName || user.name}
-                </span>
-                <button
-                  onClick={logout}
-                  className="flex items-center gap-1.5 text-[10px] sm:text-xs font-black text-[#E3350D] hover:text-red-400 transition-colors tracking-wider uppercase"
-                >
-                  <LogOut className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                  <span className="hidden sm:inline">{t.auth_logout || "Logout"}</span>
-                </button>
-              </div>
+              <button
+                onClick={logout}
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-[11px] font-black text-[#E3350D] bg-white/10 hover:bg-[#E3350D]/15 border border-[#E3350D]/30 hover:border-[#E3350D] rounded transition-colors tracking-wider uppercase"
+              >
+                <LogOut className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                <span>{t.auth_logout || "Logout"}</span>
+              </button>
             ) : (
               <span className="text-[10px] sm:text-xs font-bold text-zinc-500 tracking-wider uppercase">
                 {t.siteMastheadBadge || "DASHBOARD"}
@@ -128,9 +124,9 @@ export default function MagazinePageShell({
           </div>
         </div>
 
-        {/* ===== TAB BAR (8 tabs — no leaderboard/download) ===== */}
-        <nav className="max-w-7xl mx-auto px-4 pb-0" role="tablist" aria-label="Game views">
-          <div className="flex gap-0.5 sm:gap-1.5 overflow-x-auto custom-scrollbar">
+        {/* ===== TAB BAR (8 tabs, no scrollbar, wrap on tiny screens) ===== */}
+        <nav className="max-w-7xl mx-auto px-2 sm:px-4 pb-0" role="tablist" aria-label="Game views">
+          <div className="flex flex-wrap gap-0.5">
             {NAV_ITEMS.map(({ id, labelKey, fallbackLabel, icon: Icon, href }) => {
               const isActive = currentTab === id
               const label = (labelKey ? (t as any)[labelKey] : null) || fallbackLabel
@@ -139,14 +135,14 @@ export default function MagazinePageShell({
                 <Link
                   key={id}
                   href={href}
-                  className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-4 py-2 sm:py-2.5 font-black text-[10px] sm:text-xs tracking-wider uppercase transition-all duration-150 whitespace-nowrap ${
+                  className={`flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 font-black text-[9px] sm:text-[11px] tracking-wider uppercase transition-all duration-150 whitespace-nowrap rounded-t-lg ${
                     isActive
-                      ? "bg-[#FFCC00] text-[#1a1a1a] rounded-t-lg -mb-[1px] border-2 border-b-0 border-[#1a1a1a]"
-                      : "bg-white/80 text-[#1a1a1a]/60 rounded-t-lg border-2 border-b-0 border-[#1a1a1a]/20 hover:bg-white hover:text-[#1a1a1a] hover:border-[#1a1a1a]/40"
+                      ? "bg-[#FFCC00] text-[#1a1a1a] -mb-[1px] border-2 border-b-0 border-[#1a1a1a]"
+                      : "bg-white/70 text-[#1a1a1a]/50 border-2 border-b-0 border-[#1a1a1a]/15 hover:bg-white hover:text-[#1a1a1a] hover:border-[#1a1a1a]/30"
                   }`}
                 >
                   <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                  <span>{label}</span>
+                  <span className="hidden sm:inline">{label}</span>
                 </Link>
               )
             })}

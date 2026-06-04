@@ -38,18 +38,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   // Load token from localStorage on mount.
-  // Fallback 1: check companion session cookie → try cookie-based auth.
-  // Fallback 2: always attempt cookie-based auth as last resort (auth_token is sent automatically).
+  // Always also try cookie-based auth via /api/auth/ping (browser sends auth_token cookie).
+  // This guarantees auth state sync even when localStorage is empty.
   useEffect(() => {
     const saved = localStorage.getItem(TOKEN_KEY)
     if (saved) {
       setToken(saved)
       fetchMe(saved)
-    } else {
-      // Always attempt cookie auth — browser sends auth_token cookie if present
-      fetchMe(null)
     }
+    // Always attempt cookie-based auth as safety net
+    checkCookieAuth()
   }, [])
+
+  /** Lightweight cookie-based session check — called on every mount */
+  const checkCookieAuth = async () => {
+    try {
+      const res = await fetch("/api/auth/ping", { credentials: "include" })
+      if (!res.ok) return
+      const data = await res.json()
+      if (data.authed && data.user) {
+        setUser(data.user)
+        if (data.token) {
+          localStorage.setItem(TOKEN_KEY, data.token)
+          setToken(data.token)
+        }
+      }
+    } catch {
+      // network error — ignore
+    }
+  }
 
   const fetchMe = async (t: string | null) => {
     try {

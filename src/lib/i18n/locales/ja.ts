@@ -7,6 +7,7 @@ const ja: Dictionary = {
   siteTagline: "全部ひっくり返せ！",
   siteFooterTribute: "タゾスの黄金時代へのノスタルジックなオマージュ",
   siteFooterTrademark: "Fan-made tribute. Minimon, Cybermon, and Dracobell are original fictional IPs for Trading Tazos Game.",
+  settings_title: "設定",
   siteMastheadBadge: "限定 — コレクターズエディション",
   nav_dashboard: "ダッシュボード",
   nav_play_now: "プレイ",

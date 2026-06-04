@@ -7,6 +7,7 @@ const it: Dictionary = {
   siteTagline: "Gira che ti passa!",
   siteFooterTribute: "Un tributo nostalgico all'era d'oro dei tazos",
   siteFooterTrademark: "Fan-made tribute. Minimon, Cybermon, and Dracobell are original fictional IPs for Trading Tazos Game.",
+  settings_title: "Impostazioni",
   siteMastheadBadge: "ESCLUSIVO — EDIZIONE DA COLLEZIONE",
   nav_dashboard: "Pannello",
   nav_play_now: "Gioca Ora",

@@ -25,6 +25,7 @@ export interface Dictionary {
   siteTagline: string
   siteFooterTribute: string
   siteFooterTrademark: string
+  settings_title: string
   siteMastheadBadge: string
 
   // Nav

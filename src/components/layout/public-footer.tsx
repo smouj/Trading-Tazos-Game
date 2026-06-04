@@ -25,7 +25,6 @@ const columns = [
     title: "Support",
     links: [
       ["FAQ", "/faq"],
-      ["Support", "mailto:support@medaclawarena.com"],
       ["Contact", "mailto:support@medaclawarena.com"],
     ],
   },

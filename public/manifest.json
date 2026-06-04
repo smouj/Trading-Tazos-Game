@@ -30,12 +30,6 @@
       "sizes": "180x180",
       "type": "image/png",
       "purpose": "apple touch icon"
-    },
-    {
-      "src": "/favicon-192.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
     }
   ],
   "screenshots": [
@@ -44,7 +38,7 @@
       "sizes": "1200x630",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Trading Tazos Game"
+      "label": "Trading Tazos Game - Landing"
     }
   ],
   "shortcuts": [

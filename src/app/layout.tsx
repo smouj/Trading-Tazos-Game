@@ -82,7 +82,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" className="overflow-x-hidden" suppressHydrationWarning>
       <head>
         {/* JSON-LD structured data for VideoGame */}
         <script
@@ -118,7 +118,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="TTG" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden bg-background text-foreground`}
       >
         <I18nClientWrapper>
           <AuthProviderComponent>

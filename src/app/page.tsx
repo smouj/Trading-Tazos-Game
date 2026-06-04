@@ -215,7 +215,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="overflow-hidden border-b-4 border-[#1a1a1a] bg-white">
+      <section className="overflow-hidden border-b-4 border-[#1a1a1a] bg-white ttg-reveal">
         <div className="ttg-ticker flex whitespace-nowrap py-3 text-sm font-black uppercase tracking-[0.16em] text-[#1a1a1a]">
           <span className="px-6">Collect 319 tazos</span>
           <span className="px-6 text-[#E3350D]">Aim by hand</span>
@@ -228,7 +228,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="border-b-4 border-[#1a1a1a] bg-[#fffbe6] py-14 sm:py-18">
+      <section className="border-b-4 border-[#1a1a1a] bg-[#fffbe6] py-14 sm:py-18 ttg-reveal ttg-reveal-delay-1">
         <div className="mx-auto max-w-7xl px-4">
           <div className="mb-10 grid gap-4 md:grid-cols-[0.9fr_1.1fr] md:items-end">
             <div>
@@ -259,7 +259,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden border-b-4 border-[#1a1a1a] bg-white py-14 sm:py-18">
+      <section className="relative overflow-hidden border-b-4 border-[#1a1a1a] bg-white py-14 sm:py-18 ttg-reveal ttg-reveal-delay-2">
         <div className="absolute inset-0 mag-dots opacity-80" />
         <div className="relative mx-auto max-w-7xl px-4">
           <div className="mb-10 text-center">
@@ -307,7 +307,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="border-b-4 border-[#1a1a1a] bg-[#1a1a1a] py-14 text-white sm:py-18">
+      <section className="border-b-4 border-[#1a1a1a] bg-[#1a1a1a] py-14 text-white sm:py-18 ttg-reveal ttg-reveal-delay-3">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div>
             <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-[#FFCC00]">Battle Feel</p>
@@ -354,7 +354,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="border-b-4 border-[#1a1a1a] bg-[#fffbe6] py-14 sm:py-18">
+      <section className="border-b-4 border-[#1a1a1a] bg-[#fffbe6] py-14 sm:py-18 ttg-reveal">
         <div className="mx-auto max-w-7xl px-4">
           <div className="mb-10 text-center">
             <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-[#E3350D]">Built Out</p>
@@ -373,7 +373,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden border-b-4 border-[#1a1a1a] bg-[#E3350D] py-14 sm:py-18">
+      <section className="relative overflow-hidden border-b-4 border-[#1a1a1a] bg-[#E3350D] py-14 sm:py-18 ttg-reveal ttg-reveal-delay-1">
         <div className="absolute inset-0 mag-stripes opacity-10" />
         <div className="relative mx-auto max-w-3xl px-4 text-center">
           <h2 className="text-3xl font-black uppercase text-white sm:text-4xl">Start Your Collection Today</h2>

@@ -678,8 +678,8 @@
 
 .ttg-ticker {
   width: max-content;
-  min-width: 200%;
-  animation: ttg-ticker-slide 24s linear infinite;
+  min-width: 180%;
+  animation: ttg-ticker-slide 22s linear infinite;
 }
 
 .ttg-step-card,
@@ -784,3 +784,18 @@
     animation: none;
   }
 }
+
+/* Scroll-reveal staggered sections on landing */
+.ttg-reveal {
+  /* Start visible for graceful degradation; JS can enhance with staggered reveal if desired */
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ttg-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.ttg-reveal-delay-1 { transition-delay: 60ms; }
+.ttg-reveal-delay-2 { transition-delay: 120ms; }
+.ttg-reveal-delay-3 { transition-delay: 180ms; }

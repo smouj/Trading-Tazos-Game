@@ -28,8 +28,12 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Get version
+        id: version
+        run: echo "value=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
       - name: Build Linux installers
-        run: bun run electron:build:linux -- --publish never
+        run: bun run electron:build:linux -- --publish never -c.extraMetadata.version=${{ steps.version.outputs.value }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -53,8 +57,12 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Get version
+        id: version
+        run: echo "value=$(node -p "require('./package.json').version")" >> $env:GITHUB_OUTPUT
+
       - name: Build Windows installers
-        run: bun run electron:build:win -- --publish never
+        run: bun run electron:build:win -- --publish never -c.extraMetadata.version=${{ steps.version.outputs.value }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -77,12 +85,16 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Get version
+        id: version
+        run: echo "value=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
       - name: Build macOS installers
         run: |
-          bun run electron:build:mac -- --publish never || {
+          bun run electron:build:mac -- --publish never -c.extraMetadata.version=${{ steps.version.outputs.value }} || {
             echo "First attempt failed (likely hdiutil race), retrying in 30s..."
             sleep 30
-            bun run electron:build:mac -- --publish never
+            bun run electron:build:mac -- --publish never -c.extraMetadata.version=${{ steps.version.outputs.value }}
           }
 
       - name: Upload artifacts

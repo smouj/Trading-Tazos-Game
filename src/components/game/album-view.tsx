@@ -347,9 +347,9 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
               <SelectItem value="mint" className="text-[11px] font-bold"><span className="text-emerald-600">✨ Mint</span></SelectItem>
               <SelectItem value="good" className="text-[11px] font-bold"><CheckCircle className="w-3.5 h-3.5 inline mr-1 text-[#22C55E]" /> Good</SelectItem>
               <SelectItem value="used" className="text-[11px] font-bold"><RefreshCw className="w-3.5 h-3.5 inline mr-1 text-[#F59E0B]" /> Used</SelectItem>
-              <SelectItem value="worn" className="text-[11px] font-bold"><span className="text-orange-600">⚔️ Worn</span></SelectItem>
+              <SelectItem value="worn" className="text-[11px] font-bold"><span className="text-orange-600">Worn</span></SelectItem>
               <SelectItem value="holo" className="text-[11px] font-bold"><Palette className="w-3.5 h-3.5 inline mr-1 text-[#00A1E9]" /> Holo</SelectItem>
-              <SelectItem value="metallic" className="text-[11px] font-bold"><span className="text-slate-600">🛡️ Metallic</span></SelectItem>
+              <SelectItem value="metallic" className="text-[11px] font-bold"><span className="text-zinc-500">Metallic</span></SelectItem>
             </SelectContent>
           </Select>
 

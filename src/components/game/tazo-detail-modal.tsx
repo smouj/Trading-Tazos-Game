@@ -29,7 +29,7 @@ const STAT_CONFIG = [
   { key: 'weight' as const, label: 'WEIGHT', color: '#FFCC00', icon: '⚖️', bgColor: '#FFCC0015' },
   { key: 'stability' as const, label: 'STABLE', color: '#14B8A6', icon: '▰', bgColor: '#14B8A615' },
   { key: 'spin' as const, label: 'SPIN', color: '#78C850', icon: '🌀', bgColor: '#78C85015' },
-  { key: 'control' as const, label: 'CONTROL', color: '#EC4899', icon: '🎯', bgColor: '#EC489915' },
+  { key: 'control' as const, label: 'CONTROL', color: '#EC4899', icon: '⊙', bgColor: '#EC489915' },
   { key: 'bounce' as const, label: 'BOUNCE', color: '#F97316', icon: '↯', bgColor: '#F9731615' },
   { key: 'precision' as const, label: 'PRECISE', color: '#06B6D4', icon: '+', bgColor: '#06B6D415' },
 ]

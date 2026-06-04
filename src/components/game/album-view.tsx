@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Tazo, Franchise, Rarity, TazoCondition } from '@/lib/game/types'
 import TazoCard from './tazo-card'
 import TazoDetailModal from './tazo-detail-modal'
+import TazoGallery3D from './3d/tazo-gallery-3d'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -15,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Search, Filter, CheckCircle, RefreshCw, Palette, Grid3X3, LayoutGrid, BookOpen, Star, ArrowUpDown, Package } from 'lucide-react'
+import { Search, Filter, CheckCircle, RefreshCw, Palette, Grid3X3, LayoutGrid, BookOpen, Star, ArrowUpDown, Package, Cuboid } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
 
 interface AlbumViewProps {
@@ -428,50 +429,20 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
       </div>
 
       {/* ═══════════════════════════════════════════ */}
-      {/* TAZOS GRID - Paper textured, magazine style */}
+      {/* 3D TAZO GALLERY                            */}
       {/* ═══════════════════════════════════════════ */}
       {loading ? (
         <div
-          className={`grid gap-3 ${
-            gridSize === 'compact'
-              ? 'grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7'
-              : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
-          }`}
+          className="flex items-center justify-center py-20 border-3 border-[#1a1a1a]"
+          style={{ background: '#fffef0', minHeight: 500 }}
         >
-          {Array.from({ length: 12 }).map((_, i) => (
-            <div
-              key={i}
-              className="rounded-none p-3 flex flex-col items-center gap-2"
-              style={{
-                background: '#fff9d6',
-                border: '3px solid #1a1a1a',
-                boxShadow: '4px 4px 0px #1a1a1a',
-              }}
-            >
-              <Skeleton
-                className="w-[100px] h-[100px] rounded-full"
-                style={{ background: 'rgba(255, 204, 0, 0.3)', border: '2px solid #1a1a1a' }}
-              />
-              <Skeleton
-                className="h-3 w-20"
-                style={{ background: 'rgba(255, 204, 0, 0.3)' }}
-              />
-              <Skeleton
-                className="h-2 w-14"
-                style={{ background: 'rgba(255, 204, 0, 0.2)' }}
-              />
-              <Skeleton
-                className="h-2 w-16"
-                style={{ background: 'rgba(255, 204, 0, 0.2)' }}
-              />
-            </div>
-          ))}
+          <div className="mag-spinner w-12 h-12 rounded-full border-4 border-[#FFCC00] border-t-[#E3350D]" />
         </div>
       ) : tazos.length === 0 ? (
         /* ═══ Empty State - Magazine style ═══ */
         <div
           className="mag-card rounded-none py-16 flex flex-col items-center justify-center text-center mag-dots"
-          style={{ background: '#fffef0' }}
+          style={{ background: '#fffef0', minHeight: 400 }}
         >
           <div className="relative mb-4">
             <Star
@@ -505,28 +476,29 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
           </p>
         </div>
       ) : (
-        <div
-          className={`grid gap-3 mag-dots p-2 rounded-sm ${
-            gridSize === 'compact'
-              ? 'grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7'
-              : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
-          }`}
-          style={{
-            background: '#fffef0',
-            border: '2px solid #1a1a1a',
+        <TazoGallery3D
+          tazos={tazos.map(t => ({
+            id: t.id,
+            name: t.name,
+            displayName: t.displayName || t.name,
+            number: t.number,
+            imageUrl: t.imageUrl,
+            rarity: t.rarity,
+            franchise: t.franchise,
+            franchiseSlug: t.franchiseSlug || t.franchise,
+            attack: t.attack,
+            defense: t.defense,
+          }))}
+          selectedFranchise={selectedFranchise}
+          style={{ minHeight: 550 }}
+          onTazoClick={(t) => {
+            const found = tazos.find(tt => tt.id === t.id)
+            if (found) {
+              setSelectedTazo(found)
+              setDetailOpen(true)
+            }
           }}
-        >
-          {tazos.map((tazo) => (
-            <TazoCard
-              key={tazo.id}
-              tazo={tazo}
-              onClick={(t) => {
-                setSelectedTazo(t)
-                setDetailOpen(true)
-              }}
-            />
-          ))}
-        </div>
+        />
       )}
 
       {/* Detail Modal */}

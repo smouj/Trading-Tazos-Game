@@ -1,7 +1,8 @@
 'use client'
 
-import { Tazo, RARITY_CONFIG, CONDITION_CONFIG, TazoCondition, Rarity } from '@/lib/game/types'
-import { Lock, Star } from 'lucide-react'
+import React from "react"
+import { Tazo, RARITY_CONFIG, CONDITION_CONFIG, TazoCondition, Rarity, SOURCE_STATUS_CONFIG, SourceStatus } from '@/lib/game/types'
+import { Lock, Star, ShieldCheck, ScanEye, AlertTriangle } from 'lucide-react'
 
 interface TazoCardProps {
   tazo: Tazo
@@ -65,6 +66,8 @@ export default function TazoCard({ tazo, onClick }: TazoCardProps) {
   const isLegendary = tazo.rarity === 'legendary'
   const isWorn = tazo.condition === 'worn'
   const isNotOwned = !tazo.isOwned
+  const sourceConfig = SOURCE_STATUS_CONFIG[tazo.sourceStatus as SourceStatus]
+  const sourceIcon = tazo.sourceStatus === 'verified' ? ShieldCheck : tazo.sourceStatus === 'partial' ? ScanEye : AlertTriangle
 
   // Build circle border class
   let circleBorderClass = ''
@@ -212,6 +215,22 @@ export default function TazoCard({ tazo, onClick }: TazoCardProps) {
           </span>
         </div>
       </div>
+
+      {/* Source Status — small badge */}
+      {tazo.sourceStatus && tazo.sourceStatus !== 'verified' && (
+        <div
+          className="px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider flex items-center gap-0.5"
+          style={{
+            background: sourceConfig?.bg || '#F3F4F6',
+            color: sourceConfig?.color?.replace('text-', '#') || '#6B7280',
+            border: '1.5px solid #1a1a1a',
+          }}
+          title={sourceConfig?.label || tazo.sourceStatus}
+        >
+          {React.createElement(sourceIcon, { className: "w-2.5 h-2.5" })}
+          {sourceConfig?.label || tazo.sourceStatus}
+        </div>
+      )}
 
       {/* Rarity & Condition - Magazine sticker style */}
       <div className="flex gap-1.5 flex-wrap justify-center items-center">

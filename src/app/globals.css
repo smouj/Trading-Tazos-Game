@@ -802,3 +802,47 @@
 .ttg-reveal-delay-1 { transition-delay: 60ms; }
 .ttg-reveal-delay-2 { transition-delay: 120ms; }
 .ttg-reveal-delay-3 { transition-delay: 180ms; }
+
+/* ═══════════════════════════════════════
+   CARD FLIP REVEAL (Bag Opening)
+   ═══════════════════════════════════════ */
+@keyframes card-flip-in {
+  from {
+    opacity: 0;
+    transform: perspective(800px) rotateY(-90deg) scale(0.6);
+  }
+  40% {
+    opacity: 1;
+    transform: perspective(800px) rotateY(10deg) scale(1.05);
+  }
+  60% {
+    transform: perspective(800px) rotateY(-4deg) scale(1.02);
+  }
+  80% {
+    transform: perspective(800px) rotateY(2deg) scale(1);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(800px) rotateY(0deg) scale(1);
+  }
+}
+
+.card-flip-reveal {
+  animation: card-flip-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-style: preserve-3d;
+}
+
+/* ═══════════════════════════════════════
+   REVEAL SHIMMER (Rarity glow on reveal)
+   ═══════════════════════════════════════ */
+@keyframes reveal-shimmer {
+  0% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0); }
+  30% { box-shadow: 0 0 20px 8px rgba(255, 204, 0, 0.6); }
+  50% { box-shadow: 0 0 30px 12px rgba(255, 204, 0, 0.8); }
+  70% { box-shadow: 0 0 20px 8px rgba(255, 204, 0, 0.6); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0); }
+}
+
+.reveal-shimmer {
+  animation: reveal-shimmer 1.5s ease-in-out;
+}

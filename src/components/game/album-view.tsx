@@ -413,6 +413,8 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
                 <SelectItem value="bounce" className="text-[11px] font-bold">Bounce</SelectItem>
                 <SelectItem value="precision" className="text-[11px] font-bold">Precision</SelectItem>
                 <SelectItem value="number" className="text-[11px] font-bold">Number</SelectItem>
+                <SelectItem value="createdAt" className="text-[11px] font-bold">Recently Added</SelectItem>
+                <SelectItem value="sourceStatus" className="text-[11px] font-bold">Source</SelectItem>
               </SelectContent>
             </Select>
             <button

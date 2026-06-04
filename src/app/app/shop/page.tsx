@@ -9,6 +9,7 @@ import { useI18n } from "@/lib/i18n"
 import { useAuth } from "@/lib/auth-context"
 import Link from "next/link"
 import { ShoppingBag, Coins, Zap, Star, Gift, Loader2, X, Sparkles, Crosshair, Trophy, Calendar, Check, ShoppingCart } from "lucide-react"
+import ConfettiBurst from "@/components/game/confetti-burst"
 
 interface BagConfig {
   type: string
@@ -382,25 +383,28 @@ export default function BagShopPage() {
             <Sparkles className="w-5 h-5 text-[#F59E0B]" />
           </div>
 
-          {/* 2D Tazo reveal */}
-          <div className="h-72 bg-white border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] rounded-lg overflow-hidden flex items-center justify-center p-6">
-            <div
-              className="relative w-52 h-52 rounded-full border-4 border-[#1a1a1a] shadow-[6px_6px_0px_#1a1a1a] flex items-center justify-center overflow-hidden"
-              style={{
-                background: `linear-gradient(135deg, ${revealedTazo.franchise?.color || "#FFCC00"}, #fffef0)`,
-              }}
-            >
-              {revealedTazo.imageUrl ? (
-                <img
-                  src={revealedTazo.imageUrl}
-                  alt={revealedTazo.displayName || revealedTazo.name || "Tazo"}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="text-5xl font-black text-white mag-stroke-sm">
-                  {(revealedTazo.displayName || revealedTazo.name || "?").charAt(0)}
-                </span>
-              )}
+          {/* 2D Tazo reveal with card flip */}
+          <ConfettiBurst active />
+          <div className="h-72 perspective-[800px] flex items-center justify-center p-6">
+            <div className="card-flip-reveal w-52 h-52">
+              <div
+                className="relative w-full h-full rounded-full border-4 border-[#1a1a1a] shadow-[6px_6px_0px_#1a1a1a] flex items-center justify-center overflow-hidden"
+                style={{
+                  background: `linear-gradient(135deg, ${revealedTazo.franchise?.color || "#FFCC00"}, #fffef0)`,
+                }}
+              >
+                {revealedTazo.imageUrl ? (
+                  <img
+                    src={revealedTazo.imageUrl}
+                    alt={revealedTazo.displayName || revealedTazo.name || "Tazo"}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-5xl font-black text-white mag-stroke-sm">
+                    {(revealedTazo.displayName || revealedTazo.name || "?").charAt(0)}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 

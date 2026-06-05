@@ -40,11 +40,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Tazo not found" }, { status: 500 })
     }
 
-    // Add to user collection
+    // Auto-mark tazo as owned + add to user collection
     await db.userTazo.upsert({
       where: { userId_tazoId: { userId: user.id, tazoId: tazo.id } },
       create: { userId: user.id, tazoId: tazo.id, quantity: 1 },
       update: { quantity: { increment: 1 } },
+    })
+
+    // Set isOwned flag on the tazo itself (auto — no manual toggle)
+    await db.tazo.update({
+      where: { id: tazo.id },
+      data: { isOwned: true },
     })
 
     // Mark bag as opened

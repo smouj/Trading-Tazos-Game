@@ -12,7 +12,7 @@ const faqs = [
   },
   {
     q: "How do I get started?",
-    a: "1. Create a free account. 2. You'll receive a Welcome Pack with 10 starter tazos and a pre-built deck. 3. Head to the Battle Arena and start playing, or open tazo bags in the Shop to expand your collection."
+    a: "1. Create a free account. 2. You'll receive 10 free potato chip bags with surprise tazos inside — open them in the Shop. 3. Head to the Battle Arena and start playing, or open tazo bags in the Shop to expand your collection."
   },
   {
     q: "How does the battle system work?",

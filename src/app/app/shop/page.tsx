@@ -121,8 +121,18 @@ export default function BagShopPage() {
   const [revealedTazo, setRevealedTazo] = useState<any>(null)
   const [bonusTazo, setBonusTazo] = useState<any>(null)
   const [openingAnim, setOpeningAnim] = useState(false)
+  const [pendingBags, setPendingBags] = useState<number>(0)
 
   const tearIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  // Load pending bags count
+  useEffect(() => {
+    if (!token) return
+    fetch("/api/bags", { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(d => setPendingBags(d.total ?? 0))
+      .catch(() => {})
+  }, [token, stage])
 
   // Load credits
   useEffect(() => {
@@ -261,6 +271,50 @@ export default function BagShopPage() {
             <div className="w-px h-5 bg-[#1a1a1a]/30" />
             {creditDisplay}
           </div>
+
+          {/* ═══════════════════════════════════════════ */}
+          {/* PENDING FREE BAGS                         */}
+          {/* ═══════════════════════════════════════════ */}
+          {pendingBags > 0 && (
+            <div className="p-5 bg-[#FFCC00] border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] text-center space-y-3">
+              <div className="flex items-center justify-center gap-2">
+                <Gift className="w-6 h-6 text-[#1a1a1a]" />
+                <span className="text-lg font-black uppercase text-[#1a1a1a]">
+                  {pendingBags} Bags to Open!
+                </span>
+              </div>
+              <p className="text-xs font-black text-[#1a1a1a]/70">
+                Potato chip bags with tazos inside — open them to grow your collection!
+              </p>
+              <button
+                onClick={async () => {
+                  if (!token) return
+                  setError(null)
+                  setBuying(true)
+                  try {
+                    const res = await fetch("/api/bags", { headers: { Authorization: `Bearer ${token}` } })
+                    const data = await res.json()
+                    if (data.bags?.length > 0) {
+                      const firstBag = data.bags[0]
+                      setBagId(firstBag.id)
+                      setSelectedBag({ type: firstBag.bagType || "standard", name: "Mystery Bag", cost: 0, bonusChance: 10, rareBoost: 1, color: firstBag.preview?.franchiseColor || "#FFCC00", icon: <Gift className="w-5 h-5" /> })
+                      setBuying(false)
+                      setStage("opening")
+                      setTearProgress(0)
+                      startTearAnimation()
+                    }
+                  } catch {
+                    setError("Failed to fetch bags")
+                    setBuying(false)
+                  }
+                }}
+                disabled={buying}
+                className="mag-btn px-8 py-3 font-black text-base uppercase tracking-wider bg-[#22C55E] text-white border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_#1a1a1a] transition-all disabled:opacity-40"
+              >
+                {buying ? <Loader2 className="w-5 h-5 animate-spin inline" /> : "Open Next Bag"}
+              </button>
+            </div>
+          )}
 
           {/* Error */}
           {error && (

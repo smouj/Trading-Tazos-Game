@@ -88,43 +88,8 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
     return () => clearTimeout(timer)
   }, [fetchTazos, search])
 
-  // Toggle owned — use collection API when authenticated, old toggle fallback
-  const handleToggleOwned = async (tazo: Tazo) => {
-    try {
-      if (user && token) {
-        if (tazo.isOwned) {
-          const colRes = await fetch(`/api/collection?franchise=${encodeURIComponent(tazo.franchise?.slug || '')}&limit=200`, {
-            headers: { Authorization: `Bearer ${token}` },
-          })
-          if (colRes.ok) {
-            const colData = await colRes.json()
-            const match = colData.items?.find((i: { tazo: { id: string } }) => i.tazo.id === tazo.id)
-            if (match) {
-              await fetch("/api/collection", {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                body: JSON.stringify({ userTazoId: match.id }),
-              })
-            }
-          }
-        } else {
-          await fetch("/api/collection", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-            body: JSON.stringify({ tazoId: tazo.id }),
-          })
-        }
-      } else {
-        const res = await fetch(`/api/tazos/${tazo.id}/toggle-owned`, { method: 'PUT' })
-        await res.json()
-      }
-      setTazos(prev => prev.map(t => t.id === tazo.id ? { ...t, isOwned: !t.isOwned } : t))
-      setSelectedTazo(prev => prev?.id === tazo.id ? { ...prev, isOwned: !prev.isOwned } : prev)
-      onStatsUpdate?.()
-    } catch (err) {
-      console.error('Failed to toggle owned:', err)
-    }
-  }
+  // Collection is auto-managed — tazos are obtained by opening bags.
+  // No manual toggle. isOwned is set automatically when a bag is opened.
 
   const ownedCount = tazos.filter(t => t.isOwned).length
   const totalCount = tazos.length
@@ -510,7 +475,7 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
           setDetailOpen(false)
           setSelectedTazo(null)
         }}
-        onToggleOwned={handleToggleOwned}
+        /* No manual toggle — collection is auto-managed via bag opening */
       />
     </div>
   )

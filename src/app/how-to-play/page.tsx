@@ -16,7 +16,7 @@ export default function HowToPlayPage() {
               <h2 className="text-xl font-black uppercase text-[#1a1a1a]">Create Your Account</h2>
             </div>
             <p className="text-sm font-bold text-[#1a1a1a]/60 leading-relaxed">
-              Sign up for free at <Link href="/register" className="text-[#E3350D] underline underline-offset-4">the registration page</Link>. You&apos;ll receive a Welcome Pack with 10 starter tazos and a pre-built battle deck. No credit card required — the game is completely free to play.
+              Sign up for free at <Link href="/register" className="text-[#E3350D] underline underline-offset-4">the registration page</Link>. You&apos;ll receive 10 free potato chip bags with surprise tazos inside — open them in the Shop. No credit card required — the game is completely free to play.
             </p>
           </section>
 

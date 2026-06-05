@@ -81,45 +81,32 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/** Seed welcome tazos and a starter deck for new users */
+/** Give 10 free potato chip bags to new users — 4 Minimon, 3 Cybermon, 3 Dracobell */
 async function seedWelcomePack(userId: string) {
   try {
-    const now = isoNow()
-    
-
-    // Pick 10 random tazos (balanced across franchises)
-    const [min, drac, cyber] = await Promise.all([
-      db.tazo.findMany({ where: { franchise: { slug: "minimon" } }, take: 4, orderBy: { attack: "desc" } }),
-      db.tazo.findMany({ where: { franchise: { slug: "dracobell" } }, take: 3, orderBy: { attack: "desc" } }),
-      db.tazo.findMany({ where: { franchise: { slug: "cybermon" } }, take: 3, orderBy: { attack: "desc" } }),
+    // Select tazos balanced across franchises
+    const [min, cyb, dra] = await Promise.all([
+      db.tazo.findMany({ where: { franchise: { slug: "minimon" } }, take: 4 }),
+      db.tazo.findMany({ where: { franchise: { slug: "cybermon" } }, take: 3 }),
+      db.tazo.findMany({ where: { franchise: { slug: "dracobell" } }, take: 3 }),
     ])
-    const welcomeTazos = [...min, ...drac, ...cyber]
+    const selected = [...min, ...cyb, ...dra]
 
-    // Add to user's collection
-    for (const tazo of welcomeTazos) {
-      await db.userTazo.create({
-        data: { userId, tazoId: tazo.id, quantity: 1 },
-      })
-    }
+    if (selected.length === 0) { console.warn("No tazos available for welcome bags"); return }
 
-    // Create starter deck with first 7 (explicit timestamps)
-    const deckTazos = welcomeTazos.slice(0, 7)
-    await db.deck.create({
-      data: {
-        userId,
-        name: "Starter Squad",
-        isActive: true,
-        createdAt: now,
-        updatedAt: now,
-        deckTazos: {
-          create: deckTazos.map((t) => ({ tazoId: t.id })),
-        },
-      },
-    })
+    // Create 10 unopened BagPurchase records — one per tazo
+    const bags = selected.map((tazo) => ({
+      userId,
+      bagType: "welcome",
+      cost: 0,
+      tazoId: tazo.id,
+      opened: false,
+    }))
 
-    console.log(`Welcome pack seeded for user ${userId}: ${welcomeTazos.length} tazos + 1 deck`)
+    await db.bagPurchase.createMany({ data: bags })
+
+    console.log(`Welcome bags seeded for user ${userId}: ${bags.length} unopened bags`)
   } catch (err) {
     console.error("Welcome pack seed error:", err)
-    // Non-fatal — user can still play without welcome pack
   }
 }

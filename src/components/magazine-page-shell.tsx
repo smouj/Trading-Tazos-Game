@@ -12,7 +12,7 @@ import { useI18n } from "@/lib/i18n"
 import LanguageSwitcher from "@/components/ui/language-switcher"
 import {
   BookOpen, Swords, Scan, BarChart3, ShoppingBag,
-  Target, Disc3, Layers, LogOut, Home, Settings,
+  Target, Disc3, Layers, LogOut, Home, Settings, Shield,
 } from "lucide-react"
 
 type TabId = "album" | "battle" | "scanner" | "stats" | "shop" | "quests" | "collection" | "decks" | "settings"
@@ -70,6 +70,12 @@ export default function MagazinePageShell({
           {/* Right: user area — always visible */}
           <div className="flex items-center gap-2 sm:gap-3">
             <LanguageSwitcher />
+            {!loading && user && user.email === "dev.viewer@medaclawarena.com" && (
+              <Link href="/admin" className="text-[10px] font-black text-[#E3350D] hover:text-white tracking-wider uppercase">
+                <Shield className="w-3 h-3 sm:w-3.5 sm:h-3.5 inline mr-1" />
+                <span className="hidden sm:inline">Admin</span>
+              </Link>
+            )}
             {!loading && user ? (
               <button
                 onClick={handleLogout}

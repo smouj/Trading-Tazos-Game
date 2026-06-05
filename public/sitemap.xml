@@ -32,4 +32,6 @@
 
   <!-- Contact -->
   <url><loc>https://medaclawarena.com/contact</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <!-- Admin -->
+  <url><loc>https://medaclawarena.com/admin</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
 </urlset>

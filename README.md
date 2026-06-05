@@ -16,12 +16,13 @@
 [![PWA](https://img.shields.io/badge/PWA-Ready-5A0FC8?logo=pwa)](https://medaclawarena.com/manifest.json)
 [![i18n](https://img.shields.io/badge/i18n-10_languages-8B5CF6)](./src/lib/i18n/locales/)
 [![Version](https://img.shields.io/badge/version-v0.3.2-FFCC00)](#changelog)
+[![Design](https://img.shields.io/badge/design-Magazine_Game-FFCC00)]()
 
 <br/>
 
 **Aim. Throw. Flip. Capture. Collect.**
 
-Trading Tazos Game is a browser-based digital tazo (pog) battle game. You don't just compare stats — you aim, charge power, and throw tazos into a 3D physics-simulated arena. Features a dark immersive game-client UI, 319 tazos across 3 collections (Minimon, Dracobell, Cybermon), 9 combat stats, a 3D physics battle engine with AI opponents, real potato chip bag opening with 3D textures, and a full progression system with quests and achievements.
+Trading Tazos Game is a browser-based digital tazo (pog) battle game built with a 90s gaming magazine aesthetic. You don't just compare stats — you aim, charge power, and throw tazos into a 3D physics-simulated arena. Features a dark-backed magazine game-client with ambient particles and HUD, 319 tazos across 3 collections (Minimon, Dracobell, Cybermon), 9 combat stats, a 3D physics battle engine with AI opponents, real potato chip bag opening with 3D textures, and a full progression system with quests and achievements.
 
 🌐 **[medaclawarena.com](https://medaclawarena.com)** &nbsp;|&nbsp; 📧 **support@medaclawarena.com**
 

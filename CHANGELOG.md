@@ -1,12 +1,13 @@
 # Changelog
 
-## v0.3.2 — Game Client Redesign + Battle Unification (2026-06-05)
+## v0.3.2 — Magazine Game Enhancements + Battle Unification (2026-06-05)
 
-### 🎮 Complete Game UI Overhaul
-- **New `GameShell`**: Dark immersive game client with ambient particles, glow orbs, and HUD status bar
-- **All app pages redesigned**: Shop, Collection, Decks, Stats, Quests, Settings — all transformed from magazine-style to dark video-game aesthetic
-- **New CSS game system**: `.game-panel`, `.game-card`, `.game-banner`, `.game-btn`, `.game-input`, `.game-grid-bg`, `.game-empty`
-- **Magazine design system retained** for public/landing pages only
+### 🎮 Magazine Style Enhanced for Gameplay
+- **Dark backing**: Premium dark gradient behind magazine content — like a collector's edition gaming magazine
+- **Ambient particles**: Floating halftone dots + subtle paper texture overlay
+- **Game HUD bar**: Bottom status bar with credits + tazo count — magazine-styled (#1a1a1a bg, #FFCC00 border)
+- **Magazine DNA preserved**: Yellow masthead, `mag-card-yellow` banners, halftone patterns, bold comic typography, 3px black borders + drop shadows
+- **All app pages**: Shop, Collection, Decks, Stats, Quests, Settings — full magazine aesthetic with game enhancements
 
 ### ⚔️ Battle System Unified
 - **3D physics results now connect to server API**: Client sends `physicsResult` with actual game data

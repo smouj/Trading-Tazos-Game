@@ -182,10 +182,22 @@ export default function LeaderboardPage() {
           })}
 
           {entries.length === 0 && (
-            <div className="text-center py-16">
-              <Trophy className="w-12 h-12 mx-auto text-zinc-300 mb-3" />
-              <p className="text-sm font-bold text-zinc-400">No players yet</p>
-              <p className="text-xs text-zinc-400 mt-1">Be the first to climb the ranks!</p>
+            <div className="text-center py-16 px-4">
+              <Trophy className="w-14 h-14 mx-auto text-zinc-200 mb-4" />
+              <p className="text-base font-black uppercase tracking-wider text-[#1a1a1a]/40 mb-1">
+                No Ranked Players Yet
+              </p>
+              <p className="text-xs font-bold text-zinc-400 max-w-xs mx-auto mb-6">
+                Be the first to earn credits, collect tazos, and win battles to claim the top spot on the leaderboard.
+              </p>
+              {!user && (
+                <a
+                  href="/register"
+                  className="mag-btn inline-block bg-[#FFCC00] text-[#1a1a1a] font-black uppercase px-8 py-3 text-sm border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#1a1a1a] transition-all"
+                >
+                  Create Account &amp; Start Climbing →
+                </a>
+              )}
             </div>
           )}
         </div>

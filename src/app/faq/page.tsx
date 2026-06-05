@@ -24,7 +24,7 @@ const faqs = [
   },
   {
     q: "Can I play on mobile?",
-    a: "Yes! Trading Tazos Game is a PWA (Progressive Web App). Visit medaclawarena.com on your phone and install it to your home screen for a full-screen app experience. Desktop users can also download the Linux Electron app; Windows and macOS builds are planned."
+    a: "Yes! Trading Tazos Game is a PWA (Progressive Web App). Visit medaclawarena.com on your phone and install it to your home screen for a full-screen app experience. Desktop users can also download native apps for Linux, Windows, and macOS."
   },
   {
     q: "What are credits and how do I earn them?",
@@ -44,7 +44,7 @@ const faqs = [
   },
   {
     q: "Is there a desktop app?",
-    a: "Yes, an Electron desktop app is available for Linux (.AppImage and .deb). Windows and macOS builds are coming via CI/CD. Download from the Downloads page or GitHub Releases."
+    a: "Yes, native Electron desktop apps are available for Linux (.AppImage and .deb), Windows (.exe), and macOS (.dmg for Intel and Apple Silicon). Download from the Downloads page or GitHub Releases."
   },
   {
     q: "What is the CLI tool?",

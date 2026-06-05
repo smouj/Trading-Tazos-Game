@@ -1,37 +1,15 @@
 // ============================================================
-// Trading Tazos Game — BagOpener3D
-// 3D potato chip bag with real franchise textures,
-// tear-open animation, and tazo reveal.
+// Trading Tazos Game — BagOpener3D (Interactive Tear Edition)
+// User drags across the bag to tear it open.
+// Proper alpha rendering, dynamic texture cutting, tazo reveal.
 // ============================================================
 "use client"
 
-import { useRef, useState, useMemo, useEffect } from "react"
-import { Canvas, useFrame, useLoader } from "@react-three/fiber"
+import { useRef, useState, useMemo, useEffect, useCallback } from "react"
+import { Canvas, useFrame, useThree, useLoader } from "@react-three/fiber"
 import * as THREE from "three"
-import { Gift, Loader2, SkipForward } from "lucide-react"
-import { playSFX, sfxEnsureUnlocked } from "@/lib/audio/sfx-engine"
 
-// ── types ──
-export interface TazoPreview {
-  slug?: string
-  franchise?: { slug: string; color?: string; name?: string }
-  rarity: string
-}
-export interface BagData {
-  id: string
-  bagType?: string
-  preview?: TazoPreview | null
-}
-
-interface BagOpener3DProps {
-  bag: BagData | null
-  opening: boolean
-  progress: number // 0..1 tear progress
-  onOpen: () => void
-  onSkip: () => void
-}
-
-// ── texture registry ──
+// ── Bag texture registry ──
 const BAG_TEXTURES: Record<string, { front: string[]; back: string[] }> = {
   minimon: {
     front: ["/textures/bags/minimon/bag-minimon-front-01.png", "/textures/bags/minimon/bag-minimon-front-02.png"],
@@ -47,157 +25,278 @@ const BAG_TEXTURES: Record<string, { front: string[]; back: string[] }> = {
   },
 }
 
-// ── get random bag texture for a franchise ──
 function pickBagTexture(franchiseSlug: string | undefined) {
   const slug = franchiseSlug || "minimon"
   const set = BAG_TEXTURES[slug] || BAG_TEXTURES.minimon
   const frontIdx = Math.floor(Math.random() * set.front.length)
-  const backIdx = Math.floor(Math.random() * set.back.length)
-  return { frontUrl: set.front[frontIdx], backUrl: set.back[backIdx], franchise: slug }
+  return { url: set.front[frontIdx], franchise: slug }
 }
 
-// ── tear overlay canvas ──
-function createTearCanvas(progress: number, width = 512, height = 512) {
-  const canvas = document.createElement("canvas")
-  canvas.width = width
-  canvas.height = height
-  const ctx = canvas.getContext("2d")!
-  ctx.clearRect(0, 0, width, height)
-  if (progress <= 0) return canvas
+// ── Create torn texture — splits the bag image at tearY ──
+function createTornTextures(
+  sourceImg: HTMLImageElement,
+  tearY: number, // 0-1 normalized Y position
+  separation: number // how far apart the halves are (0-1)
+): { topHalf: THREE.CanvasTexture; bottomHalf: THREE.CanvasTexture; tearCanvas: HTMLCanvasElement } {
+  const sw = sourceImg.width
+  const sh = sourceImg.height
+  const tearPixelY = Math.floor(tearY * sh)
 
-  // Draw tear line across the bag
-  const tearY = height * 0.45
-  const tearAmplitude = width * 0.25 * progress
-  ctx.strokeStyle = "#1a1a1a"
-  ctx.lineWidth = 3 + progress * 5
-  ctx.beginPath()
-  ctx.moveTo(0, tearY)
-  for (let x = 0; x <= width; x += 8) {
-    const noise = Math.sin(x * 0.03 + progress * 12) * tearAmplitude * Math.min(1, progress * 2)
-    ctx.lineTo(x, tearY + noise)
+  // Create a tear mask canvas to apply to the entire bag
+  const tearCanvas = document.createElement("canvas")
+  tearCanvas.width = sw
+  tearCanvas.height = sh
+  const tctx = tearCanvas.getContext("2d")!
+
+  // Draw the original image
+  tctx.drawImage(sourceImg, 0, 0)
+
+  // Draw the tear line with glow
+  const tearAmp = 8 + separation * 20
+  tctx.strokeStyle = "#1a1a1a"
+  tctx.lineWidth = 3 + separation * 4
+  tctx.beginPath()
+  tctx.moveTo(0, tearPixelY)
+  for (let x = 0; x <= sw; x += 4) {
+    const noise = Math.sin(x * 0.015 + separation * 8) * tearAmp
+    tctx.lineTo(x, tearPixelY + noise)
   }
-  ctx.stroke()
+  tctx.stroke()
 
-  // Gap opening
-  const gap = progress * height * 0.15
-  ctx.fillStyle = "#1a1a1a"
-  ctx.beginPath()
-  const topEdge = tearY - gap
-  const botEdge = tearY + gap
-  ctx.rect(0, topEdge, width, botEdge - topEdge)
-  ctx.fill()
+  // Inner glow along tear
+  const glowGrad = tctx.createLinearGradient(0, tearPixelY - tearAmp * 2, 0, tearPixelY + tearAmp * 2)
+  glowGrad.addColorStop(0, "rgba(255, 204, 0, 0)")
+  glowGrad.addColorStop(0.45, "rgba(255, 204, 0, 0.6)")
+  glowGrad.addColorStop(0.5, "rgba(255, 180, 0, 0.8)")
+  glowGrad.addColorStop(0.55, "rgba(255, 204, 0, 0.6)")
+  glowGrad.addColorStop(1, "rgba(255, 204, 0, 0)")
+  tctx.fillStyle = glowGrad
+  tctx.fillRect(0, tearPixelY - tearAmp * 4, sw, tearAmp * 8)
 
-  // Glow inside the tear
-  const glow = ctx.createRadialGradient(width / 2, tearY, 0, width / 2, tearY, gap * 2.5)
-  glow.addColorStop(0, "rgba(255, 204, 0, 0.8)")
-  glow.addColorStop(0.5, "rgba(255, 150, 0, 0.3)")
-  glow.addColorStop(1, "rgba(0,0,0,0)")
-  ctx.fillStyle = glow
-  ctx.fillRect(0, topEdge - gap, width, gap * 4)
+  // Dark interior "inside the bag" visible in the gap
+  const gapSize = separation * 40
+  tctx.fillStyle = "rgba(0, 0, 0, 0.7)"
+  tctx.fillRect(0, tearPixelY - gapSize, sw, gapSize * 2)
 
-  return canvas
+  // Top half texture
+  const topCanvas = document.createElement("canvas")
+  topCanvas.width = sw
+  topCanvas.height = sh
+  const tpctx = topCanvas.getContext("2d")!
+  tpctx.drawImage(sourceImg, 0, 0, sw, tearPixelY, 0, 0, sw, tearPixelY)
+
+  // Bottom half texture
+  const botCanvas = document.createElement("canvas")
+  botCanvas.width = sw
+  botCanvas.height = sh
+  const bpctx = botCanvas.getContext("2d")!
+  bpctx.drawImage(sourceImg, 0, tearPixelY, sw, sh - tearPixelY, 0, tearPixelY, sw, sh - tearPixelY)
+
+  const topTex = new THREE.CanvasTexture(topCanvas)
+  topTex.colorSpace = THREE.SRGBColorSpace
+  topTex.needsUpdate = true
+
+  const botTex = new THREE.CanvasTexture(botCanvas)
+  botTex.colorSpace = THREE.SRGBColorSpace
+  botTex.needsUpdate = true
+
+  return { topHalf: topTex, bottomHalf: botTex, tearCanvas }
 }
 
-// ── 3D Bag Model ──
-function Bag3D({ frontUrl, opening, progress, onTextureReady }: {
+// ── 3D Bag with Interactive Tear ──
+function InteractiveBag({
+  frontUrl, onTearProgress, onTearComplete,
+}: {
   frontUrl: string
-  opening: boolean
-  progress: number
-  onTextureReady: () => void
+  onTearProgress: (progress: number) => void
+  onTearComplete: () => void
 }) {
+  const { camera, gl } = useThree()
   const texture = useLoader(THREE.TextureLoader, frontUrl)
-  const [tearTex, setTearTex] = useState<THREE.CanvasTexture | null>(null)
   const groupRef = useRef<THREE.Group>(null!)
-  const meshRef = useRef<THREE.Mesh>(null!)
+  const bagMeshRef = useRef<THREE.Mesh>(null!)
+  const topRef = useRef<THREE.Mesh>(null!)
+  const botRef = useRef<THREE.Mesh>(null!)
+  
+  const [tearState, setTearState] = useState<{
+    active: boolean
+    tearY: number
+    separation: number
+    points: { x: number; y: number }[]
+  }>({ active: false, tearY: 0.45, separation: 0, points: [] })
 
-  // Configure texture for proper alpha rendering
+  const tearing = useRef(false)
+  const tearComplete = useRef(false)
+  const sourceImage = useRef<HTMLImageElement | null>(null)
+  const [topTex, setTopTex] = useState<THREE.CanvasTexture | null>(null)
+  const [botTex, setBotTex] = useState<THREE.CanvasTexture | null>(null)
+
+  // Load source image for canvas manipulation
+  useEffect(() => {
+    const img = new Image()
+    img.crossOrigin = "anonymous"
+    img.onload = () => {
+      sourceImage.current = img
+    }
+    img.src = frontUrl
+  }, [frontUrl])
+
+  // Configure texture
   useEffect(() => {
     if (texture) {
       texture.colorSpace = THREE.SRGBColorSpace
-      texture.generateMipmaps = true
       texture.minFilter = THREE.LinearMipmapLinearFilter
       texture.magFilter = THREE.LinearFilter
-      texture.needsUpdate = true
-      onTextureReady()
     }
-  }, [texture, onTextureReady])
+  }, [texture])
 
-  // Update tear overlay
-  useEffect(() => {
-    if (opening || progress > 0) {
-      const canvas = createTearCanvas(progress)
-      const tex = new THREE.CanvasTexture(canvas)
-      tex.needsUpdate = true
-      setTearTex(tex)
+  // Pointer handlers for interactive tearing
+  const getBagUV = useCallback((clientX: number, clientY: number): { x: number; y: number } | null => {
+    if (!bagMeshRef.current) return null
+    const rect = gl.domElement.getBoundingClientRect()
+    const mouse = new THREE.Vector2(
+      ((clientX - rect.left) / rect.width) * 2 - 1,
+      -((clientY - rect.top) / rect.height) * 2 + 1
+    )
+    const raycaster = new THREE.Raycaster()
+    raycaster.setFromCamera(mouse, camera)
+    const intersects = raycaster.intersectObject(bagMeshRef.current)
+    if (intersects.length > 0) {
+      const uv = intersects[0].uv!
+      return { x: uv.x, y: 1 - uv.y } // invert Y for top-down
+    }
+    return null
+  }, [camera, gl])
+
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    if (tearComplete.current) return
+    const uv = getBagUV(e.clientX, e.clientY)
+    if (uv && uv.y > 0.1 && uv.y < 0.9) {
+      tearing.current = true
+      setTearState(s => ({
+        active: true,
+        tearY: uv.y,
+        separation: s.separation,
+        points: [{ x: uv.x, y: uv.y }],
+      }))
+    }
+  }, [getBagUV])
+
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (!tearing.current || tearComplete.current) return
+    const uv = getBagUV(e.clientX, e.clientY)
+    if (uv) {
+      setTearState(s => {
+        const newPoints = [...s.points, { x: uv.x, y: uv.y }]
+        const avgY = newPoints.reduce((sum, p) => sum + p.y, 0) / newPoints.length
+        // Progress: how far across the bag (x spread) + how many points
+        const xSpread = Math.max(...newPoints.map(p => p.x)) - Math.min(...newPoints.map(p => p.x))
+        const separation = Math.min(1, xSpread * 1.5 + newPoints.length * 0.008)
+        
+        onTearProgress(Math.min(1, separation))
+        
+        // Generate torn textures
+        if (sourceImage.current && separation > 0.05) {
+          const { topHalf, bottomHalf } = createTornTextures(sourceImage.current, avgY, separation)
+          setTopTex(topHalf)
+          setBotTex(bottomHalf)
+        }
+
+        // Check if tear is complete (enough horizontal spread)
+        if (separation >= 1 && !tearComplete.current) {
+          tearComplete.current = true
+          tearing.current = false
+          setTimeout(() => onTearComplete(), 300)
+        }
+
+        return { active: true, tearY: avgY, separation, points: newPoints.slice(-50) }
+      })
+    }
+  }, [getBagUV, onTearProgress, onTearComplete])
+
+  const handlePointerUp = useCallback(() => {
+    tearing.current = false
+  }, [])
+
+  // Float animation
+  useFrame((_, delta) => {
+    if (!groupRef.current) return
+    const s = tearState.separation
+    
+    if (s > 0 && topRef.current && botRef.current) {
+      // Separate the halves
+      topRef.current.position.y = s * 0.3
+      topRef.current.rotation.z = -s * 0.08
+      botRef.current.position.y = -s * 0.3
+      botRef.current.rotation.z = s * 0.05
     } else {
-      setTearTex(null)
+      // Idle float
+      groupRef.current.position.y = Math.sin(Date.now() * 0.0015) * 0.12
+      groupRef.current.rotation.y = Math.sin(Date.now() * 0.0008) * 0.1
     }
-  }, [progress, opening])
+  })
 
-  // Curved bag geometry
   const bagGeo = useMemo(() => {
     const geo = new THREE.PlaneGeometry(1.6, 2.2, 32, 32)
     const pos = geo.attributes.position
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i)
       const y = pos.getY(i)
-      // Gentle pillow curve — bulges in the middle
-      const bulge = 0.06 * (1 - Math.abs(x) * 1.5) * (1 - Math.abs(y) * 1.3)
-      pos.setZ(i, bulge + Math.sin(x * 2.5) * 0.03 * (1 - Math.abs(y)))
+      const bulge = 0.05 * (1 - Math.abs(x) * 1.5) * (1 - Math.abs(y) * 1.3)
+      pos.setZ(i, bulge)
     }
     geo.computeVertexNormals()
     return geo
   }, [])
 
-  useFrame((_, delta) => {
-    if (!groupRef.current) return
-    // Gentle float when idle, shake when opening
-    if (opening) {
-      const shakeX = Math.sin(Date.now() * 0.05) * progress * 0.06
-      const shakeY = Math.cos(Date.now() * 0.07) * progress * 0.04
-      groupRef.current.position.x = shakeX
-      groupRef.current.position.y = shakeY + Math.sin(Date.now() * 0.003) * 0.15
-      groupRef.current.rotation.z = Math.sin(Date.now() * 0.004) * 0.08
-    } else {
-      groupRef.current.position.y = Math.sin(Date.now() * 0.0015) * 0.15
-      groupRef.current.rotation.y = Math.sin(Date.now() * 0.0008) * 0.12
-      groupRef.current.rotation.z = Math.cos(Date.now() * 0.001) * 0.04
-    }
-  })
+  const separation = tearState.separation
 
   return (
     <group ref={groupRef}>
-      {/* Main bag plane */}
-      <mesh ref={meshRef} geometry={bagGeo}>
-        <meshStandardMaterial
-          map={texture}
-          roughness={0.35}
-          metalness={0.05}
-          side={THREE.FrontSide}
-          transparent
-          alphaTest={0.01}
-          depthWrite
-        />
-      </mesh>
-
-      {/* Tear overlay */}
-      {tearTex && (
-        <mesh position={[0, 0, 0.002]} geometry={bagGeo}>
-          <meshBasicMaterial
-            map={tearTex}
-            transparent
-            depthTest={false}
-            depthWrite={false}
+      {/* Whole bag — shown before tearing */}
+      {separation < 0.15 && (
+        <mesh ref={bagMeshRef} geometry={bagGeo}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerLeave={handlePointerUp}
+        >
+          <meshBasicMaterial 
+            map={texture} 
+            side={THREE.FrontSide}
+            transparent={false}
           />
         </mesh>
       )}
 
-      {/* Edge seal — top crimp */}
+      {/* Torn halves — shown during/after tearing */}
+      {separation >= 0.15 && topTex && botTex && (
+        <>
+          {/* Top half */}
+          <mesh ref={topRef} geometry={bagGeo}>
+            <meshBasicMaterial map={topTex} side={THREE.FrontSide} transparent />
+          </mesh>
+          {/* Bottom half */}
+          <mesh ref={botRef} geometry={bagGeo}>
+            <meshBasicMaterial map={botTex} side={THREE.FrontSide} transparent />
+          </mesh>
+          {/* Interactive overlay for continued tearing */}
+          <mesh geometry={bagGeo}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerLeave={handlePointerUp}
+          >
+            <meshBasicMaterial visible={false} />
+          </mesh>
+        </>
+      )}
+
+      {/* Edge seals */}
       <mesh position={[0, 1.12, 0.02]}>
         <boxGeometry args={[1.62, 0.04, 0.04]} />
         <meshStandardMaterial color="#999" roughness={0.6} metalness={0.2} />
       </mesh>
-      {/* Bottom crimp */}
       <mesh position={[0, -1.12, 0.02]}>
         <boxGeometry args={[1.62, 0.04, 0.04]} />
         <meshStandardMaterial color="#999" roughness={0.6} metalness={0.2} />
@@ -206,121 +305,118 @@ function Bag3D({ frontUrl, opening, progress, onTextureReady }: {
   )
 }
 
-// ── Particle burst ──
-function ParticleBurst({ active, progress }: { active: boolean; progress: number }) {
-  const count = 40
-  const particlesRef = useRef<THREE.Points>(null!)
+// ── Particle burst on reveal ──
+function Particles({ active }: { active: boolean }) {
+  const count = 30
+  const ref = useRef<THREE.Points>(null!)
   const positions = useMemo(() => {
     const arr = new Float32Array(count * 3)
     for (let i = 0; i < count; i++) {
       arr[i * 3] = (Math.random() - 0.5) * 2
-      arr[i * 3 + 1] = Math.random() * -1.5
-      arr[i * 3 + 2] = (Math.random() - 0.5) * 0.5
+      arr[i * 3 + 1] = (Math.random() - 0.5) * 2
+      arr[i * 3 + 2] = (Math.random() - 0.5) * 1
     }
     return arr
   }, [])
-
   useFrame(() => {
-    if (!particlesRef.current || !active) {
-      particlesRef.current!.visible = false
-      return
-    }
-    particlesRef.current.visible = true
-    particlesRef.current.rotation.y += 0.01
-    const attr = particlesRef.current.geometry.attributes.position
+    if (!ref.current || !active) return
+    ref.current.rotation.y += 0.015
+    const attr = ref.current.geometry.attributes.position
     for (let i = 0; i < count; i++) {
-      attr.array[i * 3 + 1] -= 0.008 * (1 + progress)
-      attr.array[i * 3] += (Math.random() - 0.5) * 0.01
+      attr.array[i * 3 + 1] += 0.015
+      attr.array[i * 3] += (Math.random() - 0.5) * 0.015
     }
     attr.needsUpdate = true
   })
-
-  const sizes = useMemo(() => {
-    const arr = new Float32Array(count)
-    for (let i = 0; i < count; i++) arr[i] = Math.random() * 0.04 + 0.01
-    return arr
-  }, [])
-
   return (
-    <points ref={particlesRef}>
+    <points ref={ref}>
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
-        <bufferAttribute attach="attributes-size" args={[sizes, 1]} />
       </bufferGeometry>
-      <pointsMaterial color="#FFCC00" size={0.03} blending={THREE.AdditiveBlending} depthWrite={false} transparent />
+      <pointsMaterial color="#FFCC00" size={0.04} transparent opacity={0.8} depthWrite={false} />
     </points>
   )
 }
 
-// ── Scene setup: lighting + transparent background ──
-function SceneSetup() {
-  return (
-    <>
-      <color attach="background" args={[0]} /> {/* explicit transparent bg */}
-      <ambientLight intensity={1.2} />
-      <spotLight position={[3, 2, 4]} intensity={2.5} angle={0.5} penumbra={0.5} color="#fffef0" />
-      <spotLight position={[-2, 1, -3]} intensity={1.2} angle={0.4} penumbra={0.6} color="#fffef0" />
-      <pointLight position={[0, -2, 2]} intensity={0.8} color="#FFCC00" />
-    </>
-  )
+// ── Types ──
+export interface BagData {
+  id: string
+  bagType?: string
+  preview?: { franchise?: { slug?: string } } | null
 }
 
-// ── Main component ──
+interface BagOpener3DProps {
+  bag: BagData | null
+  opening: boolean
+  progress: number
+  onOpen: () => void
+  onSkip: () => void
+}
+
+// ── Main ──
 export default function BagOpener3D({ bag, opening, progress, onOpen, onSkip }: BagOpener3DProps) {
-  const { frontUrl, franchise } = useMemo(() => {
+  const { url, franchise } = useMemo(() => {
     const slug = bag?.preview?.franchise?.slug
     return pickBagTexture(slug)
   }, [bag])
-  const [textureReady, setTextureReady] = useState(false)
+
+  const [tearProgress, setTearProgress] = useState(progress)
+  const [revealed, setRevealed] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const franchiseColor = useMemo(() => {
-    const slug = bag?.preview?.franchise?.slug || franchise
     const colors: Record<string, string> = { minimon: "#22C55E", cybermon: "#3B82F6", dracobell: "#F97316" }
-    return colors[slug] || "#FFCC00"
-  }, [bag, franchise])
+    return colors[franchise] || "#FFCC00"
+  }, [franchise])
+
+  const handleTearProgress = useCallback((p: number) => {
+    setTearProgress(p)
+  }, [])
+
+  const handleTearComplete = useCallback(() => {
+    setRevealed(true)
+    onOpen()
+  }, [onOpen])
 
   return (
-    <div className="relative w-full h-[420px] sm:h-[480px]">
-      {/* 3D Scene */}
+    <div ref={containerRef} className="relative w-full h-[420px] sm:h-[480px] select-none touch-none"
+      style={{ background: "radial-gradient(ellipse at center, #1a1810 0%, #0a0805 100%)" }}
+    >
       <Canvas
-        camera={{ position: [0, 0, 3.2], fov: 42 }}
-        gl={{ antialias: true, alpha: true, premultipliedAlpha: false }}
-        style={{ background: "radial-gradient(ellipse at center, #2a2015 0%, #0d0a05 100%)" }}
+        camera={{ position: [0, 0, 3.2], fov: 40 }}
+        gl={{
+          antialias: true,
+          alpha: false,
+          premultipliedAlpha: false,
+        }}
         onCreated={({ gl }) => {
           gl.setClearColor(0x000000, 0)
-          gl.setPixelRatio(Math.min(window.devicePixelRatio, 2))
         }}
       >
-        <SceneSetup />
-        <Bag3D
-          frontUrl={frontUrl}
-          opening={opening}
-          progress={progress}
-          onTextureReady={() => setTextureReady(true)}
+        <color attach="background" args={[0x000000]} />
+        <ambientLight intensity={1.0} />
+        <spotLight position={[3, 2, 4]} intensity={2.2} angle={0.5} penumbra={0.5} color="#fffef0" />
+        <spotLight position={[-2, 1, -3]} intensity={1.0} angle={0.4} penumbra={0.6} color="#fffef0" />
+        <pointLight position={[0, -2, 2]} intensity={0.6} color="#FFCC00" />
+
+        <InteractiveBag
+          frontUrl={url}
+          onTearProgress={handleTearProgress}
+          onTearComplete={handleTearComplete}
         />
-        <ParticleBurst active={opening && progress > 0.15} progress={progress} />
-        {/* Spotlight glow on floor */}
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.6, 0]}>
-          <planeGeometry args={[3.5, 2.5]} />
-          <meshBasicMaterial color="#FFCC00" transparent opacity={0.08} depthWrite={false} />
-        </mesh>
+        
+        <Particles active={revealed} />
       </Canvas>
 
-      {/* HUD overlay */}
-      <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-3 p-4">
-        {!textureReady && !opening ? (
-          <div className="flex items-center gap-2 px-4 py-2 bg-black/70 border-2 border-[#FFCC00]/30 text-[#FFCC00] text-xs font-black uppercase">
-            <Loader2 className="w-4 h-4 animate-spin" />
-            Loading bag...
-          </div>
-        ) : !opening ? (
+      {/* UI Overlay */}
+      <div className="absolute bottom-4 left-0 right-0 flex items-center justify-center gap-3 z-10">
+        {!opening && tearProgress < 0.02 && (
           <button
             onClick={() => {
-              sfxEnsureUnlocked()
-              playSFX('bag_open')
-              onOpen()
+              // Trigger tear by simulating a click-and-drag via the pointer events
+              // Instead, just tell them to drag
             }}
-            className="flex items-center gap-2 px-6 py-3 font-black text-sm uppercase tracking-wider border-3 transition-all animate-pulse"
+            className="px-8 py-3 font-black text-sm uppercase tracking-wider border-3 animate-pulse cursor-pointer"
             style={{
               backgroundColor: franchiseColor,
               color: "#fff",
@@ -328,35 +424,40 @@ export default function BagOpener3D({ bag, opening, progress, onOpen, onSkip }: 
               boxShadow: "4px 4px 0px #1a1a1a",
             }}
           >
-            <Gift className="w-5 h-5" />
-            Open Bag!
+            ✂️ Drag across bag to tear open!
           </button>
-        ) : progress < 1 ? (
-          <>
-            {/* Progress bar */}
-            <div className="flex-1 max-w-[200px]">
-              <div className="h-2 bg-black/60 rounded-full overflow-hidden border border-white/30">
+        )}
+
+        {tearProgress > 0.02 && tearProgress < 1 && (
+          <div className="flex items-center gap-3">
+            <div className="flex-1 max-w-[180px]">
+              <div className="h-2.5 bg-black/70 rounded-full overflow-hidden border border-white/20">
                 <div
                   className="h-full rounded-full transition-all duration-100"
                   style={{
-                    width: `${Math.round(progress * 100)}%`,
+                    width: `${Math.round(tearProgress * 100)}%`,
                     backgroundColor: franchiseColor,
                   }}
                 />
               </div>
             </div>
+            <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.15em]">
+              {Math.round(tearProgress * 100)}%
+            </span>
             <button
-              onClick={() => {
-                playSFX('bag_tear')
-                onSkip()
-              }}
-              className="flex items-center gap-1 px-3 py-1.5 bg-black/60 border border-white/20 text-white/80 text-[10px] font-black uppercase hover:bg-black/80"
+              onClick={onSkip}
+              className="px-3 py-1.5 bg-black/60 border border-white/20 text-white/70 text-[10px] font-black uppercase hover:bg-black/80 hover:text-white transition-colors"
             >
-              <SkipForward className="w-3 h-3" />
               Skip
             </button>
-          </>
-        ) : null}
+          </div>
+        )}
+
+        {revealed && (
+          <div className="px-6 py-2 bg-[#FFCC00] border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a]">
+            <span className="font-black text-sm text-[#1a1a1a] uppercase tracking-wider">✨ Tazo Revealed!</span>
+          </div>
+        )}
       </div>
     </div>
   )

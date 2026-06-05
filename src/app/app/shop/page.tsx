@@ -173,7 +173,6 @@ export default function BagShopPage() {
       setOpeningAnim(false)
       sfxEnsureUnlocked()
       playSFX('coin', { volume: 0.35 })
-      // Don't auto-start — user clicks "Open Bag!" button
     } catch {
       setError("Connection error")
       setBuying(false)
@@ -323,7 +322,9 @@ export default function BagShopPage() {
                       setBuying(false)
                       setStage("opening")
                       setTearProgress(0)
-                      startTearAnimation()
+                      setOpeningAnim(false)
+                      sfxEnsureUnlocked()
+                      playSFX('coin', { volume: 0.35 })
                     }
                   } catch {
                     setError("Failed to fetch bags")
@@ -435,12 +436,12 @@ export default function BagShopPage() {
 
     return (
         <div className="max-w-2xl mx-auto py-6 px-4 text-center space-y-3">
-          <h2 className="text-xl font-black uppercase tracking-wider text-[#1a1a1a]">
-            Opening {selectedBag.name}...
+          <h2 className="text-lg font-black uppercase tracking-wider text-[#1a1a1a]">
+            ✂️ Drag to tear open!
           </h2>
           <p className="text-xs font-black text-zinc-400">
-            {tearProgress < 0.3 ? "Rip the bag open to reveal your tazo..." :
-             tearProgress < 0.7 ? "Almost there..." : "Something shiny inside!"}
+            {tearProgress < 0.3 ? "Drag your finger/mouse across the bag to rip it open..." :
+             tearProgress < 0.7 ? "Almost there — keep tearing!" : "Something shiny inside!"}
           </p>
           <div className="border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] overflow-hidden">
             <BagOpener3D
@@ -448,20 +449,20 @@ export default function BagShopPage() {
               opening={openingAnim}
               progress={tearProgress}
               onOpen={() => {
-                if (!tearIntervalRef.current) {
-                  startTearAnimation()
-                }
+                setOpeningAnim(true)
+                playSFX('bag_tear')
+                setTimeout(() => openBag(), 400)
               }}
               onSkip={() => {
-                if (tearIntervalRef.current) clearInterval(tearIntervalRef.current)
-                tearIntervalRef.current = null
+                playSFX('bag_tear')
+                setOpeningAnim(true)
                 setTearProgress(1)
                 setTimeout(() => openBag(), 150)
               }}
             />
           </div>
           <p className="text-xs font-bold text-zinc-500">
-            {tearProgress < 0.05 ? 'Click "Open Bag!" to start' :
+            {tearProgress < 0.02 ? 'Drag across the bag to tear it open!' :
              tearProgress < 1 ? "Tearing open..." : "Revealing tazo..."}
           </p>
         </div>

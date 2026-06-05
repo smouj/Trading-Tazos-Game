@@ -21,6 +21,13 @@ const FRANCHISE_STRIP_TEXT: Record<string, string> = {
   dracobell: '#FFFFFF',
 }
 
+// Back art for each franchise (shown when no individual tazo image exists)
+const FRANCHISE_BACK: Record<string, string> = {
+  minimon: '/tazos-artgen/backs/minimon-back.png',
+  cybermon: '/tazos-artgen/backs/cybermon-back.png',
+  dracobell: '/tazos-artgen/backs/dracobell-back.png',
+}
+
 const STAT_CONFIG = [
   { key: 'attack' as const, label: 'ATK', color: '#EF4444' },
   { key: 'defense' as const, label: 'DEF', color: '#3B82F6' },
@@ -145,23 +152,19 @@ export default function TazoCard({ tazo, onClick }: TazoCardProps) {
               className="w-full h-full object-cover rounded-full"
             />
           ) : (
+            /* Back art with series logo */
             <>
-              <span
-                className="text-3xl sm:text-4xl font-black leading-none mag-stroke-sm"
-                style={{
-                  color: '#FFFFFF',
-                  WebkitTextStroke: '2px #1a1a1a',
-                  paintOrder: 'stroke fill',
-                }}
-              >
-                {tazo.displayName || tazo.name || "...".charAt(0)}
-              </span>
+              <img
+                src={FRANCHISE_BACK[franchiseSlug] || FRANCHISE_BACK.minimon}
+                alt={franchiseSlug + " back"}
+                className="w-full h-full object-cover rounded-full"
+              />
               {tazo.number && (
                 <span
-                  className="text-[8px] sm:text-[9px] font-black mt-0.5 px-1.5 rounded-sm leading-tight"
+                  className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[8px] sm:text-[9px] font-black px-1.5 rounded-sm leading-tight"
                   style={{
                     color: '#1a1a1a',
-                    background: 'rgba(255,255,255,0.85)',
+                    background: 'rgba(255,255,255,0.9)',
                     border: '1px solid #1a1a1a',
                   }}
                 >

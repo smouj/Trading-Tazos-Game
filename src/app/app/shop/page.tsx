@@ -257,7 +257,7 @@ export default function BagShopPage() {
   // ── Select stage ──
   if (stage === "select") {
     return (
-        <div className="max-w-4xl mx-auto py-6 px-4 space-y-6">
+        <div className="max-w-7xl mx-auto py-6 px-4 space-y-6">
           {/* ═══════════════════════════════════════════ */}
           {/* MAGAZINE BANNER STRIP                      */}
           {/* ═══════════════════════════════════════════ */}
@@ -454,9 +454,11 @@ export default function BagShopPage() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-5xl font-black text-white mag-stroke-sm">
-                    {(revealedTazo.displayName || revealedTazo.name || "?").charAt(0)}
-                  </span>
+                  <img
+                    src={`/tazos-artgen/backs/${revealedTazo.franchise?.slug || "minimon"}-back.png`}
+                    alt={revealedTazo.franchise?.name || "series back"}
+                    className="w-full h-full object-cover"
+                  />
                 )}
               </div>
             </div>

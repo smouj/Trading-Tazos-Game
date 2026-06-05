@@ -272,19 +272,15 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: 
                   />
                 ) : (
                   <>
-                    <span
-                      className="text-6xl sm:text-7xl font-black leading-none"
-                      style={{
-                        color: franchiseColors.from,
-                        textShadow: `0 0 24px ${franchiseColors.from}50, 2px 2px 0px #1a1a1a`,
-                      }}
-                    >
-                      {tazo.displayName || tazo.name || "?".charAt(0)}
-                    </span>
+                    <img
+                      src={`/tazos-artgen/backs/${franchiseSlug}-back.png`}
+                      alt={`${franchiseSlug} back`}
+                      className="w-full h-full object-cover rounded-full"
+                    />
                     {tazo.number && (
                       <span
-                        className="text-xs font-black mt-1 px-2 py-0.5 bg-black/20 rounded-full"
-                        style={{ color: 'white' }}
+                        className="absolute bottom-1 text-xs font-black px-2 py-0.5 rounded-full"
+                        style={{ color: 'white', background: 'rgba(0,0,0,0.5)' }}
                       >
                         #{tazo.number}
                       </span>

@@ -19,6 +19,9 @@ const LEGACY_PAGES: Record<string, string> = {
   "/battle": "/app/battle",
   "/scanner": "/app/album",
   "/stats": "/app/stats",
+  "/profile": "/app/settings",
+  "/settings": "/app/settings",
+  "/inventory": "/app/collection",
 }
 
 // Auth pages (redirect to dashboard if already logged in)
@@ -85,6 +88,9 @@ export const config = {
     "/battle", "/battle/:path*",
     "/scanner", "/scanner/:path*",
     "/stats", "/stats/:path*",
+    "/profile",
+    "/settings", "/settings/:path*",
+    "/inventory",
     // Auth pages
     "/login", "/register",
   ],

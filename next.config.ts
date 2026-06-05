@@ -26,9 +26,14 @@ const nextConfig: NextConfig = {
       { source: "/refund-policy", destination: "/terms", permanent: true },
       { source: "/reset-password", destination: "/login", permanent: true },
       { source: "/verify-email", destination: "/login", permanent: true },
+      { source: "/signup", destination: "/register", permanent: true },
 
-      // Public arena → battle
-      { source: "/arena", destination: "/app?tab=battle", permanent: false },
+      // Battle
+      { source: "/arena", destination: "/app/battle", permanent: false },
+
+      // Legacy RPGClaw routes → redirect home
+      { source: "/earth", destination: "/", permanent: true },
+      { source: "/status", destination: "/leaderboard", permanent: true },
 
       // Favicon fallbacks
       { source: "/favicon.ico", destination: "/favicon.png", permanent: true },

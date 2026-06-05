@@ -9,14 +9,13 @@ const collectionData = [
     year: 2000,
     origin: "Matutano",
     color: "#FFCC00",
-    accent: "bg-[#FFCC00]",
-    categories: ["Tazos", "Supertazos Voladores"],
-    desc: "The original collection that started it all. 51 Minimon creatures with balanced combat stats — perfect for beginners learning the battle system. These classic starter creatures have moderate power across all stats, making them versatile in any deck.",
+    categories: ["Tazos"],
+    desc: "The original collection that started it all. 51 creature companions with balanced combat stats — perfect for learning the battle system. These classic characters have versatile stat profiles, making them reliable in any deck.",
     highlights: [
       "Balanced stat distribution — great for learning",
-      "Classic starter creatures with evolution chains",
-      "Original 2000 Matutano series",
-      "Includes Supertazos Voladores variants"
+      "Classic creature designs with evolution chains",
+      "Original 2000 Spanish snack series",
+      "Versatile across all battle strategies"
     ]
   },
   {
@@ -26,14 +25,13 @@ const collectionData = [
     year: 1995,
     origin: "Matutano",
     color: "#FF6B00",
-    accent: "bg-[#FF6B00]",
-    categories: ["Tazos", "Megatazos", "Supertazos Octogonales", "Mastertazos", "Holo 3D", "Caps", "Gold"],
-    desc: "The largest and most diverse collection. 118 warrior characters across 7 categories. High attack stats and powerful special abilities dominate this collection. Masters and Holo variants are the rarest finds.",
+    categories: ["Tazos", "Megatazos", "Supertazos Octogonales", "Supertazos Voladores", "Mastertazos", "Holo 3D"],
+    desc: "The most diverse collection with 118 martial arts warriors across 6 distinct categories. High attack stats and powerful combat abilities dominate this set. The rarest Holo 3D and Mastertazo variants have the most impressive stats in the game.",
     highlights: [
-      "7 unique categories with different shapes and rarities",
+      "6 unique categories with different shapes",
       "Highest average attack stats of all collections",
-      "Includes rare Holo 3D and Gold variants",
-      "Most diverse set — 7 times more variety than standard collections"
+      "Includes rare Holo 3D and Mastertazo variants",
+      "Most diverse category system in the game"
     ]
   },
   {
@@ -43,14 +41,13 @@ const collectionData = [
     year: 2000,
     origin: "Magic Box",
     color: "#00B4D8",
-    accent: "bg-[#00B4D8]",
-    categories: ["Tazos", "Megatazos", "Supertazos Voladores"],
-    desc: "The biggest digital-era collection. 150 Cybermon with extensive evolution trees and transformation paths. High precision and technical stats make these creatures excel in aim-based combat strategies.",
+    categories: ["Caps"],
+    desc: "The largest collection with 150 digital companions in cap format. High precision and technical stats make these creatures excel in aim-based combat strategies. With extensive evolution trees, they offer the most progression depth.",
     highlights: [
       "Largest collection — 150 tazos total",
       "Complex evolution trees with multiple stages",
       "Highest precision and technical stats",
-      "Magic Box 2000 series"
+      "Original Magic Box 2000 cap-tazo series"
     ]
   }
 ]
@@ -60,14 +57,14 @@ export default function CollectionsPage() {
     <PublicPageShell>
       <div className="max-w-5xl mx-auto px-4 py-12 sm:py-16">
         <h1 className="text-3xl sm:text-4xl font-black uppercase text-[#1a1a1a] mb-4">Collections</h1>
-        <p className="text-lg font-bold text-[#1a1a1a]/60 mb-10">319 verified tazos from 3 legendary Spanish collections. Every tazo with 9 unique combat stats.</p>
+        <p className="text-lg font-bold text-[#1a1a1a]/60 mb-10">319 tazos across 3 legendary collections. Each with 9 unique combat stats.</p>
 
         <div className="space-y-8">
           {collectionData.map((c) => (
-            <section key={c.slug} className="border-4 border-[#1a1a1a] shadow-[8px_8px_0px_#1a1a1a] bg-white overflow-hidden">
+            <section key={c.slug} className="border-3 border-[#1a1a1a] shadow-[6px_6px_0px_#1a1a1a] bg-white overflow-hidden">
               <div className="p-6 sm:p-8">
                 <div className="flex flex-wrap items-center gap-4 mb-4">
-                  <div className="w-6 h-6 border-3 border-[#1a1a1a] rounded" style={{ backgroundColor: c.color }} />
+                  <div className="w-6 h-6 border-3 border-[#1a1a1a]" style={{ backgroundColor: c.color }} />
                   <h2 className="text-2xl font-black uppercase text-[#1a1a1a]">{c.name}</h2>
                   <span className="text-4xl font-black text-[#1a1a1a] ml-auto">{c.count}</span>
                   <span className="text-sm font-bold uppercase text-[#1a1a1a]/40">tazos</span>
@@ -88,7 +85,7 @@ export default function CollectionsPage() {
                   ))}
                 </ul>
                 <Link href={`/collections/${c.slug}`} className="text-sm font-black uppercase text-[#E3350D] hover:underline underline-offset-4">
-                  View full {c.name} collection →
+                  View {c.name} collection →
                 </Link>
               </div>
             </section>
@@ -96,7 +93,7 @@ export default function CollectionsPage() {
         </div>
 
         <div className="mt-12 text-center">
-          <Link href="/tazos" className="mag-btn inline-block bg-[#FFCC00] text-[#1a1a1a] border-2 border-[#1a1a1a] px-8 py-4 text-sm font-black uppercase tracking-wider shadow-[6px_6px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_#1a1a1a] transition-all">
+          <Link href="/tazos" className="inline-block bg-[#FFCC00] text-[#1a1a1a] border-3 border-[#1a1a1a] px-8 py-4 text-sm font-black uppercase tracking-wider shadow-[6px_6px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_#1a1a1a] transition-all">
             Browse Complete Catalog
           </Link>
         </div>

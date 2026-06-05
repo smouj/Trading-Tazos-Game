@@ -1,30 +1,20 @@
 # Changelog
 
-## v0.3.2 — Magazine Game Enhancements + Battle Unification (2026-06-05)
+## v0.3.2 — Pure Magazine Theme + Battle Unification (2026-06-05)
 
-### 🎮 Magazine Style Enhanced for Gameplay
-- **Dark backing**: Premium dark gradient behind magazine content — like a collector's edition gaming magazine
-- **Ambient particles**: Floating halftone dots + subtle paper texture overlay
-- **Game HUD bar**: Bottom status bar with credits + tazo count — magazine-styled (#1a1a1a bg, #FFCC00 border)
-- **Magazine DNA preserved**: Yellow masthead, `mag-card-yellow` banners, halftone patterns, bold comic typography, 3px black borders + drop shadows
-- **All app pages**: Shop, Collection, Decks, Stats, Quests, Settings — full magazine aesthetic with game enhancements
+### 🎴 Complete 90s Magazine Visual Coherence
+- **Pure magazine background**: Cream paper (`mag-bg`/`#FFF9E6`) with halftone overlay — zero dark backgrounds
+- **Game HUD bar**: Bottom status bar with credits + tazo count — yellow `#FFCC00` bg, black border, matching masthead
+- **MagazinePageShell unified**: Light halftone background, yellow masthead with tabs, HUD bar, red footer — same magazine aesthetic across ALL pages
+- **Dark backing eliminated**: Removed `#1a1a2e` gradient, dark particles, glow orbs — magazine is the ONLY theme
+- **All 35 routes**: Public pages (PublicPageShell) + Game pages (MagazinePageShell) — one visual language
 
 ### ⚔️ Battle System Unified
 - **3D physics results now connect to server API**: Client sends `physicsResult` with actual game data
 - **Server fast-path**: When `physicsResult` is provided, skips RPG simulation and saves actual match data
 - **Quest progression triggers**: Battles now increment quests with `battle_played`, `battle_won`, `battles_played`, `battles_won` requirements
 
-### 📊 Stats Panel Redesigned
-- Dark game panels replace magazine cards
-- Unified stat bar styling with glow effects
-- Franchise/rarity distribution bars with proper color coding
-- Stat champions grid with franchise-colored accents
-
----
-
-## v0.3.1 — 3D Battle System + 12 Content Fixes (2026-06-05)
-
-### ⚔️ 3D Physics Battle System
+### ⚔️ Battle System Unified
 - **Complete battle engine** (`game-loop.ts`): State machine (lobby→aim→power→spin→launch→physics→resolve), 60-step physics simulation with friction, wall bounce, disc-to-disc collisions, ring-out
 - **AI engine**: 3 difficulty levels (Novice/Skilled/Master)
 - **Game Lobby**: Mode selector (Practice/Ranked/Friend Battle), deck builder, auto-best deck

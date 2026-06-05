@@ -1,12 +1,12 @@
 // ============================================================
-// Trading Tazos Game — Magazine Page Shell (Game Enhanced)
-// Magazine aesthetic preserved: yellow banners, halftone,
-// bold comic typography, black borders. Game enhancements:
-// subtle dark backing, particle ambience, HUD status bar.
+// Trading Tazos Game — Magazine Page Shell
+// 90s gaming magazine aesthetic: cream paper, yellow masthead,
+// comic typography, 3px black borders, halftone patterns.
+// Full visual coherence — no dark backgrounds.
 // ============================================================
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
@@ -30,45 +30,22 @@ const NAV_ITEMS: { id: TabId; label: string; icon: typeof BookOpen; href: string
   { id: "settings", label: "Settings", icon: Settings, href: "/app/settings" },
 ]
 
-// ── Game ambience — subtle animated particles behind magazine content ──
-function MagazineAmbient() {
-  return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-      {/* Rich dark backing — like a premium gaming magazine */}
-      <div className="absolute inset-0" style={{
-        background: "linear-gradient(180deg, #1a1a2e 0%, #16213e 40%, #0f0f1a 100%)",
-      }} />
-      {/* Subtle magazine paper texture */}
-      <div className="absolute inset-0 opacity-[0.03]" style={{
-        backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
-      }} />
-      {/* Floating halftone particles */}
-      {Array.from({ length: 12 }).map((_, i) => (
-        <div key={i} className="absolute w-1 h-1 rounded-full bg-[#FFCC00]/15"
-          style={{ left: `${5 + Math.random() * 90}%`, top: `${5 + Math.random() * 90}%`,
-            animation: `float-particle ${3 + Math.random() * 4}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 3}s` }} />
-      ))}
-    </div>
-  )
-}
-
-// ── Game HUD status bar (bottom) — magazine-style ──
+// ── HUD status bar (bottom) — magazine-style ──
 function GameHUD({ credits, tazoCount }: { credits?: number; tazoCount?: number }) {
   const { user } = useAuth()
   if (!user) return null
   return (
-    <div className="sticky bottom-0 z-40 bg-[#1a1a1a] border-t-3 border-[#FFCC00]">
-      <div className="max-w-7xl mx-auto px-4 py-1.5 flex items-center justify-between text-[10px] font-black">
-        <div className="flex items-center gap-4">
-          <span className="text-white/40 uppercase tracking-wider">{user.displayName || user.name}</span>
-          <span className="flex items-center gap-1.5 text-[#FFCC00]">
+    <div className="sticky bottom-0 z-40 bg-[#FFCC00] border-t-4 border-[#1a1a1a]">
+      <div className="max-w-7xl mx-auto px-4 py-1.5 flex items-center justify-between text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-[#1a1a1a]">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <span className="text-[#1a1a1a]/50">{user.displayName || user.name}</span>
+          <span className="flex items-center gap-1">
             <Coins className="w-3 h-3" /> {credits != null ? credits : "—"}
           </span>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="text-white/20">{tazoCount != null ? `${tazoCount}/319` : ""} TAZOS</span>
-          <span className="text-white/10 text-[8px] tracking-[0.2em]">v0.3.2</span>
+        <div className="flex items-center gap-3 sm:gap-4">
+          <span className="text-[#1a1a1a]/40">{tazoCount != null ? `${tazoCount}/319` : ""} TAZOS</span>
+          <span className="text-[#1a1a1a]/25 text-[7px] sm:text-[8px] tracking-[0.15em]">v0.3.2</span>
         </div>
       </div>
     </div>
@@ -99,53 +76,53 @@ export default function MagazinePageShell({
   }, [user])
 
   return (
-    <div className="min-h-screen flex flex-col relative">
-      {/* Ambient background */}
-      <MagazineAmbient />
+    <div className="min-h-screen flex flex-col mag-bg">
+      {/* Halftone overlay — magazine texture */}
+      <div className="mag-halftone fixed inset-0 pointer-events-none opacity-20 z-0" />
 
       {/* ═══════════════════════════════════════ */}
       {/* MAGAZINE MASTHEAD                        */}
       {/* ═══════════════════════════════════════ */}
       <header className="sticky top-0 z-40 bg-[#FFCC00] border-b-4 border-[#1a1a1a] mag-stripes">
-        {/* Top bar */}
-        <div className="bg-[#1a1a1a] text-white text-center py-1.5 px-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-1.5 text-[10px] sm:text-xs font-black text-zinc-400 hover:text-[#FFCC00] transition-colors tracking-wider uppercase">
+        {/* Top bar — utility strip */}
+        <div className="bg-[#1a1a1a] text-white text-center py-1 px-3 sm:px-4 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-1 text-[9px] sm:text-[10px] font-black text-zinc-400 hover:text-[#FFCC00] transition-colors tracking-wider uppercase">
             <Home className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             <span className="hidden sm:inline">{t.nav_back_to_home || "Back to Home"}</span>
           </Link>
-          <span className="text-[10px] sm:text-xs font-black tracking-[3px] uppercase text-[#FFCC00]">
+          <span className="text-[9px] sm:text-[10px] font-black tracking-[3px] uppercase text-[#FFCC00]">
             {t.siteMastheadBadge || "MAGAZINE"}
           </span>
           <div className="flex items-center gap-2 sm:gap-3">
             <LanguageSwitcher />
             {!loading && user && user.email === "dev.viewer@medaclawarena.com" && (
-              <Link href="/admin" className="text-[10px] font-black text-[#E3350D] hover:text-white tracking-wider uppercase"><Shield className="w-3 h-3 inline mr-1" /><span className="hidden sm:inline">Admin</span></Link>
+              <Link href="/admin" className="text-[9px] font-black text-[#E3350D] hover:text-white tracking-wider uppercase"><Shield className="w-3 h-3 inline mr-1" /><span className="hidden sm:inline">Admin</span></Link>
             )}
             {!loading && user ? (
-              <button onClick={() => { logout(); router.push("/") }} className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-[11px] font-black text-[#E3350D] bg-white/10 hover:bg-[#E3350D]/15 border border-[#E3350D]/30 hover:border-[#E3350D] transition-colors tracking-wider uppercase">
+              <button onClick={() => { logout(); router.push("/") }} className="flex items-center gap-1 px-2 py-1 text-[9px] sm:text-[10px] font-black text-[#E3350D] bg-white/10 hover:bg-[#E3350D]/15 border border-[#E3350D]/30 hover:border-[#E3350D] transition-colors tracking-wider uppercase">
                 <LogOut className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> <span>{t.auth_logout || "Logout"}</span>
               </button>
             ) : (
-              <span className="text-[10px] sm:text-xs font-bold text-zinc-500 tracking-wider uppercase">{t.siteMastheadBadge || "DASHBOARD"}</span>
+              <span className="text-[9px] sm:text-[10px] font-bold text-zinc-500 tracking-wider uppercase">{t.siteMastheadBadge || "DASHBOARD"}</span>
             )}
           </div>
         </div>
 
         {/* Title Row */}
-        <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
+        <div className="max-w-7xl mx-auto px-4 py-2.5 sm:py-3">
           <div className="flex items-center gap-3 sm:gap-4">
             <Link href="/" className="relative shrink-0">
-              <img src="/logo/logo-icon-black.webp" alt="TTG" className="w-12 h-12 sm:w-16 sm:h-16 drop-shadow-[3px_3px_0px_rgba(26,26,26,0.3)]" />
+              <img src="/logo/logo-icon-black.webp" alt="TTG" className="w-11 h-11 sm:w-14 sm:h-14 drop-shadow-[3px_3px_0px_rgba(26,26,26,0.3)]" />
             </Link>
             <div className="min-w-0 flex-1">
-              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black leading-none tracking-tight mag-stroke" style={{ WebkitTextStroke: "3px #1a1a1a" }}>
+              <h1 className="text-xl sm:text-3xl lg:text-4xl font-black leading-none tracking-tight" style={{ color: "#1a1a1a" }}>
                 {t.siteTitle || "TRADING TAZOS GAME"}
               </h1>
               <div className="flex items-baseline gap-2 mt-0.5">
-                <span className="text-lg sm:text-2xl lg:text-3xl font-black mag-stroke-red leading-none" style={{ WebkitTextStroke: "2px #1a1a1a" }}>
+                <span className="text-sm sm:text-lg lg:text-xl font-black leading-none" style={{ color: "#E3350D" }}>
                   {t.siteSubtitle || "COLLECT. TRADE. BATTLE."}
                 </span>
-                <span className="hidden sm:inline text-[10px] font-black text-[#1a1a1a] bg-white border-2 border-[#1a1a1a] px-1.5 py-0.5 shadow-[2px_2px_0px_#1a1a1a] uppercase tracking-wider">
+                <span className="hidden sm:inline text-[9px] font-black text-[#1a1a1a] bg-white border-2 border-[#1a1a1a] px-1.5 py-0.5 shadow-[2px_2px_0px_#1a1a1a] uppercase tracking-wider">
                   {t.siteIssue || "ISSUE #001"}
                 </span>
               </div>
@@ -175,7 +152,7 @@ export default function MagazinePageShell({
       </header>
 
       {/* ═══════════════════════════════════════ */}
-      {/* GAME CONTENT                             */}
+      {/* PAGE CONTENT                             */}
       {/* ═══════════════════════════════════════ */}
       <main className="relative z-10 flex-1">
         <div className="max-w-7xl mx-auto relative">
@@ -196,7 +173,7 @@ export default function MagazinePageShell({
           <div className="max-w-7xl mx-auto px-4 py-3">
             <div className="flex justify-center gap-2 mb-2">
               {["#FFCC00", "#3B4CCA", "#FF6B00", "#78C850", "#00A1E9"].map((color, i) => (
-                <div key={i} className="w-2 h-2 rounded-full border border-[#1a1a1a]/30" style={{ backgroundColor: color }} />
+                <div key={i} className="w-2 h-2 rounded-full border border-white/30" style={{ backgroundColor: color }} />
               ))}
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-between gap-1">
@@ -212,14 +189,6 @@ export default function MagazinePageShell({
           </div>
         </footer>
       )}
-
-      {/* Particle animation keyframes */}
-      <style jsx global>{`
-        @keyframes float-particle {
-          0%, 100% { transform: translateY(0px) scale(1); opacity: 0; }
-          50% { transform: translateY(-16px) scale(1.3); opacity: 0.5; }
-        }
-      `}</style>
     </div>
   )
 }

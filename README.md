@@ -22,7 +22,7 @@
 
 **Aim. Throw. Flip. Capture. Collect.**
 
-Trading Tazos Game is a browser-based digital tazo (pog) battle game built with a 90s gaming magazine aesthetic. You don't just compare stats — you aim, charge power, and throw tazos into a 3D physics-simulated arena. Features a dark-backed magazine game-client with ambient particles and HUD, 319 tazos across 3 collections (Minimon, Dracobell, Cybermon), 9 combat stats, a 3D physics battle engine with AI opponents, real potato chip bag opening with 3D textures, and a full progression system with quests and achievements.
+Trading Tazos Game is a browser-based digital tazo (pog) battle game designed entirely with a 90s gaming magazine aesthetic — cream paper backgrounds, yellow mastheads, halftone dot patterns, bold comic typography, and 3px black border cards with drop shadows. You don't just compare stats — you aim, charge power, and throw tazos into a 3D physics-simulated arena. Features 319 tazos across 3 collections (Minimon, Dracobell, Cybermon), 9 combat stats, a unified 3D physics battle engine with AI opponents, real potato chip bag opening with 3D textures, and a full progression system with quests and achievements.
 
 🌐 **[medaclawarena.com](https://medaclawarena.com)** &nbsp;|&nbsp; 📧 **support@medaclawarena.com**
 

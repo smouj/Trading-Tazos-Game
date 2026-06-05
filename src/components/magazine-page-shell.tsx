@@ -163,7 +163,7 @@ export default function MagazinePageShell({
       </header>
 
       {/* ===== MAIN CONTENT ===== */}
-      <main className="flex-1 p-3 sm:p-4 lg:p-5">
+      <main className="flex-1">
         {children}
       </main>
 

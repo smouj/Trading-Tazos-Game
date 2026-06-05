@@ -32,7 +32,7 @@ export default function ScannerPage() {
     return null
   }
   return (
-    <div className="max-w-7xl mx-auto w-full px-3 sm:px-4 py-4 sm:py-6">
+    <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-4 sm:py-6">
       <ScannerView />
     </div>
   )

@@ -89,7 +89,7 @@ export default function DecksPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto w-full px-3 sm:px-4 py-4 sm:py-6 space-y-4">
+    <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-4 sm:py-6 space-y-4">
       {/* ═══════════════════════════════════════════ */}
       {/* MAGAZINE BANNER STRIP                      */}
       {/* ═══════════════════════════════════════════ */}

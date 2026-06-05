@@ -77,7 +77,7 @@ export default function TazosCatalogPage() {
 
   return (
     <PublicPageShell>
-      <div className="max-w-5xl mx-auto py-12 sm:py-16 space-y-8">
+      <div className="max-w-5xl mx-auto px-4 py-12 sm:py-16 space-y-8">
         {/* Header */}
         <div>
           <h1 className="text-3xl sm:text-4xl font-black uppercase text-[#1a1a1a] mb-2">

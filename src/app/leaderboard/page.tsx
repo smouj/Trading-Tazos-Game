@@ -57,7 +57,7 @@ export default function LeaderboardPage() {
 
   return (
     <PublicPageShell>
-    <div className="max-w-5xl mx-auto py-8 px-4 space-y-6">
+    <div className="max-w-5xl mx-auto px-4 py-12 sm:py-16 space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-3xl sm:text-4xl font-black uppercase text-[#1a1a1a] mb-1">

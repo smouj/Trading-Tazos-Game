@@ -63,7 +63,7 @@ export default function DownloadPage() {
 
   return (
     <PublicPageShell>
-      <div className="max-w-5xl mx-auto w-full px-4 py-8 space-y-8">
+      <div className="max-w-5xl mx-auto w-full px-4 py-12 sm:py-16 space-y-8">
 
         {/* ─── Header ─── */}
         <h1 className="text-3xl sm:text-4xl font-black uppercase text-[#1a1a1a] mb-4">Download</h1>

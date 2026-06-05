@@ -153,7 +153,7 @@ export default function CollectionPage() {
   const activeDeck = data.decks?.find(d => d.isActive)
 
   return (
-    <div className="max-w-7xl mx-auto w-full px-3 sm:px-4 py-4 sm:py-6 space-y-5">
+    <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-4 sm:py-6 space-y-5">
       {/* ═══════════════════════════════════════════════ */}
       {/* HEADER BANNER                                 */}
       {/* ═══════════════════════════════════════════════ */}

@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Search, Filter, CheckCircle, RefreshCw, Palette, Grid3X3, LayoutGrid, BookOpen, Star, ArrowUpDown, Package, Cuboid } from 'lucide-react'
+import { Search, Filter, CheckCircle, RefreshCw, Palette, Grid3X3, LayoutGrid, BookOpen, Star, ArrowUpDown, Package, Cuboid, FlipHorizontal } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
 
 interface AlbumViewProps {
@@ -41,9 +41,10 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
   const [selectedRarity, setSelectedRarity] = useState<string>('all')
   const [selectedCondition, setSelectedCondition] = useState<string>('all')
   const [selectedOwned, setSelectedOwned] = useState<string>('all')
-  const [sortBy, setSortBy] = useState<string>('name')
+  const [sortBy, setSortBy] = useState<string>('franchise')
   const [sortOrder, setSortOrder] = useState<string>('asc')
   const [gridSize, setGridSize] = useState<GridSize>('normal')
+  const [flippedAll, setFlippedAll] = useState(false)
   const [selectedTazo, setSelectedTazo] = useState<Tazo | null>(null)
   const [detailOpen, setDetailOpen] = useState(false)
   const [obtainedMap, setObtainedMap] = useState<Record<string, string>>({})
@@ -184,8 +185,24 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
             </div>
           </div>
 
+          {/* Flip-all toggle */}
+          <button
+            className={`mag-btn px-2 py-1.5 rounded-sm text-[10px] flex items-center gap-1 ${
+              flippedAll
+                ? 'bg-[#FFCC00] text-[#1a1a1a]'
+                : 'bg-white text-[#1a1a1a]'
+            }`}
+            onClick={() => setFlippedAll(v => !v)}
+            title={flippedAll ? 'Show fronts' : 'Flip all to back'}
+          >
+            <FlipHorizontal className="w-4 h-4" />
+            <span className="text-[9px] font-black uppercase tracking-wide">
+              {flippedAll ? 'BACKS' : 'FLIP'}
+            </span>
+          </button>
+
           {/* Grid size toggle - mag-btn style */}
-          <div className="ml-auto flex gap-1">
+          <div className="flex gap-1">
             <button
               className={`mag-btn px-2 py-1.5 rounded-sm text-[10px] ${
                 gridSize === 'normal'
@@ -388,6 +405,7 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
                   boxShadow: '4px 4px 0px #1a1a1a',
                 }}
               >
+                <SelectItem value="franchise" className="text-[11px] font-black uppercase">Series</SelectItem>
                 <SelectItem value="name" className="text-[11px] font-black uppercase">Name</SelectItem>
                 <SelectItem value="rarity" className="text-[11px] font-bold">Rarity</SelectItem>
                 <SelectItem value="attack" className="text-[11px] font-bold">Attack</SelectItem>
@@ -480,6 +498,7 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
             <TazoCard
               key={tazo.id}
               tazo={{ ...tazo, obtainedFrom: (obtainedMap[tazo.id] as any) || null }}
+              forceFlipped={flippedAll}
               onClick={(item) => {
                 setSelectedTazo(item)
                 setDetailOpen(true)

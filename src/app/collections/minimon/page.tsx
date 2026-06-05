@@ -1,31 +1,146 @@
 import PublicPageShell from "@/components/layout/public-page-shell"
 import Link from "next/link"
 
+const regions = [
+  { name: "Sunnyvale Fields", style: "Campos, granjas, pueblos pequeños", types: "Normal, solar, planta" },
+  { name: "Mossdeep Woods", style: "Bosques antiguos", types: "Planta, insecto, tierra, místico" },
+  { name: "Bluefin Coast", style: "Playas, arrecifes, faros", types: "Agua, viento, hielo suave" },
+  { name: "Cinderpop Hills", style: "Colinas cálidas y cuevas volcánicas", types: "Fuego, roca, metal" },
+  { name: "Stormtail Ridge", style: "Montañas con tormentas", types: "Eléctrico, volador, dragón menor" },
+  { name: "Moonberry Hollow", style: "Zona nocturna y extraña", types: "Sombra, sueño, ilusión" },
+  { name: "Aurora Summit", style: "Región final de leyendas", types: "Formas raras y guardianes" },
+]
+
+const bloomPhases = [
+  { name: "Tiny Form", desc: "Forma pequeña, tierna, inestable" },
+  { name: "Trail Form", desc: "Forma de aventura, más definida" },
+  { name: "Guardian Form", desc: "Forma fuerte, protectora y madura" },
+  { name: "Mythic Bloom", desc: "Forma legendaria, rara y casi única" },
+]
+
+const FRANCHISE_COLOR = "#FFCB05"
+
 export default function MinimonCollectionPage() {
   return (
     <PublicPageShell>
-      <div className="max-w-3xl mx-auto px-4 py-12 sm:py-16">
+      {/* ── Hero ── */}
+      <div className="max-w-4xl mx-auto px-4 py-12 sm:py-16">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-6 h-6 border-3 border-[#1a1a1a]" style={{ backgroundColor: "#FFCC00" }} />
-          <span className="text-sm font-black uppercase text-[#1a1a1a]/50">Collection</span>
+          <div className="w-6 h-6 border-3 border-[#1a1a1a]" style={{ backgroundColor: FRANCHISE_COLOR }} />
+          <span className="text-sm font-black uppercase text-[#1a1a1a]/50">Franchise</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black uppercase text-[#1a1a1a] mb-2">Minimon</h1>
+        <h1 className="text-3xl sm:text-4xl font-black uppercase text-[#1a1a1a] mb-1">Minimon</h1>
+        <p className="text-lg font-bold text-[#1a1a1a]/40 mb-6">
+          A creature adventure world about exploration, friendship, elemental habitats, and natural evolution.
+        </p>
         <div className="flex flex-wrap items-center gap-3 mb-8">
           <span className="text-5xl font-black text-[#1a1a1a]">51</span>
           <span className="text-lg font-bold text-[#1a1a1a]/40">tazos</span>
           <span className="text-xs font-bold bg-[#FFCC00] px-2 py-1 border-2 border-[#1a1a1a]">Matutano 2000</span>
         </div>
-        <p className="text-base font-bold text-[#1a1a1a]/60 mb-2">Categories: Tazos, Supertazos Voladores</p>
 
-        <p className="text-sm font-bold text-[#1a1a1a]/50 leading-relaxed mb-8">
-          Each tazo in this collection has been verified against the original 2000 Matutano series. 
-          All 51 tazos have 9 balanced combat stats, a tactical role, and evolutive relationships 
-          where applicable. Browse the full catalog to see individual tazo stats and details.
+        {/* ── World ── */}
+        <div className="border-3 border-[#1a1a1a] bg-[#fafafa] p-6 sm:p-8 mb-8 shadow-[6px_6px_0px_#1a1a1a]">
+          <h2 className="text-lg font-black uppercase tracking-wider text-[#1a1a1a] mb-3">The World of Luminara</h2>
+          <p className="text-sm font-bold text-[#1a1a1a]/60 leading-relaxed mb-4">
+            Luminara is a luminous land of colorful regions, winding paths, small villages, 
+            natural laboratories, and places where elemental energy takes shape. It is not a medieval 
+            or futuristic world — it is a world of adventure, discovery, and wonder.
+          </p>
+          <p className="text-sm font-bold text-[#1a1a1a]/60 leading-relaxed">
+            Hace siglos, Luminara estaba llena de una energía invisible llamada{" "}
+            <strong className="text-[#1a1a1a]">Life Spark</strong>. Esta energía fluía 
+            por los árboles, ríos, cuevas, nubes y montañas. Cuando la Life Spark se acumulaba 
+            en un lugar durante mucho tiempo, nacía un Minimon. Por eso cada criatura está 
+            conectada con su entorno.
+          </p>
+        </div>
+
+        {/* ── Regions ── */}
+        <h2 className="text-lg font-black uppercase tracking-wider text-[#1a1a1a] mb-4">Regions of Luminara</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+          {regions.map((r) => (
+            <div key={r.name} className="border-2 border-[#1a1a1a] bg-white p-4 shadow-[3px_3px_0px_#1a1a1a]">
+              <h3 className="text-sm font-black uppercase text-[#1a1a1a] mb-1">{r.name}</h3>
+              <p className="text-xs font-bold text-[#1a1a1a]/50">{r.style}</p>
+              <p className="text-xs font-bold mt-1" style={{ color: FRANCHISE_COLOR }}>
+                {r.types}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Pathfinders ── */}
+        <div className="border-3 border-[#1a1a1a] bg-[#fafafa] p-6 sm:p-8 mb-8 shadow-[6px_6px_0px_#1a1a1a]" style={{ borderLeft: `6px solid ${FRANCHISE_COLOR}` }}>
+          <h2 className="text-lg font-black uppercase tracking-wider text-[#1a1a1a] mb-3">Pathfinders &amp; Bond Marks</h2>
+          <p className="text-sm font-bold text-[#1a1a1a]/60 leading-relaxed mb-3">
+            In Luminara exist people called <strong className="text-[#1a1a1a]">Pathfinders</strong>. 
+            They are not military trainers. They are explorers, caretakers, and travelers who study 
+            Minimon, accompany them, and document their forms.
+          </p>
+          <p className="text-sm font-bold text-[#1a1a1a]/60 leading-relaxed mb-3">
+            A Pathfinder does not &ldquo;own&rdquo; a Minimon. They create a{" "}
+            <strong className="text-[#1a1a1a]">Bond Mark</strong>, a mark of trust that 
+            allows both to travel together.
+          </p>
+          <blockquote className="text-sm font-bold italic text-[#1a1a1a]/70 border-l-4 pl-4 py-1" style={{ borderLeftColor: FRANCHISE_COLOR }}>
+            &ldquo;A Minimon does not obey out of obligation. It follows you because it trusts you.&rdquo;
+          </blockquote>
+        </div>
+
+        {/* ── Blooming ── */}
+        <h2 className="text-lg font-black uppercase tracking-wider text-[#1a1a1a] mb-4">Evolution: Blooming</h2>
+        <p className="text-sm font-bold text-[#1a1a1a]/60 leading-relaxed mb-4">
+          Evolution in Minimon is called <strong className="text-[#1a1a1a]">Blooming</strong>. 
+          A Minimon evolves when its Life Spark matures — through bonding with its Pathfinder, 
+          overcoming challenges, protecting another Minimon, entering an elemental zone, 
+          reaching experience thresholds, or awakening a strong emotion.
         </p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-8">
+          {bloomPhases.map((phase, i) => (
+            <div key={phase.name} className="border-2 border-[#1a1a1a] bg-white p-3 text-center shadow-[2px_2px_0px_#1a1a1a]">
+              <div className="text-xs font-black uppercase text-[#1a1a1a]/30 mb-1">Phase {i + 1}</div>
+              <div className="text-xs font-black uppercase text-[#1a1a1a] mb-1">{phase.name}</div>
+              <div className="text-[10px] font-bold text-[#1a1a1a]/50 leading-tight">{phase.desc}</div>
+            </div>
+          ))}
+        </div>
 
-        <Link href="/tazos?collection=minimon" className="mag-btn inline-block bg-[#E3350D] text-white border-2 border-[#1a1a1a] px-8 py-4 text-sm font-black uppercase tracking-wider shadow-[6px_6px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_#1a1a1a] transition-all">
-          Browse Minimon Tazos
-        </Link>
+        {/* ── Threat ── */}
+        <div className="border-3 border-[#1a1a1a] bg-[#1a1a1a] p-6 sm:p-8 mb-8 shadow-[6px_6px_0px_#1a1a1a] text-white">
+          <h2 className="text-lg font-black uppercase tracking-wider mb-3" style={{ color: FRANCHISE_COLOR }}>The Stillness</h2>
+          <p className="text-sm font-bold text-white/70 leading-relaxed mb-3">
+            The Stillness is a force that stops evolution. It does not destroy directly, 
+            but freezes the natural growth of Minimon. Affected creatures lose color, 
+            personality, and the ability to change. They become{" "}
+            <strong className="text-white">Faded Minimon</strong>.
+          </p>
+          <p className="text-sm font-bold text-white/70 leading-relaxed">
+            A Pathfinder&apos;s goal is not to destroy them — it is to restore their Life Spark.
+          </p>
+        </div>
+
+        {/* ── Call to Action ── */}
+        <div className="text-center mb-8">
+          <p className="text-sm font-black uppercase tracking-[0.2em] text-[#1a1a1a]/30 mb-4">Official Motto</p>
+          <p className="text-xl sm:text-2xl font-black uppercase text-[#1a1a1a] mb-6">
+            Find them. Bond with them. Watch them bloom.
+          </p>
+          <Link
+            href="/tazos?collection=minimon"
+            className="mag-btn inline-block bg-[#E3350D] text-white border-2 border-[#1a1a1a] px-8 py-4 text-sm font-black uppercase tracking-wider shadow-[6px_6px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_#1a1a1a] transition-all"
+          >
+            Browse All 51 Minimon Tazos
+          </Link>
+        </div>
+
+        {/* ── Footer note ── */}
+        <p className="text-xs font-bold text-zinc-400 text-center">
+          Minimon are small creatures born from the Life Spark, a natural energy that flows through 
+          the regions of Luminara. Pathfinders travel with them, form bonds, discover new species, 
+          and help each Minimon unlock its next Bloom. Every journey begins with one tiny companion 
+          — and a world full of forms waiting to be found.
+        </p>
       </div>
     </PublicPageShell>
   )

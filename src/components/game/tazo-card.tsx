@@ -8,6 +8,7 @@ import { getTazoBackgroundConfig, getTazoBackgroundClasses, FRANCHISE_MAX } from
 interface TazoCardProps {
   tazo: Tazo
   onClick?: (tazo: Tazo) => void
+  forceFlipped?: boolean
 }
 
 const FRANCHISE_COLORS: Record<string, { from: string; to: string; text: string; strip: string }> = {
@@ -61,8 +62,9 @@ function getRarityStars(rarity: Rarity): string {
   return '★'.repeat(RARITY_ORDER[rarity])
 }
 
-export default function TazoCard({ tazo, onClick }: TazoCardProps) {
+export default function TazoCard({ tazo, onClick, forceFlipped }: TazoCardProps) {
   const [flipped, setFlipped] = useState(false)
+  const showBack = forceFlipped !== undefined ? forceFlipped : flipped
   const franchiseSlug = tazo.franchise?.slug || 'minimon'
   const franchiseColors = FRANCHISE_COLORS[franchiseSlug] || FRANCHISE_COLORS.minimon
   const franchiseStripText = FRANCHISE_STRIP_TEXT[franchiseSlug] || '#1F2937'
@@ -132,12 +134,12 @@ export default function TazoCard({ tazo, onClick }: TazoCardProps) {
         style={{ width: '112px', height: '112px' }}
         onClick={(e) => {
           e.stopPropagation() // Don't trigger card click
-          setFlipped(!flipped)
+          setFlipped(!showBack)
         }}
         title="Click to flip"
       >
         <div
-          className={`tazo-flip-inner ${flipped ? 'flipped' : ''}`}
+          className={`tazo-flip-inner ${showBack ? 'flipped' : ''}`}
           style={{ transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)' }}
         >
           {/* ===== FRONT FACE ===== */}

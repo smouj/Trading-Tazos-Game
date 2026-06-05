@@ -105,8 +105,17 @@ function tryMatch() {
 }
 
 // ─── Server ─────────────────────────────────────────────────
-const wss = new WebSocketServer({ port: PORT })
-console.log(`[WS] Multiplayer server on port ${PORT}`)
+let wss
+try {
+  wss = new WebSocketServer({ port: PORT })
+  console.log(`[WS] Multiplayer server on port ${PORT}`)
+} catch (err) {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`[WS] FATAL: Port ${PORT} already in use. Exiting so PM2 can retry.`)
+    process.exit(1)
+  }
+  throw err
+}
 
 wss.on("connection", (ws, req) => {
   const url = new URL(req.url || "/", `http://${req.headers.host}`)
@@ -185,15 +194,40 @@ wss.on("connection", (ws, req) => {
 
 // ─── Status HTTP ─────────────────────────────────────────────
 const http = require("http")
-http.createServer((_req, res) => {
-  res.writeHead(200, { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" })
-  res.end(JSON.stringify({
-    activeRooms: rooms.size,
-    queueLength: queue.length,
-    connectedClients: connections.size,
-    uptime: process.uptime(),
-  }))
-}).listen(PORT + 1)
-console.log(`[WS] Status HTTP on port ${PORT + 1}`)
+let statusServer
+try {
+  statusServer = http.createServer((_req, res) => {
+    res.writeHead(200, { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" })
+    res.end(JSON.stringify({
+      activeRooms: rooms.size,
+      queueLength: queue.length,
+      connectedClients: connections.size,
+      uptime: process.uptime(),
+    }))
+  })
+  statusServer.listen(PORT + 1)
+  console.log(`[WS] Status HTTP on port ${PORT + 1}`)
+} catch (err) {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`[WS] FATAL: Status port ${PORT + 1} already in use.`)
+  }
+  throw err
+}
 
-process.on("SIGTERM", () => { wss.close(); process.exit(0) })
+function shutdown() {
+  console.log('[WS] Shutting down gracefully...')
+  try { wss && wss.close() } catch (_) {}
+  try { statusServer && statusServer.close() } catch (_) {}
+  process.exit(0)
+}
+
+process.on("SIGTERM", shutdown)
+process.on("SIGINT", shutdown)
+process.on("uncaughtException", (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`[WS] Port conflict, exiting for PM2 restart.`)
+    process.exit(1)
+  }
+  console.error('[WS] Uncaught:', err.message)
+  shutdown()
+})

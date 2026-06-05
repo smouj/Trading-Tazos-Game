@@ -40,24 +40,24 @@ async function main() {
   const minimon = await db.franchise.create({
     data: {
       name: "Minimon", slug: "minimon", color: "#FFCB05", icon: "🐾",
-      description: "Minimon — criaturas coleccionables originales. Colección de 51 tazos con diseños coloridos y adorables.",
-      mechanic: "Colección numerada #1-51. Criaturas tipo mascota con trazo suave, colores vibrantes y diseño expresivo.",
+      description: "Minimon are small creatures born from the Life Spark, a natural energy that flows through the regions of Luminara. Pathfinders travel with them, form bonds, discover new species, and help each Minimon unlock its next Bloom.",
+      mechanic: "Creature companion adventure. Explore 7 regions, bond with Minimon, and unlock 4 Bloom phases: Tiny → Trail → Guardian → Mythic. 51 tazos total.",
     },
   })
 
   const dracobell = await db.franchise.create({
     data: {
       name: "Dracobell", slug: "dracobell", color: "#FF6B00", icon: "💥",
-      description: "Dracobell — guerreros de artes marciales originales. Luchadores con auras elementales y técnicas especiales.",
-      mechanic: "7 categorías: Tazos, Supertazos Voladores, Supertazos Octogonales, Megatazos, Holo 3D, Mastertazos.",
+      description: "Dracobell is an action-fighting saga set in Bellora, a world of clans, tournaments, dragon energy, and legendary Bell Shards. Warriors train to awaken their Roar Aura, master unique Bell Arts, and ascend beyond their limits.",
+      mechanic: "Martial action world. Join 7 clans, collect Bell Shards, master Bell Arts, and ascend through 5 transformation phases. 118 tazos total.",
     },
   })
 
   const cybermon = await db.franchise.create({
     data: {
       name: "Cybermon", slug: "cybermon", color: "#00A1E9", icon: "🦾",
-      description: "Cybermon — criaturas digitales originales. Monstruos biomecánicos con energía tecnológica y datos corruptos.",
-      mechanic: "Criaturas digitales con armaduras, circuitos brillantes y habilidades de datos.",
+      description: "Cybermon are living digital creatures from the Neon Grid, a hidden dimension of signals, memories, and code. Each Cybermon carries a Soul Protocol that can Shift into stronger forms through data, battle, and emotional links with a human Linker.",
+      mechanic: "Digital companion world. Traverse 7 sectors of the Neon Grid, link with Cybermon, and unlock 6 Shift phases from Boot to Omega Patch. 150 tazos total.",
     },
   })
 

@@ -1,31 +1,212 @@
 import PublicPageShell from "@/components/layout/public-page-shell"
 import Link from "next/link"
 
+const regions = [
+  { name: "Ember Valley", clan: "Ember Fist", style: "Fuego, ataque directo" },
+  { name: "Storm Peaks", clan: "Storm Fang", style: "Trueno, velocidad" },
+  { name: "Iron Plateau", clan: "Iron Horn", style: "Defensa, resistencia" },
+  { name: "Frost Temple", clan: "Frost Scale", style: "Control, precisión" },
+  { name: "Shadow Basin", clan: "Shadow Claw", style: "Contraataque, sigilo" },
+  { name: "Golden Shrine", clan: "Golden Roar", style: "Aura, maestría" },
+  { name: "Dragon Crater", clan: "Dragon Bell", style: "Poder ancestral" },
+]
+
+const bellShards = [
+  { name: "Flame Shard", power: "Fuerza ofensiva" },
+  { name: "Storm Shard", power: "Velocidad" },
+  { name: "Iron Shard", power: "Resistencia" },
+  { name: "Frost Shard", power: "Control" },
+  { name: "Shadow Shard", power: "Técnica" },
+  { name: "Gold Shard", power: "Aura superior" },
+  { name: "Dragon Shard", power: "Transformación legendaria" },
+]
+
+const ascensionPhases = [
+  { name: "Base Fighter", desc: "Forma normal del guerrero" },
+  { name: "Aura Release", desc: "Primera liberación de energía interior" },
+  { name: "Clan Ascension", desc: "Forma ligada al clan y su técnica" },
+  { name: "Champion Ascension", desc: "Forma de torneo superior" },
+  { name: "Dragon Bell", desc: "Forma legendaria vinculada a la campana" },
+]
+
+const bellArts = [
+  { name: "Dragon Breaker", desc: "Golpe frontal envuelto en aura dracónica" },
+  { name: "Ember Rush", desc: "Ataque veloz de fuego" },
+  { name: "Storm Spiral", desc: "Patada giratoria eléctrica" },
+  { name: "Iron Shell", desc: "Defensa total de cuerpo completo" },
+  { name: "Frost Lock", desc: "Técnica que ralentiza al rival" },
+  { name: "Shadow Reversal", desc: "Contraataque desde el punto ciego" },
+  { name: "Golden Roar", desc: "Explosión de aura de campeón" },
+]
+
+const auraTypes = [
+  { name: "Red Aura", trait: "Furia, fuego, ataque" },
+  { name: "Blue Aura", trait: "Control, calma, precisión" },
+  { name: "Gold Aura", trait: "Maestría, poder superior" },
+  { name: "Black Aura", trait: "Sombra, técnica peligrosa" },
+  { name: "White Aura", trait: "Pureza, defensa, concentración" },
+  { name: "Dragon Aura", trait: "Forma legendaria" },
+]
+
+const FRANCHISE_COLOR = "#FF6B00"
+
 export default function DracobellCollectionPage() {
   return (
     <PublicPageShell>
-      <div className="max-w-3xl mx-auto px-4 py-12 sm:py-16">
+      {/* ── Hero ── */}
+      <div className="max-w-4xl mx-auto px-4 py-12 sm:py-16">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-6 h-6 border-3 border-[#1a1a1a]" style={{ backgroundColor: "#FF6B00" }} />
-          <span className="text-sm font-black uppercase text-[#1a1a1a]/50">Collection</span>
+          <div className="w-6 h-6 border-3 border-[#1a1a1a]" style={{ backgroundColor: FRANCHISE_COLOR }} />
+          <span className="text-sm font-black uppercase text-[#1a1a1a]/50">Franchise</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black uppercase text-[#1a1a1a] mb-2">Dracobell</h1>
+        <h1 className="text-3xl sm:text-4xl font-black uppercase text-[#1a1a1a] mb-1">Dracobell</h1>
+        <p className="text-lg font-bold text-[#1a1a1a]/40 mb-6">
+          A martial action world about clans, tournaments, aura, transformations, dragon power, and legendary fragments.
+        </p>
         <div className="flex flex-wrap items-center gap-3 mb-8">
           <span className="text-5xl font-black text-[#1a1a1a]">118</span>
           <span className="text-lg font-bold text-[#1a1a1a]/40">tazos</span>
           <span className="text-xs font-bold bg-[#FFCC00] px-2 py-1 border-2 border-[#1a1a1a]">Matutano 1995</span>
         </div>
-        <p className="text-base font-bold text-[#1a1a1a]/60 mb-2">Categories: Tazos, Megatazos, Supertazos Octogonales, Mastertazos, Holo 3D, Caps, Gold</p>
 
-        <p className="text-sm font-bold text-[#1a1a1a]/50 leading-relaxed mb-8">
-          Each tazo in this collection has been verified against the original 1995 Matutano series. 
-          All 118 tazos have 9 balanced combat stats, a tactical role, and evolutive relationships 
-          where applicable. Browse the full catalog to see individual tazo stats and details.
+        {/* ── World ── */}
+        <div className="border-3 border-[#1a1a1a] bg-[#1a0a00] p-6 sm:p-8 mb-8 shadow-[6px_6px_0px_#1a1a1a]">
+          <h2 className="text-lg font-black uppercase tracking-wider mb-3" style={{ color: FRANCHISE_COLOR }}>The World of Bellora</h2>
+          <p className="text-sm font-bold text-white/70 leading-relaxed mb-4">
+            Bellora is a world of combat regions governed by clans. Each clan protects 
+            a technique, a philosophy, and a fragment of an ancient sonic relic — the{" "}
+            <strong className="text-white">Dracobell</strong>.
+          </p>
+          <p className="text-sm font-bold text-white/70 leading-relaxed">
+            The Dracobell is a legendary bell forged from meteorite metal and ancient dragon 
+            scales. According to legend, when the complete bell rings, it can awaken the 
+            true potential of any warrior. But the bell was shattered during a war between 
+            clans. Its fragments — the{" "}
+            <strong style={{ color: FRANCHISE_COLOR }}>Bell Shards</strong> — are now 
+            scattered across Bellora, each containing a piece of the original power.
+          </p>
+        </div>
+
+        {/* ── Regions ── */}
+        <h2 className="text-lg font-black uppercase tracking-wider text-[#1a1a1a] mb-4">Clans of Bellora</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+          {regions.map((r) => (
+            <div key={r.name} className="border-2 border-[#1a1a1a] bg-white p-4 shadow-[3px_3px_0px_#1a1a1a]">
+              <h3 className="text-sm font-black uppercase text-[#1a1a1a] mb-1">{r.name}</h3>
+              <p className="text-xs font-bold" style={{ color: FRANCHISE_COLOR }}>{r.clan}</p>
+              <p className="text-xs font-bold text-[#1a1a1a]/50 mt-1">{r.style}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Bell Shards ── */}
+        <h2 className="text-lg font-black uppercase tracking-wider text-[#1a1a1a] mb-4">The Bell Shards</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-8">
+          {bellShards.map((s) => (
+            <div key={s.name} className="border-2 border-[#1a1a1a] bg-white p-3 text-center shadow-[2px_2px_0px_#1a1a1a]">
+              <div className="text-xs font-black uppercase text-[#1a1a1a] mb-1">{s.name}</div>
+              <div className="text-[10px] font-bold text-[#1a1a1a]/50">{s.power}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Roar Aura ── */}
+        <div className="border-3 border-[#1a1a1a] bg-[#fafafa] p-6 sm:p-8 mb-8 shadow-[6px_6px_0px_#1a1a1a]" style={{ borderLeft: `6px solid ${FRANCHISE_COLOR}` }}>
+          <h2 className="text-lg font-black uppercase tracking-wider text-[#1a1a1a] mb-3">Roar Aura</h2>
+          <p className="text-sm font-bold text-[#1a1a1a]/60 leading-relaxed mb-4">
+            The energy of Dracobell is called <strong className="text-[#1a1a1a]">Roar Aura</strong>. 
+            It is not common magic — it is an inner force born from discipline, will, and 
+            fighting spirit. Each warrior manifests their Roar Aura differently.
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {auraTypes.map((a) => (
+              <div key={a.name} className="border border-[#1a1a1a]/20 bg-white p-2 text-center">
+                <div className="text-xs font-black uppercase text-[#1a1a1a]">{a.name}</div>
+                <div className="text-[10px] font-bold text-[#1a1a1a]/50 mt-0.5">{a.trait}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Ascensions ── */}
+        <h2 className="text-lg font-black uppercase tracking-wider text-[#1a1a1a] mb-4">Transformation: Ascension</h2>
+        <p className="text-sm font-bold text-[#1a1a1a]/60 leading-relaxed mb-4">
+          An <strong className="text-[#1a1a1a]">Ascension</strong> occurs when a fighter 
+          surpasses their physical and spiritual limits. It is the Dracobell equivalent of 
+          evolution — not a biological change, but a martial breakthrough.
         </p>
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-8">
+          {ascensionPhases.map((phase, i) => (
+            <div key={phase.name} className="border-2 border-[#1a1a1a] bg-white p-3 text-center shadow-[2px_2px_0px_#1a1a1a]">
+              <div className="text-xs font-black uppercase text-[#1a1a1a]/30 mb-1">Phase {i + 1}</div>
+              <div className="text-xs font-black uppercase text-[#1a1a1a] mb-1">{phase.name}</div>
+              <div className="text-[10px] font-bold text-[#1a1a1a]/50 leading-tight">{phase.desc}</div>
+            </div>
+          ))}
+        </div>
 
-        <Link href="/tazos?collection=dracobell" className="mag-btn inline-block bg-[#E3350D] text-white border-2 border-[#1a1a1a] px-8 py-4 text-sm font-black uppercase tracking-wider shadow-[6px_6px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_#1a1a1a] transition-all">
-          Browse Dracobell Tazos
-        </Link>
+        {/* ── Bell Arts ── */}
+        <h2 className="text-lg font-black uppercase tracking-wider text-[#1a1a1a] mb-4">Bell Arts</h2>
+        <p className="text-sm font-bold text-[#1a1a1a]/60 leading-relaxed mb-4">
+          Each warrior possesses a signature technique called a{" "}
+          <strong className="text-[#1a1a1a]">Bell Art</strong>.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-8">
+          {bellArts.map((art) => (
+            <div key={art.name} className="border-2 border-[#1a1a1a] bg-white p-3 shadow-[2px_2px_0px_#1a1a1a] flex items-center justify-between">
+              <span className="text-xs font-black uppercase text-[#1a1a1a]">{art.name}</span>
+              <span className="text-[10px] font-bold text-[#1a1a1a]/50">{art.desc}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Tournament ── */}
+        <div className="border-3 border-[#1a1a1a] bg-[#fafafa] p-6 sm:p-8 mb-8 shadow-[6px_6px_0px_#1a1a1a]" style={{ borderLeft: `6px solid ${FRANCHISE_COLOR}` }}>
+          <h2 className="text-lg font-black uppercase tracking-wider text-[#1a1a1a] mb-3">The Grand Bell Tournament</h2>
+          <p className="text-sm font-bold text-[#1a1a1a]/60 leading-relaxed mb-3">
+            The main event of Bellora is the <strong className="text-[#1a1a1a]">Grand Bell Tournament</strong>. 
+            It is not just a sporting event — it is a test of lineage, honor, and power. 
+            Champions from each clan face each other to win Bell Shards. Whoever gathers 
+            enough fragments can ring the incomplete Dracobell and awaken a higher Ascension.
+          </p>
+        </div>
+
+        {/* ── Threat ── */}
+        <div className="border-3 border-[#1a1a1a] bg-[#1a1a1a] p-6 sm:p-8 mb-8 shadow-[6px_6px_0px_#1a1a1a] text-white">
+          <h2 className="text-lg font-black uppercase tracking-wider mb-3" style={{ color: FRANCHISE_COLOR }}>The Silent Clan</h2>
+          <p className="text-sm font-bold text-white/70 leading-relaxed mb-3">
+            The Silent Clan believes the Dracobell must not be restored. To them, the bell&apos;s 
+            sound only brings wars, rivalry, and destruction. Their goal is to gather the 
+            Bell Shards — not to use the bell, but to silence it forever.
+          </p>
+          <p className="text-sm font-bold text-white/70 leading-relaxed">
+            This creates a richer conflict: the heroes believe the bell can unite Bellora, 
+            while The Silent Clan believes it will only bring another war. Both sides have 
+            reasons. The tournament decides the future of the world.
+          </p>
+        </div>
+
+        {/* ── CTA ── */}
+        <div className="text-center mb-8">
+          <p className="text-sm font-black uppercase tracking-[0.2em] text-[#1a1a1a]/30 mb-4">Official Motto</p>
+          <p className="text-xl sm:text-2xl font-black uppercase text-[#1a1a1a] mb-6">
+            Train hard. Ring loud. Rise beyond.
+          </p>
+          <Link
+            href="/tazos?collection=dracobell"
+            className="mag-btn inline-block bg-[#E3350D] text-white border-2 border-[#1a1a1a] px-8 py-4 text-sm font-black uppercase tracking-wider shadow-[6px_6px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_#1a1a1a] transition-all"
+          >
+            Browse All 118 Dracobell Tazos
+          </Link>
+        </div>
+
+        {/* ── Footer note ── */}
+        <p className="text-xs font-bold text-zinc-400 text-center">
+          Dracobell is an action-fighting saga set in Bellora, a world of clans, tournaments, 
+          dragon energy, and legendary Bell Shards. Warriors train to awaken their Roar Aura, 
+          master unique Bell Arts, and ascend beyond their limits. When the Dracobell rings, 
+          only true champions rise.
+        </p>
       </div>
     </PublicPageShell>
   )

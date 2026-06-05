@@ -45,7 +45,7 @@ function GameHUD({ credits, tazoCount }: { credits?: number; tazoCount?: number 
         </div>
         <div className="flex items-center gap-3 sm:gap-4">
           <span className="text-[#1a1a1a]/40">{tazoCount != null ? `${tazoCount}/319` : ""} TAZOS</span>
-          <span className="text-[#1a1a1a]/25 text-[7px] sm:text-[8px] tracking-[0.15em]">v0.3.2</span>
+          <span className="text-[#1a1a1a]/25 text-[7px] sm:text-[8px] tracking-[0.15em]">v0.3.1</span>
         </div>
       </div>
     </div>

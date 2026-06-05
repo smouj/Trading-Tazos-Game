@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.2 — Security + Magazine + Battle Unification (2026-06-05)
+## v0.3.2 — Security + Magazine + Battle Unification (2026-06-05) [Unreleased — deployed, not tagged]
 
 ### 🔒 Security Hardening
 - **POST /api/tazos**: Now admin-only — requires valid JWT + admin email authentication

@@ -1,616 +1,450 @@
 // ============================================================
-// Trading Tazos Game — Battle View (Main)
-// Full battle experience: tazo selection, arena, aim controls,
-// physics simulation, event log, and results.
+// Trading Tazos Game — Battle View (Complete Rewrite)
+// Professional 3D tazo battle: lobby → intro → aim → throw → resolve.
+// Supports AI practice, PvP ranked, and PvP friend modes.
+// Mobile-first responsive design.
 // ============================================================
 "use client"
 
-import { useState, useEffect, useCallback, useMemo, useRef } from "react"
-import { useI18n } from "@/lib/i18n"
-import type { Dictionary } from "@/lib/i18n/types"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { useAuth } from "@/lib/auth-context"
 import {
-  createBattleState, startTurn, selectThrower,
-  setHorizontalAim, setVerticalAim, setPower, executeThrow,
-  opponentPlaceTazo, endTurn, exportReplay, executeAITurn,
-} from "@/lib/battle/battle-engine"
-import type { BattleState, BattlePhase } from "@/lib/battle"
-import BattleStadium3D from "./3d/battle-stadium-3d"
-import LaunchControl from "./battle/launch-control"
-import BattleEventLog from "./battle/battle-event-log"
+  createMatch, simulateThrow, generateAIMove, checkMatchEnd,
+  DEFAULT_ARENA_3D,
+} from "@/lib/battle/game-loop"
+import type {
+  GameState, PlayMode, AIDifficulty, SpinType,
+  TazoCard, DiscPhysics, MatchConfig, MatchResult, ThrowParams, RoundResult,
+} from "@/lib/battle/game-loop"
+import { deriveBattleStats } from "@/lib/battle/battle-types"
+import GameLobby from "./battle/game-lobby"
+import BattleArena3D from "./battle/battle-arena-3d"
+import BattleHUD from "./battle/battle-hud"
+import LaunchSystem from "./battle/launch-system"
 import BattleResultPanel from "./battle/battle-result-panel"
-import {
-  Swords, Play, RotateCcw, ChevronRight,
-  Zap, Shield, Star, Disc3, LogIn,
-} from "lucide-react"
-import Link from "next/link"
-import PvPBattlePanel from "./pvp-battle-panel"
+import { Disc3, Swords, Play, RotateCcw } from "lucide-react"
 
-// ---- Demo tazos (for unauthenticated users) — 9 stats ----
-const DEMO_TAZOS = [
-  { id: "demo-1", name: "Mimichu", slug: "demo-mimichu", franchise: "minimon", imageUrl: "/tazos/minimon/minimon-mimichu.svg", attack: 45, defense: 40, resistance: 35, weight: 35, stability: 40, spin: 55, control: 50, bounce: 45, precision: 55 },
-  { id: "demo-2", name: "Shadox", slug: "demo-shadox", franchise: "minimon", imageUrl: "/tazos/minimon/minimon-shadox.svg", attack: 65, defense: 60, resistance: 55, weight: 40, stability: 45, spin: 45, control: 55, bounce: 40, precision: 50 },
-  { id: "demo-3", name: "Graymech", slug: "demo-graymech", franchise: "cybermon", imageUrl: "/tazos/cybermon/cybermon-graymech.svg", attack: 55, defense: 50, resistance: 45, weight: 55, stability: 50, spin: 45, control: 40, bounce: 35, precision: 40 },
-  { id: "demo-4", name: "Archangelon", slug: "demo-archangelon", franchise: "cybermon", imageUrl: "/tazos/cybermon/cybermon-archangelon.svg", attack: 70, defense: 55, resistance: 50, weight: 45, stability: 55, spin: 50, control: 60, bounce: 45, precision: 55 },
-  { id: "demo-5", name: "Vexar", slug: "demo-vexar", franchise: "dracobell", imageUrl: "/tazos/dracobell/dracobell-vexar.svg", attack: 60, defense: 45, resistance: 40, weight: 50, stability: 45, spin: 50, control: 45, bounce: 40, precision: 45 },
-  { id: "demo-6", name: "Kairo SSJ", slug: "demo-kairo-ssj", franchise: "dracobell", imageUrl: "/tazos/dracobell/dracobell-kairo-ssj.svg", attack: 80, defense: 55, resistance: 50, weight: 55, stability: 55, spin: 65, control: 60, bounce: 50, precision: 55 },
-  { id: "demo-7", name: "Phantom", slug: "demo-phantom", franchise: "dracobell", imageUrl: "/tazos/dracobell/dracobell-phantom.svg", attack: 75, defense: 65, resistance: 60, weight: 60, stability: 58, spin: 55, control: 50, bounce: 45, precision: 50 },
+// ─── Demo tazos for guest users ───
+const DEMO_TAZOS: TazoCard[] = [
+  { id: "demo-1", name: "Lumipuff", slug: "lumipuff", franchise: "minimon", imageUrl: "/assets/tazos/minimon/001.png", attack: 45, defense: 40, resistance: 35, weight: 35, stability: 40, spin: 55, control: 50, bounce: 45, precision: 55 },
+  { id: "demo-2", name: "Emberkit", slug: "emberkit", franchise: "minimon", imageUrl: "/assets/tazos/minimon/003.png", attack: 65, defense: 50, resistance: 45, weight: 40, stability: 45, spin: 45, control: 55, bounce: 40, precision: 50 },
+  { id: "demo-3", name: "Voltcrab", slug: "voltcrab-x", franchise: "cybermon", imageUrl: "/assets/tazos/cybermon/001.png", attack: 70, defense: 45, resistance: 50, weight: 55, stability: 50, spin: 60, control: 40, bounce: 35, precision: 45 },
+  { id: "demo-4", name: "Datadrake", slug: "datadrake", franchise: "cybermon", imageUrl: "/assets/tazos/cybermon/002.png", attack: 60, defense: 55, resistance: 50, weight: 45, stability: 55, spin: 50, control: 60, bounce: 45, precision: 55 },
+  { id: "demo-5", name: "Rai Kendo", slug: "rai-kendo", franchise: "dracobell", imageUrl: "/assets/tazos/dracobell/001.png", attack: 75, defense: 45, resistance: 42, weight: 52, stability: 48, spin: 55, control: 47, bounce: 42, precision: 48 },
+  { id: "demo-6", name: "Tenzan", slug: "tenzan-blaze", franchise: "dracobell", imageUrl: "/assets/tazos/dracobell/002.png", attack: 80, defense: 55, resistance: 52, weight: 58, stability: 55, spin: 65, control: 60, bounce: 48, precision: 55 },
+  { id: "demo-7", name: "Mizu Shiro", slug: "mizu-shiro", franchise: "dracobell", imageUrl: "/assets/tazos/dracobell/003.png", attack: 62, defense: 65, resistance: 58, weight: 55, stability: 58, spin: 50, control: 52, bounce: 45, precision: 52 },
 ]
 
-type TazoCard = { id: string; name: string; slug: string; franchise: string; imageUrl: string | null; attack: number; defense: number; resistance: number; weight: number; stability: number; spin: number; control: number; bounce: number; precision: number; role?: string | null; stackable?: boolean; maxStackOn?: number }
-
 export default function BattleView() {
-  const { t } = useI18n()
   const { user, token } = useAuth()
-  const [battleMode, setBattleMode] = useState<"practice" | "online">("practice")
-  const [playerTazos, setPlayerTazos] = useState<TazoCard[]>([])
-  const [opponentTazos, setOpponentTazos] = useState<TazoCard[]>([])
+  const [gamePhase, setGamePhase] = useState<GameState>("lobby")
   const [loading, setLoading] = useState(true)
-  const [battleState, setBattleState] = useState<BattleState | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [capturedIds, setCapturedIds] = useState<string[]>([])
-  const [savingCaptures, setSavingCaptures] = useState(false)
+  const [playerTazos, setPlayerTazos] = useState<TazoCard[]>([])
+  const [playerDeck, setPlayerDeck] = useState<TazoCard[]>([])
+  const [matchConfig, setMatchConfig] = useState<MatchConfig | null>(null)
+  const [playerHP, setPlayerHP] = useState(100)
+  const [opponentHP, setOpponentHP] = useState(100)
+  const [playerDiscs, setPlayerDiscs] = useState<DiscPhysics[]>([])
+  const [opponentDiscs, setOpponentDiscs] = useState<DiscPhysics[]>([])
+  const [playerCaptured, setPlayerCaptured] = useState(0)
+  const [opponentCaptured, setOpponentCaptured] = useState(0)
+  const [round, setRound] = useState(1)
+  const [turnNumber, setTurnNumber] = useState(0)
+  const [matchResult, setMatchResult] = useState<MatchResult | null>(null)
+  const [throwingTazo, setThrowingTazo] = useState<TazoCard | null>(null)
+  const [launchPhase, setLaunchPhase] = useState<"aim" | "power" | "spin">("aim")
+  const [aimParams, setAimParams] = useState<{ x: number; y: number; accuracy: number }>({ x: 0, y: 0, accuracy: 0.8 })
+  const effectRun = useRef(false)
 
-  // ---- Load tazos: active deck (auth) or demo (guest) ----
+  // ─── Load tazos ───
   useEffect(() => {
     async function load() {
       try {
         let myTazos: TazoCard[] = []
-
         if (user && token) {
-          // Authenticated: load active deck
-          const deckRes = await fetch("/api/decks", {
-            headers: { Authorization: `Bearer ${token}` },
-          })
+          const deckRes = await fetch("/api/decks", { headers: { Authorization: `Bearer ${token}` } })
           if (deckRes.ok) {
-            const deckData = await deckRes.json()
-            const activeDeck = deckData.decks?.find((d: { isActive: boolean }) => d.isActive)
-            if (activeDeck && activeDeck.tazos?.length >= 5) {
+            const data = await deckRes.json()
+            const activeDeck = data.decks?.find((d: { isActive: boolean }) => d.isActive)
+            if (activeDeck?.tazos?.length) {
               myTazos = activeDeck.tazos.map((t: Record<string, unknown>) => ({
                 id: t.id as string,
                 name: (t.name || t.displayName || "?") as string,
                 slug: (t.slug || "") as string,
-                franchise: (t.franchiseSlug || "minimon") as string,
+                franchise: (t.franchiseSlug || "minimon") as "minimon" | "cybermon" | "dracobell",
                 imageUrl: t.imageUrl as string || null,
-                attack: t.attack as number,
-                defense: t.defense as number,
-                resistance: (t as any).resistance || 50,
-                weight: (t as any).weight || 50,
-                stability: (t as any).stability || 50,
-                spin: t.spin as number,
-                control: t.control as number,
-                bounce: (t as any).bounce || 50,
-                precision: (t as any).precision || 50,
-                role: (t.role as string) || null,
-                stackable: (t.stackable as boolean) ?? true,
-                maxStackOn: (t.maxStackOn as number) || 1,
+                attack: (t.attack || 50) as number,
+                defense: (t.defense || 50) as number,
+                resistance: ((t as any).resistance || 50) as number,
+                weight: ((t as any).weight || 50) as number,
+                stability: ((t as any).stability || 50) as number,
+                spin: (t.spin || 50) as number,
+                control: (t.control || 50) as number,
+                bounce: ((t as any).bounce || 50) as number,
+                precision: ((t as any).precision || 50) as number,
               }))
             }
           }
         }
-
-        // Fallback to demo if no deck or not authenticated
-        if (myTazos.length < 5) {
-          myTazos = DEMO_TAZOS
-        }
-
-        setPlayerTazos(myTazos)
-
-        // Generate AI opponent from API (random cross-franchise tazos)
-        const oppRes = await fetch("/api/tazos?sortBy=attack&sortOrder=desc&limit=20")
-        if (oppRes.ok) {
-          const oppData = await oppRes.json()
-          const pool = (oppData.tazos || [])
-            .filter((t: Record<string, unknown>) => !myTazos.some(mt => mt.id === t.id))
-          const shuffled = pool.sort(() => Math.random() - 0.5)
-          const selected = shuffled.slice(0, 7).map((t: Record<string, unknown>) => ({
-            id: t.id as string,
-            name: (t.name || t.displayName || "?") as string,
-            slug: t.slug as string,
-            franchise: ((t.franchise as { slug?: string })?.slug || "minimon") as string,
-            imageUrl: t.imageUrl as string || null,
-            attack: t.attack as number,
-            defense: t.defense as number,
-            resistance: (t as any).resistance || 50,
-            weight: (t as any).weight || 50,
-            stability: (t as any).stability || 50,
-            spin: t.spin as number,
-            control: t.control as number,
-            bounce: (t as any).bounce || 50,
-            precision: (t as any).precision || 50,
-            role: (t.role as string) || null,
-            stackable: (t.stackable as boolean) ?? true,
-            maxStackOn: (t.maxStackOn as number) || 1,
-          }))
-          setOpponentTazos(selected.length >= 5 ? selected : DEMO_TAZOS)
-        } else {
-          setOpponentTazos(DEMO_TAZOS)
-        }
-      } catch (err) {
-        console.error("Failed to load tazos:", err)
-        setPlayerTazos(DEMO_TAZOS)
-        setOpponentTazos(DEMO_TAZOS)
-      } finally {
-        setLoading(false)
-      }
+        setPlayerTazos(myTazos.length >= 5 ? myTazos : DEMO_TAZOS)
+      } catch { setPlayerTazos(DEMO_TAZOS) }
+      finally { setLoading(false) }
     }
     load()
   }, [user, token])
 
-  // ---- Start battle ----
-  const startBattle = useCallback(() => {
-    if (playerTazos.length < 5) {
-      setError(t.battle_need_5_tazos)
-      return
+  // ─── Start match ───
+  const handleStartMatch = useCallback(async (mode: PlayMode, difficulty: AIDifficulty, deck: TazoCard[]) => {
+    setPlayerDeck(deck)
+
+    // Generate opponent deck
+    let oppDeck: TazoCard[] = []
+    if (mode === "practice") {
+      // Use demo tazos for AI
+      oppDeck = [...DEMO_TAZOS].sort(() => Math.random() - 0.5).slice(0, 5)
+    } else {
+      try {
+        const res = await fetch("/api/tazos?sortBy=attack&sortOrder=desc&limit=20")
+        if (res.ok) {
+          const data = await res.json()
+          const pool = (data.tazos || []).map((t: Record<string, unknown>) => ({
+            id: t.id as string,
+            name: (t.name || "?") as string,
+            slug: t.slug as string,
+            franchise: ((t.franchise as { slug?: string })?.slug || "minimon") as "minimon" | "cybermon" | "dracobell",
+            imageUrl: t.imageUrl as string || null,
+            attack: (t.attack || 50) as number,
+            defense: (t.defense || 50) as number,
+            resistance: ((t as any).resistance || 50) as number,
+            weight: ((t as any).weight || 50) as number,
+            stability: ((t as any).stability || 50) as number,
+            spin: (t.spin || 50) as number,
+            control: (t.control || 50) as number,
+            bounce: ((t as any).bounce || 50) as number,
+            precision: ((t as any).precision || 50) as number,
+          }))
+          oppDeck = pool
+            .filter((t: TazoCard) => !deck.some(d => d.id === t.id))
+            .sort(() => Math.random() - 0.5).slice(0, 5)
+        }
+      } catch { oppDeck = [...DEMO_TAZOS].sort(() => Math.random() - 0.5).slice(0, 5) }
     }
-    setError(null)
-    const state = createBattleState(playerTazos, opponentTazos, {
-      arena: { radius: 250, centerX: 300, centerY: 300 },
-    })
-    // Track captured opponent tazos for collection saving
-    const oppLookup = new Map(opponentTazos.map(t => [t.id, t]))
-    setCapturedIds([])
-    // We'll track captures via battle events
-    setBattleState(startTurn(state))
-  }, [playerTazos, opponentTazos, t.battle_need_5_tazos])
+    if (oppDeck.length < 5) oppDeck = [...DEMO_TAZOS].sort(() => Math.random() - 0.5).slice(0, 5)
 
-  // ---- Phase handlers ----
-  const handleSelectThrower = useCallback((tazoId: string) => {
-    if (!battleState) return
-    setBattleState(selectThrower(battleState, tazoId))
-  }, [battleState])
+    const config: MatchConfig = {
+      mode,
+      aiDifficulty: difficulty,
+      arena: DEFAULT_ARENA_3D,
+      rounds: 0,
+      playerDeck: deck,
+      opponentDeck: oppDeck,
+    }
 
-  const handleHorizontalAim = useCallback((value: number) => {
-    if (!battleState) return
-    setBattleState(setHorizontalAim(battleState, value))
-  }, [battleState])
+    setMatchConfig(config)
+    setPlayerHP(100)
+    setOpponentHP(100)
+    setPlayerCaptured(0)
+    setOpponentCaptured(0)
+    setRound(1)
+    setTurnNumber(0)
+    setMatchResult(null)
 
-  const handleVerticalAim = useCallback((value: number) => {
-    if (!battleState) return
-    setBattleState(setVerticalAim(battleState, value))
-  }, [battleState])
+    // Init physics discs on the field
+    const pDiscs: DiscPhysics[] = deck.map((t, i) => ({
+      id: t.id,
+      position: [i * 0.8 - 1.6, 0.04, 3.5], // Player side
+      velocity: [0, 0, 0],
+      rotation: [0, 0, 0],
+      angularVelocity: [0, 0, 0],
+      facing: "front",
+      state: "stopped",
+      owner: "player",
+    }))
+    const oDiscs: DiscPhysics[] = oppDeck.map((t, i) => ({
+      id: t.id,
+      position: [i * 0.8 - 1.6, 0.04, -3.5], // Opponent side
+      velocity: [0, 0, 0],
+      rotation: [0, 0, 0],
+      angularVelocity: [0, 0, 0],
+      facing: "front",
+      state: "stopped",
+      owner: "opponent",
+    }))
 
-  const handlePowerSet = useCallback((value: number) => {
-    if (!battleState) return
-    const powered = setPower(battleState, value)
+    setPlayerDiscs(pDiscs)
+    setOpponentDiscs(oDiscs)
+
+    // Intro → Round start
+    setGamePhase("intro")
     setTimeout(() => {
-      setBattleState(executeThrow(powered))
-    }, 300)
-  }, [battleState])
+      setGamePhase("round_start")
+      setTimeout(() => {
+        // Start with player aim
+        const firstTazo = deck[0]
+        setThrowingTazo(firstTazo)
+        setLaunchPhase("aim")
+        setGamePhase("player_aim")
+      }, 1500)
+    }, 2500)
+  }, [])
 
-  const handleArenaClick = useCallback((x: number, y: number) => {
-    if (!battleState || battleState.phase !== "opponent_place_penalty") return
-    setBattleState(opponentPlaceTazo(battleState, x, y))
-  }, [battleState])
+  // ─── AIM lock ───
+  const handleAimLock = useCallback((x: number, y: number, accuracy: number) => {
+    setAimParams({ x, y, accuracy })
+    setLaunchPhase("power")
+    setGamePhase("player_power")
+  }, [])
 
+  // ─── POWER lock → throw ───
+  const handlePowerLock = useCallback((power: number, accuracy: number) => {
+    if (!throwingTazo || !matchConfig) return
+
+    const throwParams: ThrowParams = {
+      tazoId: throwingTazo.id,
+      aimX: aimParams.x,
+      aimY: aimParams.y,
+      power,
+      powerAccuracy: accuracy,
+      spinType: "none", // Simplified: we skip spin phase for now
+      accuracyPenalty: (1 - aimParams.accuracy) * 0.5 + (1 - accuracy) * 0.3,
+      timestamp: Date.now(),
+    }
+
+    setGamePhase("throwing")
+
+    // Simulate throw after animation delay
+    setTimeout(() => {
+      if (!matchConfig) return
+      setGamePhase("physics")
+
+      const result = simulateThrow(throwingTazo, throwParams, opponentDiscs, matchConfig.arena)
+      setOpponentDiscs([...result.discs])
+
+      // Apply HP damage
+      const damage = result.result.hpDealt
+      setOpponentHP(prev => Math.max(0, prev - damage))
+      setOpponentCaptured(prev => prev + result.result.discsCaptured.length)
+      setPlayerCaptured(prev => prev + result.result.discsRingOut.length)
+      setTurnNumber(prev => prev + 1)
+
+      setTimeout(() => {
+        setGamePhase("resolve")
+
+        // Check match end
+        const end = checkMatchEnd(
+          { id: "player", name: "You", deck: playerDeck, hp: playerHP, maxHp: 100, tazosRemaining: playerDeck.length - playerCaptured, captured: playerCaptured, currentTazo: null, isAI: false },
+          { id: "opponent", name: matchConfig.mode === "practice" ? `AI` : "Opponent", deck: matchConfig.opponentDeck, hp: opponentHP - damage, maxHp: 100, tazosRemaining: matchConfig.opponentDeck.length - opponentCaptured, captured: opponentCaptured, currentTazo: null, isAI: true },
+          playerDiscs, opponentDiscs
+        )
+
+        if (end) {
+          setMatchResult(end)
+          setGamePhase("match_end")
+          return
+        }
+
+        // Opponent turn
+        setTimeout(() => {
+          setGamePhase("opponent_turn")
+          const oppTazo = matchConfig.opponentDeck[Math.floor(Math.random() * matchConfig.opponentDeck.length)]
+          const aiMove = generateAIMove(oppTazo, playerDiscs, opponentDiscs, matchConfig.arena, matchConfig.aiDifficulty)
+
+          setTimeout(() => {
+            setGamePhase("physics")
+            const oppResult = simulateThrow(oppTazo, aiMove, playerDiscs, matchConfig.arena)
+            setPlayerDiscs([...oppResult.discs])
+            const oppDamage = oppResult.result.hpDealt
+            setPlayerHP(prev => Math.max(0, prev - oppDamage))
+            setPlayerCaptured(prev => prev + oppResult.result.discsCaptured.length)
+            setTurnNumber(prev => prev + 1)
+
+            setTimeout(() => {
+              setGamePhase("resolve")
+              // Check end again
+              const end2 = checkMatchEnd(
+                { id: "player", name: "You", deck: playerDeck, hp: playerHP - oppDamage, maxHp: 100, tazosRemaining: playerDeck.length - playerCaptured, captured: playerCaptured, currentTazo: null, isAI: false },
+                { id: "opponent", name: matchConfig.mode === "practice" ? `AI` : "Opponent", deck: matchConfig.opponentDeck, hp: opponentHP - damage, maxHp: 100, tazosRemaining: matchConfig.opponentDeck.length - opponentCaptured, captured: opponentCaptured, currentTazo: null, isAI: true },
+                playerDiscs, opponentDiscs
+              )
+              if (end2) {
+                setMatchResult(end2)
+                setGamePhase("match_end")
+                return
+              }
+
+              // Next round
+              setRound(prev => prev + 1)
+              setGamePhase("round_end")
+              setTimeout(() => {
+                const nextTazo = playerDeck[turnNumber % playerDeck.length]
+                setThrowingTazo(nextTazo)
+                setLaunchPhase("aim")
+                setGamePhase("player_aim")
+              }, 1500)
+            }, 1000)
+          }, 1500)
+        }, 1200)
+      }, 800)
+    }, 400)
+  }, [throwingTazo, matchConfig, aimParams, playerDeck, playerHP, opponentHP, playerDiscs, opponentDiscs, playerCaptured, opponentCaptured, turnNumber])
+
+  // ─── Rematch ───
   const handleRematch = useCallback(() => {
-    setCapturedIds([])
-    startBattle()
-  }, [startBattle])
+    if (!matchConfig) return
+    handleStartMatch(matchConfig.mode, matchConfig.aiDifficulty, playerDeck)
+  }, [matchConfig, playerDeck, handleStartMatch])
 
-  // ---- Derived ----
-  const playerHand = useMemo(() =>
-    battleState?.player.hand.filter(t => t.state === "in_hand") ?? [],
-  [battleState])
-  const playerField = useMemo(() =>
-    battleState?.player.field.filter(t => t.state === "on_field") ?? [],
-  [battleState])
+  // ─── Back to lobby ───
+  const handleBackToLobby = useCallback(() => {
+    setGamePhase("lobby")
+    setMatchConfig(null)
+    setMatchResult(null)
+    setThrowingTazo(null)
+  }, [])
 
-  // ---- Loading ----
+  // ─── Loading ───
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="text-center space-y-3">
           <Disc3 className="w-12 h-12 mx-auto animate-spin text-[#FFCC00]" />
-          <p className="font-black text-sm text-[#1a1a1a] uppercase tracking-wider">
-            {t.battle_loading}
-          </p>
+          <p className="font-black text-sm text-[#1a1a1a] uppercase tracking-wider">Loading Battle...</p>
         </div>
       </div>
     )
   }
 
-  // ---- Pre-battle screen ----
-  if (!battleState) {
+  // ─── Lobby ───
+  if (gamePhase === "lobby") {
     return (
-      <div className="space-y-6">
-        {/* Title */}
-        <div className="text-center py-6 px-4 bg-[#FFCC00] border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a]">
-          <Swords className="w-10 h-10 mx-auto mb-2 text-[#1a1a1a]" />
-          <h2 className="text-3xl font-black uppercase tracking-wider text-[#1a1a1a] mag-stroke-sm">
-            {t.battle_title}
-          </h2>
-          <p className="text-sm font-bold text-[#1a1a1a]/70 mt-1">
-            {t.battle_tagline}
-          </p>
-        </div>
-
-        {/* Info cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="p-4 bg-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a]">
-            <Zap className="w-5 h-5 mb-1 text-[#F59E0B]" />
-            <h3 className="font-black text-sm uppercase text-[#1a1a1a]">{t.info_aim_title}</h3>
-            <p className="text-xs text-[#1a1a1a]/60 mt-1">{t.info_aim_desc}</p>
-          </div>
-          <div className="p-4 bg-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a]">
-            <Shield className="w-5 h-5 mb-1 text-[#3B4CCA]" />
-            <h3 className="font-black text-sm uppercase text-[#1a1a1a]">{t.info_charge_title}</h3>
-            <p className="text-xs text-[#1a1a1a]/60 mt-1">{t.info_charge_desc}</p>
-          </div>
-          <div className="p-4 bg-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a]">
-            <Star className="w-5 h-5 mb-1 text-[#A855F7]" />
-            <h3 className="font-black text-sm uppercase text-[#1a1a1a]">{t.info_capture_title}</h3>
-            <p className="text-xs text-[#1a1a1a]/60 mt-1">{t.info_capture_desc}</p>
-          </div>
-        </div>
-
-        {/* Error */}
-        {error && (
-          <div className="p-4 bg-[#E3350D15] border-3 border-[#E3350D] text-center">
-            <p className="font-bold text-sm text-[#E3350D]">{error}</p>
-          </div>
-        )}
-
-        {/* Owned tazos count */}
-        <div className="text-center">
-          <p className="text-sm font-bold text-[#1a1a1a]/60">
-            {playerTazos.length} {t.battle_owned_tazos}
-            {playerTazos.length < 5 && ` ${t.battle_need_5_suffix}`}
-          </p>
-          {!user && (
-            <div className="mt-3 p-3 bg-purple-50 border-2 border-purple-200 rounded-lg inline-block">
-              <LogIn className="w-4 h-4 inline mr-1 text-purple-500" />
-              <Link href="/login" className="text-sm font-bold text-purple-600 hover:text-purple-800 underline">
-                {t.auth_login}
-              </Link>
-              <span className="text-xs text-purple-400 mx-1">{t.auth_no_account}</span>
-              <Link href="/register" className="text-sm font-bold text-purple-600 hover:text-purple-800 underline">
-                {t.auth_register}
-              </Link>
-              <p className="text-[10px] text-purple-400 mt-1">
-                {t.auth_register_subtitle}
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Start button */}
-        <div className="text-center">
-          <button
-            onClick={startBattle}
-            disabled={playerTazos.length < 5}
-            className="px-8 py-4 font-black text-lg uppercase tracking-wider bg-[#E3350D] text-white border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_#1a1a1a] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <Play className="w-5 h-5 inline mr-2" />
-            {t.battle_start}
-          </button>
-        </div>
-      </div>
+      <GameLobby
+        playerTazos={playerTazos}
+        onStart={handleStartMatch}
+        isLoading={false}
+        isAuthenticated={!!user}
+      />
     )
   }
 
-  // ---- Battle finished ----
-  if (battleState.phase === "battle_finished" && battleState.finalResult) {
-    // Collect captured opponent tazo IDs from battle result
-    const playerCapturedList = battleState.finalResult.playerCaptures ?? battleState.player.captured ?? []
-    const playerCaptures: { id: string; side?: string }[] = Array.isArray(playerCapturedList) ? playerCapturedList : []
-    const captureTazoIds = playerCaptures
-      .filter((c) => c.side === "opponent" || opponentTazos.some(o => o.id === c.id))
-      .map((c: { id: string }) => c.id)
-
-    const handleSaveCaptures = async () => {
-      if (!token || captureTazoIds.length === 0) return
-      setSavingCaptures(true)
-      for (const tazoId of captureTazoIds) {
-        try {
-          await fetch("/api/collection", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-            body: JSON.stringify({ tazoId }),
-          })
-        } catch { /* continue on error */ }
-      }
-      setSavingCaptures(false)
-      setCapturedIds(captureTazoIds)
-    }
+  // ─── Match End ───
+  if (gamePhase === "match_end" && matchResult) {
     return (
       <div className="max-w-md mx-auto space-y-4">
         <BattleResultPanel
-          result={battleState.finalResult}
-          playerName={t.battle_you}
-          opponentName={t.battle_rival}
+          result={{
+            winner: matchResult.winner,
+            victoryType: matchResult.victoryType,
+            playerScore: playerDiscs.filter(d => d.owner === "player" && d.state !== "captured").length,
+            opponentScore: opponentDiscs.filter(d => d.owner === "opponent" && d.state !== "captured").length,
+            totalTurns: turnNumber,
+            playerCaptures: playerCaptured,
+            opponentCaptures: opponentCaptured,
+            summary: matchResult.summary,
+          }}
+          playerName="You"
+          opponentName={matchConfig?.mode === "practice" ? `AI (${matchConfig?.aiDifficulty})` : "Opponent"}
           onRematch={handleRematch}
         />
-        {/* Save captured tazos to collection */}
-        {user && captureTazoIds.length > 0 && capturedIds.length < captureTazoIds.length && (
-          <div className="text-center">
-            <button
-              onClick={handleSaveCaptures}
-              disabled={savingCaptures}
-              className="px-6 py-3 font-black text-sm uppercase tracking-wider bg-[#22C55E] text-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50"
-            >
-              {savingCaptures ? t.common_loading : `+${captureTazoIds.length} ${t.battle_captured} ${t.collection_total}`}
-            </button>
-          </div>
-        )}
-        {capturedIds.length > 0 && (
-          <div className="text-center">
-            <span className="inline-block px-3 py-1 bg-green-100 border-2 border-green-300 rounded text-xs font-bold text-green-700">
-              {capturedIds.length} {t.battle_captured_suffix}
-            </span>
-          </div>
-        )}
-        {!user && captureTazoIds.length > 0 && (
-          <div className="text-center p-3 bg-purple-50 border-2 border-purple-200 rounded-lg">
-            <p className="text-sm font-bold text-purple-700">
-              {captureTazoIds.length} {t.battle_captured_suffix}
-            </p>
-            <Link href="/login" className="text-xs text-purple-500 hover:text-purple-700 underline">
-              {t.auth_login} {t.auth_register_subtitle}
-            </Link>
-          </div>
-        )}
-        <BattleEventLog turns={battleState.turns} />
-      </div>
-    )
-  }
-
-  // ---- Active battle ----
-  const phase = battleState.phase
-  const isSelectPhase = phase === "select_thrower" || phase === "turn_start"
-  const isAimPhase = phase === "aim_horizontal" || phase === "aim_vertical" || phase === "charge_power"
-  const isAnimating = phase === "throwing" || phase === "physics_simulation" ||
-    phase === "impact_resolution" || phase === "capture_resolution"
-  const isPenalty = phase === "opponent_place_penalty"
-  const isTurnEnd = phase === "turn_end"
-  const isOpponentTurn = battleState.currentPlayerId === "opponent" &&
-    (isSelectPhase || isAimPhase || isAnimating)
-
-  // ─── PvP Online mode ────────────────────────────────
-  if (battleMode === "online") {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 p-3 bg-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a]">
+        <div className="text-center">
           <button
-            onClick={() => setBattleMode("practice")}
-            className="mag-btn text-[10px] font-black uppercase px-3 py-1.5 border-2 border-[#1a1a1a] bg-zinc-100 text-zinc-500 shadow-[2px_2px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+            onClick={handleBackToLobby}
+            className="px-6 py-3 font-black text-sm uppercase tracking-wider bg-white text-[#1a1a1a] border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
           >
-            ← {t.common_back || "Back"}
+            <RotateCcw className="w-4 h-4 inline mr-2" />
+            Back to Lobby
           </button>
-          <span className="text-xs font-black uppercase tracking-wider text-[#1a1a1a]">Online PvP</span>
-          <span className="ml-auto flex items-center gap-1 text-[10px] font-bold text-green-600">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" /> LIVE
-          </span>
         </div>
-        <PvPBattlePanel />
       </div>
     )
   }
 
-  // ─── Local Practice mode ─────────────────────────────
-  return (
-    <div className="h-full flex flex-col">
-      {/* Header bar */}
-      <div className="flex-shrink-0 flex items-center justify-between p-3 bg-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] mb-3">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setBattleMode("online")}
-            className="mag-btn flex items-center gap-1 text-[10px] font-black uppercase px-2.5 py-1 border-2 border-[#1a1a1a] bg-[#FFCC00] text-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all mr-2"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-            Online
-          </button>
-          <Swords className="w-5 h-5 text-[#E3350D]" />
-          <span className="font-black text-sm uppercase tracking-wider text-[#1a1a1a]">
-            {t.battle_turn} {battleState.turnNumber}
-          </span>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-bold text-[#3B82F6] uppercase">{t.battle_you}</span>
-            <span className="font-black text-sm">{battleState.player.captured.length}</span>
-          </div>
-          <span className="text-[#1a1a1a]/30 font-bold">-</span>
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-bold text-[#E3350D] uppercase">{t.battle_rival}</span>
-            <span className="font-black text-sm">{battleState.opponent.captured.length}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* LEFT: Arena */}
-        <div className="lg:col-span-2 min-h-0 flex flex-col">
-          <div className="flex-1 min-h-0">
-          <BattleStadium3D
-            playerTazos={battleState.player.field.map((p) => ({
-              id: p.id,
-              name: p.name,
-              franchise: p.franchise || "minimon",
-              attack: p.stats.attack,
-              defense: p.stats.defense,
-            }))}
-            opponentTazos={battleState.opponent.field.map((p) => ({
-              id: p.id,
-              name: p.name,
-              franchise: p.franchise || "cybermon",
-              attack: p.stats.attack,
-              defense: p.stats.defense,
-            }))}
-            className="flex-1 min-h-0"
-          />
-          </div>
-
-          {/* Phase indicator */}
-          <div className="flex-shrink-0 text-center py-1">
-            <span className="inline-block px-3 py-1 font-black text-xs uppercase tracking-wider bg-[#1a1a1a] text-[#FFCC00] border-2 border-[#1a1a1a]">
-              {isSelectPhase && t.battle_phase_select}
-              {phase === "aim_horizontal" && t.battle_phase_horizontal}
-              {phase === "aim_vertical" && t.battle_phase_vertical}
-              {phase === "charge_power" && t.battle_phase_charge}
-              {isAnimating && t.battle_phase_resolving}
-              {isPenalty && t.battle_phase_penalty}
-              {isTurnEnd && t.battle_phase_turn_end}
-              {isOpponentTurn && t.battle_phase_rival}
-            </span>
-          </div>
-        </div>
-
-        {/* RIGHT: Controls */}
-        <div className="min-h-0 overflow-y-auto custom-scrollbar space-y-3">
-          {/* Tazo selection */}
-          {isSelectPhase && battleState.currentPlayerId === "player" && (
-            <div className="p-4 bg-white border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a]">
-              <h3 className="font-black text-xs uppercase tracking-wider text-[#1a1a1a] mb-3">
-                {t.battle_your_hand} ({playerHand.length} {t.tabStats.toLowerCase()})
-              </h3>
-              <div className="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar">
-                {playerHand.map((tazo) => (
-                  <button
-                    key={tazo.id}
-                    onClick={() => handleSelectThrower(tazo.id)}
-                    className="w-full flex items-center gap-3 p-2 border-2 border-[#1a1a1a]/10 rounded hover:border-[#FFCC00] hover:bg-[#FFCB0510] transition-all text-left"
-                  >
-                    <div
-                      className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-black shrink-0 border-2 border-[#1a1a1a]"
-                      style={{
-                        background: tazo.franchise === "minimon"
-                          ? "linear-gradient(135deg, #FFCB05, #FF8C00)"
-                          : tazo.franchise === "cybermon"
-                          ? "linear-gradient(135deg, #00A1E9, #0057B7)"
-                          : "linear-gradient(135deg, #FF6B00, #CC4400)",
-                      }}
-                    >
-                      <span className="text-white">{tazo.name.charAt(0)}</span>
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="text-sm font-bold text-[#1a1a1a] truncate">{tazo.name}</div>
-                      <div className="flex gap-1 mt-0.5">
-                        <span className="text-[9px] font-bold px-1 bg-[#E3350D15] text-[#E3350D] rounded">
-                          {t.tazo_attack} {tazo.stats.attack}
-                        </span>
-                        <span className="text-[9px] font-bold px-1 bg-[#3B4CCA15] text-[#3B4CCA] rounded">
-                          {t.tazo_defense} {tazo.stats.defense}
-                        </span>
-                        <span className="text-[9px] font-bold px-1 bg-[#F59E0B15] text-[#F59E0B] rounded">
-                          {t.tazo_bounce} {tazo.stats.bounce}
-                        </span>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-[#1a1a1a]/30 shrink-0" />
-                  </button>
-                ))}
-              </div>
-              {playerHand.length === 0 && (
-                <p className="text-xs text-[#1a1a1a]/50 italic text-center py-3">
-                  {t.battle_no_tazos_hand}
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* Aim controls */}
-          {isAimPhase && battleState.currentPlayerId === "player" && (
-            <LaunchControl
-              phase={phase}
-              aimPhase={battleState.aimPhase}
-              onHorizontalAim={handleHorizontalAim}
-              onVerticalAim={handleVerticalAim}
-              onPowerSet={handlePowerSet}
-              onThrow={() => {}}
-            />
-          )}
-
-          {/* Opponent AI turn — auto-resolve after delay */}
-          {isOpponentTurn && <AITurnResolver state={battleState} onResolved={setBattleState} t={t} />}
-
-          {/* Turn end — advance to next turn */}
-          {isTurnEnd && battleState.currentPlayerId === "player" && (
-            <div className="p-4 bg-white border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] text-center space-y-3">
-              <p className="font-bold text-sm text-[#1a1a1a]">
-                {t.battle_turn} {battleState.turnNumber} {t.battle_turn_complete}
-              </p>
-              <button
-                onClick={() => setBattleState(endTurn({ ...battleState }))}
-                className="w-full py-3 font-black text-sm uppercase tracking-wider bg-[#22C55E] text-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
-              >
-                <ChevronRight className="w-4 h-4 inline mr-2" />
-                {t.battle_next_turn}
-              </button>
-            </div>
-          )}
-
-          {/* Event log */}
-          {battleState.turns.length > 0 && (
-            <BattleEventLog turns={battleState.turns} />
-          )}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ============================================================
-// AITurnResolver — Auto-executes AI opponent turns with delay
-// ============================================================
- 
-function AITurnResolver({
-  state,
-  onResolved,
-  t,
-}: {
-  state: import("@/lib/battle/battle-engine").BattleState
-  onResolved: (s: import("@/lib/battle/battle-engine").BattleState) => void
-  t: Dictionary
-}) {
-  const keyRef = useRef(0)
-  const [progress, setProgress] = useState(0)
-
-  useEffect(() => {
-    const currentKey = ++keyRef.current
-    setProgress(0)
-    let frame = 0
-    const duration = 1500
-    const fps = 30
-    const step = duration / fps
-    
-    const interval = setInterval(() => {
-      frame++
-      const pct = Math.min((frame * step / duration) * 100, 100)
-      if (currentKey === keyRef.current) setProgress(pct)
-      if (pct >= 100) {
-        clearInterval(interval)
-        if (currentKey === keyRef.current) {
-          try { onResolved(executeAITurn({ ...state })) }
-          catch { onResolved(endTurn({ ...state })) }
-        }
-      }
-    }, step)
-
-    return () => clearInterval(interval)
-  }, [state.turnNumber, state.currentPlayerId])
-
-  if (progress >= 100) {
-    return (
-      <div className="p-4 bg-white border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] text-center">
-        <Zap className="w-6 h-6 mx-auto mb-1 text-[#22C55E]" />
-        <p className="text-xs font-bold text-[#1a1a1a]">{t.battle_next_turn}</p>
-      </div>
-    )
-  }
+  // ─── Active Battle ───
+  const arenaConfig = matchConfig?.arena || DEFAULT_ARENA_3D
+  const isCompact = typeof window !== "undefined" && window.innerWidth < 640
 
   return (
-    <div className="p-4 bg-white border-3 border-[#E3350D] shadow-[4px_4px_0px_#1a1a1a] text-center space-y-3">
-      <Disc3 className="w-8 h-8 mx-auto animate-spin text-[#E3350D]" />
-      <p className="font-black text-xs uppercase tracking-wider text-[#E3350D]">
-        {t.battle_rival_throwing}
-      </p>
-      <div className="w-full h-2 bg-zinc-200 border border-[#1a1a1a]">
-        <div
-          className="h-full bg-[#E3350D]"
-          style={{ width: `${progress}%`, transition: "width 50ms linear" }}
+    <div className="w-full h-full flex flex-col space-y-3 animate-in fade-in duration-300">
+      {/* ── HUD ── */}
+      <div className="flex-shrink-0 px-1">
+        <BattleHUD
+          playerName="You"
+          opponentName={matchConfig?.mode === "practice" ? `AI (${matchConfig?.aiDifficulty})` : "Opponent"}
+          playerHP={playerHP} playerMaxHP={100}
+          opponentHP={opponentHP} opponentMaxHP={100}
+          playerTazos={playerDeck.length}
+          opponentTazos={matchConfig?.opponentDeck.length || 5}
+          playerCaptured={playerCaptured}
+          opponentCaptured={opponentCaptured}
+          round={round}
+          phase={gamePhase}
+          turnPlayer={gamePhase.startsWith("player_") ? "player" : "opponent"}
+          compact={isCompact}
         />
       </div>
+
+      {/* ── Back to lobby button ── */}
+      {gamePhase !== "throwing" && gamePhase !== "physics" && (
+        <button
+          onClick={handleBackToLobby}
+          className="self-start text-[10px] font-bold text-[#1a1a1a]/40 hover:text-[#E3350D] transition-colors ml-1"
+        >
+          ← Lobby
+        </button>
+      )}
+
+      {/* ── Arena 3D ── */}
+      <div className="flex-1 min-h-0">
+        <BattleArena3D
+          config={arenaConfig}
+          playerDiscs={playerDiscs}
+          opponentDiscs={opponentDiscs}
+          gamePhase={gamePhase}
+          aimDirection={
+            gamePhase === "player_aim" && aimParams
+              ? [aimParams.x, 0, aimParams.y > 0 ? -aimParams.y : Math.abs(aimParams.y)]
+              : undefined
+          }
+          aimPower={launchPhase === "power" ? 0.5 : undefined}
+          compact={isCompact}
+        />
+      </div>
+
+      {/* ── Launch Controls ── */}
+      {gamePhase === "player_aim" || gamePhase === "player_power" || gamePhase === "player_spin" ? (
+        <div className="flex-shrink-0">
+          <LaunchSystem
+            phase={launchPhase}
+            onAimLock={handleAimLock}
+            onPowerLock={handlePowerLock}
+            onSpinLock={(spin) => {
+              // Handle spin
+              handlePowerLock(0.6, 0.8)
+            }}
+            throwingTazoName={throwingTazo?.name || "?"}
+            throwingTazoFranchise={throwingTazo?.franchise || "minimon"}
+          />
+        </div>
+      ) : gamePhase === "throwing" || gamePhase === "physics" ? (
+        <div className="flex-shrink-0 p-4 bg-white border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] text-center">
+          <Disc3 className="w-8 h-8 mx-auto animate-spin text-[#FFCC00]" />
+          <p className="font-black text-sm uppercase text-[#1a1a1a]/50 mt-2">
+            {gamePhase === "throwing" ? "Throwing..." : "Resolving..."}
+          </p>
+        </div>
+      ) : gamePhase === "opponent_turn" ? (
+        <div className="flex-shrink-0 p-4 bg-white border-3 border-[#E3350D] shadow-[4px_4px_0px_#1a1a1a] text-center">
+          <Disc3 className="w-8 h-8 mx-auto animate-spin text-[#E3350D]" />
+          <p className="font-black text-xs uppercase text-[#E3350D] mt-2">
+            Opponent is throwing...
+          </p>
+        </div>
+      ) : gamePhase === "round_end" ? (
+        <div className="flex-shrink-0 p-4 bg-white border-3 border-[#22C55E] shadow-[4px_4px_0px_#1a1a1a] text-center">
+          <p className="font-black text-xs uppercase text-[#22C55E]">
+            Round {round} Complete — Next Round Starting...
+          </p>
+        </div>
+      ) : null}
     </div>
   )
 }

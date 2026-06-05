@@ -3,3 +3,4 @@
 export * from "./battle-types"
 export * from "./battle-rules"
 export * from "./battle-engine"
+export * from "./game-loop"

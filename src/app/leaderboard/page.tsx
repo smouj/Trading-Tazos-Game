@@ -19,6 +19,7 @@ interface LeaderboardEntry {
   score: number
   rankField: string
   tazoCount?: number
+  winCount?: number
   _count?: { userTazos: number }
 }
 
@@ -162,7 +163,10 @@ export default function LeaderboardPage() {
                     {isCurrentUser && <span className="ml-1 text-[8px] text-[#E3350D]">(YOU)</span>}
                   </p>
                   {entry.tazoCount !== undefined && (
-                    <p className="text-[9px] font-bold text-zinc-400">{entry.tazoCount || entry._count?.userTazos || 0} tazos</p>
+                    <p className="text-[9px] font-bold text-zinc-400">
+                      {entry.tazoCount || entry._count?.userTazos || 0} tazos
+                      {entry.winCount != null && ` · ${entry.winCount}W`}
+                    </p>
                   )}
                 </div>
 
@@ -185,20 +189,20 @@ export default function LeaderboardPage() {
           })}
 
           {entries.length === 0 && (
-            <div className="text-center py-16 px-4">
-              <Trophy className="w-14 h-14 mx-auto text-zinc-200 mb-4" />
-              <p className="text-base font-black uppercase tracking-wider text-[#1a1a1a]/40 mb-1">
-                No Ranked Players Yet
+            <div className="text-center py-20 px-4">
+              <Trophy className="w-16 h-16 mx-auto text-[#FFCC00]/30 mb-5" />
+              <p className="text-lg font-black uppercase tracking-wider text-[#1a1a1a]/30 mb-2">
+                Leaderboard Awaits
               </p>
-              <p className="text-xs font-bold text-zinc-400 max-w-xs mx-auto mb-6">
-                Be the first to earn credits, collect tazos, and win battles to claim the top spot on the leaderboard.
+              <p className="text-xs font-bold text-[#1a1a1a]/40 max-w-sm mx-auto mb-8 leading-relaxed">
+                No players have earned points yet. Sign up, collect tazos, win battles, and your name will appear here.
               </p>
               {!user && (
                 <a
                   href="/register"
-                  className="mag-btn inline-block bg-[#FFCC00] text-[#1a1a1a] font-black uppercase px-8 py-3 text-sm border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#1a1a1a] transition-all"
+                  className="mag-btn inline-block bg-[#E3350D] text-white font-black uppercase px-8 py-3 text-sm border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#1a1a1a] transition-all"
                 >
-                  Create Account &amp; Start Climbing →
+                  Create Free Account &amp; Claim #1 →
                 </a>
               )}
             </div>

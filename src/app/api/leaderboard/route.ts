@@ -22,19 +22,20 @@ export async function GET(req: NextRequest) {
       users = users.map(u => ({ ...u, score: u._count.userTazos, rankField: "tazos" }))
       break
     case "battles":
-      // Use aggregate of battle records as proxy
-      users = await prisma.user.findMany({
-        select: { id: true, name: true, displayName: true, avatarUrl: true, credits: true },
-        orderBy: { credits: "desc" },
+      // Real battle counts from BattleRecord
+      const battleUsers = await prisma.user.findMany({
+        select: { id: true, name: true, displayName: true, avatarUrl: true, credits: true, _count: { select: { userTazos: true } } },
         take: limit,
       })
-      // Get battle wins from userTazos
-      for (const u of users) {
-        const stats = await prisma.userTazo.aggregate({ _sum: { quantity: true }, where: { userId: u.id } })
-        u.battleCount = Math.floor((stats._sum.quantity || 0) * 0.3) // proxy
+      // Count real battles per user
+      for (const u of battleUsers) {
+        const wins = await prisma.battleRecord.count({ where: { userId: u.id, winner: "player" } })
+        const total = await prisma.battleRecord.count({ where: { userId: u.id } })
+        u.battleCount = total
+        u.winCount = wins
       }
-      users.sort((a: any, b: any) => (b.battleCount || 0) - (a.battleCount || 0))
-      users = users.map(u => ({ ...u, score: u.battleCount || 0, rankField: "battles" }))
+      battleUsers.sort((a: any, b: any) => (b.battleCount || 0) - (a.battleCount || 0))
+      users = battleUsers.map(u => ({ ...u, score: u.battleCount || 0, rankField: "battles", tazoCount: u._count.userTazos }))
       break
     case "credits":
     default:

@@ -2,6 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /_next/
+Disallow: /admin
 
 Sitemap: https://medaclawarena.com/sitemap.xml
 

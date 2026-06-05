@@ -1,5 +1,8 @@
 import { db } from "@/lib/db"
+import { getAuthUser } from "@/lib/auth"
 import { NextRequest, NextResponse } from "next/server"
+
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "dev.viewer@medaclawarena.com"
 
 export async function GET(request: NextRequest) {
   try {
@@ -54,6 +57,15 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Admin-only: authenticate user and verify admin email
+    const authUser = await getAuthUser(request)
+    if (!authUser) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+    if (authUser.email !== ADMIN_EMAIL) {
+      return NextResponse.json({ error: "Forbidden: admin only" }, { status: 403 })
+    }
+
     const body = await request.json()
 
     const tazo = await db.tazo.create({

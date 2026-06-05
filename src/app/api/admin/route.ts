@@ -3,19 +3,15 @@
 // ============================================================
 import { NextRequest, NextResponse } from "next/server"
 import { PrismaClient } from "@prisma/client"
-import jwt from "jsonwebtoken"
+import { getAuthUser } from "@/lib/auth"
 
 const prisma = new PrismaClient()
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "dev.viewer@medaclawarena.com"
-const JWT_SECRET = process.env.JWT_SECRET || "ttg-jwt-secret-dev"
 
 async function isAdmin(req: NextRequest) {
-  const token = req.cookies.get("auth_token")?.value
-  if (!token) return false
-  try {
-    const payload = jwt.verify(token, JWT_SECRET) as { userId: string; email: string }
-    return payload.email === ADMIN_EMAIL
-  } catch { return false }
+  const user = await getAuthUser(req)
+  if (!user) return false
+  return user.email === ADMIN_EMAIL
 }
 
 export async function GET(req: NextRequest) {

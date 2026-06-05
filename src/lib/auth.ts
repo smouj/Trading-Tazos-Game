@@ -2,7 +2,10 @@ import jwt from "jsonwebtoken"
 import bcrypt from "bcryptjs"
 import { db } from "@/lib/db"
 
-const JWT_SECRET = process.env.JWT_SECRET || "ttg-dev-secret-change-in-production"
+const JWT_SECRET = process.env.JWT_SECRET
+if (!JWT_SECRET) {
+  throw new Error("FATAL: JWT_SECRET environment variable is required. Set it in .env")
+}
 const TOKEN_EXPIRY = "7d"
 
 export interface AuthUser {

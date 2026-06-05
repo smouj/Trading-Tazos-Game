@@ -88,6 +88,41 @@ export default function TazosCatalogPage() {
           </p>
         </div>
 
+        {/* Featured Tazos preview */}
+        {!loading && tazos.length > 0 && (
+          <div className="mag-card-yellow rounded-none px-5 py-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Star className="w-4 h-4 text-[#1a1a1a]" />
+              <h2 className="text-sm font-black uppercase tracking-wider text-[#1a1a1a]">Featured Tazos</h2>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+              {tazos
+                .filter(t => t.imageUrl && (t.rarity === "legendary" || t.rarity === "ultra" || t.rarity === "rare"))
+                .slice(0, 5)
+                .map(t => (
+                  <div key={t.id} className="bg-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] p-2 flex flex-col items-center gap-1.5 hover:-translate-y-1 transition-transform">
+                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full border-3 border-[#1a1a1a] overflow-hidden"
+                      style={{ background: FRANCHISE_STYLE[t.franchise]?.gradient || "#FFCC00" }}>
+                      <img src={t.imageUrl!} alt={t.name} className="w-full h-full object-cover rounded-full" loading="lazy" />
+                      <span className="absolute bottom-0 right-0.5 text-[7px] font-black bg-white/90 border border-[#1a1a1a] px-1 text-[#1a1a1a]">#{t.number}</span>
+                    </div>
+                    <p className="text-[10px] sm:text-[11px] font-black text-[#1a1a1a] text-center leading-tight line-clamp-2">{t.name}</p>
+                    <span className="text-[8px] font-black uppercase px-1.5 py-0.5 border border-[#1a1a1a]"
+                      style={{ background: FRANCHISE_STYLE[t.franchise]?.bg || "#FFCC00", color: FRANCHISE_STYLE[t.franchise]?.text || "#1a1a1a" }}>
+                      {t.franchise}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-[7px] font-black" style={{ color: RARITY_COLORS[t.rarity] || "#9CA3AF" }}>{t.rarity}</span>
+                      <span className="text-[7px] font-bold text-[#1a1a1a]/30">
+                        {(t.attack||0)+(t.defense||0)+(t.bounce||0)+(t.spin||0)+(t.precision||0)} TP
+                      </span>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
+
         {/* Collection cards */}
         <div className="grid sm:grid-cols-3 gap-4">
           {[

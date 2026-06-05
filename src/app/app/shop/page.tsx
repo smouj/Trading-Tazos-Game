@@ -32,7 +32,7 @@ interface BagConfig {
 const BAGS: BagConfig[] = [
   {
     type: "standard",
-    name: "Bolsa Clasica",
+    name: "Classic Bag",
     cost: 50,
     bonusChance: 8,
     rareBoost: 1,
@@ -42,7 +42,7 @@ const BAGS: BagConfig[] = [
   },
   {
     type: "premium",
-    name: "Bolsa Premium",
+    name: "Premium Bag",
     cost: 150,
     bonusChance: 15,
     rareBoost: 2,
@@ -52,7 +52,7 @@ const BAGS: BagConfig[] = [
   },
   {
     type: "mega",
-    name: "Mega Bolsa",
+    name: "Mega Bag",
     cost: 400,
     bonusChance: 25,
     rareBoost: 3,
@@ -71,11 +71,11 @@ const RARITY_COLORS: Record<string, string> = {
 }
 
 const RARITY_LABELS: Record<string, string> = {
-  common: "Comun",
-  uncommon: "Poco Comun",
-  rare: "Raro",
-  "ultra-rare": "Ultra Raro",
-  legendary: "Legendario",
+  common: "Common",
+  uncommon: "Uncommon",
+  rare: "Rare",
+  "ultra-rare": "Ultra Rare",
+  legendary: "Legendary",
 }
 
 function BagPreview({ bag }: { bag: BagConfig }) {

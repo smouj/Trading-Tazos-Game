@@ -158,7 +158,7 @@ export default function MagazinePageShell({
       {/* ═══════════════════════════════════════ */}
       {/* PAGE CONTENT                             */}
       {/* ═══════════════════════════════════════ */}
-      <main className="relative z-10 flex-1">
+      <main className="relative z-10 flex-1 pb-12">
         <div className="max-w-7xl mx-auto relative">
           {children}
         </div>

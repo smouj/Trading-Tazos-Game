@@ -188,48 +188,62 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
             </div>
           </div>
 
-          {/* Flip-all toggle */}
-          <button
-            className={`mag-btn px-2 py-1.5 rounded-sm text-[10px] flex items-center gap-1 ${
-              flippedAll
-                ? 'bg-[#FFCC00] text-[#1a1a1a]'
-                : 'bg-white text-[#1a1a1a]'
-            }`}
-            onClick={() => setFlippedAll(v => !v)}
-            title={flippedAll ? 'Show fronts' : 'Flip all to back'}
-          >
-            <FlipHorizontal className="w-4 h-4" />
-            <span className="text-[9px] font-black uppercase tracking-wide">
-              {flippedAll ? 'BACKS' : 'FLIP'}
-            </span>
-          </button>
-
-          {/* Grid size toggle - mag-btn style */}
-          <div className="flex gap-1">
-            <button
-              className={`mag-btn px-2 py-1.5 rounded-sm text-[10px] ${
-                gridSize === 'normal'
-                  ? 'bg-[#E3350D] text-white'
-                  : 'bg-white text-[#1a1a1a]'
-              }`}
-              onClick={() => setGridSize('normal')}
-              aria-label="Normal grid"
-            >
-              <LayoutGrid className="w-4 h-4" />
-            </button>
-            <button
-              className={`mag-btn px-2 py-1.5 rounded-sm text-[10px] ${
-                gridSize === 'compact'
-                  ? 'bg-[#E3350D] text-white'
-                  : 'bg-white text-[#1a1a1a]'
-              }`}
-              onClick={() => setGridSize('compact')}
-              aria-label="Compact grid"
-            >
-              <Grid3X3 className="w-4 h-4" />
-            </button>
-          </div>
         </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* VIEW CONTROLS — grid size + flip toggle    */}
+      {/* ═══════════════════════════════════════════ */}
+      <div
+        className="px-3 py-2 flex items-center gap-3 bg-white border-3 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a]"
+      >
+        <span className="text-[10px] font-black text-[#1a1a1a]/40 uppercase tracking-wider">View:</span>
+        <div className="flex gap-1">
+          <button
+            className={`mag-btn px-2.5 py-1.5 rounded-sm text-[10px] font-black flex items-center gap-1 ${
+              gridSize === 'normal'
+                ? 'bg-[#1a1a1a] text-[#FFCC00]'
+                : 'bg-white text-[#1a1a1a] border-2 border-[#1a1a1a]'
+            }`}
+            onClick={() => setGridSize('normal')}
+            aria-label="Normal grid"
+          >
+            <LayoutGrid className="w-3.5 h-3.5" />
+            <span>Normal</span>
+          </button>
+          <button
+            className={`mag-btn px-2.5 py-1.5 rounded-sm text-[10px] font-black flex items-center gap-1 ${
+              gridSize === 'compact'
+                ? 'bg-[#1a1a1a] text-[#FFCC00]'
+                : 'bg-white text-[#1a1a1a] border-2 border-[#1a1a1a]'
+            }`}
+            onClick={() => setGridSize('compact')}
+            aria-label="Compact grid"
+          >
+            <Grid3X3 className="w-3.5 h-3.5" />
+            <span>Compact</span>
+          </button>
+        </div>
+
+        <div className="w-px h-5 bg-[#1a1a1a]/20" />
+
+        <button
+          className={`mag-btn px-2.5 py-1.5 rounded-sm text-[10px] font-black flex items-center gap-1 ${
+            flippedAll
+              ? 'bg-[#FFCC00] text-[#1a1a1a] border-2 border-[#1a1a1a]'
+              : 'bg-white text-[#1a1a1a] border-2 border-[#1a1a1a]'
+          }`}
+          onClick={() => setFlippedAll(v => !v)}
+          title={flippedAll ? 'Show fronts' : 'Flip all to back'}
+        >
+          <FlipHorizontal className="w-3.5 h-3.5" />
+          <span>{flippedAll ? 'SHOW FRONTS' : 'FLIP ALL'}</span>
+        </button>
+
+        {/* Quick completion hint */}
+        <span className="ml-auto text-[10px] font-bold text-[#1a1a1a]/30 uppercase tracking-wide">
+          {ownedCount}/{totalCount} collected
+        </span>
       </div>
 
       {/* ═══════════════════════════════════════════ */}
@@ -240,7 +254,7 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a1a1a]" />
           <Input
-            placeholder="Search SEARCH YOUR COLLECTION..."
+            placeholder="Search tazos by name or number..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10 mag-card rounded-none h-10 text-sm font-black text-[#1a1a1a] placeholder:text-[#1a1a1a]/40 placeholder:font-black placeholder:text-sm"

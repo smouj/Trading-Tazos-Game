@@ -4,16 +4,17 @@ import { useEffect, useState, useMemo } from "react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
 import { useI18n } from "@/lib/i18n"
+import TazoDiscImage from "@/components/game/tazo-disc-image"
 import {
-  Package, Swords, Shield, Target, Star, TrendingUp,
-  Clock, ChevronRight, BookOpen, Sparkles, Zap,
-  ShoppingBag, Gift, Camera
+  Package, Swords, Star, TrendingUp,
+  Clock, ChevronRight, BookOpen, Sparkles,
+  ShoppingBag, Gift, Camera, Search, Eye, Heart, PlusCircle,
 } from "lucide-react"
 
 // ── Types ──────────────────────────────────────────────
-interface DeckTazo { id: string; name: string; displayName: string; number: string; imageUrl: string; rarity: string; franchiseSlug: string; attack: number; defense: number; resistance: number; role?: string | null }
+interface DeckTazo { id: string; name: string; displayName: string; number: string; imageUrl: string; rarity: string; franchiseSlug: string; attack: number; defense: number; resistance: number }
 interface Deck { id: string; name: string; isActive: boolean; tazos: DeckTazo[] }
-interface CollectionTazo { id: string; tazoId: string; quantity: number; acquiredAt: string; obtainedFrom?: string | null; isFavorite: boolean; inDeckId?: string | null; deckName?: string | null; tazo: DeckTazo & { precision: number; bounce: number; control: number; spin: number; stability: number; weight: number; franchise: string } }
+interface CollectionTazo { id: string; tazoId: string; quantity: number; acquiredAt: string; obtainedFrom?: string | null; isFavorite: boolean; inDeckId?: string | null; deckName?: string | null; tazo: DeckTazo & { precision: number; bounce: number; control: number; spin: number; stability: number; weight: number; franchise: string; imageUrl?: string | null; number?: string | number } }
 interface CollectionData { items: CollectionTazo[]; total: number; totalUnique: number; decks: Deck[]; franchiseSummary: Record<string, number> }
 
 // ── Constants ──────────────────────────────────────────
@@ -32,7 +33,7 @@ const RARITY_COLOR: Record<string, string> = {
   common: "#9CA3AF", uncommon: "#22C55E", rare: "#3B82F6", ultra: "#A855F7", legendary: "#F59E0B",
 }
 const OBTAINED_ICON: Record<string, any> = { bag: ShoppingBag, starter: Gift, scanner: Camera }
-const OBTAINED_LABEL: Record<string, string> = { bag: "Bag", starter: "Starter", scanner: "Scan" }
+const OBTAINED_LABEL: Record<string, string> = { bag: "Bag", starter: "Starter", scan: "Scan" }
 
 // ── Helpers ────────────────────────────────────────────
 function totalPower(t: CollectionTazo["tazo"]): number {
@@ -58,7 +59,8 @@ export default function CollectionPage() {
   const { user, token, loading } = useAuth()
   const [data, setData] = useState<CollectionData | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [filter, setFilter] = useState<"all" | "deck" | "duplicates" | "recent">("all")
+  const [filter, setFilter] = useState<"all" | "deck" | "duplicates" | "recent" | "favorites">("all")
+  const [searchTerm, setSearchTerm] = useState("")
 
   useEffect(() => {
     let cancelled = false
@@ -73,25 +75,37 @@ export default function CollectionPage() {
   }, [token])
 
   // ── Derived data ──────────────────────────────────────
-  const { strongest, rarest, recentTazos, deckTazos, duplicateTazos } = useMemo(() => {
-    if (!data?.items.length) return { strongest: null, rarest: null, recentTazos: [], deckTazos: [], duplicateTazos: [] }
+  const { strongest, rarest, recentTazos, deckTazos, duplicateTazos, favoriteTazos } = useMemo(() => {
+    if (!data?.items.length) return { strongest: null, rarest: null, recentTazos: [], deckTazos: [], duplicateTazos: [], favoriteTazos: [] }
     const sorted = [...data.items].sort((a, b) => totalPower(b.tazo) - totalPower(a.tazo))
     const byRarity = [...data.items].sort((a, b) => rarityOrder(b.tazo.rarity) - rarityOrder(a.tazo.rarity))
     const recent = [...data.items].sort((a, b) => new Date(b.acquiredAt).getTime() - new Date(a.acquiredAt).getTime()).slice(0, 8)
     const inDeck = data.items.filter(i => i.inDeckId)
     const dupes = data.items.filter(i => i.quantity > 1)
-    return { strongest: sorted[0] || null, rarest: byRarity[0] || null, recentTazos: recent, deckTazos: inDeck, duplicateTazos: dupes }
+    const favs = data.items.filter(i => i.isFavorite)
+    return { strongest: sorted[0] || null, rarest: byRarity[0] || null, recentTazos: recent, deckTazos: inDeck, duplicateTazos: dupes, favoriteTazos: favs }
   }, [data])
 
   const filteredItems = useMemo(() => {
     if (!data) return []
+    let items: CollectionTazo[] = []
     switch (filter) {
-      case "deck": return deckTazos
-      case "duplicates": return duplicateTazos
-      case "recent": return recentTazos
-      default: return data.items
+      case "deck": items = deckTazos; break
+      case "duplicates": items = duplicateTazos; break
+      case "recent": items = recentTazos; break
+      case "favorites": items = favoriteTazos; break
+      default: items = data.items
     }
-  }, [data, filter, deckTazos, duplicateTazos, recentTazos])
+    if (searchTerm) {
+      const q = searchTerm.toLowerCase()
+      items = items.filter(i =>
+        (i.tazo.name || "").toLowerCase().includes(q) ||
+        (i.tazo.displayName || "").toLowerCase().includes(q) ||
+        String(i.tazo.number || "").includes(q)
+      )
+    }
+    return items
+  }, [data, filter, deckTazos, duplicateTazos, recentTazos, favoriteTazos, searchTerm])
 
   // ── Loading state ─────────────────────────────────────
   if (loading || (token && !data && !error)) {
@@ -186,27 +200,21 @@ export default function CollectionPage() {
       {/* ═══════════════════════════════════════════════ */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {/* Active Deck */}
-        <div
-          className="p-3 border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] bg-white"
-        >
+        <div className="p-3 border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] bg-white">
           <div className="flex items-center gap-1.5 mb-1">
             <Swords className="w-3.5 h-3.5 text-[#E3350D]" />
             <span className="text-[9px] font-black uppercase text-[#1a1a1a]/50 tracking-wider">Active Deck</span>
           </div>
           <div className="text-xl font-black text-[#E3350D]">
-            {activeDeck ? activeDeck.tazos.length : 0}<span className="text-sm text-[#1a1a1a]/30">/3</span>
+            {activeDeck ? activeDeck.tazos.length : 0}<span className="text-sm text-[#1a1a1a]/30">/20</span>
           </div>
           {activeDeck && (
-            <p className="text-[10px] font-bold text-[#1a1a1a]/60 truncate mt-0.5">
-              {activeDeck.name}
-            </p>
+            <p className="text-[10px] font-bold text-[#1a1a1a]/60 truncate mt-0.5">{activeDeck.name}</p>
           )}
         </div>
 
         {/* Strongest */}
-        <div
-          className="p-3 border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] bg-white"
-        >
+        <div className="p-3 border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] bg-white">
           <div className="flex items-center gap-1.5 mb-1">
             <TrendingUp className="w-3.5 h-3.5 text-[#FFCC00]" />
             <span className="text-[9px] font-black uppercase text-[#1a1a1a]/50 tracking-wider">Strongest</span>
@@ -216,9 +224,7 @@ export default function CollectionPage() {
               <div className="text-sm font-black text-[#1a1a1a] truncate">
                 {strongest.tazo.displayName || strongest.tazo.name}
               </div>
-              <div className="text-[10px] font-bold text-[#E3350D]">
-                {totalPower(strongest.tazo)} Power
-              </div>
+              <div className="text-[10px] font-bold text-[#E3350D]">{totalPower(strongest.tazo)} Power</div>
             </>
           ) : (
             <span className="text-xs text-[#1a1a1a]/30 font-bold">—</span>
@@ -226,9 +232,7 @@ export default function CollectionPage() {
         </div>
 
         {/* Rarest */}
-        <div
-          className="p-3 border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] bg-white"
-        >
+        <div className="p-3 border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] bg-white">
           <div className="flex items-center gap-1.5 mb-1">
             <Star className="w-3.5 h-3.5 text-[#F59E0B]" />
             <span className="text-[9px] font-black uppercase text-[#1a1a1a]/50 tracking-wider">Rarest</span>
@@ -248,16 +252,12 @@ export default function CollectionPage() {
         </div>
 
         {/* Duplicates */}
-        <div
-          className="p-3 border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] bg-white"
-        >
+        <div className="p-3 border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] bg-white">
           <div className="flex items-center gap-1.5 mb-1">
-            <Zap className="w-3.5 h-3.5 text-[#3B4CCA]" />
+            <Sparkles className="w-3.5 h-3.5 text-[#3B4CCA]" />
             <span className="text-[9px] font-black uppercase text-[#1a1a1a]/50 tracking-wider">Duplicates</span>
           </div>
-          <div className="text-xl font-black text-[#3B4CCA]">
-            {duplicateTazos.length}
-          </div>
+          <div className="text-xl font-black text-[#3B4CCA]">{duplicateTazos.length}</div>
           <div className="text-[10px] font-bold text-[#1a1a1a]/60">
             {duplicateTazos.reduce((s, i) => s + i.quantity - 1, 0)} extra tazos
           </div>
@@ -280,7 +280,7 @@ export default function CollectionPage() {
               </span>
             </div>
             <Link
-              href="/app?tab=battle"
+              href="/app/battle"
               className="mag-btn px-4 py-1.5 text-[11px] font-black uppercase tracking-wider flex items-center gap-1"
               style={{ background: "#E3350D", color: "white" }}
             >
@@ -288,7 +288,7 @@ export default function CollectionPage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
             {activeDeck.tazos.map((dt) => {
               const gradient = FRANCHISE_GRADIENT[dt.franchiseSlug] || "#1a1a1a"
               return (
@@ -296,15 +296,16 @@ export default function CollectionPage() {
                   key={dt.id}
                   className="flex items-center gap-2 p-2 bg-white border-2 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a]"
                 >
-                  <div
-                    className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden border-2 border-[#1a1a1a]"
-                    style={{ background: gradient }}
-                  >
-                    {dt.imageUrl ? (
-                      <img src={dt.imageUrl} alt="" className="w-full h-full object-cover rounded-full" />
-                    ) : (
-                      <span className="text-[10px] font-black text-white">#{dt.number}</span>
-                    )}
+                  <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden border-2 border-[#1a1a1a]"
+                    style={{ background: gradient }}>
+                    <TazoDiscImage
+                      src={dt.imageUrl}
+                      alt={dt.name || ""}
+                      size={40}
+                      scale={1.05}
+                      borderWidth={0}
+                      lazy
+                    />
                   </div>
                   <div className="min-w-0">
                     <p className="text-[11px] font-black text-[#1a1a1a] truncate leading-tight">
@@ -324,12 +325,13 @@ export default function CollectionPage() {
       )}
 
       {/* ═══════════════════════════════════════════════ */}
-      {/* FILTER BAR                                     */}
+      {/* FILTER + SEARCH BAR                           */}
       {/* ═══════════════════════════════════════════════ */}
       <div className="flex flex-wrap items-center gap-2">
         {([
           { key: "all", label: "All", count: data.items.length },
           { key: "deck", label: "In Deck", count: deckTazos.length },
+          { key: "favorites", label: "Favorites", count: favoriteTazos.length },
           { key: "duplicates", label: "Duplicates", count: duplicateTazos.length },
           { key: "recent", label: "Recent", count: recentTazos.length },
         ] as const).map((f) => (
@@ -343,14 +345,25 @@ export default function CollectionPage() {
               boxShadow: filter === f.key ? "2px 2px 0px #FFCC00" : "2px 2px 0px #1a1a1a",
             }}
           >
-            {f.label}
-            <span className="ml-1 opacity-50">({f.count})</span>
+            {f.label} <span className="ml-1 opacity-50">({f.count})</span>
           </button>
         ))}
 
+        {/* Search */}
+        <div className="relative ml-auto min-w-[140px]">
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#1a1a1a]/30" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            placeholder="Search..."
+            className="w-full pl-7 pr-3 py-1.5 text-[10px] font-bold border-2 border-[#1a1a1a] bg-white text-[#1a1a1a] placeholder:text-[#1a1a1a]/25 shadow-[2px_2px_0px_#1a1a1a]"
+          />
+        </div>
+
         {/* Franchise quick-filters */}
         {data.franchiseSummary && Object.keys(data.franchiseSummary).length > 0 && (
-          <div className="ml-auto flex gap-1.5">
+          <div className="flex gap-1.5">
             {Object.entries(data.franchiseSummary).map(([slug, count]) => (
               <span
                 key={slug}
@@ -365,7 +378,7 @@ export default function CollectionPage() {
       </div>
 
       {/* ═══════════════════════════════════════════════ */}
-      {/* COLLECTION GRID — Backpack style              */}
+      {/* COLLECTION GRID                               */}
       {/* ═══════════════════════════════════════════════ */}
       <div
         className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 p-3 sm:p-4"
@@ -408,49 +421,48 @@ export default function CollectionPage() {
               {/* Franchise strip */}
               <div className="h-1.5" style={{ background: gradient }} />
 
-              {/* Tazo image */}
+              {/* TazoDiscImage */}
               <div className="p-3 flex items-center justify-center bg-[#fffef0]" style={{ aspectRatio: "1" }}>
-                <div
-                  className="w-full h-full rounded-full flex items-center justify-center overflow-hidden border-2 border-[#1a1a1a]/20"
-                  style={{ background: gradient + "20" }}
-                >
-                  {item.tazo.imageUrl ? (
-                    <img
-                      src={item.tazo.imageUrl}
-                      alt={item.tazo.name || ""}
-                      className="w-[85%] h-[85%] object-contain drop-shadow-sm rounded-full"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <span className="text-4xl font-black text-[#1a1a1a]/15">?</span>
-                  )}
-                </div>
+                <TazoDiscImage
+                  src={item.tazo.imageUrl}
+                  alt={item.tazo.name || ""}
+                  size="100%"
+                  scale={1.12}
+                  borderWidth={2}
+                  borderColor="#1a1a1a33"
+                  franchiseSlug={item.tazo.franchiseSlug}
+                  number={item.tazo.number}
+                  overlay={
+                    item.quantity > 1 ? (
+                      <div className="absolute top-1 right-1 bg-[#FFCC00] text-[#1a1a1a] text-[9px] font-black px-1.5 py-0.5 border border-[#1a1a1a] shadow-[1px_1px_0px_#1a1a1a] rounded-sm pointer-events-auto">
+                        x{item.quantity}
+                      </div>
+                    ) : undefined
+                  }
+                  lazy
+                />
               </div>
 
               {/* Info panel */}
               <div className="p-2 space-y-2">
-                {/* Name + quantity */}
-                <div className="flex items-start justify-between gap-1">
-                  <div className="min-w-0">
-                    <p className="text-[11px] font-black text-[#1a1a1a] truncate leading-tight">
-                      {item.tazo.name || item.tazo.displayName || `#${item.tazo.number}`}
-                    </p>
-                    <p className="text-[9px] font-bold text-[#1a1a1a]/40 uppercase">
-                      {item.tazo.franchise || item.tazo.franchiseSlug} #{item.tazo.number}
-                    </p>
-                  </div>
-                  {item.quantity > 1 && (
-                    <span className="flex-shrink-0 text-[10px] font-black bg-[#FFCC00] text-[#1a1a1a] px-1.5 py-0.5 border border-[#1a1a1a] shadow-[1px_1px_0px_#1a1a1a]">
-                      x{item.quantity}
-                    </span>
-                  )}
+                {/* Name + series */}
+                <div className="min-w-0">
+                  <p className="text-[11px] font-black text-[#1a1a1a] truncate leading-tight">
+                    {item.tazo.name || item.tazo.displayName || `#${item.tazo.number}`}
+                  </p>
+                  <p className="text-[9px] font-bold text-[#1a1a1a]/40 uppercase">
+                    {item.tazo.franchise || item.tazo.franchiseSlug} #{item.tazo.number}
+                  </p>
                 </div>
 
                 {/* Rarity bar */}
                 <div className="flex items-center gap-1">
                   <span
                     className="text-[8px] font-black uppercase px-1.5 py-0.5 border border-[#1a1a1a]"
-                    style={{ background: (RARITY_COLOR[item.tazo.rarity] || "#9CA3AF") + "20", color: RARITY_COLOR[item.tazo.rarity] || "#9CA3AF" }}
+                    style={{
+                      background: (RARITY_COLOR[item.tazo.rarity] || "#9CA3AF") + "20",
+                      color: RARITY_COLOR[item.tazo.rarity] || "#9CA3AF",
+                    }}
                   >
                     {RARITY_STARS[item.tazo.rarity] || ""}
                   </span>
@@ -464,36 +476,50 @@ export default function CollectionPage() {
                     { label: "SPD", value: Math.round((item.tazo.spin + item.tazo.bounce + item.tazo.precision) / 3), color: "#06B6D4" },
                   ].map((stat) => (
                     <div key={stat.label} className="text-center">
-                      <div className="text-[7px] font-black text-[#1a1a1a]/40 uppercase leading-none mb-0.5">
-                        {stat.label}
-                      </div>
-                      <div
-                        className="text-xs font-black leading-none"
-                        style={{ color: stat.color }}
-                      >
-                        {stat.value}
-                      </div>
+                      <div className="text-[7px] font-black text-[#1a1a1a]/40 uppercase leading-none mb-0.5">{stat.label}</div>
+                      <div className="text-xs font-black leading-none" style={{ color: stat.color }}>{stat.value}</div>
                     </div>
                   ))}
                 </div>
 
                 {/* Power + acquired info */}
                 <div className="flex items-center justify-between text-[8px]">
-                  <span className="font-black text-[#1a1a1a]/50">
-                    {power} TP
-                  </span>
+                  <span className="font-black text-[#1a1a1a]/50">{power} TP</span>
                   <span className="font-bold text-[#1a1a1a]/30 flex items-center gap-0.5">
                     <Clock className="w-2.5 h-2.5" />
                     {timeAgo(item.acquiredAt)}
                   </span>
                 </div>
 
+                {/* Quick actions */}
+                <div className="flex gap-1 pt-1 border-t border-[#1a1a1a]/10">
+                  <Link
+                    href={`/tazos?highlight=${item.tazoId}`}
+                    className="flex-1 text-[7px] font-black uppercase text-center py-1 border border-[#1a1a1a]/20 hover:bg-[#1a1a1a]/5 transition-colors flex items-center justify-center gap-0.5"
+                    title="View details"
+                  >
+                    <Eye className="w-2 h-2" /> View
+                  </Link>
+                  <Link
+                    href="/app/decks"
+                    className="flex-1 text-[7px] font-black uppercase text-center py-1 border border-[#1a1a1a]/20 hover:bg-[#1a1a1a]/5 transition-colors flex items-center justify-center gap-0.5"
+                    title="Add to deck"
+                  >
+                    <PlusCircle className="w-2 h-2" /> Deck
+                  </Link>
+                  <button
+                    className="flex-1 text-[7px] font-black uppercase text-center py-1 border border-[#1a1a1a]/20 hover:bg-[#FFCC00]/10 transition-colors flex items-center justify-center gap-0.5"
+                    title={item.isFavorite ? "Favorited" : "Add to favorites"}
+                  >
+                    <Heart className={`w-2 h-2 ${item.isFavorite ? "fill-[#E3350D] text-[#E3350D]" : ""}`} />
+                    {item.isFavorite ? "Liked" : "Like"}
+                  </button>
+                </div>
+
                 {/* Obtained from badge */}
                 {ObtainedIcon && obtainedLabel && (
-                  <div
-                    className="flex items-center gap-0.5 text-[8px] font-bold px-1 py-0.5 border border-[#1a1a1a]/20"
-                    style={{ color: "#1a1a1a60" }}
-                  >
+                  <div className="flex items-center gap-0.5 text-[8px] font-bold px-1 py-0.5 border border-[#1a1a1a]/20"
+                    style={{ color: "#1a1a1a60" }}>
                     <ObtainedIcon className="w-2.5 h-2.5" />
                     {obtainedLabel}
                   </div>
@@ -505,13 +531,13 @@ export default function CollectionPage() {
       </div>
 
       {/* Grid empty state for active filter */}
-      {filteredItems.length === 0 && filter !== "all" && (
+      {filteredItems.length === 0 && (
         <div className="text-center py-12 border-3 border-[#1a1a1a] bg-white">
           <p className="font-black text-sm text-[#1a1a1a]/30 uppercase tracking-wider">
             No tazos match this filter
           </p>
           <button
-            onClick={() => setFilter("all")}
+            onClick={() => { setFilter("all"); setSearchTerm("") }}
             className="mt-2 text-[10px] font-black underline text-[#E3350D] uppercase"
           >
             Show all
@@ -521,29 +547,17 @@ export default function CollectionPage() {
 
       {/* Footer: Quick links */}
       <div className="flex flex-wrap gap-3 justify-center pt-2">
-        <Link
-          href="/app?tab=album"
-          className="mag-btn px-5 py-2.5 text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5"
-          style={{ background: "white", color: "#1a1a1a", border: "3px solid #1a1a1a", boxShadow: "3px 3px 0px #1a1a1a" }}
-        >
-          <BookOpen className="w-4 h-4" />
-          View Album
+        <Link href="/app/album" className="mag-btn px-5 py-2.5 text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5"
+          style={{ background: "white", color: "#1a1a1a", border: "3px solid #1a1a1a", boxShadow: "3px 3px 0px #1a1a1a" }}>
+          <BookOpen className="w-4 h-4" /> View Album
         </Link>
-        <Link
-          href="/app?tab=battle"
-          className="mag-btn px-5 py-2.5 text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5"
-          style={{ background: "#E3350D", color: "white", border: "3px solid #1a1a1a", boxShadow: "3px 3px 0px #1a1a1a" }}
-        >
-          <Swords className="w-4 h-4" />
-          Battle
+        <Link href="/app/battle" className="mag-btn px-5 py-2.5 text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5"
+          style={{ background: "#E3350D", color: "white", border: "3px solid #1a1a1a", boxShadow: "3px 3px 0px #1a1a1a" }}>
+          <Swords className="w-4 h-4" /> Battle
         </Link>
-        <Link
-          href="/app/shop"
-          className="mag-btn px-5 py-2.5 text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5"
-          style={{ background: "#FFCC00", color: "#1a1a1a", border: "3px solid #1a1a1a", boxShadow: "3px 3px 0px #1a1a1a" }}
-        >
-          <ShoppingBag className="w-4 h-4" />
-          Open More Bags
+        <Link href="/app/shop" className="mag-btn px-5 py-2.5 text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5"
+          style={{ background: "#FFCC00", color: "#1a1a1a", border: "3px solid #1a1a1a", boxShadow: "3px 3px 0px #1a1a1a" }}>
+          <ShoppingBag className="w-4 h-4" /> Open More Bags
         </Link>
       </div>
     </div>

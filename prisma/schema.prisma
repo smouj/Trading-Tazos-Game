@@ -123,9 +123,10 @@ model UserTazo {
   user       User     @relation(fields: [userId], references: [id])
   tazoId     String
   tazo       Tazo     @relation(fields: [tazoId], references: [id])
-  quantity   Int      @default(1)
-  isFavorite Boolean  @default(false)
-  acquiredAt DateTime @default(now())
+  quantity     Int      @default(1)
+  isFavorite   Boolean  @default(false)
+  obtainedFrom String?  // "bag" | "starter" | "scanner" | null (legacy)
+  acquiredAt   DateTime @default(now())
 
   @@unique([userId, tazoId])
   @@index([userId])

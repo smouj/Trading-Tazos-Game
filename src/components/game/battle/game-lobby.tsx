@@ -198,16 +198,28 @@ export default function GameLobby({ playerTazos, onStart, isLoading, isAuthentic
                 className={`p-2 border-2 text-center transition-all ${
                   selected
                     ? "border-[#FFCC00] bg-[#FFCB0510] shadow-[2px_2px_0px_#FFCC00]"
-                    : "border-[#1a1a1a]/10 hover:border-[#1a1a1a]/40 opacity-75"
+                    : "border-[#1a1a1a]/10 hover:border-[#1a1a1a]/40 opacity-80 hover:opacity-100"
                 }`}
               >
-                <div
-                  className="w-8 h-8 rounded-full mx-auto mb-1 flex items-center justify-center text-white text-[10px] font-black border-2 border-[#1a1a1a]/30"
-                  style={{ background: franchiseGrad(t.franchise) }}
-                >
-                  {t.name.charAt(0)}
+                {/* Tazo image thumbnail */}
+                <div className="w-10 h-10 mx-auto mb-1 rounded-full overflow-hidden border-2 border-[#1a1a1a]/20 bg-zinc-100">
+                  {t.imageUrl ? (
+                    <img
+                      src={t.imageUrl}
+                      alt={t.name}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div
+                      className="w-full h-full flex items-center justify-center text-white text-[10px] font-black"
+                      style={{ background: franchiseGrad(t.franchise) }}
+                    >
+                      {t.name.charAt(0)}
+                    </div>
+                  )}
                 </div>
-                <div className="text-[10px] font-bold text-[#1a1a1a] truncate">{t.name}</div>
+                <div className="text-[10px] font-bold text-[#1a1a1a] truncate leading-tight">{t.name}</div>
                 <div className="text-[9px] font-bold mt-0.5" style={{ color: franchiseColor(t.franchise) }}>
                   {total}
                 </div>

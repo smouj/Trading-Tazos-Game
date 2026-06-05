@@ -6,6 +6,13 @@
 
 import type { BattleTurn, BattleFinalResult, TazoBattleStats, ThrowResult, CollisionEvent } from "./battle-types"
 
+// ─── Back-Art URLs ───
+const BACK_ARTS: Record<string, string> = {
+  minimon: "/tazos-artgen/backs/minimon-back.png",
+  cybermon: "/tazos-artgen/backs/cybermon-back.png",
+  dracobell: "/tazos-artgen/backs/dracobell-back.png",
+}
+
 // ─── New Game States ───
 export type GameState =
   | "lobby"          // Pre-battle: mode select, deck setup
@@ -81,6 +88,10 @@ export interface ThrowParams {
 // ─── Physics Disc State ───
 export interface DiscPhysics {
   id: string
+  tazoName: string
+  franchise: string
+  imageUrl: string | null
+  backImageUrl: string | null
   position: [number, number, number]   // x, y (height), z
   velocity: [number, number, number]
   rotation: [number, number, number]   // euler angles
@@ -226,7 +237,11 @@ export function simulateThrow(
 
   const disc: DiscPhysics = {
     id: tazo.id,
-    position: [normX * (arena.radius * 0.6), 0.08, 0.5 * arena.radius], // Start near player side
+    tazoName: tazo.name,
+    franchise: tazo.franchise,
+    imageUrl: tazo.imageUrl,
+    backImageUrl: BACK_ARTS[tazo.franchise] || null,
+    position: [normX * (arena.radius * 0.6), 0.08, 0.5 * arena.radius],
     velocity,
     rotation: [0, spinVelocity[2] > 0 ? Math.PI / 6 : -Math.PI / 6, 0],
     angularVelocity: spinVelocity,

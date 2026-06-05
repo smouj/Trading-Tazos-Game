@@ -101,3 +101,4 @@ agent-ctx/
 artgen/output/
 artgen/.env
 .env
+public/tazos-generated/

@@ -71,15 +71,15 @@ export default function BattleEventLog({ turns }: Props) {
             {/* Aim summary */}
             {turn.aimPhase && (
               <div className="flex flex-wrap gap-1 mb-1">
-                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-[#1a1a2e] text-white rounded text-[9px] font-bold">
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-[#1a1a1a] text-white rounded text-[9px] font-bold">
                   <Target className="w-2.5 h-2.5" />
                   H:{Math.round(turn.aimPhase.horizontalAccuracy * 100)}%
                 </span>
-                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-[#1a1a2e] text-white rounded text-[9px] font-bold">
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-[#1a1a1a] text-white rounded text-[9px] font-bold">
                   <Target className="w-2.5 h-2.5" />
                   V:{Math.round(turn.aimPhase.verticalAccuracy * 100)}%
                 </span>
-                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-[#1a1a2e] text-white rounded text-[9px] font-bold">
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-[#1a1a1a] text-white rounded text-[9px] font-bold">
                   <Zap className="w-2.5 h-2.5" />
                   {Math.round(turn.aimPhase.powerValue * 100)}%
                 </span>

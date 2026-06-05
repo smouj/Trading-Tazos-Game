@@ -126,7 +126,7 @@ export default function LaunchControl({
             {t.aim_horizontal_title}
           </span>
         </div>
-        <div className="relative h-10 bg-[#1a1a2e] border-2 border-[#1a1a1a] rounded overflow-hidden">
+        <div className="relative h-10 bg-[#1a1a1a] border-2 border-[#1a1a1a] rounded overflow-hidden">
           <div
             className="absolute top-0 h-full w-2 bg-[#FFCC00] border-r-2 border-[#1a1a1a]"
             style={{ left: `${hSlider * 100}%` }}
@@ -169,7 +169,7 @@ export default function LaunchControl({
             {t.aim_vertical_title}
           </span>
         </div>
-        <div className="relative w-10 h-40 mx-auto bg-[#1a1a2e] border-2 border-[#1a1a1a] rounded overflow-hidden">
+        <div className="relative w-10 h-40 mx-auto bg-[#1a1a1a] border-2 border-[#1a1a1a] rounded overflow-hidden">
           <div
             className="absolute left-0 w-full h-2 bg-[#3B4CCA] border-b-2 border-[#1a1a1a]"
             style={{ top: `${vSlider * 100}%` }}
@@ -208,7 +208,7 @@ export default function LaunchControl({
         </div>
         <div className="flex items-center justify-center py-4">
           <div className="relative w-48 h-48">
-            <div className="absolute inset-0 rounded-full border-4 border-[#1a1a1a] bg-[#1a1a2e]" />
+            <div className="absolute inset-0 rounded-full border-4 border-[#1a1a1a] bg-[#1a1a1a]" />
             <div
               className="absolute rounded-full transition-all duration-75"
               style={{

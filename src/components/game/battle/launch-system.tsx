@@ -81,7 +81,7 @@ export default function LaunchSystem({ phase, onAimLock, onPowerLock, throwingTa
         {tazoTag}
       </div>
       <div className="p-3 sm:p-4 mag-dots space-y-3">
-        <div className="relative h-36 sm:h-44 bg-[#0a0a0a] border-3 border-[#1a1a1a] overflow-hidden">
+        <div className="relative h-36 sm:h-44 bg-[#1a1a1a] border-3 border-[#1a1a1a] overflow-hidden">
           <div className="absolute inset-0 opacity-[0.08]"
             style={{ backgroundImage: "linear-gradient(#fff2 1px,transparent 1px),linear-gradient(90deg,#fff2 1px,transparent 1px)", backgroundSize: "14px 14px" }} />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full border border-white/10" />
@@ -122,7 +122,7 @@ export default function LaunchSystem({ phase, onAimLock, onPowerLock, throwingTa
         <div className="p-3 sm:p-4 mag-dots space-y-3">
           <div className="flex items-center justify-center py-1">
             <div className="relative w-40 h-40 sm:w-44 sm:h-44">
-              <div className="absolute inset-0 rounded-full border-4 border-[#1a1a1a] bg-[#0a0a0a]" />
+              <div className="absolute inset-0 rounded-full border-4 border-[#1a1a1a] bg-[#1a1a1a]" />
               <div className="absolute rounded-full border-3 border-[#1a1a1a] transition-none"
                 style={{ width: `${pw*100}%`, height: `${pw*100}%`, top: `${(1-pw)*50}%`, left: `${(1-pw)*50}%`,
                   background: pw > 0.68 ? "radial-gradient(circle, #E3350D, #991B1B)" : pw > 0.42 ? "radial-gradient(circle, #F59E0B, #D97706)" : "radial-gradient(circle, #22C55E, #15803D)" }} />

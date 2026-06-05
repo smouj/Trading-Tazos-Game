@@ -40,6 +40,7 @@ export interface Tazo {
   stackable?: boolean
   maxStackOn?: number
   isOwned: boolean
+  obtainedFrom?: ObtainedFrom | null
   battleWins: number
   battleLosses: number
   franchise?: Franchise
@@ -81,6 +82,15 @@ export const SOURCE_STATUS_CONFIG: Record<SourceStatus, { label: string; color: 
   verified: { label: "Verified", color: "text-emerald-600", bg: "bg-emerald-100" },
   partial: { label: "Partial", color: "text-amber-600", bg: "bg-amber-100" },
   pending_visual_check: { label: "Pending Visual Check", color: "text-gray-500", bg: "bg-gray-100" },
+}
+
+// ---- Obtained From (acquisition source) ----
+export type ObtainedFrom = "bag" | "starter" | "scanner"
+
+export const OBTAINED_FROM_CONFIG: Record<ObtainedFrom, { label: string; icon: string; color: string; bg: string }> = {
+  bag: { label: "Bag", icon: "🎒", color: "#92400E", bg: "#FEF3C7" },
+  starter: { label: "Starter", icon: "🎁", color: "#1E3A5F", bg: "#DBEAFE" },
+  scanner: { label: "Scanned", icon: "📸", color: "#065F46", bg: "#D1FAE5" },
 }
 
 // ---- Legacy combat types (for compatibility) ----

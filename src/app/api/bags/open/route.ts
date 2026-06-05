@@ -41,9 +41,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Auto-mark tazo as owned + add to user collection
+    const obtainedFrom = purchase.bagType === "welcome" ? "starter" : "bag"
     await db.userTazo.upsert({
       where: { userId_tazoId: { userId: user.id, tazoId: tazo.id } },
-      create: { userId: user.id, tazoId: tazo.id, quantity: 1 },
+      create: { userId: user.id, tazoId: tazo.id, quantity: 1, obtainedFrom },
       update: { quantity: { increment: 1 } },
     })
 
@@ -69,7 +70,7 @@ export async function POST(request: NextRequest) {
       if (bonusTazo) {
         await db.userTazo.upsert({
           where: { userId_tazoId: { userId: user.id, tazoId: bonusTazo.id } },
-          create: { userId: user.id, tazoId: bonusTazo.id, quantity: 1 },
+          create: { userId: user.id, tazoId: bonusTazo.id, quantity: 1, obtainedFrom },
           update: { quantity: { increment: 1 } },
         })
       }

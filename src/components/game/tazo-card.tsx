@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useState, useMemo } from "react"
-import { Tazo, RARITY_CONFIG, CONDITION_CONFIG, TazoCondition, Rarity, SOURCE_STATUS_CONFIG, SourceStatus } from '@/lib/game/types'
-import { Lock, Star, ShieldCheck, ScanEye, AlertTriangle, RotateCw } from 'lucide-react'
+import { Tazo, RARITY_CONFIG, CONDITION_CONFIG, TazoCondition, Rarity, SOURCE_STATUS_CONFIG, SourceStatus, OBTAINED_FROM_CONFIG, ObtainedFrom } from '@/lib/game/types'
+import { Lock, Star, ShieldCheck, ScanEye, AlertTriangle, RotateCw, ShoppingBag, Gift, Camera } from 'lucide-react'
 import { getTazoBackgroundConfig, getTazoBackgroundClasses, FRANCHISE_MAX } from '@/lib/tazoBackgrounds'
 
 interface TazoCardProps {
@@ -85,6 +85,8 @@ export default function TazoCard({ tazo, onClick }: TazoCardProps) {
   const isNotOwned = !tazo.isOwned
   const sourceConfig = SOURCE_STATUS_CONFIG[tazo.sourceStatus as SourceStatus]
   const sourceIcon = tazo.sourceStatus === 'verified' ? ShieldCheck : tazo.sourceStatus === 'partial' ? ScanEye : AlertTriangle
+  const obtainedFromConfig = tazo.obtainedFrom ? OBTAINED_FROM_CONFIG[tazo.obtainedFrom as ObtainedFrom] : null
+  const obtainedIcon = tazo.obtainedFrom === 'bag' ? ShoppingBag : tazo.obtainedFrom === 'starter' ? Gift : Camera
 
   let circleBorderClass = ''
   if (isHolo) circleBorderClass = 'holo-border'
@@ -299,6 +301,22 @@ export default function TazoCard({ tazo, onClick }: TazoCardProps) {
         >
           {React.createElement(sourceIcon, { className: "w-2.5 h-2.5" })}
           {sourceConfig?.label || tazo.sourceStatus}
+        </div>
+      )}
+
+      {/* Obtained From Badge */}
+      {obtainedFromConfig && !isNotOwned && (
+        <div
+          className="px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider flex items-center gap-0.5"
+          style={{
+            background: obtainedFromConfig.bg,
+            color: obtainedFromConfig.color,
+            border: '1.5px solid #1a1a1a',
+          }}
+          title={`Obtained from: ${obtainedFromConfig.label}`}
+        >
+          {React.createElement(obtainedIcon, { className: "w-2.5 h-2.5" })}
+          {obtainedFromConfig.label}
         </div>
       )}
 

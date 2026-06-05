@@ -50,6 +50,7 @@ export async function GET(request: NextRequest) {
         id: ut.id,
         quantity: ut.quantity,
         isFavorite: ut.isFavorite,
+        obtainedFrom: ut.obtainedFrom,
         acquiredAt: ut.acquiredAt,
         tazo: {
           id: ut.tazo.id,

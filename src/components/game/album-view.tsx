@@ -46,6 +46,7 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
   const [gridSize, setGridSize] = useState<GridSize>('normal')
   const [selectedTazo, setSelectedTazo] = useState<Tazo | null>(null)
   const [detailOpen, setDetailOpen] = useState(false)
+  const [obtainedMap, setObtainedMap] = useState<Record<string, string>>({})
 
   // Fetch franchises on mount
   useEffect(() => {
@@ -56,6 +57,27 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
       })
       .catch(console.error)
   }, [])
+
+  // Fetch user collection to get obtainedFrom data
+  useEffect(() => {
+    if (!token) return
+    fetch('/api/collection?limit=200', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.items) {
+          const map: Record<string, string> = {}
+          for (const item of data.items) {
+            if (item.obtainedFrom && item.tazo?.id) {
+              map[item.tazo.id] = item.obtainedFrom
+            }
+          }
+          setObtainedMap(map)
+        }
+      })
+      .catch(() => {})
+  }, [token])
 
   // Fetch tazos with filters
   const fetchTazos = useCallback(async () => {
@@ -457,7 +479,7 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
           {tazos.map((tazo) => (
             <TazoCard
               key={tazo.id}
-              tazo={tazo}
+              tazo={{ ...tazo, obtainedFrom: (obtainedMap[tazo.id] as any) || null }}
               onClick={(item) => {
                 setSelectedTazo(item)
                 setDetailOpen(true)

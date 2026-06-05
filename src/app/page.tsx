@@ -136,8 +136,8 @@ const features = [
   },
   {
     icon: ScanLine,
-    title: "Scanner Flow",
-    desc: "Upload sheets, crop tazos, and add physical finds into your digital collection.",
+    title: "Physical Collection",
+    desc: "Each franchise mirrors real tazo lines from Spanish 1995-2000. Build authentic nostalgia.",
   },
   {
     icon: ShieldCheck,

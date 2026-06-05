@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   keywords: [
     "tazos", "pogs", "trading tazos game", "ttg", "medaclawarena",
     "minimon tazos", "dracobell tazos", "cybermon tazos",
-    "collectible game", "physics battle", "digital album", "scanner",
+    "collectible game", "physics battle", "digital album", "battle",
     "multiplayer battle", "pvp tazos", "3d battle arena",
     "90s collectibles", "nostalgia game",
   ],

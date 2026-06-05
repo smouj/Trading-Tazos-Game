@@ -4,7 +4,7 @@ import Link from "next/link"
 const faqs = [
   {
     q: "What is Trading Tazos Game?",
-    a: "Trading Tazos Game is a browser-based skill game where you collect, trade, and battle with digital tazos. Album, shop, deck, and scanner views stay clear and readable in 2D; matches use a 3D arena where you aim, charge power, and throw your tazos. 319 verified tazos from 3 classic Spanish collections, with 9 combat stats each."
+    a: "Trading Tazos Game is a browser-based skill game where you collect, trade, and battle with digital tazos. Album, shop, deck, and battle stats stay clear and readable in 2D; matches use a 3D arena where you aim, charge power, and throw your tazos. 319 verified tazos from 3 classic Spanish collections, with 9 combat stats each."
   },
   {
     q: "Is it free to play?",

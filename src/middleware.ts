@@ -17,7 +17,7 @@ const LEGACY_PAGES: Record<string, string> = {
   "/shop": "/app/shop",
   "/album": "/app/album",
   "/battle": "/app/battle",
-  "/scanner": "/app/scanner",
+  "/scanner": "/app/album",
   "/stats": "/app/stats",
 }
 

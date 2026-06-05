@@ -6,7 +6,6 @@ import MagazinePageShell from "@/components/magazine-page-shell"
 const PATH_TO_TAB: Record<string, string> = {
   "/app/album": "album",
   "/app/battle": "battle",
-  "/app/scanner": "scanner",
   "/app/stats": "stats",
   "/app/shop": "shop",
   "/app/quests": "quests",

@@ -27,7 +27,7 @@ export default function HowToPlayPage() {
               <h2 className="text-xl font-black uppercase text-[#1a1a1a]">Build Your Collection</h2>
             </div>
             <p className="text-sm font-bold text-[#1a1a1a]/60 leading-relaxed">
-              Collect tazos by opening potato chip bags in the <Link href="/app/shop" className="text-[#E3350D] underline underline-offset-4">Tazo Shop</Link>. Use credits earned from battles, daily logins, and quests. Each bag type has different rarity chances. You can also scan physical tazos with the Scanner tool to add them to your digital collection.
+              Collect tazos by opening potato chip bags in the <Link href="/app/shop" className="text-[#E3350D] underline underline-offset-4">Tazo Shop</Link>. Use credits earned from battles, daily logins, and quests. Each bag type has different rarity chances. 
             </p>
           </section>
 

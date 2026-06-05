@@ -11,16 +11,15 @@ import { useAuth } from "@/lib/auth-context"
 import { useI18n } from "@/lib/i18n"
 import LanguageSwitcher from "@/components/ui/language-switcher"
 import {
-  BookOpen, Swords, Scan, BarChart3, ShoppingBag,
+  BookOpen, Swords, BarChart3, ShoppingBag,
   Target, Disc3, Layers, LogOut, Home, Settings, Shield,
 } from "lucide-react"
 
-type TabId = "album" | "battle" | "scanner" | "stats" | "shop" | "quests" | "collection" | "decks" | "settings"
+type TabId = "album" | "battle" | "stats" | "shop" | "quests" | "collection" | "decks" | "settings"
 
 const NAV_ITEMS: { id: TabId; labelKey?: string; fallbackLabel: string; icon: typeof BookOpen; href: string }[] = [
   { id: "album", labelKey: "tabAlbum", fallbackLabel: "Album", icon: BookOpen, href: "/app/album" },
   { id: "battle", labelKey: "tabBattle", fallbackLabel: "Battle!", icon: Swords, href: "/app/battle" },
-  { id: "scanner", labelKey: "tabScanner", fallbackLabel: "Scanner", icon: Scan, href: "/app/scanner" },
   { id: "stats", labelKey: "tabStats", fallbackLabel: "Stats", icon: BarChart3, href: "/app/stats" },
   { id: "shop", fallbackLabel: "Shop", icon: ShoppingBag, href: "/app/shop" },
   { id: "quests", fallbackLabel: "Quests", icon: Target, href: "/app/quests" },

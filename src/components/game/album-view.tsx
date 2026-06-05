@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/select'
 import { Search, Filter, CheckCircle, RefreshCw, Palette, Grid3X3, LayoutGrid, BookOpen, Star, ArrowUpDown, Package, Cuboid, FlipHorizontal } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
+import OnboardingBanner from './onboarding-banner'
 
 interface AlbumViewProps {
   onStatsUpdate?: () => void
@@ -120,6 +121,8 @@ export default function AlbumView({ onStatsUpdate }: AlbumViewProps) {
 
   return (
     <div className="space-y-4">
+      {/* Onboarding — shown for new users with pending steps */}
+      {user && <OnboardingBanner key={user.id} />}
       {/* ═══════════════════════════════════════════ */}
       {/* MAGAZINE BANNER STRIP - Stats Summary Bar  */}
       {/* ═══════════════════════════════════════════ */}

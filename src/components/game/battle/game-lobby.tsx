@@ -144,7 +144,7 @@ export default function GameLobby({ playerTazos, onStart, isLoading, isAuthentic
             </h3>
           </div>
           <span className="text-[8px] font-black text-[#1a1a1a]/25 uppercase tracking-widest">
-            {sel.length > 0 ? "CUSTOM" : "AUTO-BEST"}
+            {sel.length > 0 ? "CUSTOM" : "Auto-Select"}
           </span>
         </div>
 

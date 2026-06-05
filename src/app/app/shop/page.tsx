@@ -5,15 +5,19 @@
 "use client"
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react"
+import dynamic from "next/dynamic"
 import { useI18n } from "@/lib/i18n"
 import { useAuth } from "@/lib/auth-context"
 import Link from "next/link"
 import { ShoppingBag, Coins, Zap, Star, Gift, Loader2, X, Sparkles, Crosshair, Trophy, Calendar, Check, ShoppingCart } from "lucide-react"
 import ConfettiBurst from "@/components/game/confetti-burst"
-import BagOpener3D, { type BagData } from "@/components/game/bag-opener-3d"
-import BagShowcase3D from "@/components/game/3d/bag-showcase-3d"
+import { type BagData } from "@/components/game/bag-opener-3d"
 import { pickBagVariant } from "@/components/game/3d/potato-chip-bag-3d"
 import { playSFX, sfxEnsureUnlocked } from "@/lib/audio/sfx-engine"
+
+// Dynamic imports for 3D components (SSR-safe)
+const BagOpener3D = dynamic(() => import("@/components/game/bag-opener-3d"), { ssr: false })
+const BagShowcase3D = dynamic(() => import("@/components/game/3d/bag-showcase-3d"), { ssr: false })
 
 interface BagConfig {
   type: string

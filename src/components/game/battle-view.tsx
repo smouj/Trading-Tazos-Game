@@ -278,7 +278,7 @@ export default function BattleView() {
   const isPlayer = phase.startsWith("player_")
 
   return (
-    <div className="w-full flex flex-col" style={{ minHeight: "calc(100vh - 140px)" }}>
+    <div className="w-full h-full flex flex-col overflow-hidden">
       {/* HUD — magazine score strip */}
       <BattleHUD
         playerName="You"

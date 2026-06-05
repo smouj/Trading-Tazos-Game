@@ -199,11 +199,9 @@ interface Props {
 export default function BattleArena3D(props: Props) {
   return (
     <div
-      className="w-full"
+      className="w-full flex-1 min-h-0"
       style={{
-        height: props.compact ? 320 : 520,
         background: "radial-gradient(ellipse at 50% 50%, #f5f0e0, #d8cdb8)",
-        borderRadius: 0,
         overflow: "hidden",
         border: "3px solid #1a1a1a",
         boxShadow: "inset 0 0 80px rgba(0,0,0,0.08), 4px 4px 0px #1a1a1a",

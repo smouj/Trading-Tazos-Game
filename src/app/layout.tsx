@@ -36,9 +36,9 @@ export const metadata: Metadata = {
     "multiplayer battle", "pvp tazos", "3d battle arena",
     "90s collectibles", "nostalgia game",
   ],
-  authors: [{ name: "MedaClaw Arena", url: SITE_URL }],
-  creator: "MedaClaw Arena",
-  publisher: "MedaClaw Arena",
+  authors: [{ name: "Trading Tazos Game", url: SITE_URL }],
+  creator: "Trading Tazos Game",
+  publisher: "Trading Tazos Game",
   robots: {
     index: true,
     follow: true,
@@ -101,7 +101,7 @@ export default function RootLayout({
               "applicationCategory": "Game",
               "author": {
                 "@type": "Organization",
-                "name": "MedaClaw Arena",
+                "name": "Trading Tazos Game",
                 "url": SITE_URL,
                 "email": "support@medaclawarena.com",
               },

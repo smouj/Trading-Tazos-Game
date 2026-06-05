@@ -121,7 +121,7 @@ It's a game of **physical tazo throwing** — aim, power, physics, chain rebound
 |---------|--------|
 | Web | Full Next.js 16 app at [medaclawarena.com](https://medaclawarena.com) |
 | PWA | Installable on mobile and desktop with manifest.json |
-| Desktop | Electron app for Linux (.AppImage, .deb) — [v0.3.0](https://github.com/smouj/Trading-Tazos-Game/releases/tag/v0.3.0). Windows/macOS planned |
+| Desktop | Electron app — [v0.3.1](https://github.com/smouj/Trading-Tazos-Game/releases/tag/v0.3.1) installers for Windows (.exe), macOS (.dmg), and Linux (.AppImage, .deb) |
 | i18n | 10 languages: EN, ES, PT, DE, FR, IT, JA, KO, ZH, RU |
 | SEO | JSON-LD VideoGame schema, sitemap.xml, robots.txt, hreflang alternates |
 | Security | CSP + HSTS + X-Frame-Options + dual cookie auth |
@@ -347,13 +347,13 @@ The game uses a **90s Nintendo Power / Pokémon Magazine** aesthetic specified i
 
 ## Desktop App
 
-Linux installers are available on the [Releases page](https://github.com/smouj/Trading-Tazos-Game/releases). Windows and macOS builds run via GitHub Actions on tag push.
+Desktop installers for all platforms are available on the [Releases page](https://github.com/smouj/Trading-Tazos-Game/releases/latest).
 
 | Platform | Format | Status |
 |----------|--------|--------|
 | Linux | AppImage, .deb | ✅ Available |
-| Windows | .exe (NSIS) | 🚧 Coming via CI |
-| macOS | .dmg, .zip | 🚧 Coming via CI |
+| Windows | .exe (NSIS) | ✅ Available |
+| macOS | .dmg, .zip | ✅ Available |
 
 ---
 

@@ -12,6 +12,8 @@ import { useAuth } from "@/lib/auth-context"
 import {
   Download, Globe, Monitor, Apple, Terminal,
   Zap, Star, Disc3, Swords, Medal, PackageOpen,
+  BookOpen, ShoppingBag, BarChart3, Dices,
+  ChevronLeft, ChevronRight,
 } from "lucide-react"
 
 // ── Magazine Splash Screen ──
@@ -113,6 +115,119 @@ function StatBadge({ number, label, color }: { number: string; label: string; co
       style={{ boxShadow: `3px 3px 0 ${color}40` }}>
       <span className="text-lg sm:text-xl font-black text-[#1a1a1a] leading-none">{number}</span>
       <span className="text-[8px] font-black text-[#1a1a1a]/60 uppercase tracking-wider mt-0.5">{label}</span>
+    </div>
+  )
+}
+
+// ── Preview Slider ──
+const PREVIEW_SLIDES = [
+  {
+    icon: Disc3, label: "Tazo Collection",
+    desc: "Browse all 319 tazos with search, filters & flip view. Track your album progress.",
+    color: "#00A1E9", bg: "#E8F4FD",
+  },
+  {
+    icon: Swords, label: "3D Battle Arena",
+    desc: "Aim, throw & flip in skill-based combat. Practice vs CPU or challenge friends.",
+    color: "#E3350D", bg: "#FDE8E8",
+  },
+  {
+    icon: ShoppingBag, label: "Open Tazo Bags",
+    desc: "Claim daily bonuses & tear open classic bags. Rare holos & mastertazos await.",
+    color: "#FFCC00", bg: "#FFF9E6",
+  },
+  {
+    icon: BarChart3, label: "Leaderboards",
+    desc: "Compete globally. Rise through the ranks with battle wins & collection score.",
+    color: "#22C55E", bg: "#E8FDE8",
+  },
+  {
+    icon: BookOpen, label: "Deck Builder",
+    desc: "Build custom 20-tazo decks. Pick 5 starters & fine-tune your battle strategy.",
+    color: "#A855F7", bg: "#F3E8FD",
+  },
+  {
+    icon: Dices, label: "Quests & Progress",
+    desc: "Complete daily quests, unlock achievements & level up your collector rank.",
+    color: "#F59E0B", bg: "#FEF9E8",
+  },
+]
+
+function PreviewSlider() {
+  const [active, setActive] = useState(0)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
+
+  const next = useCallback(() => setActive(p => (p + 1) % PREVIEW_SLIDES.length), [])
+  const prev = useCallback(() => setActive(p => (p - 1 + PREVIEW_SLIDES.length) % PREVIEW_SLIDES.length), [])
+
+  useEffect(() => {
+    timerRef.current = setInterval(next, 4000)
+    return () => { if (timerRef.current) clearInterval(timerRef.current) }
+  }, [next])
+
+  const slide = PREVIEW_SLIDES[active]
+  const Icon = slide.icon
+
+  return (
+    <div className="w-full max-w-[340px] sm:max-w-[420px] lg:max-w-[380px]">
+      {/* Slide card */}
+      <div className="relative border-3 border-[#1a1a1a] overflow-hidden transition-all duration-400"
+        style={{ background: slide.bg, boxShadow: "4px 4px 0 #1a1a1a" }}>
+        {/* Color accent bar */}
+        <div className="h-1.5" style={{ background: slide.color }} />
+        
+        <div className="flex items-start gap-3 p-3 sm:p-4">
+          {/* Icon block */}
+          <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center border-2 border-[#1a1a1a] bg-white"
+            style={{ boxShadow: "2px 2px 0 #1a1a1a" }}>
+            <Icon className="w-6 h-6 sm:w-7 sm:h-7" style={{ color: slide.color }} />
+          </div>
+
+          {/* Text */}
+          <div className="min-w-0 flex-1">
+            <h3 className="text-xs sm:text-sm font-black text-[#1a1a1a] uppercase tracking-wider leading-tight">
+              {slide.label}
+            </h3>
+            <p className="mt-0.5 text-[10px] sm:text-[11px] font-bold text-[#1a1a1a]/55 leading-relaxed">
+              {slide.desc}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Nav controls */}
+      <div className="flex items-center justify-between mt-2">
+        <button onClick={prev}
+          className="flex items-center justify-center w-7 h-7 border-2 border-[#1a1a1a] bg-white hover:bg-[#FFF9E6] transition-colors"
+          style={{ boxShadow: "2px 2px 0 #1a1a1a" }}>
+          <ChevronLeft className="w-3.5 h-3.5 text-[#1a1a1a]" />
+        </button>
+
+        {/* Dots */}
+        <div className="flex items-center gap-1.5">
+          {PREVIEW_SLIDES.map((_, i) => (
+            <button key={i} onClick={() => setActive(i)}
+              className="transition-all duration-300 rounded-full"
+              style={{
+                width: i === active ? "18px" : "6px",
+                height: "6px",
+                background: i === active ? "#1a1a1a" : "#1a1a1a20",
+                borderRadius: "3px",
+              }} />
+          ))}
+        </div>
+
+        <button onClick={next}
+          className="flex items-center justify-center w-7 h-7 border-2 border-[#1a1a1a] bg-white hover:bg-[#FFF9E6] transition-colors"
+          style={{ boxShadow: "2px 2px 0 #1a1a1a" }}>
+          <ChevronRight className="w-3.5 h-3.5 text-[#1a1a1a]" />
+        </button>
+      </div>
+
+      {/* Slide counter */}
+      <p className="mt-1 text-center text-[8px] font-black text-[#1a1a1a]/25 uppercase tracking-[0.3em]">
+        {active + 1} / {PREVIEW_SLIDES.length}
+      </p>
     </div>
   )
 }
@@ -244,21 +359,23 @@ export default function LauncherView() {
                 <img
                   src="/logo/logo-icon-black.webp"
                   alt="TTG"
-                  className="w-24 h-24 sm:w-32 sm:h-32"
-                  style={{ filter: "drop-shadow(6px 6px 0 rgba(26,26,26,0.3))" }}
+                  className="w-18 h-18 sm:w-24 sm:h-24 lg:w-20 lg:h-20"
+                  style={{ filter: "drop-shadow(4px 4px 0 rgba(26,26,26,0.3))" }}
                 />
               </div>
 
-              {/* Title */}
+              {/* Compact tagline */}
               <div className="text-center lg:text-left">
-                <h1 className="text-[1.35rem] xs:text-[1.6rem] sm:text-5xl lg:text-6xl font-black text-[#1a1a1a] uppercase leading-[0.9] tracking-tight"
-                  style={{ textShadow: "4px 4px 0 rgba(227,53,13,0.25)" }}>
-                  TRADING<span className="text-[#E3350D]">TAZOS</span><span className="text-[#1a1a1a]">GAME</span>
-                </h1>
-                <p className="mt-1 text-xs sm:text-sm font-black text-[#1a1a1a]/50 uppercase tracking-[0.3em]">
-                  Collect · Build · Battle
+                <h2 className="text-sm sm:text-base lg:text-lg font-black text-[#1a1a1a] uppercase tracking-[0.08em] leading-tight">
+                  <span className="text-[#E3350D]">Collect</span> · <span className="text-[#FFCC00]">Trade</span> · <span className="text-[#00A1E9]">Battle</span>
+                </h2>
+                <p className="mt-0.5 text-[10px] font-bold text-[#1a1a1a]/40 uppercase tracking-[0.2em]">
+                  The classic tazo arena
                 </p>
               </div>
+
+              {/* ── Preview Slider ── */}
+              <PreviewSlider />
 
               {/* Stats grid */}
               <div className="grid grid-cols-4 gap-1.5 sm:gap-2">

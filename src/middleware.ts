@@ -24,8 +24,9 @@ const LEGACY_PAGES: Record<string, string> = {
   "/inventory": "/app/collection",
 }
 
-// Auth pages (redirect to dashboard if already logged in)
-const AUTH_PAGES = ["/login", "/register"]
+// Auth pages that redirect to dashboard if already logged in
+// Note: /register is excluded so logged-in users can create a new account if needed
+const AUTH_REDIRECT_PAGES = ["/login"]
 
 export function middleware(req: NextRequest) {
   const token = req.cookies.get("auth_token")?.value
@@ -55,8 +56,8 @@ export function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  // Redirect authenticated users away from login/register → dashboard
-  if (AUTH_PAGES.includes(pathname) && token && !isJwtExpired(token)) {
+  // Redirect authenticated users away from login → dashboard
+  if (AUTH_REDIRECT_PAGES.includes(pathname) && token && !isJwtExpired(token)) {
     return NextResponse.redirect(new URL("/app/album", req.url))
   }
 

@@ -61,9 +61,7 @@ function MagazineSplash({ onFinish }: { onFinish: () => void }) {
       {/* Title — comic style */}
       <h1 className="mt-5 text-3xl sm:text-5xl font-black text-[#1a1a1a] uppercase tracking-[0.1em] text-center leading-none"
         style={{ textShadow: "3px 3px 0 rgba(227,53,13,0.3)" }}>
-        TRADING<br className="sm:hidden" />{" "}
-        <span className="text-[#E3350D]">TAZOS</span>{" "}
-        <span className="text-[#1a1a1a]">GAME</span>
+        TRADING<span className="text-[#E3350D]">TAZOS</span><span className="text-[#1a1a1a]">GAME</span>
       </h1>
 
       {/* Magazine subtitle */}
@@ -253,11 +251,9 @@ export default function LauncherView() {
 
               {/* Title */}
               <div className="text-center lg:text-left">
-                <h1 className="text-[2rem] sm:text-5xl lg:text-6xl font-black text-[#1a1a1a] uppercase leading-[0.9] tracking-tight"
+                <h1 className="text-[1.35rem] xs:text-[1.6rem] sm:text-5xl lg:text-6xl font-black text-[#1a1a1a] uppercase leading-[0.9] tracking-tight"
                   style={{ textShadow: "4px 4px 0 rgba(227,53,13,0.25)" }}>
-                  TRADING<br className="sm:hidden" />{" "}
-                  <span className="text-[#E3350D]">TAZOS</span>{" "}
-                  <span className="text-[#1a1a1a]">GAME</span>
+                  TRADING<span className="text-[#E3350D]">TAZOS</span><span className="text-[#1a1a1a]">GAME</span>
                 </h1>
                 <p className="mt-1 text-xs sm:text-sm font-black text-[#1a1a1a]/50 uppercase tracking-[0.3em]">
                   Collect · Build · Battle

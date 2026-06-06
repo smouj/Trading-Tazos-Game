@@ -63,7 +63,8 @@ function MagazineSplash({ onFinish }: { onFinish: () => void }) {
       <h1 className="mt-5 text-3xl sm:text-5xl font-black text-[#1a1a1a] uppercase tracking-[0.1em] text-center leading-none"
         style={{ textShadow: "3px 3px 0 rgba(227,53,13,0.3)" }}>
         TRADING<br className="sm:hidden" />{" "}
-        <span className="text-[#E3350D]">TAZOS</span>
+        <span className="text-[#E3350D]">TAZOS</span>{" "}
+        <span className="text-[#1a1a1a]">GAME</span>
       </h1>
 
       {/* Magazine subtitle */}
@@ -72,7 +73,7 @@ function MagazineSplash({ onFinish }: { onFinish: () => void }) {
       }`}>
         <span className="w-3 h-[2px] bg-[#1a1a1a]" />
         <span className="text-[10px] sm:text-xs font-black text-[#1a1a1a]/50 uppercase tracking-[0.4em]">
-          Official Game Magazine
+          Official Game TTG
         </span>
         <span className="w-3 h-[2px] bg-[#1a1a1a]" />
       </div>
@@ -154,13 +155,13 @@ export default function LauncherView() {
           {/* Main masthead */}
           <div className="flex items-center justify-between px-3 sm:px-5 py-2.5">
             <div className="flex items-center gap-2.5">
-              <img src="/logo/logo-icon-black.webp" alt="TTG" className="w-7 h-7 sm:w-8 sm:h-8 brightness-[10]" />
+              <img src="/favicon-192.png" alt="TTG" className="w-7 h-7 sm:w-8 sm:h-8" />
               <div>
                 <h2 className="text-lg sm:text-xl font-black text-white uppercase tracking-[0.08em] leading-none">
-                  TRADING<span className="text-[#FFCC00]">TAZOS</span>
+                  TRADING<span className="text-[#FFCC00]">TAZOS</span><span className="text-white/80">GAME</span>
                 </h2>
                 <p className="text-[8px] font-bold text-[#FFCC00]/70 uppercase tracking-[0.3em] leading-none mt-0.5">
-                  Official Launcher Magazine
+                  Official Game TTG
                 </p>
               </div>
             </div>
@@ -254,7 +255,8 @@ export default function LauncherView() {
                 <h1 className="text-[2rem] sm:text-5xl lg:text-6xl font-black text-[#1a1a1a] uppercase leading-[0.9] tracking-tight"
                   style={{ textShadow: "4px 4px 0 rgba(227,53,13,0.25)" }}>
                   TRADING<br className="sm:hidden" />{" "}
-                  <span className="text-[#E3350D]">TAZOS</span>
+                  <span className="text-[#E3350D]">TAZOS</span>{" "}
+                  <span className="text-[#1a1a1a]">GAME</span>
                 </h1>
                 <p className="mt-1 text-xs sm:text-sm font-black text-[#1a1a1a]/50 uppercase tracking-[0.3em]">
                   Collect · Build · Battle
@@ -324,8 +326,7 @@ export default function LauncherView() {
 
                   <span className="relative flex items-center gap-2.5 text-lg sm:text-xl md:text-2xl font-black text-[#1a1a1a] uppercase tracking-[0.15em]">
                     <Play className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 fill-[#1a1a1a]" />
-                    JUGAR
-                    <Play className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 fill-[#1a1a1a]" />
+                    Play Now
                   </span>
 
                   {/* Overlay halftone */}
@@ -341,7 +342,7 @@ export default function LauncherView() {
               <p className="text-[10px] font-black text-[#1a1a1a]/40 uppercase tracking-wider text-center">
                 {user
                   ? `Welcome back, ${user.displayName || user.name}! Ready for battle?`
-                  : "No account needed — jump right in!"}
+                  : "Create a free account to start playing!"}
               </p>
 
               {/* Feature cards — magazine "articles" */}
@@ -353,9 +354,9 @@ export default function LauncherView() {
                     color: "#FFCC00", href: user ? "/app/shop" : "/register",
                   },
                   {
-                    icon: Crosshair, label: user ? "Battle Arena" : "Play Demo",
-                    desc: user ? "3D skill-based combat" : "No account needed!",
-                    color: "#E3350D", href: user ? "/app/battle" : "/game/practice",
+                    icon: Crosshair, label: "Battle Arena",
+                    desc: "3D skill-based combat",
+                    color: "#E3350D", href: user ? "/app/battle" : "/register",
                   },
                   {
                     icon: Disc3, label: "319 Tazos",

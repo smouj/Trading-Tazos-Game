@@ -10,9 +10,8 @@ import { useState, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
 import {
-  Play, Download, Globe, Monitor, Apple, Terminal,
-  Zap, Star, Crosshair, Disc3, Swords, Sparkles, X,
-  ChevronRight, Medal, PackageOpen, Flame,
+  Download, Globe, Monitor, Apple, Terminal,
+  Zap, Star, Disc3, Swords, Medal, PackageOpen,
 } from "lucide-react"
 
 // ── Magazine Splash Screen ──
@@ -73,7 +72,7 @@ function MagazineSplash({ onFinish }: { onFinish: () => void }) {
       }`}>
         <span className="w-3 h-[2px] bg-[#1a1a1a]" />
         <span className="text-[10px] sm:text-xs font-black text-[#1a1a1a]/50 uppercase tracking-[0.4em]">
-          Official Game TTG
+          Official Game (Beta)
         </span>
         <span className="w-3 h-[2px] bg-[#1a1a1a]" />
       </div>
@@ -82,17 +81,13 @@ function MagazineSplash({ onFinish }: { onFinish: () => void }) {
       <div className={`mt-8 transition-all duration-500 ${
         phase === "flip" ? "opacity-100" : "opacity-0"
       }`}>
-        {/* Halftone loading bar */}
+        {/* Magazine-stripe loading bar */}
         <div className="relative w-56 sm:w-72 h-3 border-2 border-[#1a1a1a] overflow-hidden"
-          style={{ background: "#FFCC00" }}>
-          <div className="mag-dots absolute inset-0 opacity-30" />
+          style={{
+            background: "repeating-linear-gradient(-45deg, #FFCC00, #FFCC00 6px, #F0A800 6px, #F0A800 12px)",
+          }}>
           <div className="absolute inset-0 bg-[#1a1a1a] transition-all duration-75"
             style={{ left: `${Math.min(progress, 100)}%` }} />
-          {/* Print-register marks */}
-          <div className="absolute -top-1 -left-1 w-2 h-2 bg-[#E3350D] rounded-full" />
-          <div className="absolute -top-1 -right-1 w-2 h-2 bg-[#00A1E9] rounded-full" />
-          <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-[#00A1E9] rounded-full" />
-          <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-[#E3350D] rounded-full" />
         </div>
         <p className="mt-2 text-[9px] font-black text-[#1a1a1a]/40 text-center uppercase tracking-[0.3em]">
           Loading issue #{phase === "cover" ? "001" : Math.floor(progress / 10) + 1}...
@@ -161,7 +156,7 @@ export default function LauncherView() {
                   TRADING<span className="text-[#FFCC00]">TAZOS</span><span className="text-white/80">GAME</span>
                 </h2>
                 <p className="text-[8px] font-bold text-[#FFCC00]/70 uppercase tracking-[0.3em] leading-none mt-0.5">
-                  Official Game TTG
+                  Official Game (Beta)
                 </p>
               </div>
             </div>
@@ -287,7 +282,6 @@ export default function LauncherView() {
                   style={{ background: "#FFCC00" }}>
                   <Star className="w-2.5 h-2.5 fill-[#1a1a1a]" /> FREE TO PLAY
                 </span>
-                <span className="text-[9px] font-black text-[#1a1a1a]/30 uppercase tracking-wider">v0.3.1</span>
               </div>
             </div>
 
@@ -330,8 +324,7 @@ export default function LauncherView() {
                     ))}
                   </div>
 
-                  <span className="relative flex items-center gap-2.5 text-lg sm:text-xl md:text-2xl font-black text-[#1a1a1a] uppercase tracking-[0.15em]">
-                    <Play className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 fill-[#1a1a1a]" />
+                  <span className="relative text-lg sm:text-xl md:text-2xl font-black text-[#1a1a1a] uppercase tracking-[0.15em] whitespace-nowrap">
                     Play Now
                   </span>
 
@@ -339,15 +332,13 @@ export default function LauncherView() {
                   <div className="mag-halftone absolute inset-0 opacity-20 pointer-events-none" />
                 </div>
 
-                {/* Corner accents */}
-                <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-[#E3350D] border-2 border-[#1a1a1a]" />
-                <div className="absolute -bottom-1.5 -left-1.5 w-3 h-3 bg-[#00A1E9] border-2 border-[#1a1a1a]" />
+
               </button>
 
               {/* Status */}
               <p className="text-[10px] font-black text-[#1a1a1a]/40 uppercase tracking-wider text-center">
                 {user
-                  ? `Welcome back, ${user.displayName || user.name}! Ready for battle?`
+                  ? "Ready for battle?"
                   : "Create a free account to start playing!"}
               </p>
 
@@ -356,13 +347,13 @@ export default function LauncherView() {
                 {[
                   {
                     icon: PackageOpen, label: "Open Bags",
-                    desc: "10 FREE welcome bags",
-                    color: "#FFCC00", href: user ? "/app/shop" : "/register",
+                    desc: "319 tazos to collect",
+                    color: "#FFCC00", href: "/tazos",
                   },
                   {
-                    icon: Crosshair, label: "Battle Arena",
-                    desc: "3D skill-based combat",
-                    color: "#E3350D", href: user ? "/app/battle" : "/register",
+                    icon: Swords, label: "Practice Mode",
+                    desc: "No account needed!",
+                    color: "#E3350D", href: "/game/practice",
                   },
                   {
                     icon: Disc3, label: "319 Tazos",
@@ -370,8 +361,8 @@ export default function LauncherView() {
                     color: "#00A1E9", href: "/tazos",
                   },
                   {
-                    icon: Medal, label: "Ranked Play",
-                    desc: "Climb the leaderboard",
+                    icon: Medal, label: "Leaderboard",
+                    desc: "See top players",
                     color: "#22C55E", href: "/leaderboard",
                   },
                 ].map(({ icon: Icon, label, desc, color, href }) => (

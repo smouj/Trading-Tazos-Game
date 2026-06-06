@@ -329,7 +329,7 @@ export default function BagShopPage() {
           {/* ═══════════════════════════════════════════ */}
           {/* MAGAZINE BANNER STRIP                      */}
           {/* ═══════════════════════════════════════════ */}
-          <div className="mag-card-yellow rounded-none px-3 py-1.5 flex flex-wrap items-center gap-2 flex-shrink-0" style={{ borderBottom: "3px solid #1a1a1a" }}>
+          <div className="mag-card-yellow rounded-none px-4 py-3 flex flex-wrap items-center gap-3 flex-shrink-0" style={{ borderBottom: "4px solid #1a1a1a" }}>
             <div className="flex items-center gap-1.5">
               <ShoppingCart className="w-4 h-4 text-[#E3350D]" />
               <h1 className="text-sm font-black text-[#1a1a1a] tracking-tight uppercase">
@@ -402,10 +402,10 @@ export default function BagShopPage() {
                 key={bag.type}
                 data-bag-card={bag.type}
                 onClick={() => { setSelectedBag(bag) }}
-                className={`relative p-2 flex flex-col text-left border-2 transition-all ${
+                className={`relative p-2 flex flex-col text-left border-3 transition-all ${
                   isSelected
-                    ? "border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] -translate-x-0.5 -translate-y-0.5 bg-white"
-                    : "border-zinc-200 shadow-[2px_2px_0px_#1a1a1a] bg-white/60 hover:border-[#FFCC00] hover:bg-white"
+                    ? "border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] -translate-x-0.5 -translate-y-0.5 bg-white active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+                    : "border-[#1a1a1a]/15 shadow-[3px_3px_0px_#1a1a1a] bg-white/60 hover:border-[#FFCC00] hover:bg-white hover:shadow-[2px_2px_0px_#1a1a1a] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none active:translate-x-[3px] active:translate-y-[3px]"
                 }`}
               >
                 {/* 3D bag preview */}
@@ -435,7 +435,7 @@ export default function BagShopPage() {
                       }}
                       className={`w-full py-1.5 text-center text-[10px] font-black uppercase tracking-wider border-2 border-[#1a1a1a] transition-all ${
                         isSelected && canAfford
-                          ? "bg-[#22C55E] text-white shadow-[2px_2px_0px_#1a1a1a] hover:-translate-y-[1px] hover:shadow-[3px_3px_0px_#1a1a1a]"
+                          ? "bg-[#22C55E] text-white shadow-[3px_3px_0px_#1a1a1a] hover:shadow-[2px_2px_0px_#1a1a1a] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none active:translate-x-[3px] active:translate-y-[3px]"
                           : isSelected && !canAfford
                           ? "bg-zinc-400 text-white/60 cursor-not-allowed"
                           : "bg-[#1a1a1a] text-[#FFCC00] opacity-70 hover:opacity-100"

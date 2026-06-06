@@ -6,7 +6,7 @@
 import { useState, useEffect } from "react"
 import PublicPageShell from "@/components/layout/public-page-shell"
 import Link from "next/link"
-import { Star, Zap, Flame, Cpu, Loader2 } from "lucide-react"
+import { Star, Zap, Flame, Cpu, Loader2, Package } from "lucide-react"
 
 interface TazoData {
   id: string; name: string; displayName: string; number: string
@@ -81,15 +81,25 @@ export default function TazosCatalogPage() {
   return (
     <PublicPageShell>
       <div className="max-w-5xl mx-auto px-4 py-12 sm:py-16 space-y-8">
-        {/* Header */}
-        <div>
-          <h1 className="text-3xl sm:text-4xl font-black uppercase text-[#1a1a1a] mb-2">
-            Tazo Catalog
-          </h1>
-          <p className="text-lg font-bold text-[#1a1a1a]/60">
-            Browse {tazos.length || 319} tazos across 3 collections. Sign in for full stats, deck building, and battle.
-          </p>
+        {/* Magazine Banner Strip */}
+        <div className="mag-card-yellow rounded-none px-4 py-3 flex flex-wrap items-center gap-3" style={{ borderBottom: "4px solid #1a1a1a" }}>
+          <div className="flex items-center gap-1.5">
+            <Package className="w-5 h-5 text-[#1a1a1a]" />
+            <span className="text-sm font-black text-[#1a1a1a] tracking-tight uppercase">
+              Tazo Catalog
+            </span>
+          </div>
+          <div className="w-px h-5 bg-[#1a1a1a]/30" />
+          <span className="text-sm font-black text-[#E3350D] tracking-tight">
+            {tazos.length || 319} TAZOS
+          </span>
+          <div className="w-px h-5 bg-[#1a1a1a]/30" />
+          <span className="text-[10px] font-black text-[#1a1a1a]/40 uppercase tracking-wider">
+            3 Collections
+          </span>
         </div>
+
+        {/* Description */}
 
         {/* Featured Tazos preview */}
         {!loading && tazos.length > 0 && (
@@ -138,7 +148,7 @@ export default function TazosCatalogPage() {
               <Link
                 key={c.slug}
                 href={`/collections/${c.slug}`}
-                className="border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] bg-white hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#1a1a1a] transition-all p-5"
+                className="border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] bg-white hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#1a1a1a] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all p-5"
               >
                 <div className="flex items-center gap-3 mb-2">
                   <c.icon className="w-6 h-6" style={{ color: c.color }} />
@@ -158,8 +168,8 @@ export default function TazosCatalogPage() {
               onClick={() => setFranchise(f)}
               className={`px-4 py-2 text-[10px] font-black uppercase tracking-wider border-2 transition-all ${
                 franchise === f
-                  ? "bg-[#1a1a1a] text-white border-[#1a1a1a] shadow-[2px_2px_0px_#FFCC00]"
-                  : "bg-white text-[#1a1a1a] border-[#1a1a1a]/15 hover:border-[#FFCC00]"
+                  ? "bg-[#1a1a1a] text-white border-[#1a1a1a] shadow-[2px_2px_0px_#FFCC00] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+                  : "bg-white text-[#1a1a1a] border-[#1a1a1a]/15 hover:border-[#FFCC00] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
               }`}
             >
               {f === "all" ? `All (${franchiseCounts.all})` : `${f} (${franchiseCounts[f] || 0})`}

@@ -198,7 +198,7 @@ function PreviewSlider() {
       {/* Nav controls */}
       <div className="flex items-center justify-between mt-2">
         <button onClick={prev}
-          className="flex items-center justify-center w-7 h-7 border-2 border-[#1a1a1a] bg-white hover:bg-[#FFF9E6] transition-colors"
+          className="flex items-center justify-center w-7 h-7 border-2 border-[#1a1a1a] bg-white hover:bg-[#FFF9E6] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
           style={{ boxShadow: "2px 2px 0 #1a1a1a" }}>
           <ChevronLeft className="w-3.5 h-3.5 text-[#1a1a1a]" />
         </button>
@@ -218,7 +218,7 @@ function PreviewSlider() {
         </div>
 
         <button onClick={next}
-          className="flex items-center justify-center w-7 h-7 border-2 border-[#1a1a1a] bg-white hover:bg-[#FFF9E6] transition-colors"
+          className="flex items-center justify-center w-7 h-7 border-2 border-[#1a1a1a] bg-white hover:bg-[#FFF9E6] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
           style={{ boxShadow: "2px 2px 0 #1a1a1a" }}>
           <ChevronRight className="w-3.5 h-3.5 text-[#1a1a1a]" />
         </button>
@@ -237,6 +237,7 @@ export default function LauncherView() {
   const { user } = useAuth()
   const [showSplash, setShowSplash] = useState(false)
   const [hoverPlay, setHoverPlay] = useState(false)
+  const [pressPlay, setPressPlay] = useState(false)
   const [showNews, setShowNews] = useState(false)
 
   const handlePlay = useCallback(() => setShowSplash(true), [])
@@ -405,10 +406,14 @@ export default function LauncherView() {
               <button
                 onClick={handlePlay}
                 onMouseEnter={() => setHoverPlay(true)}
-                onMouseLeave={() => setHoverPlay(false)}
-                className="group relative"
+                onMouseLeave={() => { setHoverPlay(false); setPressPlay(false); }}
+                onMouseDown={() => setPressPlay(true)}
+                onMouseUp={() => setPressPlay(false)}
+                onTouchStart={() => setPressPlay(true)}
+                onTouchEnd={() => setPressPlay(false)}
+                className="group relative select-none"
                 style={{
-                  transform: hoverPlay ? "translate(-2px, -2px)" : "translate(0, 0)",
+                  transform: pressPlay ? "translate(2px, 2px)" : hoverPlay ? "translate(-2px, -2px)" : "translate(0, 0)",
                   transition: "transform 0.15s ease",
                 }}
               >
@@ -419,10 +424,10 @@ export default function LauncherView() {
                 {/* Main button */}
                 <div className="relative px-10 sm:px-14 md:px-20 py-3.5 sm:py-4 md:py-5 border-[4px] border-[#1a1a1a] overflow-hidden"
                   style={{
-                    background: hoverPlay
+                    background: (hoverPlay || pressPlay)
                       ? "linear-gradient(180deg, #FFE566 0%, #FFCC00 50%, #F5B800 100%)"
                       : "linear-gradient(180deg, #FFCC00 0%, #F0A800 100%)",
-                    boxShadow: hoverPlay
+                    boxShadow: (hoverPlay || pressPlay)
                       ? "inset 0 -4px 0 rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.3)"
                       : "inset 0 -3px 0 rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.25)",
                   }}

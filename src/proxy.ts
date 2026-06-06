@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from "next/server"
 
 const ROOT_REDIRECTS: Record<string, string> = {
-  "/app": "/app/album",
+  "/app": "/app/collection",
 }
 
 const LEGACY_PAGES: Record<string, string> = {
@@ -14,9 +14,9 @@ const LEGACY_PAGES: Record<string, string> = {
   "/decks": "/app/decks",
   "/quests": "/app/quests",
   "/shop": "/app/shop",
-  "/album": "/app/album",
+  "/album": "/app/collection",
   "/battle": "/app/battle",
-  "/scanner": "/app/album",
+  "/scanner": "/app/collection",
   "/stats": "/app/stats",
   "/profile": "/app/settings",
   "/settings": "/app/settings",
@@ -50,7 +50,7 @@ export function proxy(req: NextRequest) {
   }
 
   if (AUTH_REDIRECT_PAGES.includes(pathname) && token && !isJwtExpired(token)) {
-    return NextResponse.redirect(new URL("/app/album", req.url))
+    return NextResponse.redirect(new URL("/app/collection", req.url))
   }
 
   return NextResponse.next()

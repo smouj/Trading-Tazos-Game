@@ -33,6 +33,10 @@ const nextConfig: NextConfig = {
       // Battle
       { source: "/arena", destination: "/app/battle", permanent: false },
 
+      // App nav merge — Album merged into Collection
+      { source: "/app/album", destination: "/app/collection", permanent: true },
+      { source: "/app/album/:path*", destination: "/app/collection", permanent: true },
+
       // Legacy RPGClaw routes → redirect home
       { source: "/earth", destination: "/", permanent: true },
       { source: "/status", destination: "/leaderboard", permanent: true },

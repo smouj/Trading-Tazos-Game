@@ -547,9 +547,9 @@ export default function CollectionPage() {
 
       {/* Footer: Quick links */}
       <div className="flex flex-wrap gap-3 justify-center pt-2">
-        <Link href="/app/album" className="mag-btn px-5 py-2.5 text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5"
+        <Link href="/tazos" className="mag-btn px-5 py-2.5 text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5"
           style={{ background: "white", color: "#1a1a1a", border: "3px solid #1a1a1a", boxShadow: "3px 3px 0px #1a1a1a" }}>
-          <BookOpen className="w-4 h-4" /> View Album
+          <BookOpen className="w-4 h-4" /> Tazo Catalog
         </Link>
         <Link href="/app/battle" className="mag-btn px-5 py-2.5 text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5"
           style={{ background: "#E3350D", color: "white", border: "3px solid #1a1a1a", boxShadow: "3px 3px 0px #1a1a1a" }}>

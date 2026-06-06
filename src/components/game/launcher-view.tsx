@@ -134,7 +134,7 @@ export default function LauncherView() {
   const handlePlay = useCallback(() => setShowSplash(true), [])
   const handleSplashDone = useCallback(() => {
     setShowSplash(false)
-    window.location.href = user ? "/app/album" : "/login"
+    window.location.href = user ? "/app/collection" : "/login"
   }, [user])
 
   return (
@@ -185,7 +185,7 @@ export default function LauncherView() {
             <div className="flex items-center gap-2">
               {user ? (
                 <>
-                  <Link href="/app/album"
+                  <Link href="/app/collection"
                     className="px-3 py-1 text-[10px] font-black text-[#1a1a1a] bg-[#FFCC00] uppercase tracking-wider border-2 border-white/20 hover:bg-[#FFE566] transition-colors">
                     Dashboard
                   </Link>

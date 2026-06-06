@@ -18,12 +18,11 @@ import {
   Target, Disc3, Layers, LogOut, Home, Settings, Shield, Coins,
 } from "lucide-react"
 
-type TabId = "album" | "battle" | "stats" | "shop" | "quests" | "collection" | "decks" | "settings"
+type TabId = "battle" | "stats" | "shop" | "quests" | "collection" | "decks" | "settings"
 
 const NAV_ITEMS: { id: TabId; label: string; icon: typeof BookOpen; href: string }[] = [
-  { id: "album", label: "Album", icon: BookOpen, href: "/app/album" },
-  { id: "battle", label: "Battle!", icon: Swords, href: "/app/battle" },
   { id: "collection", label: "Collection", icon: Disc3, href: "/app/collection" },
+  { id: "battle", label: "Battle!", icon: Swords, href: "/app/battle" },
   { id: "shop", label: "Shop", icon: ShoppingBag, href: "/app/shop" },
   { id: "decks", label: "Decks", icon: Layers, href: "/app/decks" },
   { id: "stats", label: "Stats", icon: BarChart3, href: "/app/stats" },

@@ -1,6 +1,6 @@
 "use client"
 
-// Album view — served at /app/album
+// Album view — merged into /app/collection (redirect handled by next.config)
 // MagazinePageShell provided by /app/layout.tsx
 
 import { useCallback, useState } from "react"

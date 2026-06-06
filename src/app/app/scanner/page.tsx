@@ -2,7 +2,7 @@
 
 // Scanner view — served at /app/scanner
 // MagazinePageShell provided by /app/layout.tsx
-// ADMIN-ONLY: Redirects non-admin users to /app/album
+// ADMIN-ONLY: Redirects non-admin users to /app/collection
 
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
@@ -16,7 +16,7 @@ export default function ScannerPage() {
 
   useEffect(() => {
     if (!loading && user?.email !== "dev.viewer@medaclawarena.com") {
-      router.replace("/app/album")
+      router.replace("/app/collection")
     }
   }, [user, loading, router])
 

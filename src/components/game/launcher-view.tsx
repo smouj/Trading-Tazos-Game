@@ -90,7 +90,7 @@ function MagazineSplash({ onFinish }: { onFinish: () => void }) {
             style={{ left: `${Math.min(progress, 100)}%` }} />
         </div>
         <p className="mt-2 text-[9px] font-black text-[#1a1a1a]/40 text-center uppercase tracking-[0.3em]">
-          Loading issue #{phase === "cover" ? "001" : Math.floor(progress / 10) + 1}...
+          Loading magazine #{phase === "cover" ? "001" : Math.floor(progress / 10) + 1}...
         </p>
       </div>
     </div>

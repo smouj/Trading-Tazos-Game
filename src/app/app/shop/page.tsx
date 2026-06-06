@@ -33,18 +33,18 @@ const BAGS: BagConfig[] = [
   {
     type: "standard",
     name: "Classic Bag",
-    cost: 50,
-    bonusChance: 8,
+    cost: 25,
+    bonusChance: 12,
     rareBoost: 1,
-    color: "#22C55E",
+    color: "#FFCC00",
     franchise: "minimon",
     icon: <ShoppingBag className="w-5 h-5" />,
   },
   {
     type: "premium",
     name: "Premium Bag",
-    cost: 150,
-    bonusChance: 15,
+    cost: 25,
+    bonusChance: 18,
     rareBoost: 2,
     color: "#3B82F6",
     franchise: "cybermon",
@@ -53,7 +53,7 @@ const BAGS: BagConfig[] = [
   {
     type: "mega",
     name: "Mega Bag",
-    cost: 400,
+    cost: 25,
     bonusChance: 25,
     rareBoost: 3,
     color: "#F97316",
@@ -82,7 +82,7 @@ function BagPreview({ bag }: { bag: BagConfig }) {
   const variant = useMemo(() => pickBagVariant(bag.franchise), [bag.franchise])
   return (
     <div
-      className="relative h-[190px] sm:h-[220px] overflow-hidden border-3 border-[#1a1a1a] bg-[#fffbe6] shadow-[3px_3px_0px_#1a1a1a]"
+      className="relative h-[130px] sm:h-[160px] overflow-hidden border-2 border-[#1a1a1a] bg-[#fffbe6] shadow-[2px_2px_0px_#1a1a1a]"
       style={{
         background:
           "radial-gradient(circle at 25% 20%, rgba(255,255,255,0.9), transparent 22%), repeating-linear-gradient(-8deg, rgba(26,26,26,0.04) 0 6px, transparent 6px 13px), #fffbe6",
@@ -324,11 +324,11 @@ export default function BagShopPage() {
   // ── Select stage ──
   if (stage === "select") {
     return (
-        <div className="max-w-7xl mx-auto py-6 px-4 space-y-6">
+        <div className="max-w-7xl mx-auto py-3 px-3 space-y-3 h-[calc(100vh-140px)] flex flex-col overflow-hidden">
           {/* ═══════════════════════════════════════════ */}
           {/* MAGAZINE BANNER STRIP                      */}
           {/* ═══════════════════════════════════════════ */}
-          <div className="mag-card-yellow rounded-none px-4 py-3 flex flex-wrap items-center gap-3" style={{ borderBottom: "4px solid #1a1a1a" }}>
+          <div className="mag-card-yellow rounded-none px-3 py-2 flex flex-wrap items-center gap-2 flex-shrink-0" style={{ borderBottom: "3px solid #1a1a1a" }}>
             <div className="flex items-center gap-1.5">
               <ShoppingCart className="w-5 h-5 text-[#E3350D]" />
               <h1 className="text-sm font-black text-[#1a1a1a] tracking-tight uppercase">
@@ -343,8 +343,8 @@ export default function BagShopPage() {
           {/* PENDING FREE BAGS                         */}
           {/* ═══════════════════════════════════════════ */}
           {pendingBags > 0 && (
-            <div className="p-5 bg-[#FFCC00] border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] text-center space-y-3">
-              <div className="flex items-center justify-center gap-2">
+            <div className="p-3 bg-[#FFCC00] border-2 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] text-center space-y-2 flex-shrink-0">
+              <div className="flex items-center justify-center gap-1.5">
                 <Gift className="w-6 h-6 text-[#1a1a1a]" />
                 <span className="text-lg font-black uppercase text-[#1a1a1a]">
                   {pendingBags} Bags to Open!
@@ -397,20 +397,20 @@ export default function BagShopPage() {
           )}
 
           {/* Bag selection */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 flex-1 min-h-0">
             {BAGS.map(bag => (
               <button
                 key={bag.type}
                 data-bag-card={bag.type}
                 onClick={() => setSelectedBag(bag)}
-                className={`relative p-4 text-left border-3 transition-all ${
+                className={`relative p-3 text-left border-2 transition-all ${
                   selectedBag.type === bag.type
-                    ? "border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] -translate-x-0.5 -translate-y-0.5 bg-white"
+                    ? "border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] -translate-x-0.5 -translate-y-0.5 bg-white"
                     : "border-zinc-200 shadow-[2px_2px_0px_#1a1a1a] bg-white/60 hover:border-[#FFCC00]"
                 }`}
               >
                 {/* 3D bag preview */}
-                <div className="h-[200px] sm:h-[240px] mb-3">
+                <div className="h-[140px] sm:h-[160px] mb-2">
                   <BagPreview bag={bag} />
                 </div>
                 <div className="flex items-center gap-2 mb-1">
@@ -430,7 +430,7 @@ export default function BagShopPage() {
           </div>
 
           {/* Buy button */}
-          <div className="text-center">
+          <div className="text-center flex-shrink-0">
             <button
               onClick={handleBuy}
               disabled={buying || credits < selectedBag.cost}
@@ -455,14 +455,14 @@ export default function BagShopPage() {
           </div>
 
           {/* How to earn */}
-          <div className="p-4 bg-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a]">
-            <h3 className="font-black text-xs uppercase tracking-wider text-[#1a1a1a] mb-2 flex items-center gap-2">
+          <div className="p-3 bg-white border-2 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a] flex-shrink-0">
+            <h3 className="font-black text-[10px] uppercase tracking-wider text-[#1a1a1a] mb-1.5 flex items-center gap-1.5">
               <Gift className="w-4 h-4 text-[#F59E0B]" /> How to earn credits
             </h3>
             <button
               onClick={claimDaily}
               disabled={!dailyClaimable || claimingDaily}
-              className="mb-3 flex w-full items-center justify-center gap-2 border-3 border-[#1a1a1a] bg-[#3B4CCA] px-4 py-2 text-xs font-black uppercase text-white shadow-[3px_3px_0px_#1a1a1a] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#1a1a1a] disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:shadow-none"
+              className="mb-2 flex w-full items-center justify-center gap-2 border-2 border-[#1a1a1a] bg-[#3B4CCA] px-3 py-1.5 text-[10px] font-black uppercase text-white shadow-[2px_2px_0px_#1a1a1a] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#1a1a1a] disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:shadow-none"
             >
               {claimingDaily ? <Loader2 className="h-4 w-4 animate-spin" /> : <Calendar className="h-4 w-4" />}
               {dailyClaimable ? "Claim daily +25 credits" : "Daily bonus claimed"}

@@ -1,14 +1,22 @@
 #!/usr/bin/env python3
 """
-Trading Tazos Game — Premium Tazo Art Generator (Optimized)
-Generates 1024x1024 PNG tazo disc images efficiently.
+Trading Tazos Game — Premium Tazo Art Generator v2
+Composites franchise-specific background textures with character art.
+Generates 1024x1024 PNG tazo disc images.
+
+Backgrounds (from frontal-bg-tazos):
+  - minimon: 6 backgrounds (01-06) — assigned by number % 6
+  - cybermon: 3 backgrounds (evo-1, evo-2, evo-3) — mapped by transformStage / evolution
+  - dracobell: 4 backgrounds (01-04) — assigned by number % 4
+  - special: 1 background — for legendary + ultra rarity across all franchises
 """
 
-import sqlite3, os, math, random
+import sqlite3, os, math, random, sys
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 OUT_DIR = Path("public/tazos-generated")
+BG_DIR = Path("scripts/tazo-backgrounds")
 SIZE = 1024
 CENTER = SIZE // 2
 RADIUS = 440  # Leave breathing room
@@ -23,7 +31,7 @@ FRANCHISE = {
         "bg_mid": (240, 250, 230),
         "text_dark": (26, 26, 26),
         "text_light": (255, 255, 255),
-        "collection": "POKÉMON TAZOS 1",
+        "collection": "MINIMON TAZOS SERIES 1",
         "ring_colors": [(255,203,5), (34,197,94), (124,45,18)],
         "type_colors": {
             "fire":(239,68,68),"water":(59,130,246),"grass":(34,197,94),
@@ -40,7 +48,7 @@ FRANCHISE = {
         "bg_mid": (190, 230, 250),
         "text_dark": (26, 26, 26),
         "text_light": (255, 255, 255),
-        "collection": "DIGIMON MAGIC BOX 2000",
+        "collection": "CYBERMON DIGI-TAZOS 2000",
         "ring_colors": [(0,161,233), (0,87,183), (30,58,95)],
         "type_colors": {
             "data":(0,161,233),"virus":(139,92,246),
@@ -56,7 +64,7 @@ FRANCHISE = {
         "bg_mid": (255, 230, 200),
         "text_dark": (26, 26, 26),
         "text_light": (255, 255, 255),
-        "collection": "DBZ MATUTANO 1995",
+        "collection": "DRACOBELL MASTER SERIES",
         "ring_colors": [(255,107,0), (204,68,0), (124,45,18)],
         "type_colors": {
             "saiyan":(227,53,13),"namekian":(34,197,94),
@@ -73,37 +81,83 @@ RARITY = {
     "legendary": {"border":(251,191,36),"stars":5,"glow":(251,191,36)},
 }
 
-# Pre-render a radial gradient mask (H, W)
-def make_gradient(center_color, edge_color):
-    arr = bytearray(SIZE * SIZE * 4)
-    cx, cy = CENTER, CENTER
-    for y in range(SIZE):
-        for x in range(SIZE):
-            dx, dy = x - cx, y - cy
-            dist = math.sqrt(dx*dx + dy*dy)
-            t = min(1.0, dist / RADIUS)
-            # More gradual gradient — stay bright longer, darken at edges
-            t2 = t ** 1.5  # Ease: stays bright in center, darkens at edge
-            blend = 0
-            if t > 0.6:
-                blend = (t - 0.6) / 0.4  # Only darken the outer 40%
-            r = int(center_color[0] + (edge_color[0] - center_color[0]) * blend)
-            g = int(center_color[1] + (edge_color[1] - center_color[1]) * blend)
-            b = int(center_color[2] + (edge_color[2] - center_color[2]) * blend)
-            idx = (y * SIZE + x) * 4
-            arr[idx] = r
-            arr[idx+1] = g
-            arr[idx+2] = b
-            arr[idx+3] = 255
-    return Image.frombytes("RGBA", (SIZE, SIZE), bytes(arr))
+# ── Background loading ──
 
-# Pre-render gradients (one per franchise)
-GRADIENTS = {}
-def get_gradient(franchise_slug):
-    if franchise_slug not in GRADIENTS:
-        fx = FRANCHISE[franchise_slug]
-        GRADIENTS[franchise_slug] = make_gradient(fx["primary"], fx["dark"])
-    return GRADIENTS[franchise_slug].copy()
+def load_backgrounds():
+    """Load all backgrounds into a dict: { 'minimon-0': Image, ... }"""
+    bgs = {}
+    for fname in sorted(os.listdir(BG_DIR)):
+        if not fname.endswith('.png'):
+            continue
+        path = BG_DIR / fname
+        img = Image.open(path).convert("RGBA")
+        img = img.resize((SIZE, SIZE), Image.LANCZOS)
+        key = fname.replace('.png', '').replace('bg-frontal-tazo-', '')
+        bgs[key] = img
+    return bgs
+
+
+def pick_background(tazo, bgs, number):
+    """Pick the right background for a tazo based on franchise + number/evolution."""
+    fs = tazo["franchise_slug"]
+    rarity = tazo.get("rarity", "common")
+
+    # Special/legendary across all franchises → special background
+    if rarity in ("legendary", "ultra") and "all-special-01" in bgs:
+        return bgs["all-special-01"]
+
+    if fs == "minimon":
+        # 6 backgrounds, distribute by number
+        idx = (number - 1) % 6 + 1
+        key = f"minimon-{idx:02d}"
+        if key in bgs:
+            return bgs[key]
+
+    elif fs == "cybermon":
+        # 3 evo backgrounds — map by transform stage or evolution chain depth
+        stage = tazo.get("transformStage")
+        evo = tazo.get("evolutionFrom")
+        evo_to = tazo.get("evolutionTo")
+
+        if stage and stage in ("1", "2", "3"):
+            idx = int(stage)
+        elif evo and evo_to:
+            idx = 2  # Has both evolutionFrom and evolutionTo → middle
+        elif evo_to and not evo:
+            idx = 1  # Only evolutionTo → first stage
+        elif evo and not evo_to:
+            idx = 3  # Only evolutionFrom → final stage
+        else:
+            # No evolution data — distribute by number
+            idx = ((number - 1) % 3) + 1
+
+        idx = max(1, min(3, idx))
+        key = f"cybermon-evo-{idx}"
+        if key in bgs:
+            return bgs[key]
+
+    elif fs == "dracobell":
+        # 4 backgrounds, distribute by number
+        idx = (number - 1) % 4 + 1
+        key = f"dracobell-{idx:02d}"
+        if key in bgs:
+            return bgs[key]
+
+    return None
+
+
+def circular_mask(img, blur=True):
+    """Apply circular mask to make the background a perfect disc."""
+    mask = Image.new("L", (SIZE, SIZE), 0)
+    mask_draw = ImageDraw.Draw(mask)
+    mask_draw.ellipse(
+        [CENTER - RADIUS, CENTER - RADIUS, CENTER + RADIUS, CENTER + RADIUS],
+        fill=255
+    )
+    if blur:
+        mask = mask.filter(ImageFilter.GaussianBlur(1))
+    img.putalpha(mask)
+    return img
 
 
 def draw_star(draw, cx, cy, r, color, points=5):
@@ -113,6 +167,7 @@ def draw_star(draw, cx, cy, r, color, points=5):
         rad = r if i % 2 == 0 else r * 0.4
         pts.append((cx + math.cos(angle) * rad, cy + math.sin(angle) * rad))
     draw.polygon(pts, fill=color)
+
 
 def get_fonts():
     try:
@@ -129,7 +184,7 @@ def get_fonts():
         return {k: d for k in ["small","large","medium","number","tiny"]}
 
 
-def generate_tazo(tazo, fonts):
+def generate_tazo(tazo, bgs, fonts):
     fs = tazo["franchise_slug"]
     fx = FRANCHISE.get(fs, FRANCHISE["minimon"])
     rz = RARITY.get(tazo.get("rarity", "common"), RARITY["common"])
@@ -143,32 +198,59 @@ def generate_tazo(tazo, fonts):
     slug = tazo["slug"]
     rng = random.Random(hash(slug) & 0xFFFFFFFF)
 
-    # ── Start with gradient base ──
-    img = get_gradient(fs)
+    # ── Pick background texture ──
+    raw_number = str(tazo.get("number", "1"))
+    try:
+        number = int(raw_number)
+    except (ValueError, TypeError):
+        number = abs(hash(raw_number)) % 200 + 1  # stable hash-based number
+
+    bg = pick_background(tazo, bgs, number)
+
+    if bg:
+        img = bg.copy()
+    else:
+        # Fallback: solid gradient if no background available
+        img = Image.new("RGBA", (SIZE, SIZE), fx["bg_light"])
+
     draw = ImageDraw.Draw(img)
 
-    # ── Mask to circle ──
-    mask = Image.new("L", (SIZE, SIZE), 0)
-    mask_draw = ImageDraw.Draw(mask)
-    mask_draw.ellipse([CENTER-RADIUS, CENTER-RADIUS, CENTER+RADIUS, CENTER+RADIUS], fill=255)
-    # Soften mask edges
-    mask = mask.filter(ImageFilter.GaussianBlur(1))
-    img.putalpha(mask)
+    # ── Circular mask ──
+    img = circular_mask(img)
+
+    # If using a background, add a subtle dark overlay at edges for depth
+    if bg:
+        edge_overlay = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
+        edge_draw = ImageDraw.Draw(edge_overlay)
+        # Radial gradient from transparent center to dark edge
+        for r_frac in range(75, 100, 2):
+            r = int(RADIUS * r_frac / 100.0)
+            alpha = int(180 * ((r_frac - 75) / 25.0))  # 0→180 alpha
+            edge_draw.ellipse(
+                [CENTER - r, CENTER - r, CENTER + r, CENTER + r],
+                outline=(0, 0, 0, alpha), width=2
+            )
+        img = Image.alpha_composite(img, edge_overlay)
+        draw = ImageDraw.Draw(img)
 
     # ── Rings (from outside in) ──
     R = RADIUS
     # Outer border
-    draw.ellipse([CENTER-R-5, CENTER-R-5, CENTER+R+5, CENTER+R+5], outline=border_color, width=10)
-    draw.ellipse([CENTER-R+5, CENTER-R+5, CENTER+R-5, CENTER+R-5], outline=(26,26,26), width=3)
-    
+    draw.ellipse([CENTER-R-5, CENTER-R-5, CENTER+R+5, CENTER+R+5],
+                 outline=border_color, width=10)
+    draw.ellipse([CENTER-R+5, CENTER-R+5, CENTER+R-5, CENTER+R-5],
+                 outline=(26,26,26), width=3)
+
     # Decorative rings
     for offset, w, color, alpha in [
         (16, 2, (255,255,255), 180),
         (26, 3, fx["ring_colors"][1], 200),
         (36, 1, (255,255,255), 120),
     ]:
-        draw.ellipse([CENTER-R+offset, CENTER-R+offset, CENTER+R-offset, CENTER+R-offset],
-                     outline=color + (alpha,) if len(color) == 3 else color, width=w)
+        draw.ellipse([
+            CENTER - R + offset, CENTER - R + offset,
+            CENTER + R - offset, CENTER + R - offset,
+        ], outline=color + (alpha,), width=w)
 
     # Dots ring
     for i in range(24):
@@ -178,40 +260,53 @@ def generate_tazo(tazo, fonts):
         dot_c = fx["ring_colors"][rng.randint(0, 2)]
         draw.ellipse([dx-3, dy-3, dx+3, dy+3], fill=dot_c + (140,))
 
-    # ── Inner disc (lighter background) ──
+    # ── Inner disc area (semi-transparent for text visibility) ──
     inner_r = R - 70
-    # Use a solid fill with slight transparency for depth
-    inner_overlay = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
-    inner_draw = ImageDraw.Draw(inner_overlay)
-    inner_draw.ellipse([CENTER-inner_r, CENTER-inner_r, CENTER+inner_r, CENTER+inner_r],
-                       fill=fx["bg_light"] + (200,))
-    img = Image.alpha_composite(img, inner_overlay)
+    inner_badge = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
+    inner_draw = ImageDraw.Draw(inner_badge)
+    if bg:
+        # More transparent if we have a background (let texture show through)
+        inner_draw.ellipse([
+            CENTER - inner_r, CENTER - inner_r,
+            CENTER + inner_r, CENTER + inner_r,
+        ], fill=fx["bg_light"] + (120,))
+    else:
+        inner_draw.ellipse([
+            CENTER - inner_r, CENTER - inner_r,
+            CENTER + inner_r, CENTER + inner_r,
+        ], fill=fx["bg_light"] + (200,))
+    img = Image.alpha_composite(img, inner_badge)
     draw = ImageDraw.Draw(img)
 
     # Inner border
-    draw.ellipse([CENTER-inner_r, CENTER-inner_r, CENTER+inner_r, CENTER+inner_r],
-                 outline=dark + (200,), width=4)
+    draw.ellipse([
+        CENTER - inner_r, CENTER - inner_r,
+        CENTER + inner_r, CENTER + inner_r,
+    ], outline=dark + (200,), width=4)
 
     # ── Core area — subtle stripes ──
     core_r = inner_r - 20
-    stripe_overlay = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
-    stripe_draw = ImageDraw.Draw(stripe_overlay)
-    for i in range(6):
-        angle = i * math.pi / 3 + rng.random() * 0.3
-        x1 = CENTER + math.cos(angle) * core_r * 0.6
-        y1 = CENTER + math.sin(angle) * core_r * 0.6
-        x2 = CENTER + math.cos(angle) * core_r
-        y2 = CENTER + math.sin(angle) * core_r
-        c = fx["ring_colors"][i % 3]
-        stripe_draw.line([(x1, y1), (x2, y2)], fill=c + (40,), width=30)
-    img = Image.alpha_composite(img, stripe_overlay)
-    draw = ImageDraw.Draw(img)
+    if not bg:
+        stripe_overlay = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
+        stripe_draw = ImageDraw.Draw(stripe_overlay)
+        for i in range(6):
+            angle = i * math.pi / 3 + rng.random() * 0.3
+            x1 = CENTER + math.cos(angle) * core_r * 0.6
+            y1 = CENTER + math.sin(angle) * core_r * 0.6
+            x2 = CENTER + math.cos(angle) * core_r
+            y2 = CENTER + math.sin(angle) * core_r
+            c = fx["ring_colors"][i % 3]
+            stripe_draw.line([(x1, y1), (x2, y2)], fill=c + (40,), width=30)
+        img = Image.alpha_composite(img, stripe_overlay)
+        draw = ImageDraw.Draw(img)
 
     # ── Center shine ──
     shine_overlay = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
     shine_draw = ImageDraw.Draw(shine_overlay)
-    shine_draw.ellipse([CENTER-core_r*0.5, CENTER-core_r*0.5-30, CENTER+core_r*0.5, CENTER+core_r*0.5-30],
-                       fill=(255, 255, 255, 50))
+    shine_draw.ellipse([
+        CENTER - core_r*0.5, CENTER - core_r*0.5 - 30,
+        CENTER + core_r*0.5, CENTER + core_r*0.5 - 30,
+    ], fill=(255, 255, 255, 50))
     img = Image.alpha_composite(img, shine_overlay)
     draw = ImageDraw.Draw(img)
 
@@ -221,13 +316,21 @@ def generate_tazo(tazo, fonts):
     draw.text((CENTER - cw//2, 65), collection, fill=fx["text_light"],
               font=fonts["small"], stroke_width=2, stroke_fill=dark)
 
-    # ── Character Letter(s) ──
+    # ── Character Letter(s) — with dark background pill for readability ──
     letters = ''.join([w[0] for w in name.split() if w])[:2]
     if not letters:
         letters = name[:2] if len(name) >= 2 else name[0]
 
     lbbox = draw.textbbox((0, 0), letters, font=fonts["large"])
     lw, lh = lbbox[2] - lbbox[0], lbbox[3] - lbbox[1]
+
+    # Semi-transparent pill behind the letter for contrast over textures
+    if bg:
+        pad_x, pad_y = 30, 20
+        draw.rounded_rectangle([
+            CENTER - lw//2 - pad_x, CENTER - lh//2 - 20 - pad_y,
+            CENTER + lw//2 + pad_x, CENTER + lh//2 - 20 + pad_y,
+        ], radius=20, fill=(0, 0, 0, 90))
 
     # Glow
     if rz["glow"]:
@@ -258,7 +361,7 @@ def generate_tazo(tazo, fonts):
                   fill=(255,255,255), font=fonts["small"],
                   stroke_width=1, stroke_fill=dark)
 
-    # ── Name at bottom ──
+    # ── Name at bottom — with solid background for readability ──
     if len(name) > 14:
         sp = name.rfind(' ', 0, len(name)//2 + 4)
         if sp > 3:
@@ -268,15 +371,16 @@ def generate_tazo(tazo, fonts):
     else:
         name_lines = [name]
 
-    n_y = CENTER + RADIUS - 65  # Well inside the disc
+    n_y = CENTER + RADIUS - 65
     for line in reversed(name_lines):
         nbbox = draw.textbbox((0, 0), line, font=fonts["medium"])
         nw = nbbox[2] - nbbox[0]
         pad = 8
+        # Solid background for name plate
         draw.rounded_rectangle(
             [CENTER - nw//2 - pad, n_y - 26 - pad,
              CENTER + nw//2 + pad, n_y + pad],
-            radius=14, fill=(255,255,255,230), outline=dark, width=3
+            radius=14, fill=(255,255,255,240), outline=dark, width=3
         )
         draw.text((CENTER - nw//2, n_y - 26), line, fill=dark, font=fonts["medium"])
         n_y -= 34
@@ -285,11 +389,11 @@ def generate_tazo(tazo, fonts):
     num_str = f"Nº {number}"
     nbbox2 = draw.textbbox((0, 0), num_str, font=fonts["tiny"])
     nw2 = nbbox2[2] - nbbox2[0]
-    nx = CENTER + RADIUS - 130  # Further inside
+    nx = CENTER + RADIUS - 130
     ny = CENTER + RADIUS - 130
     draw.rounded_rectangle(
         [nx - nw2//2 - 6, ny - 10 - 4, nx + nw2//2 + 6, ny + 10 + 4],
-        radius=8, fill=(255,255,255,220), outline=dark, width=2
+        radius=8, fill=(255,255,255,230), outline=dark, width=2
     )
     draw.text((nx - nw2//2, ny - 10), num_str, fill=dark, font=fonts["tiny"])
 
@@ -317,21 +421,28 @@ def generate_tazo(tazo, fonts):
     return img
 
 
+    force = "--force" in sys.argv
+
 def main():
-    import sys
-    db_path = sys.argv[1] if len(sys.argv) > 1 else "/home/smouj/apps/ttg/Trading-Tazos-Game/prisma/dev.db"
+    db_path = sys.argv[1] if len(sys.argv) > 1 else "prisma/dev.db"
 
     print(f"DB: {db_path}")
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     tazos = [dict(r) for r in conn.execute(
         "SELECT t.number, t.slug, t.name, t.displayName, t.rarity, "
-        "t.combatType, f.slug as franchise_slug "
+        "t.combatType, t.evolutionFrom, t.evolutionTo, t.transformStage, "
+        "f.slug as franchise_slug "
         "FROM Tazo t JOIN Franchise f ON t.franchiseId = f.id "
         "ORDER BY f.slug, t.number"
     )]
     conn.close()
     print(f"Total tazos: {len(tazos)}")
+
+    bgs = load_backgrounds()
+    print(f"Backgrounds loaded: {len(bgs)}")
+    for k in sorted(bgs.keys()):
+        print(f"  {k}")
 
     fonts = get_fonts()
     generated, skipped = 0, 0
@@ -345,8 +456,26 @@ def main():
             continue
         out.parent.mkdir(parents=True, exist_ok=True)
         try:
-            img = generate_tazo(t, fonts)
+            img = generate_tazo(t, bgs, fonts)
             img.save(str(out), "PNG", optimize=True)
+            # Post-process with pngquant for 3-10x smaller files (falls back to PIL quantize)
+            try:
+                import subprocess, tempfile
+                with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+                    tmp_path = tmp.name
+                subprocess.run(
+                    ["pngquant", "--quality=45-75", "--speed=1", "--force",
+                     "--output", tmp_path, str(out)],
+                    check=True, capture_output=True, timeout=15
+                )
+                os.replace(tmp_path, str(out))
+            except Exception:
+                # Fallback: PIL quantize
+                final = Image.open(str(out))
+                if final.mode == "RGBA":
+                    final = final.quantize(colors=256, method=2,
+                        kmeans=1, dither=Image.Dither.FLOYDSTEINBERG)
+                final.save(str(out), "PNG", optimize=True)
             generated += 1
         except Exception as e:
             print(f"  ERROR {slug}: {e}")

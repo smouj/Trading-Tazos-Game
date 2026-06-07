@@ -23,26 +23,41 @@ function Floor({ config }: { config: Arena3DConfig }) {
     const c = document.createElement("canvas")
     c.width = 1024; c.height = 1024
     const ctx = c.getContext("2d")!
-    // Radial gradient — light center, darker edges
-    const g = ctx.createRadialGradient(512, 512, 30, 512, 512, 540)
-    g.addColorStop(0, "#fdf9f0"); g.addColorStop(0.55, "#f0e8d8")
-    g.addColorStop(0.88, "#d4c8b0"); g.addColorStop(1, "#a89880")
+    // Fondo de madera cálida con gradiente radial
+    const g = ctx.createRadialGradient(512, 512, 20, 512, 512, 550)
+    g.addColorStop(0, "#fffaf0"); g.addColorStop(0.45, "#f5ead0")
+    g.addColorStop(0.75, "#e0d4b8"); g.addColorStop(0.92, "#c8b898")
+    g.addColorStop(1, "#a09070")
     ctx.fillStyle = g; ctx.fillRect(0, 0, 1024, 1024)
-    // Yellow circle border
-    ctx.strokeStyle = "#FFCC00"; ctx.lineWidth = 26
+    // Grain texture
+    ctx.fillStyle = "rgba(0,0,0,0.02)"
+    for (let i = 0; i < 600; i++) {
+      ctx.fillRect(Math.random()*1024, Math.random()*1024, 2, 2)
+    }
+    // Outer circle (ammonite)
+    ctx.strokeStyle = "#b8a888"; ctx.lineWidth = 20
     ctx.beginPath(); ctx.arc(512, 512, config.radius * 48, 0, Math.PI * 2); ctx.stroke()
-    ctx.strokeStyle = "#1a1a1a"; ctx.lineWidth = 4
-    ctx.beginPath(); ctx.arc(512, 512, config.radius * 48, 0, Math.PI * 2); ctx.stroke()
-    // Concentric guide rings
-    ctx.strokeStyle = "rgba(0,0,0,0.04)"; ctx.lineWidth = 2
-    for (let r = 65; r < config.radius * 45; r += 70) {
+    // Inner gold ring
+    ctx.strokeStyle = "#FFCC00"; ctx.lineWidth = 4
+    ctx.beginPath(); ctx.arc(512, 512, config.radius * 48 - 10, 0, Math.PI * 2); ctx.stroke()
+    // Dark outline
+    ctx.strokeStyle = "#1a1a1a"; ctx.lineWidth = 2
+    ctx.beginPath(); ctx.arc(512, 512, config.radius * 48 + 10, 0, Math.PI * 2); ctx.stroke()
+    // Concentric guide rings (faint)
+    ctx.strokeStyle = "rgba(0,0,0,0.03)"; ctx.lineWidth = 1.5
+    for (let r = 80; r < config.radius * 42; r += 80) {
       ctx.beginPath(); ctx.arc(512, 512, r, 0, Math.PI * 2); ctx.stroke()
     }
     // Center dot
-    ctx.fillStyle = "rgba(255,204,0,0.3)"; ctx.beginPath()
-    ctx.arc(512, 512, 14, 0, Math.PI * 2); ctx.fill()
-    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath()
-    ctx.arc(512, 512, 5, 0, Math.PI * 2); ctx.fill()
+    ctx.fillStyle = "rgba(255,204,0,0.40)"; ctx.beginPath()
+    ctx.arc(512, 512, 18, 0, Math.PI * 2); ctx.fill()
+    ctx.fillStyle = "rgba(0,0,0,0.15)"; ctx.beginPath()
+    ctx.arc(512, 512, 6, 0, Math.PI * 2); ctx.fill()
+    // Stake position marks
+    ctx.fillStyle = "rgba(41,173,255,0.25)"; ctx.beginPath()
+    ctx.arc(512 - config.radius * 26, 512, 10, 0, Math.PI*2); ctx.fill()
+    ctx.fillStyle = "rgba(255,0,77,0.25)"; ctx.beginPath()
+    ctx.arc(512 + config.radius * 26, 512, 8, 0, Math.PI*2); ctx.fill()
     const t = new THREE.CanvasTexture(c)
     t.colorSpace = THREE.SRGBColorSpace
     t.minFilter = THREE.LinearMipmapLinearFilter; t.magFilter = THREE.LinearFilter
@@ -51,7 +66,7 @@ function Floor({ config }: { config: Arena3DConfig }) {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
       <planeGeometry args={[config.radius * 2.6, config.radius * 2.6]} />
-      <meshStandardMaterial map={tex} roughness={0.7} metalness={0.02} />
+      <meshStandardMaterial map={tex} roughness={0.55} metalness={0.03} />
     </mesh>
   )
 }
@@ -407,23 +422,23 @@ function ArenaCamera({ gamePhase }: { gamePhase: string }) {
     }
 
     if (gamePhase === "player_aim" || gamePhase === "placing_stakes") {
-      // Top-down view for aiming
+      // Bird's-eye for aiming — see the full circle
       const target = new THREE.Vector3(0, 0, 0)
-      const pos = new THREE.Vector3(0, 12, 0.5)
-      targetRef.current.lerp(target, 0.05)
-      camera.position.lerp(pos, 0.04)
+      const pos = new THREE.Vector3(0, 14, 1)
+      targetRef.current.lerp(target, 0.06)
+      camera.position.lerp(pos, 0.05)
       camera.lookAt(targetRef.current)
     } else if (gamePhase === "player_charge" || gamePhase === "player_tilt") {
-      // Side-angled view to see height & tilt
+      // Angled view showing height + tilt — pull back slightly
       const target = new THREE.Vector3(0, 2, 0)
-      const pos = new THREE.Vector3(6, 7, 6)
+      const pos = new THREE.Vector3(7, 8, 7)
       targetRef.current.lerp(target, 0.06)
       camera.position.lerp(pos, 0.05)
       camera.lookAt(targetRef.current)
     } else if (gamePhase === "slamming" || gamePhase === "impact" || gamePhase === "resolve_impact") {
-      // Low cinematic angle to see the impact
-      const target = new THREE.Vector3(0, 0.3, 0)
-      const pos = new THREE.Vector3(3, 3.5, 4)
+      // Low cinematic angle to see the impact — tighter on the action
+      const target = new THREE.Vector3(0, 0.2, 0)
+      const pos = new THREE.Vector3(4, 3, 5)
       targetRef.current.lerp(target, 0.08)
       camera.position.lerp(pos, 0.06)
       camera.lookAt(targetRef.current)

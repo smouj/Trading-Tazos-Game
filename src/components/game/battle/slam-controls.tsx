@@ -1,11 +1,11 @@
 // ============================================================
-// Trading Tazos Game — Vertical Slam Controls v3
-// Flujo corregido: AIM (reticle + botón) → CHARGE (auto-fill) → TILT + SLAM
+// Trading Tazos Game — Slam Controls v4: Floating Minimal
+// Overlay controls that don't hide the 3D arena
 // ============================================================
 "use client"
 
-import { useState, useRef, useCallback, useEffect } from "react"
-import { Crosshair, Zap, Target, Gauge, ArrowDown } from "lucide-react"
+import { useCallback, useRef, useEffect } from "react"
+import { Crosshair, Zap } from "lucide-react"
 
 export interface SlamControlsProps {
   phase: "aim" | "charge" | "tilt"
@@ -24,16 +24,14 @@ export interface SlamControlsProps {
 }
 
 export default function SlamControls(props: SlamControlsProps) {
-  const { phase, tazoName, tazoFranchise, reticleX, reticleZ, charge, tiltDeg, spinIntensity,
+  const { phase, tazoName, reticleX, reticleZ, charge, tiltDeg, spinIntensity,
     onReticleMove, onCharge, onChargeComplete, onTilt, onSpin, onRelease, onBack } = props
 
   const chargeInterval = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  // Store callbacks in refs so the charge effect doesn't restart
   const cbRef = useRef({ onCharge, onChargeComplete })
   cbRef.current = { onCharge, onChargeComplete }
 
-  // Start auto-charge when we enter charge phase (using refs to avoid restart)
+  // Auto-charge when entering charge phase
   useEffect(() => {
     if (phase === "charge") {
       let level = 0
@@ -47,28 +45,15 @@ export default function SlamControls(props: SlamControlsProps) {
           cbRef.current.onChargeComplete(level)
         }
       }, 50)
-
       return () => {
-        if (chargeInterval.current) {
-          clearInterval(chargeInterval.current)
-          chargeInterval.current = null
-        }
+        if (chargeInterval.current) { clearInterval(chargeInterval.current); chargeInterval.current = null }
       }
     } else {
-      // Clean up if not in charge phase
-      if (chargeInterval.current) {
-        clearInterval(chargeInterval.current)
-        chargeInterval.current = null
-      }
+      if (chargeInterval.current) { clearInterval(chargeInterval.current); chargeInterval.current = null }
     }
-  }, [phase])  // Only depends on phase, not on callbacks
+  }, [phase])
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (chargeInterval.current) clearInterval(chargeInterval.current)
-    }
-  }, [])
+  useEffect(() => { return () => { if (chargeInterval.current) clearInterval(chargeInterval.current) } }, [])
 
   const handlePadMove = useCallback((cx: number, cy: number, rect: DOMRect) => {
     const x = Math.max(0, Math.min(1, (cx - rect.left) / rect.width))
@@ -79,176 +64,126 @@ export default function SlamControls(props: SlamControlsProps) {
   const handleTiltDrag = useCallback((cx: number, cy: number, rect: DOMRect) => {
     const mx = rect.left + rect.width / 2; const my = rect.top + rect.height / 2
     const dx = cx - mx; const dy = cy - my
-    const dist = Math.sqrt(dx*dx + dy*dy)
-    const angle = Math.atan2(dy, dx) * (180 / Math.PI)
-    onTilt(angle, Math.min(1, dist / (rect.width * 0.4)))
+    onTilt(Math.atan2(dy, dx) * (180 / Math.PI), Math.min(1, Math.sqrt(dx*dx + dy*dy) / (rect.width * 0.4)))
   }, [onTilt])
 
-  // Charge quality
   const isPerfect = charge >= 0.6 && charge <= 0.82
-  const isOvercharged = charge > 0.82
-  const chargeColor = isOvercharged ? "#FF004D" : isPerfect ? "#22C55E" : charge > 0.25 ? "#FFCC00" : "#FFCC0060"
-  const chargeLabel = isOvercharged ? "OVERCHARGED!" : isPerfect ? "⚡ PERFECT" : charge > 0.25 ? "Good" : "Charging..."
+  const isOver = charge > 0.82
+  const barColor = isOver ? "#FF004D" : isPerfect ? "#22C55E" : charge > 0.25 ? "#FFCC00" : "#FFCC0060"
 
-  return (
-    <div className="w-full bg-gradient-to-t from-black/90 via-black/85 to-black/70 backdrop-blur-xl border-t border-white/10">
-      {/* ═══ PHASE BAR ═══ */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/5">
-        <button onClick={onBack}
-          className="text-[10px] font-black text-white/25 hover:text-white/50 uppercase tracking-wider transition-colors">
-          ← Back
-        </button>
-
-        <div className="flex items-center gap-1.5">
-          <span className={`text-[9px] font-black px-2 py-0.5 rounded border uppercase tracking-wider transition-all ${
-            phase === "aim" ? "text-[#FFCC00] border-[#FFCC00]/40 bg-[#FFCC00]/10"
-              : phase === "charge" || phase === "tilt" ? "text-[#22C55E]/60 border-[#22C55E]/20 bg-[#22C55E]/5"
-              : "text-white/10 border-white/5"
-          }`}><Target className="w-3 h-3 inline mr-1" />AIM</span>
-          <span className="text-white/8 text-[8px]">→</span>
-          <span className={`text-[9px] font-black px-2 py-0.5 rounded border uppercase tracking-wider transition-all ${
-            phase === "charge" ? "text-[#FFCC00] border-[#FFCC00]/40 bg-[#FFCC00]/10 animate-pulse"
-              : phase === "tilt" ? "text-[#22C55E]/60 border-[#22C55E]/20 bg-[#22C55E]/5"
-              : "text-white/10 border-white/5"
-          }`}><Gauge className="w-3 h-3 inline mr-1" />CHARGE</span>
-          <span className="text-white/8 text-[8px]">→</span>
-          <span className={`text-[9px] font-black px-2 py-0.5 rounded border uppercase tracking-wider transition-all ${
-            phase === "tilt" ? "text-[#FF004D] border-[#FF004D]/40 bg-[#FF004D]/10 animate-pulse"
-              : "text-white/10 border-white/5"
-          }`}>↗ TILT</span>
-          <span className="text-white/8 text-[8px]">→</span>
-          <span className="text-[9px] font-black px-2 py-0.5 rounded border border-[#FFCC00]/20 text-[#FFCC00]/30 uppercase tracking-wider">💥 SLAM</span>
-        </div>
-
-        <span className="text-[9px] font-black text-white/15 uppercase">{tazoName}</span>
-      </div>
-
-      {/* ═══════ AIM PHASE: Reticle pad ═══════ */}
-      {phase === "aim" && (
-        <div className="p-4 space-y-3">
+  // ═══════════════════════════════════════
+  // AIM — floating reticle pad + charge btn
+  // ═══════════════════════════════════════
+  if (phase === "aim") return (
+    <>
+      {/* Semi-transparent reticle pad over 3D arena */}
+      <div className="absolute inset-0 z-20 pointer-events-none flex flex-col">
+        <div className="flex-1 flex items-center justify-center p-8 pb-32">
           <div
-            className="relative w-full aspect-[2/1] max-h-[180px] mx-auto bg-black/40 rounded-xl border-2 border-white/10 overflow-hidden cursor-crosshair hover:border-[#FFCC00]/30 transition-colors"
+            className="relative w-full max-w-[340px] aspect-square bg-black/25 rounded-3xl border border-white/10 backdrop-blur-[2px] overflow-hidden cursor-crosshair pointer-events-auto"
             onMouseMove={(e) => handlePadMove(e.clientX, e.clientY, e.currentTarget.getBoundingClientRect())}
             onClick={(e) => handlePadMove(e.clientX, e.clientY, e.currentTarget.getBoundingClientRect())}
             onTouchStart={(e) => { e.preventDefault(); const t = e.touches[0]; handlePadMove(t.clientX, t.clientY, e.currentTarget.getBoundingClientRect()) }}
             onTouchMove={(e) => { e.preventDefault(); const t = e.touches[0]; handlePadMove(t.clientX, t.clientY, e.currentTarget.getBoundingClientRect()) }}
           >
-            {/* Mini arena circles */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="border border-white/8 rounded-full" style={{ width: "70%", paddingBottom: "35%" }} />
-              <div className="absolute border border-white/5 rounded-full" style={{ width: "50%", paddingBottom: "25%" }} />
-              <div className="absolute w-2 h-2 rounded-full bg-white/10" />
+            {/* Arena rings */}
+            <div className="absolute inset-4 flex items-center justify-center pointer-events-none">
+              <div className="border border-white/8 rounded-full w-full h-full" />
+              <div className="absolute border border-white/5 rounded-full w-[70%] h-[70%]" />
+              <div className="absolute border border-white/4 rounded-full w-[40%] h-[40%]" />
+              <div className="absolute w-2 h-2 rounded-full bg-white/15" />
             </div>
-            {/* Stake position hints */}
-            <div className="absolute top-1/2 left-[28%] -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full border border-[#29ADFF]/30 bg-[#29ADFF]/5 pointer-events-none" />
-            <div className="absolute top-1/2 left-[72%] -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full border border-[#FF004D]/30 bg-[#FF004D]/5 pointer-events-none" />
-            {/* Reticle (follows finger/cursor) */}
-            <div className="absolute w-8 h-8 -ml-4 -mt-4 pointer-events-none"
+            {/* Stake hints */}
+            <div className="absolute top-1/2 left-[30%] -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 border-[#29ADFF]/30 bg-[#29ADFF]/8 pointer-events-none" />
+            <div className="absolute top-1/2 left-[70%] -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 border-[#FF004D]/30 bg-[#FF004D]/8 pointer-events-none" />
+            {/* Reticle */}
+            <div className="absolute w-10 h-10 -ml-5 -mt-5 pointer-events-none"
               style={{ left: `${((reticleX + 1) / 2) * 100}%`, top: `${((-reticleZ + 1) / 2) * 100}%` }}>
-              <Crosshair className="w-full h-full text-[#FFCC00] drop-shadow-[0_0_8px_rgba(255,204,0,0.7)]" strokeWidth={1.5} />
+              <Crosshair className="w-full h-full text-[#FFCC00] drop-shadow-[0_0_10px_rgba(255,204,0,0.8)]" strokeWidth={1.5} />
             </div>
           </div>
-          <button
-            onClick={onRelease}
-            className="w-full py-4 bg-[#FFCC00] hover:bg-[#FFD633] active:bg-[#FFB800] text-[#1a1a1a] font-black text-base uppercase rounded-xl tracking-wider transition-all shadow-[0_4px_15px_rgba(255,204,0,0.3)] hover:shadow-[0_6px_25px_rgba(255,204,0,0.5)] active:scale-[0.98] cursor-pointer"
+        </div>
+      </div>
+
+      {/* Bottom floating bar */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-3 pointer-events-none">
+        <button onClick={onBack} className="px-3 py-1.5 text-[10px] font-black text-white/30 hover:text-white/60 bg-black/30 hover:bg-black/50 rounded-full border border-white/10 uppercase tracking-wider pointer-events-auto transition-colors">←</button>
+        <div className="text-center">
+          <span className="text-[9px] font-black text-white/50 block leading-none">{tazoName}</span>
+          <span className="text-[7px] font-black text-[#FFCC00]/60 uppercase tracking-[0.3em]">tap to aim</span>
+        </div>
+        <button onClick={onRelease}
+          className="px-5 py-2.5 bg-[#FFCC00] hover:bg-[#FFD633] text-[#1a1a1a] font-black text-xs uppercase rounded-full tracking-wider shadow-[0_0_20px_rgba(255,204,0,0.4)] hover:shadow-[0_0_30px_rgba(255,204,0,0.6)] active:scale-95 pointer-events-auto transition-all">
+          ⚡ CHARGE
+        </button>
+      </div>
+    </>
+  )
+
+  // ═══════════════════════════════════════
+  // CHARGE — floating compact meter
+  // ═══════════════════════════════════════
+  if (phase === "charge") return (
+    <div className="absolute bottom-0 left-0 right-0 z-20 p-4 pointer-events-none">
+      <div className="max-w-md mx-auto space-y-3">
+        <div className="flex items-center justify-between px-1">
+          <span className="text-[9px] font-black text-white/30 uppercase tracking-widest">Force</span>
+          <span className="text-[11px] font-black" style={{ color: barColor }}>{Math.round(charge * 100)}%</span>
+        </div>
+        <div className="relative w-full h-8 bg-black/40 rounded-full overflow-hidden border border-white/10 backdrop-blur-sm">
+          <div className="h-full transition-all duration-75 rounded-full" style={{
+            width: `${charge * 100}%`,
+            background: `linear-gradient(90deg, ${barColor}33, ${barColor})`,
+            boxShadow: isPerfect || isOver ? `0 0 16px ${barColor}55` : undefined,
+          }} />
+          <div className="absolute top-0 left-[60%] w-[22%] h-full bg-[#22C55E]/10 border-l border-r border-[#22C55E]/25" />
+        </div>
+        <div className="text-center">
+          <span className="text-[8px] font-black text-white/25 uppercase tracking-widest">auto-charging</span>
+        </div>
+      </div>
+    </div>
+  )
+
+  // ═══════════════════════════════════════
+  // TILT — floating tilt + spin + slam
+  // ═══════════════════════════════════════
+  return (
+    <div className="absolute bottom-0 left-0 right-0 z-20 p-3 pointer-events-none">
+      <div className="max-w-md mx-auto flex items-end gap-3">
+        {/* Tilt pad */}
+        <div className="flex-1 space-y-1">
+          <span className="text-[7px] font-black text-white/20 uppercase tracking-widest">Tilt</span>
+          <div
+            className="relative w-full aspect-square max-w-[120px] mx-auto bg-black/35 rounded-2xl border border-white/10 backdrop-blur-sm cursor-grab active:cursor-grabbing pointer-events-auto"
+            onMouseMove={(e) => handleTiltDrag(e.clientX, e.clientY, e.currentTarget.getBoundingClientRect())}
+            onTouchMove={(e) => { e.preventDefault(); handleTiltDrag(e.touches[0].clientX, e.touches[0].clientY, e.currentTarget.getBoundingClientRect()) }}
           >
-            ⚡ START CHARGING
-          </button>
-          <p className="text-center text-[8px] font-bold text-white/20">Tap anywhere to aim, then press START CHARGING</p>
+            <Zap className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 text-white/8" strokeWidth={1.5} />
+            <div className="absolute top-1/2 left-1/2 w-1.5 h-8 -mt-4 bg-[#FFCC00] rounded-full origin-bottom shadow-[0_0_10px_rgba(255,204,0,0.5)]"
+              style={{ transform: `translateX(-50%) rotate(${tiltDeg}deg)` }} />
+          </div>
         </div>
-      )}
 
-      {/* ═══════ CHARGE PHASE: Auto-filling meter ═══════ */}
-      {phase === "charge" && (
-        <div className="p-4 space-y-4">
-          <div className="space-y-2">
+        {/* Spin + Slam column */}
+        <div className="flex-1 space-y-3">
+          <div className="space-y-1">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">Force</span>
-              <span className="text-sm font-black" style={{ color: chargeColor }}>{chargeLabel}</span>
+              <span className="text-[7px] font-black text-white/20 uppercase tracking-widest">Spin</span>
+              <span className="text-[9px] font-black text-[#FFCC00]">{Math.round(spinIntensity * 100)}%</span>
             </div>
-            {/* Big charge bar */}
-            <div className="relative w-full h-12 bg-black/40 rounded-xl overflow-hidden border-2 border-white/10">
-              <div className="absolute inset-0 flex">
-                <div className="h-full transition-all duration-75 rounded-l-xl" style={{
-                  width: `${charge * 100}%`,
-                  background: isOvercharged
-                    ? "linear-gradient(90deg, #FF004D44, #FF004D)"
-                    : isPerfect
-                    ? "linear-gradient(90deg, #22C55E44, #22C55E)"
-                    : charge > 0.25
-                    ? "linear-gradient(90deg, #FFCC0044, #FFCC00)"
-                    : "linear-gradient(90deg, #FFCC0020, #FFCC0050)",
-                }} />
-              </div>
-              {/* Sweet spot zone */}
-              <div className="absolute top-0 left-[60%] w-[22%] h-full bg-[#22C55E]/10 border-l-2 border-r-2 border-[#22C55E]/30 pointer-events-none" />
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <span className="text-base font-black text-white/40 tracking-widest">
-                  {Math.round(charge * 100)}%
-                </span>
-              </div>
-            </div>
-            <div className="flex justify-between text-[7px] font-black text-white/15">
-              <span>0</span><span>25</span><span className="text-[#22C55E]/40">60</span><span>75</span><span className="text-[#22C55E]/40">82</span><span>100</span>
-            </div>
-          </div>
-
-          <div className="text-center text-[9px] font-black text-white/30">
-            {charge < 0.6 ? "Auto-charging..." : charge < 0.82 ? "⚡ Perfect range! Release soon..." : "⚠ Too much force!"}
-          </div>
-        </div>
-      )}
-
-      {/* ═══════ TILT PHASE: Direction + Spin ═══════ */}
-      {phase === "tilt" && (
-        <div className="p-4 space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            {/* Tilt direction pad */}
-            <div className="space-y-1.5">
-              <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">Tilt Direction</span>
-              <div
-                className="relative w-full aspect-square bg-black/40 rounded-xl border-2 border-white/10 cursor-grab active:cursor-grabbing hover:border-white/20 transition-colors"
-                onMouseMove={(e) => handleTiltDrag(e.clientX, e.clientY, e.currentTarget.getBoundingClientRect())}
-                onTouchMove={(e) => { e.preventDefault(); handleTiltDrag(e.touches[0].clientX, e.touches[0].clientY, e.currentTarget.getBoundingClientRect()) }}
-              >
-                <Zap className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-white/10" strokeWidth={1.5} />
-                {/* Tilt arrow */}
-                <div className="absolute top-1/2 left-1/2 w-2 h-10 -mt-5 bg-[#FFCC00] rounded-full origin-bottom shadow-[0_0_12px_rgba(255,204,0,0.5)]"
-                  style={{ transform: `translateX(-50%) rotate(${tiltDeg}deg)` }} />
-                {/* Direction labels */}
-                <span className="absolute top-1 left-1/2 -translate-x-1/2 text-[7px] font-black text-white/10">↑</span>
-                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[7px] font-black text-white/10">↓</span>
-                <span className="absolute left-1 top-1/2 -translate-y-1/2 text-[7px] font-black text-white/10">←</span>
-                <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[7px] font-black text-white/10">→</span>
-              </div>
-            </div>
-            {/* Spin slider */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">Spin</span>
-                <span className="text-[11px] font-black text-[#FFCC00]">{Math.round(spinIntensity * 100)}%</span>
-              </div>
-              <div className="flex-1 flex flex-col justify-center gap-3">
-                <input type="range" min="0" max="100" value={spinIntensity * 100}
-                  onChange={(e) => onSpin(Number(e.target.value) / 100)}
-                  className="w-full h-3 bg-black/40 rounded-full appearance-none cursor-pointer accent-[#FFCC00]
-                    [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-7 [&::-webkit-slider-thumb]:h-7
-                    [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#FFCC00]
-                    [&::-webkit-slider-thumb]:border-3 [&::-webkit-slider-thumb]:border-[#1a1a1a]
-                    [&::-webkit-slider-thumb]:shadow-[0_0_12px_rgba(255,204,0,0.4)]" />
-              </div>
-              <div className="flex justify-between text-[7px] font-black text-white/10">
-                <span>Straight</span><span>Max curve</span>
-              </div>
-            </div>
+            <input type="range" min="0" max="100" value={spinIntensity * 100}
+              onChange={(e) => onSpin(Number(e.target.value) / 100)}
+              className="w-full h-2 bg-white/10 rounded-full appearance-none cursor-pointer accent-[#FFCC00] pointer-events-auto
+                [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full
+                [&::-webkit-slider-thumb]:bg-[#FFCC00] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#1a1a1a]" />
           </div>
           <button onClick={onRelease}
-            className="w-full py-5 bg-gradient-to-r from-[#FFCC00] to-[#FFD633] hover:from-[#FFD633] hover:to-[#FFE066] text-[#1a1a1a] font-black text-lg uppercase rounded-xl tracking-wider transition-all shadow-[0_4px_20px_rgba(255,204,0,0.4)] hover:shadow-[0_6px_30px_rgba(255,204,0,0.6)] active:scale-[0.97] cursor-pointer">
-            <ArrowDown className="w-5 h-5 inline mr-2" />
-            SLAM!
+            className="w-full py-3 bg-gradient-to-r from-[#FFCC00] to-[#FFD633] hover:from-[#FFD633] hover:to-[#FFE066] text-[#1a1a1a] font-black text-sm uppercase rounded-xl tracking-wider shadow-[0_0_20px_rgba(255,204,0,0.5)] active:scale-95 pointer-events-auto transition-all">
+            💥 SLAM!
           </button>
         </div>
-      )}
+      </div>
     </div>
   )
 }

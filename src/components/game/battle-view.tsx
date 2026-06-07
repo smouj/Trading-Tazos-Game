@@ -549,40 +549,37 @@ export default function BattleView() {
         reticleX={reticleX}
         reticleZ={reticleZ}
       >
-        {/* ── HUD overlay top ── */}
-        <div className="absolute top-0 left-0 right-0 p-3 z-20">
-          <div className="flex items-center justify-between">
-            {/* Player */}
-            <div className="flex items-center gap-2 bg-black/60 backdrop-blur-sm rounded px-3 py-2 border border-white/10">
-              <span className="text-xs font-black text-white tracking-wide">YOU</span>
+        {/* ── HUD overlay top (compact) ── */}
+        <div className="absolute top-2 left-2 right-2 z-20">
+          <div className="flex items-center gap-2">
+            {/* Player score pill */}
+            <div className="flex items-center gap-1.5 bg-black/40 backdrop-blur-sm rounded-full px-3 py-1.5 border border-white/10">
+              <span className="text-[9px] font-black text-white/60">YOU</span>
               <span className="text-sm font-black text-[#29ADFF]">{pScore}</span>
-              <span className="text-[8px] font-black text-white/30">{deck.length-1} tazos</span>
               {selectedDeckName && (
-                <span className="text-[7px] font-black text-[#FFCC00] bg-[#FFCB0508] px-1 py-0.5 border border-[#FFCC00]/20">{selectedDeckName}</span>
-              )}
-              {staked.find(s => s.owner === "player") && (
-                <span className="text-[7px] font-black text-[#22C55E] bg-[#22C55E]/10 px-1 py-0.5 rounded border border-[#22C55E]/20">
-                  STAKE: {staked.find(s => s.owner === "player")!.tazoName.slice(0, 8)}
-                </span>
+                <span className="text-[7px] font-black text-[#FFCC00]/60 ml-1">{selectedDeckName}</span>
               )}
             </div>
+
+            <div className="flex-1" />
 
             {/* Round */}
-            <div className="flex flex-col items-center">
-              <span className="text-[7px] font-black text-white/30 uppercase tracking-[0.3em]">Round</span>
-              <span className="text-sm font-black text-[#FFCC00]">{round}</span>
+            <div className="flex items-center gap-1 bg-black/40 backdrop-blur-sm rounded-full px-3 py-1.5 border border-white/5">
+              <span className="text-[8px] font-black text-white/20 uppercase">R{round}</span>
+              <span className="text-[7px] font-black text-white/10">to {cfg?.scoreToWin || 5}</span>
             </div>
 
-            {/* Opponent */}
-            <div className="flex items-center gap-2 bg-black/60 backdrop-blur-sm rounded px-3 py-2 border border-white/10">
-              <span className="text-[8px] font-black text-white/30">{cfg?.opponentDeck.length || 5} tazos</span>
+            <div className="flex-1" />
+
+            {/* Opponent score pill */}
+            <div className="flex items-center gap-1.5 bg-black/40 backdrop-blur-sm rounded-full px-3 py-1.5 border border-white/10">
               <span className="text-sm font-black text-[#FF004D]">{oScore}</span>
-              <span className="text-xs font-black text-white tracking-wide">AI</span>
+              <span className="text-[9px] font-black text-white/60">AI</span>
             </div>
           </div>
 
-          {/* Phase status — prominent center indicator */}
-          <div className="text-center mt-1">
+          {/* Phase status — centered pill */}
+          <div className="flex justify-center mt-2">
             {phase === "intro" && (
               <div className="inline-block px-8 py-2 bg-[#FFCC00]/15 rounded-full border-2 border-[#FFCC00]/50 animate-pulse">
                 <span className="text-[16px] font-black text-[#FFCC00] tracking-[0.3em]">GET READY!</span>
@@ -642,9 +639,8 @@ export default function BattleView() {
           </div>
         </div>
 
-        {/* ── Slam controls overlay bottom ── */}
-        <div className="absolute bottom-0 left-0 right-0 z-10">
-          {isAiming && throwing ? (
+        {/* ── Floating slam controls (self-positioned) ── */}
+        {isAiming && throwing ? (
             <SlamControls
               phase={slamPhase}
               tazoName={throwing.name}
@@ -686,7 +682,6 @@ export default function BattleView() {
               </button>
             </div>
           )}
-        </div>
       </BattleArena3D>
     </div>
   )

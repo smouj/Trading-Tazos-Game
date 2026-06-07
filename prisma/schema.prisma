@@ -287,3 +287,18 @@ model TradeListing {
   @@index([status])
   @@index([sellerId])
 }
+
+model TradeOffer {
+  id                String   @id @default(cuid())
+  offererId         String   // Who created the offer
+  offeredUserTazoId String   // Tazo they're offering
+  requestedTazoId   String   // Tazo they want in return
+  status            String   @default("pending") // pending, accepted, declined, cancelled
+  acceptorId        String?  // Who accepted
+  acceptedUserTazoId String? // Tazo the acceptor gave
+  createdAt         DateTime @default(now())
+  resolvedAt        DateTime?
+
+  @@index([status])
+  @@index([offererId])
+}

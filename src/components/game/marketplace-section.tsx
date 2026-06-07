@@ -8,7 +8,7 @@ import { useState, useEffect, useCallback } from "react"
 import { useAuth } from "@/lib/auth-context"
 import {
   Store, Coins, ShoppingCart, Loader2, X, AlertTriangle,
-  Search, ChevronDown, Tag, User, Clock, ArrowUpDown,
+  Search, ChevronDown, Tag, User, Clock, ArrowUpDown, Trophy,
   Shield, Swords, Zap, Flame, Sparkles,
 } from "lucide-react"
 
@@ -213,6 +213,179 @@ function SellTazoCard({ ut, onSell, selling }: {
 }
 
 // ── Marketplace Main ───────────────────────────────────
+// ── Offers sub-component ────────────────────────────────
+function OffersTab({ token }: { token: string | null }) {
+  const [offers, setOffers] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [actionId, setActionId] = useState<string | null>(null)
+  const [msg, setMsg] = useState('')
+
+  const load = useCallback(() => {
+    if (!token) return
+    fetch('/api/trade/offer', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(d => { setOffers(d.offers || []); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [token])
+
+  useEffect(() => { load() }, [load])
+
+  const handleAccept = useCallback(async (offerId: string) => {
+    if (!token) return
+    setActionId(offerId)
+    const res = await fetch(`/api/trade/offer/${offerId}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    })
+    const data = await res.json()
+    if (res.ok) { setMsg('Trade completed! ✅'); load() }
+    else setMsg(data.error || 'Failed')
+    setActionId(null)
+  }, [token, load])
+
+  const handleDecline = useCallback(async (offerId: string) => {
+    if (!token) return
+    setActionId(offerId)
+    const res = await fetch(`/api/trade/offer/${offerId}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (res.ok) load()
+    setActionId(null)
+  }, [token, load])
+
+  if (loading) return (
+    <div className="text-center py-12">
+      <Loader2 className="w-8 h-8 mx-auto text-[#1a1a1a]/8 animate-spin" />
+    </div>
+  )
+
+  if (offers.length === 0) return (
+    <div className="text-center py-12">
+      <ArrowUpDown className="w-12 h-12 mx-auto text-[#1a1a1a]/8" />
+      <p className="text-sm font-bold text-[#1a1a1a]/20">No open offers</p>
+      <p className="text-[10px] font-bold text-[#1a1a1a]/10">Create one from the Buy tab by selecting a tazo</p>
+    </div>
+  )
+
+  return (
+    <div className="space-y-2">
+      {msg && (
+        <div className="p-2 bg-green-50 border-2 border-green-200 text-[10px] font-black text-green-600">
+          {msg} <button onClick={() => setMsg('')} className="ml-2"><X className="w-3 h-3 inline" /></button>
+        </div>
+      )}
+      {offers.map((o: any) => (
+        <div key={o.id} className="flex items-center gap-3 p-3 bg-white border-2 border-[#1a1a1a]/10 shadow-[2px_2px_0px_rgba(26,26,26,0.06)]">
+          {/* Offered tazo */}
+          <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden border-2 border-[#22C55E]/30"
+            style={{ background: o.offeredTazo?.tazo?.franchise?.color || '#1a1a1a' }}>
+            {o.offeredTazo?.tazo?.imageUrl && (
+              <img src={o.offeredTazo.tazo.imageUrl} alt="" className="w-full h-full object-contain scale-110" />
+            )}
+          </div>
+          {/* Arrow */}
+          <ArrowUpDown className="w-4 h-4 flex-shrink-0 text-[#1a1a1a]/15" />
+          {/* Requested tazo */}
+          <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden border-2 border-[#E3350D]/30"
+            style={{ background: o.requestedTazo?.franchise?.color || '#1a1a1a' }}>
+            {o.requestedTazo?.imageUrl && (
+              <img src={o.requestedTazo.imageUrl} alt="" className="w-full h-full object-contain scale-110" />
+            )}
+          </div>
+          {/* Info */}
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-black text-[#1a1a1a] truncate">
+              <span className="text-[#22C55E]">{o.offeredTazo?.tazo?.displayName || o.offeredTazo?.tazo?.name || '?'}</span>
+              {' for '}
+              <span className="text-[#E3350D]">{o.requestedTazo?.displayName || o.requestedTazo?.name || '?'}</span>
+            </p>
+            <p className="text-[8px] font-bold text-[#1a1a1a]/30">
+              {o.offerer?.displayName || o.offerer?.name || '?'} · {new Date(o.createdAt).toLocaleDateString()}
+            </p>
+          </div>
+          {/* Actions */}
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <button onClick={() => handleAccept(o.id)} disabled={actionId === o.id}
+              className="px-2.5 py-1 text-[8px] font-black uppercase bg-[#22C55E]/10 text-[#22C55E] border border-[#22C55E]/20 hover:bg-[#22C55E]/20 rounded-full transition-colors disabled:opacity-30">
+              {actionId === o.id ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Accept'}
+            </button>
+            <button onClick={() => handleDecline(o.id)} disabled={actionId === o.id}
+              className="px-2 py-0.5 text-[8px] font-black uppercase text-[#1a1a1a]/20 hover:text-[#E3350D] hover:bg-[#E3350D]/10 rounded-full transition-colors">
+              <X className="w-3 h-3" />
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ── Leaderboard sub-component ───────────────────────────
+function LeaderboardTab() {
+  const [leaders, setLeaders] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch('/api/trade?mode=leaderboard')
+      .then(r => r.json())
+      .then(d => { setLeaders(d.leaderboard || []); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [])
+
+  if (loading) return (
+    <div className="text-center py-12">
+      <Loader2 className="w-8 h-8 mx-auto text-[#1a1a1a]/8 animate-spin" />
+    </div>
+  )
+
+  if (leaders.length === 0) return (
+    <div className="text-center py-12">
+      <Trophy className="w-12 h-12 mx-auto text-[#1a1a1a]/8" />
+      <p className="text-sm font-bold text-[#1a1a1a]/20">No sales yet</p>
+      <p className="text-[10px] font-bold text-[#1a1a1a]/10">Be the first seller!</p>
+    </div>
+  )
+
+  return (
+    <div className="space-y-1.5">
+      {leaders.map((l: any, i: number) => {
+        const rank = i + 1
+        return (
+          <div key={l.sellerId} className="flex items-center gap-3 p-3 bg-white border-2 border-[#1a1a1a]/10 shadow-[2px_2px_0px_rgba(26,26,26,0.06)]">
+            {/* Rank */}
+            <div className="w-7 h-7 flex-shrink-0 rounded-full flex items-center justify-center text-[10px] font-black border-2"
+              style={{
+                background: rank === 1 ? '#FFD700' : rank === 2 ? '#C0C0C0' : rank === 3 ? '#CD7F32' : '#fff',
+                borderColor: rank === 1 ? '#B8860B' : rank === 2 ? '#A0A0A0' : rank === 3 ? '#8B6914' : '#1a1a1a20',
+                color: rank <= 3 ? '#1a1a1a' : '#1a1a1a40',
+              }}
+            >
+              {rank <= 3 ? ['🥇','🥈','🥉'][rank-1] : rank}
+            </div>
+            {/* Name */}
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] font-black text-[#1a1a1a] truncate">
+                {l.displayName || l.name || 'Unknown'}
+              </p>
+              <p className="text-[8px] font-bold text-[#1a1a1a]/30">
+                {l.totalSales} sale{l.totalSales !== 1 ? 's' : ''}
+              </p>
+            </div>
+            {/* Credits */}
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <Coins className="w-3 h-3 text-[#FFCC00]" />
+              <span className="text-xs font-black text-[#1a1a1a]">
+                {l.totalCredits}
+              </span>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 // ── History sub-component ──────────────────────────────
 function HistoryTab({ token }: { token: string | null }) {
   const [history, setHistory] = useState<any[]>([])
@@ -292,7 +465,7 @@ function HistoryTab({ token }: { token: string | null }) {
 
 export default function MarketplaceSection({ credits: initialCredits }: { credits: number }) {
   const { user, token } = useAuth()
-  const [tab, setTab] = useState<"buy" | "sell" | "history">("buy")
+  const [tab, setTab] = useState<"buy" | "sell" | "history" | "leaderboard" | "offers">("buy")
   const [listings, setListings] = useState<TradeListing[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -426,12 +599,28 @@ export default function MarketplaceSection({ credits: initialCredits }: { credit
           <Tag className="w-3.5 h-3.5 inline mr-1" />Sell
         </button>
         <button onClick={() => setTab("history")}
-          className={`flex-1 py-2.5 text-xs font-black uppercase border-3 transition-all ${
+          className={`py-2.5 text-xs font-black uppercase border-3 transition-all ${
             tab === "history"
               ? "bg-[#1a1a1a] text-[#3B82F6] border-[#1a1a1a]"
               : "bg-white text-[#1a1a1a]/30 border-[#1a1a1a]/10 hover:text-[#1a1a1a]/50"
           }`}>
           <Clock className="w-3.5 h-3.5 inline mr-1" />History
+        </button>
+        <button onClick={() => setTab("offers")}
+          className={`py-2.5 text-xs font-black uppercase border-3 transition-all ${
+            tab === "offers"
+              ? "bg-[#1a1a1a] text-[#A855F7] border-[#1a1a1a]"
+              : "bg-white text-[#1a1a1a]/30 border-[#1a1a1a]/10 hover:text-[#1a1a1a]/50"
+          }`}>
+          <ArrowUpDown className="w-3.5 h-3.5 inline mr-1" />Offers
+        </button>
+        <button onClick={() => setTab("leaderboard")}
+          className={`flex-1 py-2.5 text-xs font-black uppercase border-3 transition-all ${
+            tab === "leaderboard"
+              ? "bg-[#1a1a1a] text-[#FFD700] border-[#1a1a1a]"
+              : "bg-white text-[#1a1a1a]/30 border-[#1a1a1a]/10 hover:text-[#1a1a1a]/50"
+          }`}>
+          <Trophy className="w-3.5 h-3.5 inline mr-1" />Top Sellers
         </button>
       </div>
 
@@ -535,6 +724,16 @@ export default function MarketplaceSection({ credits: initialCredits }: { credit
       {/* ════════════════════════ HISTORY TAB ════════════════════════ */}
       {tab === "history" && (
         <HistoryTab token={token} />
+      )}
+
+      {/* ════════════════════════ LEADERBOARD TAB ════════════════════════ */}
+      {tab === "leaderboard" && (
+        <LeaderboardTab />
+      )}
+
+      {/* ════════════════════════ OFFERS TAB ════════════════════════ */}
+      {tab === "offers" && (
+        <OffersTab token={token} />
       )}
     </div>
   )

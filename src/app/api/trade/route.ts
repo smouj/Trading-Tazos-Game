@@ -52,6 +52,32 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ listings: enriched })
     }
 
+    // ── Leaderboard mode ──
+    if (mode === 'leaderboard') {
+      // Aggregate top sellers by completed sales
+      const topSellers = await db.$queryRawUnsafe<Array<{
+        sellerId: string
+        name: string
+        displayName: string
+        totalSales: number
+        totalCredits: number
+      }>>(`
+        SELECT
+          tl.sellerId,
+          u.name,
+          u.displayName,
+          COUNT(*) as totalSales,
+          SUM(tl.price) as totalCredits
+        FROM TradeListing tl
+        JOIN User u ON u.id = tl.sellerId
+        WHERE tl.status = 'sold'
+        GROUP BY tl.sellerId
+        ORDER BY totalCredits DESC
+        LIMIT 20
+      `)
+      return NextResponse.json({ leaderboard: topSellers })
+    }
+
     // ── Active mode (default) ──
 
     // Fetch listings

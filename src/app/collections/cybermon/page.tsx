@@ -2,22 +2,22 @@ import PublicPageShell from "@/components/layout/public-page-shell"
 import Link from "next/link"
 
 const zones = [
-  { name: "Boot Fields", style: "Zona inicial, código estable", types: "Cybermon básicos" },
-  { name: "Pixel Ruins", style: "Restos de juegos antiguos", types: "Pixel, glitch, ilusión" },
-  { name: "Volt Highway", style: "Autopistas de electricidad", types: "Volt, speed, signal" },
-  { name: "Firewall Citadel", style: "Fortaleza defensiva", types: "Armor, shield, core" },
-  { name: "Data Ocean", style: "Mar de información", types: "Aqua-data, memory, scan" },
-  { name: "Glitch Abyss", style: "Código roto", types: "Glitch, error, corrupted" },
-  { name: "Kernel Tower", style: "Núcleo del mundo digital", types: "Formas avanzadas" },
+  { name: "Boot Fields", style: "Starting zone: stable, simple code", types: "Basic Cybermon" },
+  { name: "Pixel Ruins", style: "Ruins of ancient games and lost systems", types: "Pixel, glitch, illusion" },
+  { name: "Volt Highway", style: "Highways of pure electricity", types: "Volt, speed, signal" },
+  { name: "Firewall Citadel", style: "Fortified defensive stronghold", types: "Armor, shield, core" },
+  { name: "Data Ocean", style: "An endless sea of flowing information", types: "Aqua-data, memory, scan" },
+  { name: "Glitch Abyss", style: "Zone of broken and corrupted code", types: "Glitch, error, corrupted" },
+  { name: "Kernel Tower", style: "The core of the entire digital world", types: "Advanced forms" },
 ]
 
 const shiftPhases = [
-  { name: "Boot Form", desc: "Forma inicial, recién activada" },
-  { name: "Link Form", desc: "Forma conectada con un Linker" },
-  { name: "Overdrive", desc: "Forma de combate temporal" },
-  { name: "Prime Form", desc: "Forma completa del protocolo" },
-  { name: "Corrupt", desc: "Forma dañada por código oscuro" },
-  { name: "Omega Patch", desc: "Restaurada tras superar corrupción" },
+  { name: "Boot Form", desc: "Initial form, newly activated" },
+  { name: "Link Form", desc: "Form synchronized with a Linker" },
+  { name: "Overdrive", desc: "Temporary combat overclock" },
+  { name: "Prime Form", desc: "Full protocol form unlocked" },
+  { name: "Corrupt", desc: "Form damaged by dark code" },
+  { name: "Omega Patch", desc: "Restored after overcoming corruption" },
 ]
 
 const FRANCHISE_COLOR = "#00A1E9"

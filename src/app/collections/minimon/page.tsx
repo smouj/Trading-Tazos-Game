@@ -2,20 +2,20 @@ import PublicPageShell from "@/components/layout/public-page-shell"
 import Link from "next/link"
 
 const regions = [
-  { name: "Sunnyvale Fields", style: "Campos, granjas, pueblos pequeños", types: "Normal, solar, planta" },
-  { name: "Mossdeep Woods", style: "Bosques antiguos", types: "Planta, insecto, tierra, místico" },
-  { name: "Bluefin Coast", style: "Playas, arrecifes, faros", types: "Agua, viento, hielo suave" },
-  { name: "Cinderpop Hills", style: "Colinas cálidas y cuevas volcánicas", types: "Fuego, roca, metal" },
-  { name: "Stormtail Ridge", style: "Montañas con tormentas", types: "Eléctrico, volador, dragón menor" },
-  { name: "Moonberry Hollow", style: "Zona nocturna y extraña", types: "Sombra, sueño, ilusión" },
-  { name: "Aurora Summit", style: "Región final de leyendas", types: "Formas raras y guardianes" },
+  { name: "Sunnyvale Fields", style: "Rolling fields, farms, and small villages", types: "Normal, solar, plant" },
+  { name: "Mossdeep Woods", style: "Ancient forests with deep roots", types: "Plant, insect, earth, mystic" },
+  { name: "Bluefin Coast", style: "Beaches, reefs, and distant lighthouses", types: "Water, wind, soft ice" },
+  { name: "Cinderpop Hills", style: "Warm hills & volcanic caves", types: "Fire, rock, metal" },
+  { name: "Stormtail Ridge", style: "Storm-swept mountain peaks", types: "Electric, flying, lesser dragon" },
+  { name: "Moonberry Hollow", style: "A strange nocturnal zone", types: "Shadow, dream, illusion" },
+  { name: "Aurora Summit", style: "Legendary endgame region", types: "Rare forms and guardians" },
 ]
 
 const bloomPhases = [
-  { name: "Tiny Form", desc: "Forma pequeña, tierna, inestable" },
-  { name: "Trail Form", desc: "Forma de aventura, más definida" },
-  { name: "Guardian Form", desc: "Forma fuerte, protectora y madura" },
-  { name: "Mythic Bloom", desc: "Forma legendaria, rara y casi única" },
+  { name: "Tiny Form", desc: "Small, tender, and fragile" },
+  { name: "Trail Form", desc: "Adventurous — more defined abilities" },
+  { name: "Guardian Form", desc: "Strong, protective, and mature" },
+  { name: "Mythic Bloom", desc: "Legendary, rare, nearly one-of-a-kind" },
 ]
 
 const FRANCHISE_COLOR = "#FFCB05"
@@ -48,11 +48,11 @@ export default function MinimonCollectionPage() {
             or futuristic world — it is a world of adventure, discovery, and wonder.
           </p>
           <p className="text-sm font-bold text-[#1a1a1a]/60 leading-relaxed">
-            Hace siglos, Luminara estaba llena de una energía invisible llamada{" "}
-            <strong className="text-[#1a1a1a]">Life Spark</strong>. Esta energía fluía 
-            por los árboles, ríos, cuevas, nubes y montañas. Cuando la Life Spark se acumulaba 
-            en un lugar durante mucho tiempo, nacía un Minimon. Por eso cada criatura está 
-            conectada con su entorno.
+            Centuries ago, Luminara was filled with an invisible energy called{" "}
+            <strong className="text-[#1a1a1a]">Life Spark</strong>. This energy flowed 
+            through the trees, rivers, caves, clouds, and mountains. When Life Spark accumulated 
+            in one place for a long time, a Minimon was born. That is why each creature is 
+            connected to its environment.
           </p>
         </div>
 

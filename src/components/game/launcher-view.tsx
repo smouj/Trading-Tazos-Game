@@ -400,19 +400,19 @@ function HowToPlayContent() {
 
 const COLLECTION_DATA = [
   {
-    name: "Minimon", slug: "minimon", count: 51, year: 2000, origin: "Matutano", color: "#FFCC00",
+    name: "Minimon", slug: "minimon", count: 61, year: 2000, origin: "Matutano", color: "#FFCC00",
     categories: ["Tazos"],
     desc: "The original collection that started it all. 61 creature companions with balanced combat stats — perfect for learning the battle system.",
     highlights: ["Balanced stat distribution", "Classic creature designs", "Original 2000 Spanish series", "Versatile battle strategies"]
   },
   {
-    name: "Dracobell", slug: "dracobell", count: 118, year: 1995, origin: "Matutano", color: "#FF6B00",
+    name: "Dracobell", slug: "dracobell", count: 128, year: 1995, origin: "Matutano", color: "#FF6B00",
     categories: ["Tazos", "Megatazos", "Supertazos Octogonales", "Supertazos Voladores", "Mastertazos", "Holo 3D"],
     desc: "The most diverse collection with 128 martial arts warriors across 6 categories. Home to the rarest Holo 3D and Mastertazo variants.",
     highlights: ["6 unique categories", "Highest average attack stats", "Rare Holo 3D variants", "Most diverse category system"]
   },
   {
-    name: "Cybermon", slug: "cybermon", count: 150, year: 2000, origin: "Magic Box", color: "#00B4D8",
+    name: "Cybermon", slug: "cybermon", count: 160, year: 2000, origin: "Magic Box", color: "#00B4D8",
     categories: ["Caps"],
     desc: "The largest collection with 160 digital companions in cap format. High precision stats and extensive evolution trees.",
     highlights: ["Largest collection — 160 tazos", "Complex evolution trees", "Highest precision stats", "Original Magic Box 2000 series"]
@@ -675,6 +675,148 @@ function FAQContent() {
 // MAIN LAUNCHER COMPONENT
 // ══════════════════════════════════════════════════════════
 
+const COLLECTION_DETAILS: Record<string, {
+  name: string; count: number; year: number; origin: string; color: string;
+  world: string; worldDesc: string;
+  sections: { title: string; items: { name: string; detail: string }[] }[]
+  features: string[]; motto: string; cta: string
+}> = {
+  minimon: {
+    name: "Minimon", count: 61, year: 2000, origin: "Matutano", color: "#FFCC00",
+    world: "Luminara",
+    worldDesc: "A luminous land of colorful regions, winding paths, small villages, and places where elemental energy takes shape. Centuries ago, Luminara was filled with Life Spark — an invisible energy that flowed through trees, rivers, caves, clouds, and mountains. When Life Spark accumulated in one place long enough, a Minimon was born.",
+    sections: [
+      { title: "Regions", items: [
+        { name: "Sunnyvale Fields", detail: "Rolling fields, farms, and small villages — Normal, solar, plant" },
+        { name: "Mossdeep Woods", detail: "Ancient forests with deep roots — Plant, insect, earth, mystic" },
+        { name: "Bluefin Coast", detail: "Beaches, reefs, and distant lighthouses — Water, wind, soft ice" },
+        { name: "Cinderpop Hills", detail: "Warm hills & volcanic caves — Fire, rock, metal" },
+        { name: "Stormtail Ridge", detail: "Storm-swept mountain peaks — Electric, flying, lesser dragon" },
+        { name: "Moonberry Hollow", detail: "A strange nocturnal zone — Shadow, dream, illusion" },
+        { name: "Aurora Summit", detail: "Legendary endgame region — Rare forms and guardians" },
+      ]},
+      { title: "Evolution: Blooming", items: [
+        { name: "Tiny Form", detail: "Small, tender, and fragile" },
+        { name: "Trail Form", detail: "Adventurous — more defined abilities" },
+        { name: "Guardian Form", detail: "Strong, protective, and mature" },
+        { name: "Mythic Bloom", detail: "Legendary, rare, nearly one-of-a-kind" },
+      ]},
+    ],
+    features: ["Balanced stat distribution", "Classic creature designs", "Original Matutano 2000 series", "Versatile battle strategies"],
+    motto: "Find them. Bond with them. Watch them bloom.",
+    cta: "Browse All 61 Minimon Tazos",
+  },
+  dracobell: {
+    name: "Dracobell", count: 128, year: 1995, origin: "Matutano", color: "#FF6B00",
+    world: "Bellora",
+    worldDesc: "A world of combat regions governed by clans. Each clan protects a technique, a philosophy, and a fragment of an ancient sonic relic — the Dracobell. Forged from meteorite metal and dragon scales, the bell was shattered during a war between clans, and its Bell Shards are now scattered across Bellora.",
+    sections: [
+      { title: "Clans", items: [
+        { name: "Ember Valley — Ember Fist", detail: "Fire, direct attack" },
+        { name: "Storm Peaks — Storm Fang", detail: "Lightning, speed" },
+        { name: "Iron Plateau — Iron Horn", detail: "Defense, endurance" },
+        { name: "Frost Temple — Frost Scale", detail: "Control, precision" },
+        { name: "Shadow Basin — Shadow Claw", detail: "Counterattack, stealth" },
+        { name: "Golden Shrine — Golden Roar", detail: "Aura, mastery" },
+        { name: "Dragon Crater — Dragon Bell", detail: "Ancestral power" },
+      ]},
+      { title: "Transformation: Ascension", items: [
+        { name: "Base Fighter", detail: "The warrior's normal form" },
+        { name: "Aura Release", detail: "First release of inner energy" },
+        { name: "Clan Ascension", detail: "Form bonded to the clan" },
+        { name: "Champion Ascension", detail: "High-tournament form" },
+        { name: "Dragon Bell", detail: "Legendary form linked to the bell" },
+      ]},
+    ],
+    features: ["6 unique categories", "Highest average attack stats", "Rare Holo 3D variants", "Most diverse category system"],
+    motto: "Train hard. Ring loud. Rise beyond.",
+    cta: "Browse All 128 Dracobell Tazos",
+  },
+  cybermon: {
+    name: "Cybermon", count: 160, year: 2000, origin: "Magic Box", color: "#00B4D8",
+    world: "The Neon Grid",
+    worldDesc: "A hidden digital dimension behind all networks — not simply the internet, but a living dimension formed by forgotten data, lost signals, ancient code, and protocols that developed consciousness. During The Awakening Upload, data fragments mixed with human emotions and produced something unexpected: code with instinct.",
+    sections: [
+      { title: "Sectors", items: [
+        { name: "Boot Fields", detail: "Starting zone: stable, simple code — Basic Cybermon" },
+        { name: "Pixel Ruins", detail: "Ruins of ancient games — Pixel, glitch, illusion" },
+        { name: "Volt Highway", detail: "Highways of pure electricity — Volt, speed, signal" },
+        { name: "Firewall Citadel", detail: "Fortified defensive stronghold — Armor, shield, core" },
+        { name: "Data Ocean", detail: "Endless sea of flowing information — Aqua-data, memory" },
+        { name: "Glitch Abyss", detail: "Broken and corrupted code — Glitch, error, corrupted" },
+        { name: "Kernel Tower", detail: "Core of the digital world — Advanced forms" },
+      ]},
+      { title: "Evolution: Shift", items: [
+        { name: "Boot Form", detail: "Initial form, newly activated" },
+        { name: "Link Form", detail: "Synchronized with a Linker" },
+        { name: "Overdrive", detail: "Temporary combat overclock" },
+        { name: "Prime Form", detail: "Full protocol form unlocked" },
+        { name: "Corrupt", detail: "Damaged by dark code — Omega Patch restores it" },
+      ]},
+    ],
+    features: ["Largest collection — 160 tazos", "Complex evolution trees", "Highest precision stats", "Original Magic Box 2000 series"],
+    motto: "Log in. Link up. Break the Null.",
+    cta: "Browse All 160 Cybermon Tazos",
+  },
+}
+
+function CollectionDetailContent({ collection }: { collection: string }) {
+  const c = COLLECTION_DETAILS[collection]
+  if (!c) return null
+  return (
+    <div className="w-full max-w-3xl mx-auto space-y-5">
+      {/* Intro */}
+      <div className="border-2 border-[#1a1a1a] bg-white p-5" style={{ boxShadow: "4px 4px 0 #1a1a1a" }}>
+        <div className="h-2 mb-3" style={{ background: c.color }} />
+        <div className="flex items-baseline gap-2 mb-2">
+          <span className="text-2xl font-black text-[#1a1a1a]">{c.count}</span>
+          <span className="text-xs font-bold text-[#1a1a1a]/40 uppercase">tazos · {c.origin} {c.year}</span>
+        </div>
+        <p className="text-xs font-bold text-[#1a1a1a]/60 leading-relaxed">{c.worldDesc}</p>
+      </div>
+
+      {/* Sections */}
+      {c.sections.map(s => (
+        <div key={s.title}>
+          <h3 className="text-sm font-black uppercase text-[#1a1a1a] mb-2">{s.title}</h3>
+          <div className="grid sm:grid-cols-2 gap-2">
+            {s.items.map(item => (
+              <div key={item.name} className="border-2 border-[#1a1a1a] bg-white p-3" style={{ boxShadow: "2px 2px 0 #1a1a1a" }}>
+                <span className="text-[10px] font-black uppercase text-[#1a1a1a] block mb-0.5">{item.name}</span>
+                <span className="text-[9px] font-bold text-[#1a1a1a]/50">{item.detail}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      {/* Features + Motto */}
+      <div className="border-2 border-[#1a1a1a] bg-white p-5" style={{ boxShadow: "3px 3px 0 #1a1a1a" }}>
+        <ul className="space-y-1 mb-3">
+          {c.features.map((f, i) => (
+            <li key={i} className="text-[10px] font-bold text-[#1a1a1a]/60 flex items-center gap-1.5">
+              <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: c.color }} /> {f}
+            </li>
+          ))}
+        </ul>
+        <p className="text-sm font-black uppercase text-[#1a1a1a] text-center">
+          &ldquo;{c.motto}&rdquo;
+        </p>
+      </div>
+
+      {/* CTA */}
+      <div className="text-center">
+        <a href={`/tazos?collection=${collection}`}
+          className="inline-block px-6 py-2.5 text-[11px] font-black text-white bg-[#E3350D] uppercase tracking-wider border-2 border-[#1a1a1a]
+                     shadow-[3px_3px_0_#1a1a1a] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5px_5px_0_#1a1a1a]
+                     active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0_#1a1a1a] transition-all">
+          {c.cta}
+        </a>
+      </div>
+    </div>
+  )
+}
+
 export default function LauncherView() {
   const { user } = useAuth()
   const router = useRouter()
@@ -813,6 +955,10 @@ export default function LauncherView() {
             {currentPage === "faq" && (
               <div className="w-full max-w-5xl mx-auto"><FAQContent /></div>
             )}
+
+            {(currentPage === "collections-minimon" || currentPage === "collections-dracobell" || currentPage === "collections-cybermon") && (
+              <div className="w-full max-w-5xl mx-auto"><CollectionDetailContent collection={currentPage.replace("collections-", "")} /></div>
+            )}
           </div>
         </main>
 
@@ -828,26 +974,25 @@ export default function LauncherView() {
               <Download className="w-3 h-3" /> Download
             </button>
           </div>
-          <div className="flex items-center justify-center gap-3 pt-1.5 pb-1">
-            <a href="https://x.com/medaclaw" target="_blank" rel="noopener noreferrer" aria-label="X / Twitter"
-              className="flex items-center justify-center w-7 h-7 rounded-full border border-white/15 text-zinc-400 hover:text-[#FFCC00] hover:border-[#FFCC00]/50 transition-all">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            </a>
-            <a href="https://www.reddit.com/r/MedaclawArena/" target="_blank" rel="noopener noreferrer" aria-label="Reddit"
-              className="flex items-center justify-center w-7 h-7 rounded-full border border-white/15 text-zinc-400 hover:text-[#FFCC00] hover:border-[#FFCC00]/50 transition-all">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm6.6 12.6c0 .663-.537 1.2-1.2 1.2-.315 0-.603-.12-.816-.318A5.952 5.952 0 0 1 12 15.6a5.952 5.952 0 0 1-4.584-2.118A1.19 1.19 0 0 1 6.6 13.8c-.663 0-1.2-.537-1.2-1.2s.537-1.2 1.2-1.2c.315 0 .603.12.816.318a5.956 5.956 0 0 1 3.384-1.788l.72-3.384 2.94.624c.039-.327.312-.582.648-.582.363 0 .66.297.66.66s-.297.66-.66.66c-.234 0-.438-.123-.552-.306l-2.496-.528-.576 2.706a5.96 5.96 0 0 1 3.492 1.794c.213-.198.501-.318.816-.318.663 0 1.2.537 1.2 1.2zM9.6 13.2c-.48 0-.84.36-.84.84 0 .48.36.84.84.84s.84-.36.84-.84c0-.48-.36-.84-.84-.84zm4.8 0c-.48 0-.84.36-.84.84 0 .48.36.84.84.84s.84-.36.84-.84c0-.48-.36-.84-.84-.84zm-2.88 3.54c.48 0 .96.12 1.44.36.48-.24.96-.36 1.44-.36.18 0 .36-.18.36-.36s-.18-.36-.36-.36c-.66 0-1.26.18-1.74.48-.3-.18-.66-.3-1.14-.3s-.84.12-1.14.3c-.48-.3-1.08-.48-1.74-.48-.18 0-.36.18-.36.36s.18.36.36.36z"/></svg>
-            </a>
-            <a href="https://t.me/tradingtazosgame" target="_blank" rel="noopener noreferrer" aria-label="Telegram"
-              className="flex items-center justify-center w-7 h-7 rounded-full border border-white/15 text-zinc-400 hover:text-[#FFCC00] hover:border-[#FFCC00]/50 transition-all">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.96 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.696.064-1.225-.46-1.9-.903-1.056-.692-1.653-1.123-2.678-1.799-1.185-.781-.417-1.21.258-1.911.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.24-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635.1-.002.321.023.465.14.121.099.155.233.171.328.016.095.036.31.02.482z"/></svg>
-            </a>
-          </div>
           <div className="flex flex-col sm:flex-row items-center justify-between px-3 sm:px-5 py-2 gap-2">
-            <div className="flex items-center gap-3 sm:gap-5">
+            <div className="flex items-center gap-3 sm:gap-4">
               <button onClick={() => navigate("tazos")} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Tazos</button>
               <a href="/battle-system" className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Battle</a>
               <button onClick={() => navigate("faq")} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">FAQ</button>
               <a href="/privacy" className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Privacy</a>
+              <span className="text-white/10">|</span>
+              <a href="https://x.com/medaclaw" target="_blank" rel="noopener noreferrer" aria-label="X / Twitter"
+                className="flex items-center justify-center w-6 h-6 rounded-full border border-white/15 text-zinc-400 hover:text-[#FFCC00] hover:border-[#FFCC00]/50 transition-all">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              </a>
+              <a href="https://www.reddit.com/r/MedaclawArena/" target="_blank" rel="noopener noreferrer" aria-label="Reddit"
+                className="flex items-center justify-center w-6 h-6 rounded-full border border-white/15 text-zinc-400 hover:text-[#FFCC00] hover:border-[#FFCC00]/50 transition-all">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm6.6 12.6c0 .663-.537 1.2-1.2 1.2-.315 0-.603-.12-.816-.318A5.952 5.952 0 0 1 12 15.6a5.952 5.952 0 0 1-4.584-2.118A1.19 1.19 0 0 1 6.6 13.8c-.663 0-1.2-.537-1.2-1.2s.537-1.2 1.2-1.2c.315 0 .603.12.816.318a5.956 5.956 0 0 1 3.384-1.788l.72-3.384 2.94.624c.039-.327.312-.582.648-.582.363 0 .66.297.66.66s-.297.66-.66.66c-.234 0-.438-.123-.552-.306l-2.496-.528-.576 2.706a5.96 5.96 0 0 1 3.492 1.794c.213-.198.501-.318.816-.318.663 0 1.2.537 1.2 1.2zM9.6 13.2c-.48 0-.84.36-.84.84 0 .48.36.84.84.84s.84-.36.84-.84c0-.48-.36-.84-.84-.84zm4.8 0c-.48 0-.84.36-.84.84 0 .48.36.84.84.84s.84-.36.84-.84c0-.48-.36-.84-.84-.84zm-2.88 3.54c.48 0 .96.12 1.44.36.48-.24.96-.36 1.44-.36.18 0 .36-.18.36-.36s-.18-.36-.36-.36c-.66 0-1.26.18-1.74.48-.3-.18-.66-.3-1.14-.3s-.84.12-1.14.3c-.48-.3-1.08-.48-1.74-.48-.18 0-.36.18-.36.36s.18.36.36.36z"/></svg>
+              </a>
+              <a href="https://t.me/tradingtazosgame" target="_blank" rel="noopener noreferrer" aria-label="Telegram"
+                className="flex items-center justify-center w-6 h-6 rounded-full border border-white/15 text-zinc-400 hover:text-[#FFCC00] hover:border-[#FFCC00]/50 transition-all">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.96 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.696.064-1.225-.46-1.9-.903-1.056-.692-1.653-1.123-2.678-1.799-1.185-.781-.417-1.21.258-1.911.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.24-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635.1-.002.321.023.465.14.121.099.155.233.171.328.016.095.036.31.02.482z"/></svg>
+              </a>
             </div>
             <span className="text-[8px] font-black text-white/15 uppercase tracking-[0.3em]">© 2026 Trading Tazos Game · v0.3.1</span>
           </div>

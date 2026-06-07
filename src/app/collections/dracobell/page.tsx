@@ -2,50 +2,50 @@ import PublicPageShell from "@/components/layout/public-page-shell"
 import Link from "next/link"
 
 const regions = [
-  { name: "Ember Valley", clan: "Ember Fist", style: "Fuego, ataque directo" },
-  { name: "Storm Peaks", clan: "Storm Fang", style: "Trueno, velocidad" },
-  { name: "Iron Plateau", clan: "Iron Horn", style: "Defensa, resistencia" },
-  { name: "Frost Temple", clan: "Frost Scale", style: "Control, precisión" },
-  { name: "Shadow Basin", clan: "Shadow Claw", style: "Contraataque, sigilo" },
-  { name: "Golden Shrine", clan: "Golden Roar", style: "Aura, maestría" },
-  { name: "Dragon Crater", clan: "Dragon Bell", style: "Poder ancestral" },
+  { name: "Ember Valley", clan: "Ember Fist", style: "Fire, direct attack" },
+  { name: "Storm Peaks", clan: "Storm Fang", style: "Lightning, speed" },
+  { name: "Iron Plateau", clan: "Iron Horn", style: "Defense, endurance" },
+  { name: "Frost Temple", clan: "Frost Scale", style: "Control, precision" },
+  { name: "Shadow Basin", clan: "Shadow Claw", style: "Counterattack, stealth" },
+  { name: "Golden Shrine", clan: "Golden Roar", style: "Aura, mastery" },
+  { name: "Dragon Crater", clan: "Dragon Bell", style: "Ancestral power" },
 ]
 
 const bellShards = [
-  { name: "Flame Shard", power: "Fuerza ofensiva" },
-  { name: "Storm Shard", power: "Velocidad" },
-  { name: "Iron Shard", power: "Resistencia" },
+  { name: "Flame Shard", power: "Offensive strength" },
+  { name: "Storm Shard", power: "Speed" },
+  { name: "Iron Shard", power: "Endurance" },
   { name: "Frost Shard", power: "Control" },
-  { name: "Shadow Shard", power: "Técnica" },
-  { name: "Gold Shard", power: "Aura superior" },
-  { name: "Dragon Shard", power: "Transformación legendaria" },
+  { name: "Shadow Shard", power: "Technique" },
+  { name: "Gold Shard", power: "Superior aura" },
+  { name: "Dragon Shard", power: "Legendary transformation" },
 ]
 
 const ascensionPhases = [
-  { name: "Base Fighter", desc: "Forma normal del guerrero" },
-  { name: "Aura Release", desc: "Primera liberación de energía interior" },
-  { name: "Clan Ascension", desc: "Forma ligada al clan y su técnica" },
-  { name: "Champion Ascension", desc: "Forma de torneo superior" },
-  { name: "Dragon Bell", desc: "Forma legendaria vinculada a la campana" },
+  { name: "Base Fighter", desc: "The warrior's normal form" },
+  { name: "Aura Release", desc: "First release of inner energy" },
+  { name: "Clan Ascension", desc: "Form bonded to the clan and its technique" },
+  { name: "Champion Ascension", desc: "High-tournament form" },
+  { name: "Dragon Bell", desc: "Legendary form linked to the bell" },
 ]
 
 const bellArts = [
-  { name: "Dragon Breaker", desc: "Golpe frontal envuelto en aura dracónica" },
-  { name: "Ember Rush", desc: "Ataque veloz de fuego" },
-  { name: "Storm Spiral", desc: "Patada giratoria eléctrica" },
-  { name: "Iron Shell", desc: "Defensa total de cuerpo completo" },
-  { name: "Frost Lock", desc: "Técnica que ralentiza al rival" },
-  { name: "Shadow Reversal", desc: "Contraataque desde el punto ciego" },
-  { name: "Golden Roar", desc: "Explosión de aura de campeón" },
+  { name: "Dragon Breaker", desc: "Frontal strike wrapped in draconic aura" },
+  { name: "Ember Rush", desc: "Swift fire attack" },
+  { name: "Storm Spiral", desc: "Electric spinning kick" },
+  { name: "Iron Shell", desc: "Full-body absolute defense" },
+  { name: "Frost Lock", desc: "Technique that slows the opponent" },
+  { name: "Shadow Reversal", desc: "Counter from the blind spot" },
+  { name: "Golden Roar", desc: "Champion aura explosion" },
 ]
 
 const auraTypes = [
-  { name: "Red Aura", trait: "Furia, fuego, ataque" },
-  { name: "Blue Aura", trait: "Control, calma, precisión" },
-  { name: "Gold Aura", trait: "Maestría, poder superior" },
-  { name: "Black Aura", trait: "Sombra, técnica peligrosa" },
-  { name: "White Aura", trait: "Pureza, defensa, concentración" },
-  { name: "Dragon Aura", trait: "Forma legendaria" },
+  { name: "Red Aura", trait: "Fury, fire, attack" },
+  { name: "Blue Aura", trait: "Control, calm, precision" },
+  { name: "Gold Aura", trait: "Mastery, superior power" },
+  { name: "Black Aura", trait: "Shadow, dangerous technique" },
+  { name: "White Aura", trait: "Purity, defense, focus" },
+  { name: "Dragon Aura", trait: "Legendary form" },
 ]
 
 const FRANCHISE_COLOR = "#FF6B00"

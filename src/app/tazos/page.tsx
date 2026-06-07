@@ -7,6 +7,7 @@ import { useState, useEffect } from "react"
 import PublicPageShell from "@/components/layout/public-page-shell"
 import Link from "next/link"
 import { Star, Zap, Flame, Cpu, Loader2, Package } from "lucide-react"
+import TazoDiscImage from "@/components/game/tazo-disc-image"
 
 interface TazoData {
   id: string; name: string; displayName: string; number: string
@@ -32,14 +33,15 @@ function TazoCard({ tazo }: { tazo: TazoData }) {
   const total = (tazo.attack || 0) + (tazo.defense || 0) + (tazo.bounce || 0) + (tazo.spin || 0) + (tazo.precision || 0)
   return (
     <div className="mag-card bg-white p-3 flex flex-col items-center gap-1.5 hover:translate-y-[-2px] active:translate-y-0 transition-transform">
-      <div className="relative w-20 h-20 rounded-full border-3 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a] overflow-hidden" style={{ background: style.gradient, padding: "3px" }}>
-        {tazo.imageUrl ? (
-          <img src={tazo.imageUrl} alt={tazo.name} className="w-full h-full object-cover rounded-full" loading="lazy" />
-        ) : (
-          <div className="w-full h-full rounded-full flex items-center justify-center text-white font-black text-xl">?</div>
-        )}
-        <span className="absolute bottom-0.5 right-1 text-[7px] font-black bg-white/90 border border-[#1a1a1a] px-1 leading-tight text-[#1a1a1a]">#{tazo.number}</span>
-      </div>
+      <TazoDiscImage
+        src={tazo.imageUrl}
+        alt={tazo.name}
+        size={92}
+        scale={1.12}
+        borderWidth={3}
+        franchiseSlug={tazo.franchise}
+        number={tazo.number}
+      />
       <p className="text-[10px] font-black text-[#1a1a1a] text-center leading-tight truncate w-full">{tazo.name}</p>
       <div className="flex items-center gap-1">
         <span className="text-[7px] font-black uppercase tracking-wide px-1.5 py-0.5 border border-[#1a1a1a]" style={{ background: style.bg, color: style.text }}>{tazo.franchise}</span>
@@ -114,11 +116,15 @@ export default function TazosCatalogPage() {
                 .slice(0, 5)
                 .map(t => (
                   <div key={t.id} className="bg-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] p-2 flex flex-col items-center gap-1.5 hover:-translate-y-1 transition-transform">
-                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full border-3 border-[#1a1a1a] overflow-hidden"
-                      style={{ background: FRANCHISE_STYLE[t.franchise]?.gradient || "#FFCC00" }}>
-                      <img src={t.imageUrl!} alt={t.name} className="w-full h-full object-cover rounded-full" loading="lazy" />
-                      <span className="absolute bottom-0 right-0.5 text-[7px] font-black bg-white/90 border border-[#1a1a1a] px-1 text-[#1a1a1a]">#{t.number}</span>
-                    </div>
+                    <TazoDiscImage
+                      src={t.imageUrl}
+                      alt={t.name}
+                      size={72}
+                      scale={1.12}
+                      borderWidth={3}
+                      franchiseSlug={t.franchise}
+                      number={t.number}
+                    />
                     <p className="text-[10px] sm:text-[11px] font-black text-[#1a1a1a] text-center leading-tight line-clamp-2">{t.name}</p>
                     <span className="text-[8px] font-black uppercase px-1.5 py-0.5 border border-[#1a1a1a]"
                       style={{ background: FRANCHISE_STYLE[t.franchise]?.bg || "#FFCC00", color: FRANCHISE_STYLE[t.franchise]?.text || "#1a1a1a" }}>
@@ -161,12 +167,12 @@ export default function TazosCatalogPage() {
         </div>
 
         {/* Franchise tabs */}
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {FRANCHISES.map(f => (
             <button
               key={f}
               onClick={() => setFranchise(f)}
-              className={`px-4 py-2 text-[10px] font-black uppercase tracking-wider border-2 transition-all ${
+              className={`px-3 sm:px-4 py-2 text-[10px] font-black uppercase tracking-wider border-2 transition-all ${
                 franchise === f
                   ? "bg-[#1a1a1a] text-white border-[#1a1a1a] shadow-[2px_2px_0px_#FFCC00] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
                   : "bg-white text-[#1a1a1a] border-[#1a1a1a]/15 hover:border-[#FFCC00] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"

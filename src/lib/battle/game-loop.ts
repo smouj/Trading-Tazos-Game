@@ -48,16 +48,43 @@ export interface Arena3DConfig {
 }
 
 // ─── Tazo Card (for lobby/deck) ───
+export type TazoFinish =
+  | "normal"
+  | "matte"
+  | "glossy"
+  | "holo"
+  | "reverse_holo"
+  | "foil"
+  | "prismatic"
+  | "metallic"
+  | "chrome"
+  | "gold"
+  | "rainbow"
+  | "glitter"
+
+export type TazoCreatureVariant =
+  | "standard"
+  | "shiny"
+  | "shadow"
+  | "golden"
+  | "promo"
+  | "first_edition"
+  | "misprint"
+
 export interface TazoCard {
   id: string
   name: string
   slug: string
   franchise: "minimon" | "cybermon" | "dracobell"
   imageUrl: string | null
+  shinyImageUrl?: string | null
   attack: number; defense: number; resistance: number
   weight: number; stability: number; spin: number
   control: number; bounce: number; precision: number
   role?: string | null
+  rarity?: string
+  finish?: TazoFinish
+  creatureVariant?: TazoCreatureVariant
 }
 
 // ─── Player State ───
@@ -92,6 +119,7 @@ export interface DiscPhysics {
   franchise: string
   imageUrl: string | null
   backImageUrl: string | null
+  finish?: string
   position: [number, number, number]   // x, y (height), z
   velocity: [number, number, number]
   rotation: [number, number, number]   // euler angles

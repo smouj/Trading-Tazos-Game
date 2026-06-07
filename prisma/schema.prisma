@@ -69,6 +69,9 @@ model Tazo {
   collection     Collection @relation(fields: [collectionId], references: [id])
   number         String     @default("")
   variant        String?    // megatazo_redondo, megatazo_octogonal, ranura_derecha, ranura_izquierda, gold, black_border
+  finish         String?    @default("normal") // normal|matte|glossy|holo|reverse_holo|foil|prismatic|metallic|chrome|gold|rainbow|glitter
+  creatureVariant String?   @default("standard") // standard|shiny|shadow|golden|promo|first_edition|misprint
+  shinyImageUrl  String?    // alternativa shiny de la criatura
   category       String?    // tazos, supertazos_voladores, supertazos_octogonales, megatazos, holo_3d, mastertazos, caps
   manufacturer   String?
   country        String?

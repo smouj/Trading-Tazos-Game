@@ -1,13 +1,16 @@
 // ============================================================
 // Trading Tazos Game — TazoDiscImage
-// Reusable 2D tazo disc renderer with proper fill & scale.
+// Reusable 2D tazo disc renderer with:
+//  - Proper fill & scale
+//  - Physical finish layers (holo, foil, glossy, etc.)
+//  - Creature variant support (shiny, shadow, golden)
 // Used by: Album, Collection, Decks, Shop reveal, Battle hand.
-// Ensures tazos occupy the full circular area with configurable
-// scale compensation for transparent margins in source assets.
 // ============================================================
 "use client"
 
 import { useState } from "react"
+import "@/styles/tazo-finishes.css"
+import type { TazoFinish, TazoCreatureVariant } from "@/lib/battle/game-loop"
 
 export interface TazoDiscImageProps {
   /** Image URL (front art or back art) */
@@ -40,6 +43,12 @@ export interface TazoDiscImageProps {
   onClick?: () => void
   /** Flip handler (separate from click) */
   onFlip?: () => void
+  /** Physical finish: holo, foil, glossy, etc. (default: "normal") */
+  finish?: TazoFinish
+  /** Creature variant: shiny, shadow, golden, etc. (default: "standard") */
+  creatureVariant?: TazoCreatureVariant
+  /** Alternative shiny image URL (used when variant === "shiny" and available) */
+  shinyImageUrl?: string | null
 }
 
 // Radial gradients matching composite-tazo.js disc backgrounds
@@ -60,6 +69,8 @@ export default function TazoDiscImage({
   borderWidth = 3, borderColor = "#1a1a1a", bgColor,
   className = "", isBack = false, number, franchiseSlug,
   overlay, lazy = true, onClick, onFlip,
+  finish = "normal", creatureVariant = "standard",
+  shinyImageUrl,
 }: TazoDiscImageProps) {
   const [imgError, setImgError] = useState(false)
   const [imgLoaded, setImgLoaded] = useState(false)
@@ -68,19 +79,20 @@ export default function TazoDiscImage({
   const fallbackBg = franchiseSlug ? (FRANCHISE_FALLBACK_BG[franchiseSlug] || "#FFCC00") : "#FFCC00"
   const fallbackText = franchiseSlug ? (FRANCHISE_FALLBACK_TEXT[franchiseSlug] || "#7C2D12") : "#7C2D12"
   const innerBg = bgColor || (isBack ? "#111" : fallbackBg)
+  const effectiveFinish = finish || "normal"
+  const effectiveVariant = creatureVariant || "standard"
 
-  const renderImage = src && !imgError
-  const isGeneratedDisc = !!src?.includes("/tazos-generated/")
-  // All tazo images use the same scale for visual consistency.
-  // Generated tazos (1024×1024, disc at ~445px radius) need ~1.15×
-  // to fill the container circle; non-generated images also need
-  // similar scale compensation for transparent margins.
-  const effectiveScale = scale
-  const showExternalNumber = !isGeneratedDisc && number
+  // Resolve which image to show for shiny
+  const displaySrc = (effectiveVariant === "shiny" && shinyImageUrl) ? shinyImageUrl : src
+  const renderImage = displaySrc && !imgError
+  const showExternalNumber = number && typeof number === "string" && number.length < 10
+
+  const finishClass = `tazo-finish-${effectiveFinish}`
+  const variantClass = effectiveVariant !== "standard" ? `tazo-variant-${effectiveVariant}` : ""
 
   return (
     <div
-      className={`tazo-disc-image shrink-0 ${className}`}
+      className={`tazo-disc-image shrink-0 ${finishClass} ${variantClass} ${className}`}
       style={{
         width: sizePx,
         height: sizePx,
@@ -117,16 +129,16 @@ export default function TazoDiscImage({
           <div
             className="w-full h-full rounded-full overflow-hidden relative"
             style={{
-              transform: `scale(${effectiveScale})`,
+              transform: `scale(${scale})`,
               transformOrigin: "center center",
               opacity: imgLoaded ? 1 : 0,
               transition: "opacity 0.2s ease-in",
             }}
           >
             <img
-              src={src}
+              src={displaySrc}
               alt={alt}
-              className="w-full h-full rounded-full"
+              className={`w-full h-full rounded-full tazo-character ${variantClass}`}
               style={{ objectFit: "cover", display: "block" }}
               loading={lazy ? "lazy" : undefined}
               onLoad={() => setImgLoaded(true)}
@@ -160,6 +172,18 @@ export default function TazoDiscImage({
           </div>
         )}
       </div>
+
+      {/* ── Finish layers (above image, below overlay) ── */}
+      {!isBack && renderImage && imgLoaded && (
+        <>
+          {/* Holo/prismatic/foil/rainbow layer */}
+          <div className="tazo-finish-layer" />
+          {/* Glossy/reverse_holo layer */}
+          <div className="tazo-gloss-layer" />
+          {/* Subtle print texture (all tazos) */}
+          <div className="tazo-print-grain" />
+        </>
+      )}
 
       {/* Number badge — only when image loaded successfully */}
       {renderImage && imgLoaded && showExternalNumber && (

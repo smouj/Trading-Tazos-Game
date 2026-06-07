@@ -71,17 +71,37 @@ interface TazoDisc3DProps {
   rotationSpeed?: number
   autoRotate?: boolean
   hovered?: boolean
+  finish?: string  // holo, gold, chrome, metallic, etc.
   onClick?: () => void
+}
+
+// ─── Rim color overrides by finish ───
+const FINISH_RIM_COLORS: Record<string, string> = {
+  gold: "#D4AF37",
+  chrome: "#C0C0C0",
+  metallic: "#A8A8A8",
+  rainbow: "#E8D5E8",
+  prismatic: "#C8B8E0",
+}
+
+const FINISH_RIM_METALNESS: Record<string, number> = {
+  gold: 0.95,
+  chrome: 0.98,
+  metallic: 0.9,
 }
 
 export default function TazoDisc3D({
   name, franchise, imageUrl, backImageUrl,
   size = 0.45, rotationSpeed = 0.6, autoRotate = true,
-  hovered = false, onClick,
+  hovered = false, finish, onClick,
 }: TazoDisc3DProps) {
   const groupRef = useRef<THREE.Group>(null!)
   const colors = FRANCHISE_COLORS[franchise.toLowerCase()] || FRANCHISE_COLORS.minimon
   const thickness = size * 0.08
+
+  // Rim customization based on finish
+  const rimColor = finish ? (FINISH_RIM_COLORS[finish] || colors.rim) : colors.rim
+  const rimMetalness = finish ? (FINISH_RIM_METALNESS[finish] || 0.85) : 0.85
 
   // Front face texture
   const faceTex = useMemo(() => {
@@ -130,7 +150,7 @@ export default function TazoDisc3D({
       {/* Metallic rim */}
       <mesh rotation={[Math.PI / -2, 0, 0]}>
         <torusGeometry args={[size * 1.02, thickness * 0.55, 16, 64]} />
-        <meshStandardMaterial color={colors.rim} metalness={0.85} roughness={0.25} />
+        <meshStandardMaterial color={rimColor} metalness={rimMetalness} roughness={0.25} />
       </mesh>
 
       {/* Hover glow */}

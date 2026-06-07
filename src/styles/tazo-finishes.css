@@ -1,0 +1,238 @@
+/* ============================================================
+ * Trading Tazos Game — Tazo Finish System
+ * Simula acabados físicos de tazos coleccionables:
+ * holo, shiny, foil, reverse holo, glossy, metallic, chrome,
+ * gold, prismatic, rainbow y glitter.
+ *
+ * Principio: capas superficiales sobre el arte del tazo,
+ * respetando border-radius: 50% del contenedor circular.
+ * ============================================================ */
+
+/* ─── Capas base ─── */
+.tazo-finish-layer,
+.tazo-gloss-layer,
+.tazo-print-grain,
+.tazo-condition-layer {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* ─── Print grain (todos, sutil textura de impresión) ─── */
+.tazo-print-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  mix-blend-mode: multiply;
+}
+
+/* ─── normal ─── */
+.tazo-finish-normal .tazo-finish-layer { display: none; }
+
+/* ─── matte ─── */
+.tazo-finish-matte .tazo-finish-layer {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: brightness(0.97) saturate(0.9);
+}
+
+/* ─── glossy ─── */
+.tazo-finish-glossy .tazo-gloss-layer {
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.28) 0%,
+    transparent 45%,
+    transparent 65%,
+    rgba(255,255,255,0.12) 100%
+  );
+  opacity: 1;
+}
+
+/* ─── holo ─── */
+.tazo-finish-holo .tazo-finish-layer {
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 0, 120, 0.18) 20%,
+    rgba(0, 220, 255, 0.18) 38%,
+    rgba(255, 240, 0, 0.16) 55%,
+    rgba(150, 80, 255, 0.18) 72%,
+    transparent 100%
+  );
+  mix-blend-mode: screen;
+  opacity: 0.55;
+  background-size: 220% 220%;
+  animation: tazo-holo-sweep 5s linear infinite;
+}
+
+@keyframes tazo-holo-sweep {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tazo-finish-holo .tazo-finish-layer {
+    animation: none;
+    background-position: 50% 50%;
+  }
+}
+
+/* ─── reverse_holo ─── */
+.tazo-finish-reverse_holo .tazo-gloss-layer {
+  inset: 8%;
+  z-index: 4;
+  background: repeating-linear-gradient(
+    115deg,
+    rgba(255,255,255,0) 0px,
+    rgba(255,255,255,0) 8px,
+    rgba(255,255,255,0.18) 10px,
+    rgba(120,220,255,0.18) 14px,
+    rgba(255,80,200,0.12) 18px
+  );
+  mix-blend-mode: screen;
+  opacity: 0.42;
+}
+
+.tazo-finish-reverse_holo .tazo-character {
+  position: relative;
+  z-index: 5;
+}
+
+/* ─── foil ─── */
+.tazo-finish-foil .tazo-finish-layer {
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    rgba(255,255,255,0.45) 45%,
+    rgba(255,255,255,0.08) 52%,
+    transparent 75%
+  );
+  mix-blend-mode: screen;
+  opacity: 0.5;
+  transform: translateX(-40%);
+  animation: tazo-foil-sweep 4.5s ease-in-out infinite;
+}
+
+@keyframes tazo-foil-sweep {
+  0%, 25%  { transform: translateX(-60%) rotate(0deg); }
+  65%, 100% { transform: translateX(60%) rotate(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tazo-finish-foil .tazo-finish-layer {
+    animation: none;
+    transform: translateX(0%) rotate(0deg);
+  }
+}
+
+/* ─── prismatic ─── */
+.tazo-finish-prismatic .tazo-finish-layer {
+  background: conic-gradient(
+    from 0deg,
+    rgba(255, 0, 90, 0.24),
+    rgba(255, 220, 0, 0.22),
+    rgba(0, 220, 255, 0.22),
+    rgba(120, 80, 255, 0.24),
+    rgba(255, 0, 90, 0.24)
+  );
+  mix-blend-mode: color-dodge;
+  opacity: 0.38;
+  animation: tazo-prismatic-turn 8s linear infinite;
+}
+
+@keyframes tazo-prismatic-turn {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tazo-finish-prismatic .tazo-finish-layer {
+    animation: none;
+  }
+}
+
+/* ─── metallic ─── */
+.tazo-finish-metallic .tazo-finish-layer {
+  background: linear-gradient(
+    120deg,
+    rgba(255,255,255,0.08),
+    rgba(255,255,255,0.42),
+    rgba(30,30,30,0.14),
+    rgba(255,255,255,0.22)
+  );
+  mix-blend-mode: overlay;
+  opacity: 0.55;
+}
+
+/* ─── chrome ─── */
+.tazo-finish-chrome .tazo-finish-layer {
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.75) 0%,
+    rgba(180,210,230,0.28) 22%,
+    rgba(20,30,40,0.22) 45%,
+    rgba(255,255,255,0.55) 62%,
+    rgba(80,100,120,0.24) 100%
+  );
+  mix-blend-mode: screen;
+  opacity: 0.48;
+}
+
+/* ─── gold ─── */
+.tazo-finish-gold .tazo-finish-layer {
+  background:
+    radial-gradient(circle at 35% 25%, rgba(255,255,210,0.5), transparent 26%),
+    linear-gradient(135deg, rgba(255,210,80,0.42), rgba(160,95,20,0.20), rgba(255,235,150,0.36));
+  mix-blend-mode: screen;
+  opacity: 0.45;
+}
+
+/* ─── rainbow ─── */
+.tazo-finish-rainbow .tazo-finish-layer {
+  background: linear-gradient(
+    125deg,
+    rgba(255,0,0,0.22),
+    rgba(255,165,0,0.22),
+    rgba(255,255,0,0.22),
+    rgba(0,255,0,0.20),
+    rgba(0,200,255,0.22),
+    rgba(75,0,130,0.22),
+    rgba(238,130,238,0.22)
+  );
+  mix-blend-mode: screen;
+  opacity: 0.48;
+  background-size: 200% 200%;
+  animation: tazo-holo-sweep 4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tazo-finish-rainbow .tazo-finish-layer {
+    animation: none;
+    background-position: 50% 50%;
+  }
+}
+
+/* ─── glitter ─── */
+.tazo-finish-glitter .tazo-finish-layer {
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.75) 0 1px, transparent 1.5px),
+    radial-gradient(circle, rgba(255,220,120,0.65) 0 1px, transparent 1.5px);
+  background-size: 18px 18px, 27px 27px;
+  background-position: 0 0, 8px 11px;
+  mix-blend-mode: screen;
+  opacity: 0.38;
+}
+
+/* ─── Variante shiny ─── */
+.tazo-variant-shiny .tazo-character {
+  filter: saturate(1.35) contrast(1.08) brightness(1.05);
+}
+
+/* ─── Variante shadow ─── */
+.tazo-variant-shadow .tazo-character {
+  filter: brightness(0.4) saturate(0.2) contrast(1.2);
+}
+
+/* ─── Variante golden ─── */
+.tazo-variant-golden .tazo-character {
+  filter: sepia(0.8) saturate(1.5) brightness(1.1) hue-rotate(-10deg);
+}

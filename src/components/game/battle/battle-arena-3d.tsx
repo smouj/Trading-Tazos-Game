@@ -180,6 +180,7 @@ function PhysicsDisc({
         franchise={disc.franchise}
         imageUrl={disc.imageUrl}
         backImageUrl={disc.backImageUrl}
+        finish={disc.finish}
         size={0.38}
         autoRotate={false}
       />

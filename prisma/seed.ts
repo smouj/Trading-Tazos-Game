@@ -11,6 +11,20 @@ function randRange(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
+const FINISH_BY_RARITY: Record<string, string[]> = {
+  common: ["normal", "normal", "normal", "matte", "glossy"],
+  uncommon: ["glossy", "glossy", "normal", "foil"],
+  rare: ["holo", "reverse_holo", "foil", "glossy"],
+  ultra: ["holo", "foil", "metallic", "reverse_holo"],
+  legendary: ["prismatic", "gold", "chrome", "rainbow", "holo"],
+  secret: ["rainbow", "prismatic", "glitter", "prismatic"],
+}
+
+function pickFinish(rarity: string): string {
+  const options = FINISH_BY_RARITY[rarity] || ["normal"]
+  return options[Math.floor(Math.random() * options.length)]
+}
+
 function genStats() {
   return {
     attack: randRange(35, 85),
@@ -168,6 +182,7 @@ async function main() {
         name: t.name, displayName: t.name, slug,
         franchiseId: minimon.id, collectionId: minimonTazos1.id,
         number: t.n, variant: null, category: "tazos",
+        finish: pickFinish("common"), creatureVariant: "standard",
         manufacturer: "Matutano", country: "España",
         sourceStatus: "verified",
         physicalType: "cardboard", rarity: "common",
@@ -207,6 +222,7 @@ async function main() {
         manufacturer: "Matutano", country: "España",
         sourceStatus: "verified",
         physicalType: "cardboard", rarity: "common",
+        finish: pickFinish("common"), creatureVariant: "standard",
         imageUrl: `/tazos/dracobell/${slug}.svg`,
         ...genStats(),
       },
@@ -251,6 +267,7 @@ async function main() {
         manufacturer: "Matutano", country: "España",
         sourceStatus: "verified",
         physicalType: "plastic", rarity: "uncommon",
+        finish: pickFinish("uncommon"), creatureVariant: "standard",
         imageUrl: `/tazos/dracobell/${slug}.svg`,
         ...genStats(),
       },
@@ -295,6 +312,7 @@ async function main() {
         manufacturer: "Matutano", country: "España",
         sourceStatus: "verified",
         physicalType: "plastic", rarity: "uncommon",
+        finish: pickFinish("uncommon"), creatureVariant: "standard",
         imageUrl: `/tazos/dracobell/${slug}.svg`,
         ...genStats(),
       },
@@ -339,6 +357,7 @@ async function main() {
         manufacturer: "Matutano", country: "España",
         sourceStatus: "partial",
         physicalType: "plastic", rarity: "rare",
+        finish: pickFinish("rare"), creatureVariant: "standard",
         imageUrl: `/tazos/dracobell/dbz-mr-${t.n}.svg`,
         ...genStats(),
       },
@@ -352,6 +371,7 @@ async function main() {
         manufacturer: "Matutano", country: "España",
         sourceStatus: "partial",
         physicalType: "plastic", rarity: "rare",
+        finish: pickFinish("rare"), creatureVariant: "standard",
         imageUrl: `/tazos/dracobell/dbz-mo-${t.n}.svg`,
         ...genStats(),
       },
@@ -385,6 +405,7 @@ async function main() {
         manufacturer: "Matutano", country: "España",
         sourceStatus: "verified",
         physicalType: "holo", rarity: "ultra",
+        finish: pickFinish("ultra"), creatureVariant: "standard",
         imageUrl: `/tazos/dracobell/dbz-hr-${t.n}.svg`,
         ...genStats(),
       },
@@ -397,6 +418,7 @@ async function main() {
         manufacturer: "Matutano", country: "España",
         sourceStatus: "verified",
         physicalType: "holo", rarity: "ultra",
+        finish: pickFinish("ultra"), creatureVariant: "standard",
         imageUrl: `/tazos/dracobell/dbz-hl-${t.n}.svg`,
         ...genStats(),
       },
@@ -429,6 +451,7 @@ async function main() {
         manufacturer: "Matutano", country: "España",
         sourceStatus: "verified",
         physicalType: "metal", rarity: "legendary",
+        finish: pickFinish("legendary"), creatureVariant: "standard",
         imageUrl: `/tazos/dracobell/${slug}.svg`,
         ...genStats(),
       },
@@ -480,6 +503,7 @@ async function main() {
         manufacturer: "Magic Box", country: "España / Europa",
         sourceStatus: "verified",
         physicalType: "plastic", rarity: "common",
+        finish: pickFinish("common"), creatureVariant: "standard",
         imageUrl: `/tazos/cybermon/${slug}.svg`,
         isOwned: false,
         ...genStats(),

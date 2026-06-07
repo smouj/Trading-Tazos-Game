@@ -194,7 +194,7 @@ function TazoShowcase() {
   if (tazos.length === 0) return null
 
   return (
-    <div className="max-w-5xl mx-auto w-full px-4 pb-8 space-y-3">
+    <div className="max-w-5xl mx-auto w-full px-4 pb-4 space-y-3">
       <div className="flex items-center gap-3">
         <div className="flex-1 h-0.5 bg-[#1a1a1a]/10" />
         <span className="text-[10px] font-black text-[#1a1a1a]/30 uppercase tracking-[0.2em] whitespace-nowrap">
@@ -950,7 +950,7 @@ export default function LauncherView() {
 
         {/* ═══ MASTHEAD ═══ */}
         <header className="relative z-10 border-b-[5px] border-[#1a1a1a]" style={{ background: "#1a1a1a" }}>
-          <div className="flex items-center justify-between px-3 sm:px-5 py-2.5">
+          <div className="flex items-center justify-between px-4 sm:px-6 py-2.5">
             <div className="flex items-center gap-2.5">
               <button onClick={() => navigate("home")} className="cursor-pointer">
                 <img src="/favicon-192.png" alt="TTG" className="w-7 h-7 sm:w-8 sm:h-8" />
@@ -1012,7 +1012,7 @@ export default function LauncherView() {
         </header>
 
         {/* ═══ CONTENT AREA ═══ */}
-        <main className="relative z-10 flex-1 flex flex-col px-3 sm:px-5">
+        <main className="relative z-10 flex-1 flex flex-col px-4 sm:px-6">
           <div className="absolute top-0 left-0 right-0 h-2 mag-stripes opacity-20 pointer-events-none" />
 
           {!isHome && (
@@ -1021,7 +1021,7 @@ export default function LauncherView() {
             </div>
           )}
 
-          <div className={`${isHome ? "space-y-8" : "pb-8"}`}>
+          <div className={`${isHome ? "space-y-8 pb-8" : "pb-8"}`}>
             {currentPage === "home" && (
               <>
                 <HomeHero user={user} onPlay={handlePlay} />
@@ -1071,7 +1071,7 @@ export default function LauncherView() {
               <Download className="w-3 h-3" /> Download
             </button>
           </div>
-          <div className="flex flex-col sm:flex-row items-center justify-between px-3 sm:px-5 py-2 gap-2">
+          <div className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-2 gap-2">
             <div className="flex items-center gap-3 sm:gap-4">
               <button onClick={() => navigate("tazos")} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Tazos</button>
               <a href="/battle-system" className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Battle</a>

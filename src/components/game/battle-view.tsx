@@ -106,6 +106,7 @@ export default function BattleView() {
   const [deck, setDeck] = useState<TazoCard[]>([])
   const [allDecks, setAllDecks] = useState<any[]>([])
   const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null)
+  const [selectedDeckName, setSelectedDeckName] = useState<string>("")
   const [allTazos, setAllTazos] = useState<TazoCard[]>([])  // full fallback list
   const [cfg, setCfg] = useState<MatchConfig | null>(null)
   const [pScore, setPScore] = useState(0)
@@ -184,6 +185,7 @@ export default function BattleView() {
       if (dlist.length > 0) {
         const active = dlist.find((d:any) => d.isActive) || dlist[0]
         setSelectedDeckId(active.id)
+        setSelectedDeckName(active.name || "")
       }
     })()
   }, [user, token])
@@ -328,9 +330,11 @@ export default function BattleView() {
     setSelectedDeckId(deckId)
     if (!deckId) {
       setTazos(allTazos)
+      setSelectedDeckName("")
       return
     }
     const deck = allDecks.find((d: any) => d.id === deckId)
+    setSelectedDeckName(deck?.name || "")
     if (deck?.tazos) {
       const dt: TazoCard[] = deck.tazos.map((t: any) => ({
         id: t.id, name: t.name || "?", slug: t.slug || (t.name || "?").toLowerCase().replace(/\s/g, "-"),
@@ -545,6 +549,9 @@ export default function BattleView() {
               <span className="text-xs font-black text-white tracking-wide">YOU</span>
               <span className="text-sm font-black text-[#29ADFF]">{pScore}</span>
               <span className="text-[8px] font-black text-white/30">{deck.length-1} tazos</span>
+              {selectedDeckName && (
+                <span className="text-[7px] font-black text-[#FFCC00] bg-[#FFCB0508] px-1 py-0.5 border border-[#FFCC00]/20">{selectedDeckName}</span>
+              )}
               {staked.find(s => s.owner === "player") && (
                 <span className="text-[7px] font-black text-[#22C55E] bg-[#22C55E]/10 px-1 py-0.5 rounded border border-[#22C55E]/20">
                   STAKE: {staked.find(s => s.owner === "player")!.tazoName.slice(0, 8)}

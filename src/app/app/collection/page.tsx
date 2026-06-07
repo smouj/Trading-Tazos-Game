@@ -74,11 +74,12 @@ export default function CollectionPage() {
   const { user, token, loading } = useAuth()
   const [data, setData] = useState<CollectionData | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [filter, setFilter] = useState<"all" | "deck" | "duplicates" | "recent" | "favorites">("all")
+  const [filter, setFilter] = useState<"all" | "deck" | "duplicates" | "recent" | "favorites" | "listed">("all")
   const [franchiseFilter, setFranchiseFilter] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [sortKey, setSortKey] = useState<SortKey>("power")
   const [flippedItems, setFlippedItems] = useState<Set<string>>(new Set())
+  const [listedUserTazoIds, setListedUserTazoIds] = useState<Set<string>>(new Set())
 
   // Back art for each franchise
   const FRANCHISE_BACK: Record<string, string> = {
@@ -109,15 +110,33 @@ export default function CollectionPage() {
     return () => { cancelled = true }
   }, [token])
 
+  // Fetch active listings for this user
+  useEffect(() => {
+    if (!token || !user) return
+    fetch(`/api/trade?sellerId=${user.id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.json())
+      .then(d => {
+        const ids = new Set<string>()
+        for (const l of d.listings || []) {
+          if (l.userTazoId) ids.add(l.userTazoId)
+        }
+        setListedUserTazoIds(ids)
+      })
+      .catch(() => {})
+  }, [token, user])
+
   // ── Derived data ──────────────────────────────────────
-  const { strongest, rarest, recentTazos, deckTazos, duplicateTazos, favoriteTazos, franchiseItems } = useMemo(() => {
-    if (!data?.items.length) return { strongest: null, rarest: null, recentTazos: [], deckTazos: [], duplicateTazos: [], favoriteTazos: [], franchiseItems: {} as Record<string, CollectionTazo[]> }
+  const { strongest, rarest, recentTazos, deckTazos, duplicateTazos, favoriteTazos, listedTazos, franchiseItems } = useMemo(() => {
+    if (!data?.items.length) return { strongest: null, rarest: null, recentTazos: [], deckTazos: [], duplicateTazos: [], favoriteTazos: [], listedTazos: [], franchiseItems: {} as Record<string, CollectionTazo[]> }
     const byRarity = [...data.items].sort((a, b) => rarityOrder(b.tazo.rarity) - rarityOrder(a.tazo.rarity))
     const byPower = [...data.items].sort((a, b) => totalPower(b.tazo) - totalPower(a.tazo))
     const recent = [...data.items].sort((a, b) => new Date(b.acquiredAt).getTime() - new Date(a.acquiredAt).getTime()).slice(0, 8)
     const inDeck = data.items.filter(i => i.inDeckId)
     const dupes = data.items.filter(i => i.quantity > 1)
     const favs = data.items.filter(i => i.isFavorite)
+    const listed = data.items.filter(i => listedUserTazoIds.has(i.id))
     // Group by franchise
     const fi: Record<string, CollectionTazo[]> = {}
     for (const item of data.items) {
@@ -125,7 +144,7 @@ export default function CollectionPage() {
       if (!fi[slug]) fi[slug] = []
       fi[slug].push(item)
     }
-    return { strongest: byPower[0] || null, rarest: byRarity[0] || null, recentTazos: recent, deckTazos: inDeck, duplicateTazos: dupes, favoriteTazos: favs, franchiseItems: fi }
+    return { strongest: byPower[0] || null, rarest: byRarity[0] || null, recentTazos: recent, deckTazos: inDeck, duplicateTazos: dupes, favoriteTazos: favs, listedTazos: listed, franchiseItems: fi }
   }, [data])
 
   const filteredItems = useMemo(() => {
@@ -136,6 +155,7 @@ export default function CollectionPage() {
       case "duplicates": items = duplicateTazos; break
       case "recent": items = recentTazos; break
       case "favorites": items = favoriteTazos; break
+      case "listed": items = listedTazos; break
       default: items = data.items
     }
     if (franchiseFilter) {
@@ -161,7 +181,7 @@ export default function CollectionPage() {
       }
     })
     return items
-  }, [data, filter, franchiseFilter, deckTazos, duplicateTazos, recentTazos, favoriteTazos, searchTerm, sortKey])
+  }, [data, filter, franchiseFilter, deckTazos, duplicateTazos, recentTazos, favoriteTazos, listedTazos, searchTerm, sortKey])
 
   // ── Loading ───────────────────────────────────────────
   if (loading || (token && !data && !error)) {
@@ -401,6 +421,7 @@ export default function CollectionPage() {
             { key: "favorites", label: "Favorites", count: favoriteTazos.length },
             { key: "duplicates", label: "Duplicates", count: duplicateTazos.length },
             { key: "recent", label: "Recent", count: recentTazos.length },
+            { key: "listed", label: "Listed", count: listedTazos.length },
           ] as const).map((f) => (
             <button
               key={f.key}
@@ -627,6 +648,19 @@ export default function CollectionPage() {
                                 </span>
                               )}
                               <span className="text-[8px] font-bold text-[#1a1a1a]/30">{power} TP</span>
+                              {/* Listed on Marketplace badge */}
+                              {listedUserTazoIds.has(item.id) && (
+                                <span
+                                  className="text-[7px] font-black uppercase px-1.5 py-0.5 border rounded-full"
+                                  style={{
+                                    background: "#3B82F615",
+                                    color: "#3B82F6",
+                                    borderColor: "#3B82F630",
+                                  }}
+                                >
+                                  FOR SALE
+                                </span>
+                              )}
                             </div>
 
                             {/* Stats row */}

@@ -277,10 +277,11 @@ function StakedTazoMesh({ staked }: { staked: StakedTazo }) {
 
 // ─── Airborne Launcher Tazo ───
 function AirborneTazoMesh({
-  airborne, isPlayer,
+  airborne, isPlayer, stakedPositions = [],
 }: {
   airborne: AirborneTazo
   isPlayer: boolean
+  stakedPositions?: [number, number, number][]
 }) {
   const groupRef = useRef<THREE.Group>(null!)
   const physRef = useRef({
@@ -288,6 +289,7 @@ function AirborneTazoMesh({
     vel: new THREE.Vector3(0, 0, 0),
     falling: false,
     impactTime: 0,
+    collisionTarget: new THREE.Vector3(),
   })
 
   useEffect(() => {
@@ -312,16 +314,29 @@ function AirborneTazoMesh({
       p.vel.y -= 22 * dt
       p.pos.add(p.vel.clone().multiplyScalar(dt))
 
-      // Hit table
+      // Hit table — snap toward nearest staked tazo for collision feel
       if (p.pos.y < 0.06) {
         p.pos.y = 0.06
+        // Snap XZ toward nearest staked tazo for visual collision
+        if (stakedPositions.length > 0) {
+          let nearest = stakedPositions[0]
+          let minDist = Infinity
+          for (const sp of stakedPositions) {
+            const d = Math.hypot(p.pos.x - sp[0], p.pos.z - sp[2])
+            if (d < minDist) { minDist = d; nearest = sp }
+          }
+          p.collisionTarget.set(nearest[0], 0.06, nearest[2])
+        }
         p.falling = false
         p.vel.set(0, 0, 0)
         p.impactTime = 1.0
-        // Flash the impact light on hit
       }
     } else if (p.impactTime > 0) {
       p.impactTime = Math.max(0, p.impactTime - dt * 4)
+      // Lerp toward collision target during impact flash
+      if (p.impactTime > 0.5) {
+        p.pos.lerp(p.collisionTarget, (1 - p.impactTime) * 0.3)
+      }
     }
 
     groupRef.current.position.copy(p.pos)
@@ -583,6 +598,7 @@ function Scene({
         <AirborneTazoMesh
           airborne={airborneTazo}
           isPlayer={airborneTazo.owner === "player"}
+          stakedPositions={stakedTazos.map((st) => st.position)}
         />
       )}
 

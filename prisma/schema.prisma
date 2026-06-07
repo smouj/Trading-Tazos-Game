@@ -29,6 +29,11 @@ model User {
   displayName  String?
   avatarUrl    String?
   credits      Int        @default(100)  // Ingame currency
+  emailVerified Boolean   @default(false)
+  emailVerifyToken   String?
+  emailVerifyExpires DateTime?
+  resetToken         String?
+  resetTokenExpires  DateTime?
   userTazos    UserTazo[]
   decks        Deck[]
   bagPurchases BagPurchase[]

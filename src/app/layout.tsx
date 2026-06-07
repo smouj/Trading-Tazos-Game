@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     url: SITE_URL,
     locale: "en_US",
     images: [{
-      url: `${SITE_URL}/logo/social-preview.png`,
+      url: `${SITE_URL}/logo/social-preview.webp`,
       width: 1200,
       height: 630,
       alt: "Trading Tazos Game — 349 tazos from Minimon, Dracobell & Cybermon",
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     creator: "@medaclaw",
     title: `${SITE_NAME} — Collect, Trade & Battle Your Tazos`,
     description: "349 classic tazos, 3 collections, 9 combat stats, 2D collection views, and a skill-based 3D battle arena.",
-    images: [`${SITE_URL}/logo/social-preview.png`],
+    images: [`${SITE_URL}/logo/social-preview.webp`],
   },
   alternates: {
     canonical: SITE_URL,
@@ -96,7 +96,7 @@ export default function RootLayout({
               "name": "Trading Tazos Game",
               "description": SITE_DESC,
               "url": SITE_URL,
-              "image": `${SITE_URL}/logo/social-preview.png`,
+              "image": `${SITE_URL}/logo/social-preview.webp`,
               "operatingSystem": "Web, Linux",
               "applicationCategory": "Game",
               "author": {

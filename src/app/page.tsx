@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     title: "Trading Tazos Game — Aim. Throw. Flip. Capture.",
     description:
       "349 classic tazos across 3 collections. 9 combat stats. 2D collection views and a skill-based 3D battle arena. Free to play.",
-    images: [{ url: "/logo/social-preview.png", width: 1200, height: 630 }],
+    images: [{ url: "/logo/social-preview.webp", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     creator: "@medaclaw",
     title: "Trading Tazos Game — Aim. Throw. Flip. Capture.",
     description: "349 classic tazos, 3 collections, 9 combat stats, skill-based 3D battle arena. Free to play.",
-    images: ["/logo/social-preview.png"],
+    images: ["/logo/social-preview.webp"],
   },
 }
 

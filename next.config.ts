@@ -26,8 +26,6 @@ const nextConfig: NextConfig = {
       { source: "/privacy-policy", destination: "/privacy", permanent: true },
       { source: "/terms-of-service", destination: "/terms", permanent: true },
       { source: "/refund-policy", destination: "/terms", permanent: true },
-      { source: "/reset-password", destination: "/login", permanent: true },
-      { source: "/verify-email", destination: "/login", permanent: true },
       { source: "/signup", destination: "/register", permanent: true },
 
       // Battle

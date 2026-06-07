@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { hashPassword, generateToken } from "@/lib/auth"
 import { db, isoNow } from "@/lib/db"
+import crypto from "crypto"
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,14 +24,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Email already registered" }, { status: 409 })
     }
 
-    // Create user
+    // Create user with email verification token
     const passwordHash = await hashPassword(password)
+    const emailVerifyToken = crypto.randomBytes(24).toString('hex')
+    const emailVerifyExpires = new Date(Date.now() + 86400000) // 24 hours
     const user = await db.user.create({
       data: {
         email: email.toLowerCase().trim(),
         passwordHash,
         name: name.trim(),
         displayName: name.trim(),
+        emailVerifyToken,
+        emailVerifyExpires,
       },
     })
 

@@ -20,6 +20,9 @@
   <!-- Auth -->
   <url><loc>https://medaclawarena.com/login</loc><lastmod>2026-06-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://medaclawarena.com/register</loc><lastmod>2026-06-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://medaclawarena.com/forgot-password</loc><lastmod>2026-06-07</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://medaclawarena.com/reset-password</loc><lastmod>2026-06-07</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://medaclawarena.com/verify-email</loc><lastmod>2026-06-07</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>
 
   <!-- Legal -->
   <url><loc>https://medaclawarena.com/terms</loc><lastmod>2026-06-07</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>

@@ -172,79 +172,6 @@ function SectionCard({ step, color, title, children, bgColor }: {
 
 // ── Preview Slider (home page) ──
 
-const PREVIEW_SLIDES = [
-  {
-    icon: Disc3, label: "Tazo Collection",
-    desc: "Browse all 349 tazos with search, filters & flip view. Track your album progress.",
-    color: "#00A1E9", bg: "#E8F4FD",
-  },
-  {
-    icon: Swords, label: "3D Battle Arena",
-    desc: "Aim, throw & flip in skill-based combat. Practice vs CPU or challenge friends.",
-    color: "#E3350D", bg: "#FDE8E8",
-  },
-  {
-    icon: ShoppingBag, label: "Open Tazo Bags",
-    desc: "Claim daily bonuses & tear open classic bags. Rare holos & mastertazos await.",
-    color: "#FFCC00", bg: "#FFF9E6",
-  },
-  {
-    icon: BarChart3, label: "Leaderboards",
-    desc: "Compete globally. Rise through the ranks with battle wins & collection score.",
-    color: "#22C55E", bg: "#E8FDE8",
-  },
-  {
-    icon: BookOpen, label: "Deck Builder",
-    desc: "Build custom 20-tazo decks. Pick 5 starters & fine-tune your battle strategy.",
-    color: "#A855F7", bg: "#F3E8FD",
-  },
-  {
-    icon: Dices, label: "Quests & Progress",
-    desc: "Complete daily quests, unlock achievements & level up your collector rank.",
-    color: "#F59E0B", bg: "#FEF9E8",
-  },
-]
-
-function PreviewSlider() {
-  const [active, setActive] = useState(0)
-  const timerRef = useRef<NodeJS.Timeout | null>(null)
-  const next = useCallback(() => setActive(p => (p + 1) % PREVIEW_SLIDES.length), [])
-  const prev = useCallback(() => setActive(p => (p - 1 + PREVIEW_SLIDES.length) % PREVIEW_SLIDES.length), [])
-  useEffect(() => { timerRef.current = setInterval(next, 4000); return () => { if (timerRef.current) clearInterval(timerRef.current) } }, [next])
-  const slide = PREVIEW_SLIDES[active]; const Icon = slide.icon
-  return (
-    <div className="w-full max-w-[340px] sm:max-w-[420px] lg:max-w-[380px]">
-      <div className="relative border-3 border-[#1a1a1a] overflow-hidden transition-all duration-400"
-        style={{ background: slide.bg, boxShadow: "4px 4px 0 #1a1a1a" }}>
-        <div className="h-1.5" style={{ background: slide.color }} />
-        <div className="flex items-start gap-3 p-3 sm:p-4">
-          <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center border-2 border-[#1a1a1a] bg-white"
-            style={{ boxShadow: "2px 2px 0 #1a1a1a" }}>
-            <Icon className="w-6 h-6 sm:w-7 sm:h-7" style={{ color: slide.color }} />
-          </div>
-          <div className="min-w-0 flex-1">
-            <h3 className="text-xs sm:text-sm font-black text-[#1a1a1a] uppercase tracking-wider leading-tight">{slide.label}</h3>
-            <p className="mt-0.5 text-[10px] sm:text-[11px] font-bold text-[#1a1a1a]/55 leading-relaxed">{slide.desc}</p>
-          </div>
-        </div>
-      </div>
-      <div className="flex items-center justify-between mt-2">
-        <button onClick={prev} className="flex items-center justify-center w-7 h-7 border-2 border-[#1a1a1a] bg-white hover:bg-[#FFF9E6] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
-          style={{ boxShadow: "2px 2px 0 #1a1a1a" }}><ChevronLeft className="w-3.5 h-3.5 text-[#1a1a1a]" /></button>
-        <div className="flex items-center gap-1.5">
-          {PREVIEW_SLIDES.map((_, i) => (
-            <button key={i} onClick={() => setActive(i)} className="transition-all duration-300 rounded-full"
-              style={{ width: i === active ? "18px" : "6px", height: "6px", background: i === active ? "#1a1a1a" : "#1a1a1a20", borderRadius: "3px" }} />
-          ))}
-        </div>
-        <button onClick={next} className="flex items-center justify-center w-7 h-7 border-2 border-[#1a1a1a] bg-white hover:bg-[#FFF9E6] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
-          style={{ boxShadow: "2px 2px 0 #1a1a1a" }}><ChevronRight className="w-3.5 h-3.5 text-[#1a1a1a]" /></button>
-      </div>
-      <p className="mt-1 text-center text-[8px] font-black text-[#1a1a1a]/25 uppercase tracking-[0.3em]">{active + 1} / {PREVIEW_SLIDES.length}</p>
-    </div>
-  )
-}
-
 // ══════════════════════════════════════════════════════════
 // PAGE CONTENT COMPONENTS
 // ══════════════════════════════════════════════════════════
@@ -300,91 +227,85 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
   const [hoverPlay, setHoverPlay] = useState(false)
   const [pressPlay, setPressPlay] = useState(false)
   return (
-    <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-10 py-8 sm:py-10 lg:py-0">
-      {/* LEFT */}
-      <div className="flex flex-col items-center lg:items-start gap-4 sm:gap-5">
-        <div className="relative">
-          <div className="absolute -inset-6 sm:-inset-8 pointer-events-none">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="absolute w-0.5 sm:w-1 bg-[#E3350D]/20"
-                style={{ height: `${20 + Math.random() * 30}%`, left: "50%", top: "50%",
-                  transform: `translate(-50%, -50%) rotate(${i * 45}deg) translateY(-60%)` }} />
-            ))}
-          </div>
-          <div className="absolute -inset-3 rounded-full border-[3px] border-[#FFCC00] pointer-events-none" />
-          <div className="absolute -inset-[18px] rounded-full border-2 border-[#1a1a1a]/10 pointer-events-none" />
+    <div className="max-w-5xl mx-auto w-full flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8 px-2 py-4 sm:py-6 lg:py-2">
+      {/* LEFT — Branding + Stats */}
+      <div className="flex flex-col items-center lg:items-start gap-3 sm:gap-4 flex-shrink-0">
+        {/* Logo + Tagline row */}
+        <div className="flex items-center gap-3 sm:gap-4">
           <img src="/logo/logo-icon-black.webp" alt="TTG"
-            className="w-18 h-18 sm:w-24 sm:h-24 lg:w-20 lg:h-20"
-            style={{ filter: "drop-shadow(4px 4px 0 rgba(26,26,26,0.3))" }} />
+            className="w-14 h-14 sm:w-16 sm:h-16"
+            style={{ filter: "drop-shadow(3px 3px 0 rgba(26,26,26,0.25))" }} />
+          <div>
+            <h1 className="text-base sm:text-lg lg:text-xl font-black text-[#1a1a1a] uppercase tracking-[0.05em] leading-tight">
+              <span className="text-[#E3350D]">Trading</span>{" "}
+              <span className="text-[#FFCC00]">Tazos</span>{" "}
+              <span className="text-[#00A1E9]">Game</span>
+            </h1>
+            <p className="text-[9px] sm:text-[10px] font-bold text-[#1a1a1a]/35 uppercase tracking-[0.15em]">
+              Collect · Trade · Battle
+            </p>
+          </div>
         </div>
-        <div className="text-center lg:text-left">
-          <h2 className="text-sm sm:text-base lg:text-lg font-black text-[#1a1a1a] uppercase tracking-[0.08em] leading-tight">
-            <span className="text-[#E3350D]">Collect</span> · <span className="text-[#FFCC00]">Trade</span> · <span className="text-[#00A1E9]">Battle</span>
-          </h2>
-          <p className="mt-0.5 text-[10px] font-bold text-[#1a1a1a]/40 uppercase tracking-[0.2em]">The classic tazo arena</p>
-        </div>
-        <PreviewSlider />
-        <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
+
+        {/* Stat badges */}
+        <div className="flex items-center gap-2">
           <StatBadge number="349" label="Tazos" color="#FFCC00" />
-          <StatBadge number="3" label="Worlds" color="#E3350D" />
+          <StatBadge number="3" label="Series" color="#E3350D" />
           <StatBadge number="9" label="Stats" color="#00A1E9" />
-          <StatBadge number="5" label="Cards" color="#22C55E" />
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[9px] font-black text-white uppercase"
-            style={{ background: "#E3350D", clipPath: "polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%)" }}>
-            <Zap className="w-2.5 h-2.5 fill-white" /> NEW!
-          </span>
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[9px] font-black text-[#1a1a1a] uppercase border-2 border-[#FFCC00]"
-            style={{ background: "#FFCC00" }}>
-            <Star className="w-2.5 h-2.5 fill-[#1a1a1a]" /> FREE TO PLAY
+          <span className="inline-flex items-center gap-1 px-2 py-1 text-[9px] font-black text-[#1a1a1a] uppercase border-2 border-[#1a1a1a]"
+            style={{ background: "#22C55E", color: "#fff" }}>
+            FREE
           </span>
         </div>
       </div>
 
-      {/* RIGHT — Play Button */}
-      <div className="flex flex-col items-center gap-5 sm:gap-6">
+      {/* RIGHT — Play Button + Feature cards */}
+      <div className="flex flex-col items-center gap-3 sm:gap-4">
         <button onClick={onPlay}
           onMouseEnter={() => setHoverPlay(true)} onMouseLeave={() => { setHoverPlay(false); setPressPlay(false) }}
           onMouseDown={() => setPressPlay(true)} onMouseUp={() => setPressPlay(false)}
           onTouchStart={() => setPressPlay(true)} onTouchEnd={() => setPressPlay(false)}
           className="group relative select-none"
-          style={{ transform: pressPlay ? "translate(2px, 2px)" : hoverPlay ? "translate(-2px, -2px)" : "translate(0, 0)", transition: "transform 0.15s ease" }}>
-          <div className="absolute inset-0 translate-x-2 translate-y-2" style={{ background: "#1a1a1a" }} />
-          <div className="relative px-10 sm:px-14 md:px-20 py-3.5 sm:py-4 md:py-5 border-[4px] border-[#1a1a1a] overflow-hidden"
+          style={{ transform: pressPlay ? "translate(3px, 3px)" : hoverPlay ? "translate(-2px, -2px)" : "translate(0, 0)", transition: "transform 0.15s ease" }}>
+          <div className="absolute inset-0 translate-x-2 translate-y-2 rounded" style={{ background: "#1a1a1a" }} />
+          <div className="relative px-14 sm:px-16 md:px-20 py-3 sm:py-3.5 border-3 border-[#1a1a1a] rounded overflow-hidden"
             style={{
-              background: (hoverPlay || pressPlay) ? "linear-gradient(180deg, #FFE566 0%, #FFCC00 50%, #F5B800 100%)" : "linear-gradient(180deg, #FFCC00 0%, #F0A800 100%)",
-              boxShadow: (hoverPlay || pressPlay) ? "inset 0 -4px 0 rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.3)" : "inset 0 -3px 0 rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.25)",
+              background: (hoverPlay || pressPlay)
+                ? "linear-gradient(180deg, #FFE566 0%, #FFCC00 50%, #F5B800 100%)"
+                : "linear-gradient(180deg, #FFCC00 0%, #F0A800 100%)",
+              boxShadow: (hoverPlay || pressPlay)
+                ? "inset 0 -4px 0 rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.3)"
+                : "inset 0 -3px 0 rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.25)",
             }}>
-            <div className={`absolute right-0 top-1/2 -translate-y-1/2 flex flex-col gap-0.5 transition-opacity duration-200 ${hoverPlay ? "opacity-100" : "opacity-0"}`}>
-              {[...Array(4)].map((_, i) => (<div key={i} className="w-3 h-0.5 bg-[#1a1a1a]/40" style={{ marginRight: `${-(i * 4)}px`, width: `${12 + i * 6}px` }} />))}
-            </div>
-            <span className="relative text-lg sm:text-xl md:text-2xl font-black text-[#1a1a1a] uppercase tracking-[0.15em] whitespace-nowrap">Play Now</span>
+            <span className="relative text-base sm:text-lg md:text-xl font-black text-[#1a1a1a] uppercase tracking-[0.12em] whitespace-nowrap">
+              Play Now ⚡
+            </span>
             <div className="mag-halftone absolute inset-0 opacity-20 pointer-events-none" />
           </div>
         </button>
-        <p className="text-[10px] font-black text-[#1a1a1a]/40 uppercase tracking-wider text-center">
-          {user ? "Ready for battle?" : "Create a free account to start playing!"}
+
+        <p className="text-[9px] sm:text-[10px] font-black text-[#1a1a1a]/30 uppercase tracking-wider text-center">
+          {user ? "Ready — jump into battle!" : "No download · No signup needed"}
         </p>
-        <div className="grid grid-cols-2 gap-3 w-full max-w-sm">
+
+        {/* Feature cards — 2×2 grid */}
+        <div className="grid grid-cols-2 gap-2 w-full max-w-xs lg:max-w-sm">
           {[
-            { icon: PackageOpen, label: "Open Bags", desc: "349 tazos to collect", color: "#FFCC00" },
-            { icon: Swords, label: "Practice Mode", desc: "No account needed!", color: "#E3350D" },
-            { icon: Disc3, label: "349 Tazos", desc: "Collect them all!", color: "#00A1E9" },
-            { icon: Medal, label: "Leaderboard", desc: "See top players", color: "#22C55E" },
+            { icon: PackageOpen, label: "Open Bags", desc: "349 tazos", color: "#FFCC00" },
+            { icon: Swords, label: "Practice", desc: "AI battles", color: "#E3350D" },
+            { icon: Disc3, label: "Collect", desc: "All series", color: "#00A1E9" },
+            { icon: Medal, label: "Ranked", desc: "Leaderboard", color: "#22C55E" },
           ].map(({ icon: Icon, label, desc, color }) => (
             <div key={label}
-              className="group flex items-start gap-2 p-2.5 border-2 border-[#1a1a1a] bg-white hover:bg-[#FFF9E6] transition-colors cursor-pointer"
-              style={{ boxShadow: "3px 3px 0 #1a1a1a" }}
-              onMouseEnter={e => (e.currentTarget.style.transform = "translate(-1px, -1px)")}
-              onMouseLeave={e => (e.currentTarget.style.transform = "translate(0, 0)")}
+              className="flex items-center gap-2 p-2 sm:p-2.5 border-2 border-[#1a1a1a]/15 bg-white/80 hover:bg-white hover:border-[#FFCC00] transition-colors cursor-default"
+              style={{ boxShadow: "2px 2px 0 #1a1a1a10" }}
             >
-              <div className="flex-shrink-0 w-7 h-7 flex items-center justify-center border-2 border-[#1a1a1a]" style={{ backgroundColor: `${color}30` }}>
-                <Icon className="w-3.5 h-3.5 text-[#1a1a1a]" />
+              <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center border-2 border-[#1a1a1a]/20 rounded" style={{ backgroundColor: `${color}20` }}>
+                <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" style={{ color }} />
               </div>
               <div className="min-w-0">
-                <p className="text-[10px] font-black text-[#1a1a1a] uppercase tracking-wider leading-none">{label}</p>
-                <p className="text-[8px] font-bold text-[#1a1a1a]/50 uppercase mt-0.5">{desc}</p>
+                <p className="text-[10px] sm:text-[11px] font-black text-[#1a1a1a] uppercase leading-none">{label}</p>
+                <p className="text-[8px] font-bold text-[#1a1a1a]/35 uppercase mt-0.5">{desc}</p>
               </div>
             </div>
           ))}
@@ -1093,7 +1014,7 @@ export default function LauncherView() {
           <div className={`${isHome ? "space-y-8" : "pb-8"}`}>
             {currentPage === "home" && (
               <>
-                <div className="flex-1 flex items-center justify-center"><HomeHero user={user} onPlay={handlePlay} /></div>
+                <HomeHero user={user} onPlay={handlePlay} />
                 <TazoShowcase />
               </>
             )}

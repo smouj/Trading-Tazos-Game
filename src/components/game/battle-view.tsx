@@ -583,6 +583,16 @@ export default function BattleView() {
 
           {/* Phase status — prominent center indicator */}
           <div className="text-center mt-1">
+            {phase === "intro" && (
+              <div className="inline-block px-8 py-2 bg-[#FFCC00]/15 rounded-full border-2 border-[#FFCC00]/50 animate-pulse">
+                <span className="text-[16px] font-black text-[#FFCC00] tracking-[0.3em]">GET READY!</span>
+              </div>
+            )}
+            {phase === "round_start" && (
+              <span className="text-[9px] font-black text-white/30 bg-black/50 px-3 py-0.5 rounded-full">
+                Placing stakes...
+              </span>
+            )}
             {phase === "player_aim" && (
               <div className="inline-block px-4 py-1 bg-black/60 rounded-full border border-[#FFCC00]/40">
                 <span className="text-[11px] font-black text-[#FFCC00] tracking-wider">🎯 AIM YOUR SHOT</span>

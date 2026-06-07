@@ -699,6 +699,7 @@ export default function BattleView() {
               onReticleMove={(x, z) => { setReticleX(x); setReticleZ(z) }}
               onCharge={(level) => setCharge(level)}
               onChargeComplete={(level) => {
+                if (busy.current || slamPhase !== "charge") return
                 setSlamPhase("tilt")
                 setCharge(level)
                 setPhase("player_tilt")
@@ -710,12 +711,17 @@ export default function BattleView() {
               onSpin={(intensity) => setSpinIntensity(intensity)}
               onRelease={() => {
                 if (slamPhase === "aim") {
-                  // Start charging
                   setSlamPhase("charge")
                   setPhase("player_charge")
                   return
                 }
-                // Release the slam
+                if (slamPhase === "charge") {
+                  // User released early — skip tilt, go directly to slam
+                  // Clean interval via effect cleanup
+                  handleSlamRelease()
+                  return
+                }
+                // Tilt phase — release the slam
                 handleSlamRelease()
               }}
               onBack={back}

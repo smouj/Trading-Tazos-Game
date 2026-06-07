@@ -1,18 +1,8 @@
 // ============================================================
 // Trading Tazos Game — Contact Page
 // ============================================================
-import { Metadata } from "next"
 import PublicPageShell from "@/components/layout/public-page-shell"
 import { Mail, Github, MessageCircle, Shield, Bug, HelpCircle } from "lucide-react"
-
-export const metadata: Metadata = {
-  title: "Contact — Support & Inquiries | Trading Tazos Game",
-  description: "Get in touch with the Trading Tazos Game team. Support, bug reports, privacy inquiries, and content removal requests. We respond within 48 hours.",
-  openGraph: {
-    title: "Contact — Trading Tazos Game",
-    description: "Support, bug reports, and privacy inquiries for Trading Tazos Game",
-  },
-}
 
 const CONTACT_CHANNELS = [
   {

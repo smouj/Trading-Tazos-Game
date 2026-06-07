@@ -6,7 +6,7 @@ Disallow: /admin
 
 Sitemap: https://medaclawarena.com/sitemap.xml
 
-# AI crawlers — allowed for discovery
+# AI crawlers — allowed for discovery & indexing
 User-agent: GPTBot
 Allow: /
 
@@ -19,9 +19,28 @@ Allow: /
 User-agent: PerplexityBot
 Allow: /
 
+User-agent: Google-Extended
+Allow: /
+
 # Social media crawlers
 User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Discordbot
+Allow: /
+
+User-agent: TelegramBot
+Allow: /
+
+# Search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
 Allow: /

@@ -67,8 +67,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    site: "@medaclawarena",
-    creator: "@medaclawarena",
+    site: "@medaclaw",
+    creator: "@medaclaw",
     title: `${SITE_NAME} — Collect, Trade & Battle Your Tazos`,
     description: "319 classic tazos, 3 collections, 9 combat stats, 2D collection views, and a skill-based 3D battle arena.",
     images: [`${SITE_URL}/logo/social-preview.png`],
@@ -104,6 +104,12 @@ export default function RootLayout({
                 "name": "Trading Tazos Game",
                 "url": SITE_URL,
                 "email": "support@medaclawarena.com",
+                "sameAs": [
+                  "https://x.com/medaclaw",
+                  "https://www.reddit.com/r/MedaclawArena/",
+                  "https://t.me/tradingtazosgame",
+                  "https://github.com/smouj/Trading-Tazos-Game"
+                ]
               },
               "genre": ["Collectible", "Battle", "Physics", "Multiplayer", "Nostalgia"],
               "numberOfPlayers": { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 2 },
@@ -113,6 +119,8 @@ export default function RootLayout({
           }}
         />
         <meta name="theme-color" content="#FFCC00" />
+        <meta name="geo.region" content="ES" />
+        <meta name="geo.placename" content="Spain" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

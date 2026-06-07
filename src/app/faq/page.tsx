@@ -1,6 +1,21 @@
 import PublicPageShell from "@/components/layout/public-page-shell"
 import Link from "next/link"
 
+const FAQ_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What is Trading Tazos Game?", "acceptedAnswer": { "@type": "Answer", "text": "Trading Tazos Game is a browser-based skill game where you collect and battle with digital tazos. Open bags to discover 319 unique tazos across 3 franchises — Minimon, Dracobell, and Cybermon. Build decks of 5, then enter the 3D arena where aim, power, and spin determine victory." } },
+    { "@type": "Question", "name": "Is it free to play?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, completely free. You start with 10 free bags and earn credits by battling, completing quests, and daily logins — no credit card required." } },
+    { "@type": "Question", "name": "How do I get started?", "acceptedAnswer": { "@type": "Answer", "text": "Create a free account, open your 10 welcome bags in the Shop to discover your first tazos, build a deck of 5, and head to the Battle Arena to fight AI opponents." } },
+    { "@type": "Question", "name": "How does the battle system work?", "acceptedAnswer": { "@type": "Answer", "text": "Each turn you aim a crosshair on the 3D arena, charge your throw power with timing-based precision, and select a spin type (topspin, backspin, sidespin, or none). Your tazo slides across the arena — hit opponent tazos hard enough and they flip, capturing them. Win by capturing all opponent tazos or depleting their HP." } },
+    { "@type": "Question", "name": "What are the combat stats?", "acceptedAnswer": { "@type": "Answer", "text": "Each tazo has 9 stats: Attack, Defense, Resistance, Weight, Stability, Spin, Control, Bounce, and Precision. Stats determine throw accuracy, flip power, bounce behavior, and ring-out resistance. Building a balanced deck with complementary stats is key to winning." } },
+    { "@type": "Question", "name": "Can I play on mobile?", "acceptedAnswer": { "@type": "Answer", "text": "Yes! Trading Tazos Game is a PWA. Visit medaclawarena.com on your phone, install it to your home screen, and play full-screen. Desktop versions are also available on Windows, macOS, and Linux." } },
+    { "@type": "Question", "name": "Can I play against friends?", "acceptedAnswer": { "@type": "Answer", "text": "Friend battles support WebSocket room codes for matchmaking. Practice AI battles are the fully playable mode today; turn-by-turn PvP sync is being rolled out in stages." } },
+    { "@type": "Question", "name": "Is there a desktop app?", "acceptedAnswer": { "@type": "Answer", "text": "Yes — native desktop apps for Windows (.exe), macOS (.dmg, Intel and Apple Silicon), and Linux (.AppImage and .deb). Download from the Downloads page or GitHub Releases." } },
+  ],
+}
+
 const faqs = [
   {
     q: "What is Trading Tazos Game?",
@@ -51,6 +66,10 @@ const faqs = [
 export default function FAQPage() {
   return (
     <PublicPageShell>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_SCHEMA) }}
+      />
       <div className="max-w-3xl mx-auto px-4 py-12 sm:py-16">
         <h1 className="text-3xl sm:text-4xl font-black uppercase text-[#1a1a1a] mb-4">FAQ</h1>
         <p className="text-lg font-bold text-[#1a1a1a]/60 mb-10">Frequently asked questions about Trading Tazos Game.</p>

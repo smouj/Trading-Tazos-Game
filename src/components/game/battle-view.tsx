@@ -352,7 +352,15 @@ export default function BattleView() {
     }
   }, [allDecks, allTazos])
 
-  // ── Start match ──
+  // Update airborne tazo position to follow reticle during aim/charge
+  useEffect(() => {
+    if (!airborne || !(phase === "player_aim" || phase === "player_charge" || phase === "player_tilt")) return
+    const arena = cfg?.arena || DEFAULT_ARENA_3D
+    const h = phase === "player_aim" ? arena.maxLaunchHeight * 0.5
+           : phase === "player_charge" ? arena.maxLaunchHeight * (0.4 + charge * 0.6)
+           : arena.maxLaunchHeight * (0.6 + charge * 0.4)
+    setAirborne(prev => prev ? { ...prev, position: [reticleX * 0.3, h, reticleZ * 0.3] } : prev)
+  }, [reticleX, reticleZ, charge, phase])
   const start = useCallback((mode: PlayMode, diff: AIDifficulty, d: TazoCard[]) => {
     setDeck(d)
     const opp = [...DEMO_TAZOS].sort(() => Math.random() - 0.5).slice(0, 5)
@@ -584,6 +592,7 @@ export default function BattleView() {
             {phase === "player_charge" && (
               <div className="inline-block px-4 py-1 bg-black/60 rounded-full border border-[#FF8800]/40 animate-pulse">
                 <span className="text-[11px] font-black text-[#FF8800] tracking-wider">⚡ CHARGING — {Math.round(charge * 100)}%</span>
+                <span className="text-[8px] font-black text-white/30 ml-2">{throwing?.name}</span>
               </div>
             )}
             {phase === "player_tilt" && (
@@ -624,7 +633,7 @@ export default function BattleView() {
         </div>
 
         {/* ── Slam controls overlay bottom ── */}
-        <div className="absolute bottom-0 left-0 right-0">
+        <div className="absolute bottom-0 left-0 right-0 z-10">
           {isAiming && throwing ? (
             <SlamControls
               phase={slamPhase}

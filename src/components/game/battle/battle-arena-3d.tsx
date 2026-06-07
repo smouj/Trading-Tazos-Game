@@ -293,7 +293,26 @@ function AirborneTazoMesh({
     }
   })
 
-  if (airborne.state === "idle") return null
+  if (airborne.state === "idle") {
+    // Show tazo floating but without effects — it's on the bench waiting
+    return (
+      <group ref={groupRef} position={airborne.position}>
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.03, 0]}>
+          <ringGeometry args={[0.3, 0.33, 32]} />
+          <meshBasicMaterial color={isPlayer ? "#29ADFF" : "#FF004D"} transparent opacity={0.15} side={THREE.DoubleSide} depthWrite={false} />
+        </mesh>
+        <TazoDisc3D
+          name={airborne.tazoName}
+          franchise={airborne.franchise}
+          imageUrl={airborne.imageUrl}
+          backImageUrl={airborne.backImageUrl}
+          finish={airborne.finish}
+          size={0.38}
+          autoRotate={true}
+        />
+      </group>
+    )
+  }
 
   return (
     <group ref={groupRef} position={airborne.position}>

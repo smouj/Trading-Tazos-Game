@@ -1,15 +1,21 @@
 // ============================================================
-// Trading Tazos Game — Slam Controls v5: Floating Minimal
-// Overlay controls. User can release at any charge level.
+// Trading Tazos Game — Slam Controls v6: Auto-Aim Reticle
+//
+// AIM phase: reticle auto-moves based on tazo stats (control & precision).
+// High CONTROL = slow, rhythmic sweep. Low CONTROL = fast, erratic.
+// High PRECISION = minimal jitter. Low PRECISION = twitchy wobble.
+// User clicks to LOCK aim, then flows into CHARGE → TILT → SLAM.
 // ============================================================
 "use client"
 
-import { useCallback, useRef, useEffect } from "react"
-import { Crosshair, Zap } from "lucide-react"
+import { useCallback, useRef, useEffect, useState } from "react"
+import { Crosshair, Zap, Lock } from "lucide-react"
 
 export interface SlamControlsProps {
   phase: "aim" | "charge" | "tilt"
   tazoName: string; tazoFranchise: string
+  tazoControl: number     // 0-100, higher = slower/easier reticle movement
+  tazoPrecision: number   // 0-100, higher = less jitter
   reticleX: number; reticleZ: number
   charge: number
   tiltDeg: number; spinIntensity: number
@@ -23,14 +29,69 @@ export interface SlamControlsProps {
 }
 
 export default function SlamControls(props: SlamControlsProps) {
-  const { phase, tazoName, reticleX, reticleZ, charge, tiltDeg, spinIntensity,
+  const { phase, tazoName, tazoControl, tazoPrecision, reticleX, reticleZ,
+    charge, tiltDeg, spinIntensity,
     onReticleMove, onCharge, onChargeComplete, onTilt, onSpin, onRelease, onBack } = props
 
   const chargeInt = useRef<ReturnType<typeof setInterval> | null>(null)
   const cbRef = useRef({ onCharge, onChargeComplete })
   cbRef.current = { onCharge, onChargeComplete }
 
-  // Auto-fill charge meter when entering charge phase
+  // ─── Auto-moving reticle animation (AIM phase) ───
+  // Uses requestAnimationFrame for 60fps smooth movement.
+  // Orbit is an ellipse centered on the arena, sweeping past the two staked tazos.
+  const rafRef = useRef<number | null>(null)
+  const startTimeRef = useRef<number>(0)
+  const [aimLocked, setAimLocked] = useState(false)
+
+  useEffect(() => {
+    if (phase !== "aim") {
+      if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null }
+      return
+    }
+
+    // Stats → movement params
+    // control: 100 = glacial (0.18 rad/s), 0 = wild (1.2 rad/s)
+    const omega = 1.2 - (tazoControl / 100) * 1.02
+    // precision: 100 = zero jitter, 0 = ±0.2 jitter
+    const jitterAmp = ((100 - tazoPrecision) / 100) * 0.18
+    const orbitX = 0.65  // ellipse semi-major axis (passes near staked tazos at ±0.55)
+    const orbitZ = 0.28  // ellipse semi-minor axis
+    let noisePhase = Math.random() * Math.PI * 2
+
+    startTimeRef.current = performance.now()
+
+    const tick = (now: number) => {
+      const elapsed = (now - startTimeRef.current) / 1000  // seconds
+      const angle = omega * elapsed
+
+      // Primary elliptical orbit
+      let x = orbitX * Math.cos(angle)
+      let z = orbitZ * Math.sin(angle)
+
+      // Jitter (precision-based pseudo-noise)
+      if (jitterAmp > 0.001) {
+        x += jitterAmp * Math.sin(elapsed * 7.3 + noisePhase)
+        z += jitterAmp * Math.cos(elapsed * 5.7 + noisePhase * 1.3)
+        x += jitterAmp * 0.6 * Math.cos(elapsed * 11.1 + noisePhase * 2.1)
+        z += jitterAmp * 0.6 * Math.sin(elapsed * 8.9 + noisePhase * 0.7)
+      }
+
+      // Clamp to valid range (-1 to 1)
+      x = Math.max(-1, Math.min(1, x))
+      z = Math.max(-1, Math.min(1, z))
+
+      if (!aimLocked) {
+        onReticleMove(x, z)
+      }
+      rafRef.current = requestAnimationFrame(tick)
+    }
+
+    rafRef.current = requestAnimationFrame(tick)
+    return () => { if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null } }
+  }, [phase, tazoControl, tazoPrecision, aimLocked, onReticleMove])
+
+  // Auto-fill charge meter
   useEffect(() => {
     if (phase === "charge") {
       let level = 0
@@ -52,12 +113,6 @@ export default function SlamControls(props: SlamControlsProps) {
 
   useEffect(() => { return () => { if (chargeInt.current) clearInterval(chargeInt.current) } }, [])
 
-  const padMove = useCallback((cx: number, cy: number, rect: DOMRect) => {
-    const x = Math.max(0, Math.min(1, (cx - rect.left) / rect.width))
-    const y = Math.max(0, Math.min(1, (cy - rect.top) / rect.height))
-    onReticleMove((x - 0.5) * 2, -(y - 0.5) * 2)
-  }, [onReticleMove])
-
   const tiltDrag = useCallback((cx: number, cy: number, rect: DOMRect) => {
     const mx = rect.left + rect.width / 2; const my = rect.top + rect.height / 2
     const dx = cx - mx; const dy = cy - my
@@ -68,48 +123,122 @@ export default function SlamControls(props: SlamControlsProps) {
   const isOver = charge > 0.82
   const barColor = isOver ? "#FF004D" : isPerfect ? "#22C55E" : charge > 0.25 ? "#FFCC00" : "#FFCC0060"
 
-  // ═══════ AIM — transparent reticle pad over arena ═══════
-  if (phase === "aim") return (
-    <>
-      <div className="absolute inset-0 z-20 pointer-events-none flex flex-col">
-        <div className="flex-1 flex items-center justify-center p-8 pb-32">
-          <div
-            className="relative w-full max-w-[340px] aspect-square bg-black/25 rounded-3xl border border-white/10 backdrop-blur-[2px] overflow-hidden cursor-crosshair pointer-events-auto"
-            onMouseMove={(e) => padMove(e.clientX, e.clientY, e.currentTarget.getBoundingClientRect())}
-            onClick={(e) => padMove(e.clientX, e.clientY, e.currentTarget.getBoundingClientRect())}
-            onTouchStart={(e) => { e.preventDefault(); const t = e.touches[0]; padMove(t.clientX, t.clientY, e.currentTarget.getBoundingClientRect()) }}
-            onTouchMove={(e) => { e.preventDefault(); padMove(e.touches[0].clientX, e.touches[0].clientY, e.currentTarget.getBoundingClientRect()) }}
-          >
-            <div className="absolute inset-4 flex items-center justify-center pointer-events-none">
-              <div className="border border-white/8 rounded-full w-full h-full" />
-              <div className="absolute border border-white/5 rounded-full w-[70%] h-[70%]" />
-              <div className="absolute border border-white/4 rounded-full w-[40%] h-[40%]" />
-              <div className="absolute w-2 h-2 rounded-full bg-white/15" />
-            </div>
-            <div className="absolute top-1/2 left-[30%] -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 border-[#29ADFF]/30 bg-[#29ADFF]/8 pointer-events-none" />
-            <div className="absolute top-1/2 left-[70%] -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 border-[#FF004D]/30 bg-[#FF004D]/8 pointer-events-none" />
-            <div className="absolute w-10 h-10 -ml-5 -mt-5 pointer-events-none"
-              style={{ left: `${((reticleX + 1) / 2) * 100}%`, top: `${((-reticleZ + 1) / 2) * 100}%` }}>
-              <Crosshair className="w-full h-full text-[#FFCC00] drop-shadow-[0_0_10px_rgba(255,204,0,0.8)]" strokeWidth={1.5} />
+  // ═════════════════════════════════════
+  // AIM — auto-moving reticle
+  // ═════════════════════════════════════
+  if (phase === "aim") {
+    const ctrlLabel = tazoControl >= 70 ? "Smooth" : tazoControl >= 40 ? "Normal" : "Wild"
+    const ctrlColor = tazoControl >= 70 ? "#22C55E" : tazoControl >= 40 ? "#FFCC00" : "#FF8800"
+    const precLabel = tazoPrecision >= 70 ? "Steady" : tazoPrecision >= 40 ? "Okay" : "Shaky"
+    const precColor = tazoPrecision >= 70 ? "#22C55E" : tazoPrecision >= 40 ? "#FFCC00" : "#FF8800"
+
+    return (
+      <>
+        {/* Reticle pad — full-screen transparent */}
+        <div className="absolute inset-0 z-20 pointer-events-none flex flex-col">
+          <div className="flex-1 flex items-center justify-center p-8 pb-32">
+            <div className="relative w-full max-w-[340px] aspect-square bg-black/25 rounded-3xl border border-white/10 backdrop-blur-[2px] overflow-hidden pointer-events-none">
+              {/* Concentric reference rings */}
+              <div className="absolute inset-4 flex items-center justify-center">
+                <div className="border border-white/8 rounded-full w-full h-full" />
+                <div className="absolute border border-white/5 rounded-full w-[70%] h-[70%]" />
+                <div className="absolute border border-white/4 rounded-full w-[40%] h-[40%]" />
+              </div>
+
+              {/* Stake position indicators */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                {/* Left stake zone (player's, blue) */}
+                <div className="absolute top-1/2 -translate-y-1/2 left-[22%] w-8 h-8 rounded-full border-2 border-[#29ADFF]/30 bg-[#29ADFF]/5"
+                  style={{ transform: "translate(-50%, -50%)" }}>
+                  <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[7px] font-black text-[#29ADFF]/40">MY STAKE</span>
+                </div>
+                {/* Right stake zone (AI's, red) */}
+                <div className="absolute top-1/2 -translate-y-1/2 right-[22%] w-8 h-8 rounded-full border-2 border-[#FF004D]/30 bg-[#FF004D]/5"
+                  style={{ transform: "translate(50%, -50%)" }}>
+                  <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[7px] font-black text-[#FF004D]/40">RIVAL</span>
+                </div>
+              </div>
+
+              {/* Auto-moving crosshair */}
+              <div className="absolute w-10 h-10 -ml-5 -mt-5 transition-none pointer-events-none"
+                style={{ left: `${((reticleX + 1) / 2) * 100}%`, top: `${(((-reticleZ) + 1) / 2) * 100}%` }}>
+                <Crosshair
+                  className={`w-full h-full text-[#FFCC00] ${aimLocked ? "scale-125" : ""}`}
+                  style={{
+                    filter: aimLocked
+                      ? "drop-shadow(0 0 18px rgba(255,204,0,1)) drop-shadow(0 0 4px rgba(255,204,0,0.5))"
+                      : "drop-shadow(0 0 10px rgba(255,204,0,0.8))",
+                    transition: aimLocked ? "filter 0.2s, transform 0.2s" : "none",
+                  }}
+                  strokeWidth={1.5}
+                />
+              </div>
+
+              {/* Orbit trail hint — faint ellipse where reticle moves */}
+              <svg className="absolute inset-0 pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                <ellipse
+                  cx="50" cy="50"
+                  rx={0.65 * 50 * 1.18} ry={0.28 * 50 * 1.18}
+                  fill="none"
+                  stroke="#FFCC00"
+                  strokeWidth="0.2"
+                  strokeDasharray="2 3"
+                  opacity="0.15"
+                />
+              </svg>
             </div>
           </div>
         </div>
-      </div>
-      <div className="absolute bottom-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-3 pointer-events-none">
-        <button onClick={onBack} className="px-3 py-1.5 text-[10px] font-black text-white/30 hover:text-white/60 bg-black/30 hover:bg-black/50 rounded-full border border-white/10 uppercase tracking-wider pointer-events-auto transition-colors">←</button>
-        <div className="text-center">
-          <span className="text-[9px] font-black text-white/50 block leading-none">{tazoName}</span>
-          <span className="text-[7px] font-black text-[#FFCC00]/60 uppercase tracking-[0.3em]">tap to aim</span>
-        </div>
-        <button onClick={onRelease}
-          className="px-5 py-2.5 bg-[#FFCC00] hover:bg-[#FFD633] text-[#1a1a1a] font-black text-xs uppercase rounded-full tracking-wider shadow-[0_0_20px_rgba(255,204,0,0.4)] hover:shadow-[0_0_30px_rgba(255,204,0,0.6)] active:scale-95 pointer-events-auto transition-all">
-          ⚡ CHARGE
-        </button>
-      </div>
-    </>
-  )
 
-  // ═══════ CHARGE — meter + release button ═══════
+        {/* Bottom bar — name + stats + LOCK button */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-3 pointer-events-none">
+          <button onClick={onBack}
+            className="px-3 py-1.5 text-[10px] font-black text-white/30 hover:text-white/60 bg-black/30 hover:bg-black/50 rounded-full border border-white/10 uppercase tracking-wider pointer-events-auto transition-colors">
+            ← Back
+          </button>
+
+          <div className="flex items-center gap-3">
+            {/* Tazo name + stats mini-display */}
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2">
+                <span className="text-[10px] font-black text-white/60">{tazoName}</span>
+                <span className="text-[7px] font-black px-1.5 py-0.5 rounded-full border" style={{ color: ctrlColor, borderColor: ctrlColor + "40" }}>
+                  {ctrlLabel}
+                </span>
+                <span className="text-[7px] font-black px-1.5 py-0.5 rounded-full border" style={{ color: precColor, borderColor: precColor + "40" }}>
+                  {precLabel}
+                </span>
+              </div>
+              <span className="text-[7px] font-black text-[#FFCC00]/50">
+                {aimLocked ? "AIM LOCKED — release when ready" : "watching reticle sweep… click to LOCK"}
+              </span>
+            </div>
+          </div>
+
+          <button
+            onClick={() => {
+              if (aimLocked) {
+                // Already locked, proceed to charge
+                onRelease()
+              } else {
+                setAimLocked(true)
+              }
+            }}
+            className={`px-6 py-2.5 font-black text-xs uppercase rounded-full tracking-wider pointer-events-auto transition-all ${
+              aimLocked
+                ? "bg-[#22C55E] hover:bg-[#22C55E]/90 text-[#1a1a1a] shadow-[0_0_20px_rgba(34,197,94,0.6)]"
+                : "bg-[#FFCC00] hover:bg-[#FFD633] text-[#1a1a1a] shadow-[0_0_20px_rgba(255,204,0,0.4)] hover:shadow-[0_0_30px_rgba(255,204,0,0.6)]"
+            } active:scale-95`}>
+            {aimLocked ? <><Lock className="w-3 h-3 inline mr-1" />CHARGE</> : <>🎯 LOCK AIM</>}
+          </button>
+        </div>
+      </>
+    )
+  }
+
+  // ═════════════════════════════════════
+  // CHARGE — meter + release button
+  // ═════════════════════════════════════
   if (phase === "charge") return (
     <div className="absolute bottom-0 left-0 right-0 z-20 p-4 pointer-events-none">
       <div className="max-w-md mx-auto space-y-3">
@@ -138,7 +267,9 @@ export default function SlamControls(props: SlamControlsProps) {
     </div>
   )
 
-  // ═══════ TILT — direction + spin + SLAM ═══════
+  // ═════════════════════════════════════
+  // TILT — direction + spin + SLAM
+  // ═════════════════════════════════════
   return (
     <div className="absolute bottom-0 left-0 right-0 z-20 p-3 pointer-events-none">
       <div className="max-w-md mx-auto flex items-end gap-3">

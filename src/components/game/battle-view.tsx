@@ -421,7 +421,7 @@ export default function BattleView() {
       tilt: tiltDir,
       tiltIntensity: s.tiltIntensity,
       spinIntensity: s.spinIntensity,
-      aimPrecision: 0.8,
+      aimPrecision: Math.max(0.2, (t.precision || 50) / 100),
     }
 
     // Animate airborne tazo rising then falling
@@ -691,6 +691,8 @@ export default function BattleView() {
               phase={slamPhase}
               tazoName={throwing.name}
               tazoFranchise={throwing.franchise}
+              tazoControl={throwing.control || 50}
+              tazoPrecision={throwing.precision || 50}
               reticleX={reticleX}
               reticleZ={reticleZ}
               charge={charge}

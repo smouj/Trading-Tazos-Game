@@ -337,14 +337,13 @@ const BACK_ARTS: Record<string, string> = {
   dracobell: "/tazos-artgen/backs/dracobell-back.png",
 }
 
-// ────────────────────────────────────────
-// Vertical Slam Simulation
-// ────────────────────────────────────────
-
-/**
- * Simulate a vertical slam — tazo falls from above onto face-down staked tazos.
- * Returns the new staked tazo states and the impact result.
- */
+// ─── Deterministic pseudo-random (seed-based, no Math.random) ───
+let _seed = Date.now()
+export function seedRNG(s: number) { _seed = s >>> 0 }
+function rng(): number {
+  _seed = (_seed * 1103515245 + 12345) >>> 0
+  return (_seed & 0x7fffffff) / 0x7fffffff
+}
 export function simulateSlam(
   launcher: TazoCard,
   slam: SlamParams,
@@ -360,8 +359,8 @@ export function simulateSlam(
 
   // ── 1. AIM: Apply precision error ──
   const aimError = (1 - aimPrecision) * 0.55
-  const actualX = impactX + (Math.random() - 0.5) * aimError
-  const actualZ = impactZ + (Math.random() - 0.5) * aimError
+  const actualX = impactX + (rng() - 0.5) * aimError
+  const actualZ = impactZ + (rng() - 0.5) * aimError
 
   // ── 2. FORCE: Timing affects effective force ──
   const timingMultiplier = 0.4 + timingAccuracy * 0.6  // 0.4-1.0
@@ -379,7 +378,7 @@ export function simulateSlam(
   // ── 4. TILT: Affects edge-hit chance ──
   const isEdgeAttack = tilt !== "flat" && tiltIntensity > 0.25
   const edgeChance = isEdgeAttack ? 0.35 + tiltIntensity * 0.45 : 0.1
-  const hitsEdge = Math.random() < edgeChance
+  const hitsEdge = rng() < edgeChance
 
   // ── 5. SPIN: Adds torque, increases chaos ──
   const spinTorque = spinIntensity * launcher.spin / 100
@@ -429,7 +428,7 @@ export function simulateSlam(
     // ── Bounce check (knock out of circle) ──
     const bounceChance = launcher.bounce / 120 + slamPower * 0.15
     let knockedOut = false
-    if (slamPower > 0.4 && Math.random() < bounceChance) {
+    if (slamPower > 0.4 && rng() < bounceChance) {
       const stDistFromCenter = Math.sqrt(
         st.position[0] ** 2 + st.position[2] ** 2
       )
@@ -473,8 +472,8 @@ export function simulateSlam(
   // ── 7. Bad landing check ──
   const badLanding =
     effectiveForce < 0.2 ||
-    (tiltIntensity > 0.75 && Math.random() < 0.3) ||
-    (timingAccuracy < 0.25 && Math.random() < 0.4)
+    (tiltIntensity > 0.75 && rng() < 0.3) ||
+    (timingAccuracy < 0.25 && rng() < 0.4)
 
   // ── 8. Build result ──
   const doubleFlip = flipped.length >= 2
@@ -530,35 +529,35 @@ export function generateAISlam(
 
   if (targets.length === 0) {
     // No targets — aim for center
-    impactX = (Math.random() - 0.5) * 0.4
-    impactZ = (Math.random() - 0.5) * 0.4
-    verticalForce = 0.35 + Math.random() * 0.35
+    impactX = (rng() - 0.5) * 0.4
+    impactZ = (rng() - 0.5) * 0.4
+    verticalForce = 0.35 + rng() * 0.35
   } else {
     const target = targets[0]
-    impactX = target.position[0] + (Math.random() - 0.5) * 0.2
-    impactZ = target.position[2] + (Math.random() - 0.5) * 0.2
+    impactX = target.position[0] + (rng() - 0.5) * 0.2
+    impactZ = target.position[2] + (rng() - 0.5) * 0.2
 
     if (difficulty === "master") {
-      aimPrecision = 0.85 + Math.random() * 0.15
-      timingAccuracy = 0.8 + Math.random() * 0.2
-      verticalForce = 0.55 + Math.random() * 0.35
+      aimPrecision = 0.85 + rng() * 0.15
+      timingAccuracy = 0.8 + rng() * 0.2
+      verticalForce = 0.55 + rng() * 0.35
       // Smart tilt: edge attack mostly
-      tilt = Math.random() > 0.3 ? "forward" : "flat"
-      tiltIntensity = 0.4 + Math.random() * 0.4
-      spinIntensity = 0.2 + Math.random() * 0.3
+      tilt = rng() > 0.3 ? "forward" : "flat"
+      tiltIntensity = 0.4 + rng() * 0.4
+      spinIntensity = 0.2 + rng() * 0.3
     } else if (difficulty === "skilled") {
-      aimPrecision = 0.6 + Math.random() * 0.25
-      timingAccuracy = 0.55 + Math.random() * 0.3
-      verticalForce = 0.45 + Math.random() * 0.35
-      tilt = Math.random() > 0.5 ? "forward" : "flat"
-      tiltIntensity = 0.25 + Math.random() * 0.3
-      spinIntensity = Math.random() * 0.25
+      aimPrecision = 0.6 + rng() * 0.25
+      timingAccuracy = 0.55 + rng() * 0.3
+      verticalForce = 0.45 + rng() * 0.35
+      tilt = rng() > 0.5 ? "forward" : "flat"
+      tiltIntensity = 0.25 + rng() * 0.3
+      spinIntensity = rng() * 0.25
     } else {
       // Novice: mostly random, flat
-      aimPrecision = 0.35 + Math.random() * 0.35
-      timingAccuracy = 0.3 + Math.random() * 0.4
-      verticalForce = 0.25 + Math.random() * 0.5
-      tiltIntensity = Math.random() * 0.3
+      aimPrecision = 0.35 + rng() * 0.35
+      timingAccuracy = 0.3 + rng() * 0.4
+      verticalForce = 0.25 + rng() * 0.5
+      tiltIntensity = rng() * 0.3
     }
   }
 
@@ -687,6 +686,9 @@ export function placeStakedTazos(
   playerTazo: TazoCard,
   opponentTazo: TazoCard
 ): StakedTazo[] {
+  // Separation: tazos have visual radius ~0.38, need >0.76 between centers
+  // Place at safe distance with slight Z offset for depth
+  const STAKE_X = 0.55
   return [
     {
       id: playerTazo.id,
@@ -695,7 +697,7 @@ export function placeStakedTazos(
       imageUrl: playerTazo.imageUrl || "",
       backImageUrl: BACK_ARTS[playerTazo.franchise] || "",
       owner: "player",
-      position: [-0.35, 0.06, 0] as [number, number, number],
+      position: [-STAKE_X, 0.045, 0.08] as [number, number, number],
       state: "face_down",
       wobbleIntensity: 0,
       scored: false,
@@ -707,7 +709,7 @@ export function placeStakedTazos(
       imageUrl: opponentTazo.imageUrl || "",
       backImageUrl: BACK_ARTS[opponentTazo.franchise] || "",
       owner: "opponent",
-      position: [0.35, 0.06, 0] as [number, number, number],
+      position: [STAKE_X, 0.047, -0.08] as [number, number, number],
       state: "face_down",
       wobbleIntensity: 0,
       scored: false,

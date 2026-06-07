@@ -82,32 +82,46 @@ function Pillars({ config }: { config: Arena3DConfig }) {
   )
 }
 
-// ─── Reticle ring (target indicator) ───
+// ─── Reticle ring (target indicator) with impact ghost ───
 function Reticle({
-  position, visible,
+  position, visible, gamePhase,
 }: {
   position: [number, number, number]
   visible: boolean
+  gamePhase: string
 }) {
   if (!visible) return null
+  const isCharging = gamePhase === "player_charge" || gamePhase === "player_tilt"
   return (
     <group position={position}>
-      <mesh rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[0.42, 0.46, 32]} />
-        <meshBasicMaterial color="#FFCC00" transparent opacity={0.7} side={THREE.DoubleSide} />
+      {/* Impact ghost — grows as player charges */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
+        <ringGeometry args={[0.44, 0.50, 32]} />
+        <meshBasicMaterial
+          color={isCharging ? "#FFCC00" : "#FFFFFF"}
+          transparent opacity={isCharging ? 0.6 : 0.2}
+          side={THREE.DoubleSide}
+          depthWrite={false}
+        />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[0.38, 0.40, 24]} />
-        <meshBasicMaterial color="#FFCC00" transparent opacity={0.35} side={THREE.DoubleSide} />
+      {/* Inner ring */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
+        <ringGeometry args={[0.38, 0.42, 24]} />
+        <meshBasicMaterial color="#FFCC00" transparent opacity={0.45} side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
       {/* Crosshair lines */}
-      <mesh position={[0, 0, 0]}>
-        <boxGeometry args={[0.04, 0.01, 0.8]} />
-        <meshStandardMaterial color="#FFCC00" emissive="#FFCC00" emissiveIntensity={0.6} roughness={0.2} />
+      <mesh position={[0, 0.03, 0]}>
+        <boxGeometry args={[0.03, 0.005, 0.75]} />
+        <meshBasicMaterial color="#FFCC00" transparent opacity={0.5} />
       </mesh>
-      <mesh position={[0, 0, 0]}>
-        <boxGeometry args={[0.8, 0.01, 0.04]} />
-        <meshStandardMaterial color="#FFCC00" emissive="#FFCC00" emissiveIntensity={0.6} roughness={0.2} />
+      <mesh position={[0, 0.03, 0]}>
+        <boxGeometry args={[0.75, 0.005, 0.03]} />
+        <meshBasicMaterial color="#FFCC00" transparent opacity={0.5} />
+      </mesh>
+      {/* Center dot */}
+      <mesh position={[0, 0.03, 0]}>
+        <sphereGeometry args={[0.04, 8, 8]} />
+        <meshBasicMaterial color="#FFCC00" />
       </mesh>
     </group>
   )
@@ -134,25 +148,34 @@ function StakedTazoMesh({ staked }: { staked: StakedTazo }) {
       w.intensity *= 0.92  // Decay
       const wobX = Math.sin(w.time * 2.3) * w.intensity * 0.06
       const wobZ = Math.cos(w.time * 1.7) * w.intensity * 0.06
-      groupRef.current.rotation.set(wobX, 0, wobZ)
+      groupRef.current.rotation.set(Math.PI + wobX, 0, wobZ)
       groupRef.current.position.y = 0.06 + Math.abs(Math.sin(w.time * 3)) * w.intensity * 0.03
     } else if (staked.state === "wobbling") {
-      // Settling
-      groupRef.current.rotation.set(0, 0, 0)
+      // Settling back to face-down
+      groupRef.current.rotation.x = THREE.MathUtils.lerp(
+        groupRef.current.rotation.x, Math.PI, 0.08
+      )
       groupRef.current.position.y = 0.06
     }
 
-    // Half-flip: rotate toward face-up
+    // Half-flip: partially lifted
     if (staked.state === "half_flip") {
+      const targetXR = Math.PI / 2
       groupRef.current.rotation.x = THREE.MathUtils.lerp(
-        groupRef.current.rotation.x, Math.PI * 0.5, 0.08
+        groupRef.current.rotation.x, targetXR, 0.08
+      )
+      // Lift slightly during half-flip
+      groupRef.current.position.y = THREE.MathUtils.lerp(
+        groupRef.current.position.y, 0.12, 0.1
       )
     }
 
-    // Face-up / secured / captured
+    // Face-up / secured / captured — flip to show front face
+    // Face-down = Math.PI, Face-up = 0 (shortest rotation path through PI/2)
     if (staked.state === "face_up" || staked.state === "secured" || staked.state === "captured") {
+      const targetXR = 0  // Face-up (front art visible from above)
       groupRef.current.rotation.x = THREE.MathUtils.lerp(
-        groupRef.current.rotation.x, Math.PI, 0.15
+        groupRef.current.rotation.x, targetXR, 0.12
       )
       groupRef.current.position.y = THREE.MathUtils.lerp(
         groupRef.current.position.y, 0.06, 0.15
@@ -193,11 +216,11 @@ function StakedTazoMesh({ staked }: { staked: StakedTazo }) {
         size={0.38}
         autoRotate={false}
       />
-      {/* Glow ring for secured/captured */}
+      {/* Glow ring for secured/captured — at top of tazo disc */}
       {getGlow() && (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
-          <ringGeometry args={[0.38, 0.42, 32]} />
-          <meshBasicMaterial color={getGlow()} transparent opacity={0.5} side={THREE.DoubleSide} />
+        <mesh position={[0, 0.02, 0]}>
+          <ringGeometry args={[0.40, 0.44, 32]} />
+          <meshBasicMaterial color={getGlow()} transparent opacity={0.5} side={THREE.DoubleSide} depthWrite={false} />
         </mesh>
       )}
     </group>
@@ -274,30 +297,27 @@ function AirborneTazoMesh({
 
   return (
     <group ref={groupRef} position={airborne.position}>
-      {/* Charge glow ring */}
+      {/* Charge glow ring — horizontal on table */}
       {airborne.state === "charging" && (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.3, 0]}>
+        <mesh position={[0, 0.03, 0]}>
           <ringGeometry args={[0.44, 0.46, 32]} />
           <meshBasicMaterial
             color="#FFCC00"
             transparent
-            opacity={0.3 + airborne.charge * 0.5}
+            opacity={0.25 + airborne.charge * 0.5}
             side={THREE.DoubleSide}
+            depthWrite={false}
           />
         </mesh>
       )}
-      {/* Drop shadow on table */}
+      {/* Drop shadow on table — stays at table level, tracks launcher in XZ */}
       <mesh
         rotation={[-Math.PI / 2, 0, 0]}
-        position={[
-          airborne.position[0] - (airborne.position[1] > 1 ? airborne.position[0] * 0.3 : 0),
-          0.02,
-          airborne.position[2] - (airborne.position[1] > 1 ? airborne.position[2] * 0.3 : 0),
-        ]}
-        scale={[0.4 + Math.max(0, 1 - airborne.position[1] / 5) * 0.1, 1, 0.4]}
+        position={[airborne.position[0], 0.03, airborne.position[2]]}
+        scale={[0.35, 1, 0.35]}
       >
         <planeGeometry args={[0.4, 0.4]} />
-        <meshBasicMaterial color="#000" transparent opacity={0.15} depthWrite={false} />
+        <meshBasicMaterial color="#000" transparent opacity={0.12} depthWrite={false} />
       </mesh>
       <TazoDisc3D
         name={airborne.tazoName}
@@ -308,10 +328,10 @@ function AirborneTazoMesh({
         size={0.38}
         autoRotate={false}
       />
-      {/* Impact ring flash */}
+      {/* Impact ring flash — horizontal on table */}
       {physRef.current.impactTime > 0 && (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
-          <ringGeometry args={[0.2 * (2 - physRef.current.impactTime), 0.6 * (2 - physRef.current.impactTime), 32]} />
+        <mesh position={[0, 0.03, 0]}>
+          <ringGeometry args={[0.15 * (2 - physRef.current.impactTime), 0.55 * (2 - physRef.current.impactTime), 32]} />
           <meshBasicMaterial
             color="#FFCC00"
             transparent
@@ -432,6 +452,7 @@ function Scene({
       <Reticle
         position={[reticleX, 0.06, reticleZ]}
         visible={showReticle}
+        gamePhase={gamePhase}
       />
 
       <ArenaCamera gamePhase={gamePhase} />

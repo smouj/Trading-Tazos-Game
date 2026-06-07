@@ -182,8 +182,12 @@ export default function BattleView() {
     if (!s.cfg || busy.current) return
     busy.current = true
 
-    // Pick AI launcher tazo
-    const aiTazo = s.cfg.opponentDeck[Math.floor(Math.random() * s.cfg.opponentDeck.length)]
+    // Pick AI launcher tazo (avoid staked tazo)
+    const oppStake = s.staked.find(st => st.owner === "opponent" && !st.scored)
+    const availOpp = s.cfg.opponentDeck.filter(t => t.id !== oppStake?.id)
+    const aiTazo = availOpp.length > 0
+      ? availOpp[Math.floor(Math.random() * availOpp.length)]
+      : s.cfg.opponentDeck[0]
     setThrowing(aiTazo)
 
     // Create airborne tazo for AI
@@ -282,14 +286,17 @@ export default function BattleView() {
 
   // ── Start new round (place stakes) ──
   const startNewRound = useCallback((playerDeck: TazoCard[], opponentDeck: TazoCard[], arena: typeof DEFAULT_ARENA_3D) => {
-    // Pick stake tazos
+    // Pick stake tazos — one for each player (not the same as launcher)
     const pStake = playerDeck[Math.floor(Math.random() * playerDeck.length)]
     const oStake = opponentDeck[Math.floor(Math.random() * opponentDeck.length)]
     const newStaked = placeStakedTazos(pStake, oStake)
     setStaked(newStaked)
 
-    // Pick launcher
-    const launcher = playerDeck[Math.floor(Math.random() * playerDeck.length)]
+    // Pick launcher from remaining deck (NOT the staked tazo)
+    const availPlayer = playerDeck.filter(t => t.id !== pStake.id)
+    const launcher = availPlayer.length > 0
+      ? availPlayer[Math.floor(Math.random() * availPlayer.length)]
+      : playerDeck[0]
     setThrowing(launcher)
 
     // Create airborne tazo
@@ -497,7 +504,12 @@ export default function BattleView() {
             <div className="flex items-center gap-2 bg-black/60 backdrop-blur-sm rounded px-3 py-2 border border-white/10">
               <span className="text-xs font-black text-white tracking-wide">YOU</span>
               <span className="text-sm font-black text-[#29ADFF]">{pScore}</span>
-              <span className="text-[8px] font-black text-white/30">{deck.length} tazos</span>
+              <span className="text-[8px] font-black text-white/30">{deck.length-1} tazos</span>
+              {staked.find(s => s.owner === "player") && (
+                <span className="text-[7px] font-black text-[#22C55E] bg-[#22C55E]/10 px-1 py-0.5 rounded border border-[#22C55E]/20">
+                  STAKE: {staked.find(s => s.owner === "player")!.tazoName.slice(0, 8)}
+                </span>
+              )}
             </div>
 
             {/* Round */}

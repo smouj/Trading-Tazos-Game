@@ -129,33 +129,33 @@ export default function TazoDisc3D({
 
   return (
     <group ref={groupRef} onClick={(e) => { e.stopPropagation(); onClick?.() }}>
-      {/* Disc cylinder body */}
-      <mesh rotation={[Math.PI / -2, 0, 0]}>
+      {/* Disc cylinder body — NO rotation: cylinder height is Y, faces are in XZ plane */}
+      <mesh>
         <cylinderGeometry args={[size, size, thickness, 64]} />
         <meshStandardMaterial color={colors.secondary} roughness={0.4} metalness={0.3} />
       </mesh>
 
-      {/* Front face — tazo art */}
-      <mesh position={[0, thickness / 2 + 0.002, 0]} rotation={[Math.PI / -2, 0, 0]}>
+      {/* Front face — tazo art, rotated to XZ plane (facing +Y) */}
+      <mesh position={[0, thickness / 2 + 0.002, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <circleGeometry args={[size * 0.96, 64]} />
         <meshStandardMaterial map={faceTex} roughness={0.4} metalness={0.05} side={THREE.FrontSide} />
       </mesh>
 
-      {/* Back face — franchise back art */}
+      {/* Back face — franchise back art, rotated to XZ plane (facing -Y) */}
       <mesh position={[0, -thickness / 2 - 0.002, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <circleGeometry args={[size * 0.96, 64]} />
         <meshStandardMaterial map={backTex} roughness={0.4} metalness={0.05} side={THREE.FrontSide} />
       </mesh>
 
-      {/* Metallic rim */}
-      <mesh rotation={[Math.PI / -2, 0, 0]}>
+      {/* Metallic rim — in XZ plane */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <torusGeometry args={[size * 1.02, thickness * 0.55, 16, 64]} />
         <meshStandardMaterial color={rimColor} metalness={rimMetalness} roughness={0.25} />
       </mesh>
 
       {/* Hover glow */}
       {hovered && (
-        <mesh position={[0, thickness / 2 + 0.01, 0]} rotation={[Math.PI / -2, 0, 0]}>
+        <mesh position={[0, thickness / 2 + 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <torusGeometry args={[size * 1.08, 0.025, 8, 64]} />
           <meshBasicMaterial color={colors.primary} transparent opacity={0.6} />
         </mesh>

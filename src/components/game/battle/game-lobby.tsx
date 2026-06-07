@@ -8,13 +8,16 @@ import { useState, useMemo } from "react"
 import type { TazoCard, PlayMode, AIDifficulty } from "@/lib/battle/game-loop"
 import {
   Swords, Bot, Globe, Play, Zap, Shield, Crosshair, Star,
-  Sparkles, ChevronRight, Disc3,
+  Sparkles, ChevronRight, Disc3, Layers,
 } from "lucide-react"
 import TazoDiscImage from "@/components/game/tazo-disc-image"
 import { playSFX, sfxEnsureUnlocked } from "@/lib/audio/sfx-engine"
 
 interface Props {
   playerTazos: TazoCard[]
+  playerDecks?: { id: string; name: string; isActive: boolean; tazos: any[] }[]
+  selectedDeckId?: string | null
+  onSelectDeck?: (deckId: string | null) => void
   onStart: (mode: PlayMode, difficulty: AIDifficulty, deck: TazoCard[]) => void
   isLoading: boolean
   isAuthenticated: boolean
@@ -59,7 +62,7 @@ function fColor(f: string) {
   return f === "minimon" ? "#FFCB05" : f === "cybermon" ? "#00A1E9" : "#FF6B00"
 }
 
-export default function GameLobby({ playerTazos, onStart, isLoading, isAuthenticated }: Props) {
+export default function GameLobby({ playerTazos, playerDecks, selectedDeckId, onSelectDeck, onStart, isLoading, isAuthenticated }: Props) {
   const [mode, setMode] = useState<PlayMode>("practice")
   const [difficulty, setDifficulty] = useState<AIDifficulty>("skilled")
   const [sel, setSel] = useState<number[]>([])
@@ -118,6 +121,45 @@ export default function GameLobby({ playerTazos, onStart, isLoading, isAuthentic
           {isAuthenticated ? "Ready" : "Guest"}
         </span>
       </div>
+
+      {/* ════════════════ DECK SELECTOR ════════════════ */}
+      {playerDecks && playerDecks.length > 0 && (
+        <div className="bg-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] overflow-hidden">
+          <div className="bg-[#1a1a1a] px-4 py-2 flex items-center gap-2">
+            <Layers className="w-3.5 h-3.5 text-[#FFCC00]" />
+            <h3 className="text-[10px] font-black uppercase tracking-widest text-[#FFCC00]">Select Deck</h3>
+          </div>
+          <div className="p-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {playerDecks.map((d) => {
+              const active = d.id === selectedDeckId
+              const count = d.tazos?.length || 0
+              return (
+                <button
+                  key={d.id}
+                  onClick={() => onSelectDeck?.(active ? null : d.id)}
+                  className={`p-3 border-2 text-left transition-all ${
+                    active
+                      ? "border-[#FFCC00] bg-[#FFCB050a] shadow-[2px_2px_0px_#FFCC00]"
+                      : "border-[#1a1a1a]/8 hover:border-[#1a1a1a]/20"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="font-black text-sm text-[#1a1a1a]">{d.name}</span>
+                    {d.isActive && (
+                      <span className="text-[7px] font-black text-[#FFCC00] border border-[#FFCC00]/30 bg-[#FFCB0508] px-1 py-0.5 uppercase">
+                        Active
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-[9px] font-bold text-[#1a1a1a]/30 mt-0.5">
+                    {count} tazos {count < 5 ? `(need ${5 - count} more)` : "· Battle ready"}
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {/* ════════════════ MODE CARDS ════════════════ */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

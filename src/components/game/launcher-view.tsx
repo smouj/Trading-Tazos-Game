@@ -179,8 +179,7 @@ function SectionCard({ step, color, title, children, bgColor }: {
 
 function TazoShowcase() {
   const [tazos, setTazos] = useState<any[]>([])
-  const [failedIds, setFailedIds] = useState<Set<string>>(new Set())
-  const [resolved, setResolved] = useState(0)
+  const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     fetch("/api/tazos?limit=24")
@@ -189,53 +188,39 @@ function TazoShowcase() {
       .catch(() => {})
   }, [])
 
-  const onLoad = () => setResolved(c => c + 1)
-  const onError = (id: string) => {
-    setFailedIds(prev => new Set(prev).add(id))
-    setResolved(c => c + 1)
-  }
+  const hideTazo = (id: string) => setHiddenIds(prev => new Set(prev).add(id))
+  const display = tazos.filter(t => t.imageUrl && !hiddenIds.has(t.id)).slice(0, 8)
 
-  const display = tazos.filter(t => !failedIds.has(t.id)).slice(0, 8)
-  const ready = tazos.length > 0 && resolved >= tazos.length
+  if (tazos.length === 0) return null
 
   return (
     <div className="max-w-5xl mx-auto w-full px-4 pb-8 space-y-3">
       <div className="flex items-center gap-3">
         <div className="flex-1 h-0.5 bg-[#1a1a1a]/10" />
         <span className="text-[10px] font-black text-[#1a1a1a]/30 uppercase tracking-[0.2em] whitespace-nowrap">
-          {ready && display.length > 0 ? `${display.length} Featured Tazos` : "Featured Tazos"}
+          Featured Tazos
         </span>
         <div className="flex-1 h-0.5 bg-[#1a1a1a]/10" />
       </div>
-      <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 min-h-[96px]">
+      <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
         {display.map((t: any) => (
           <div
             key={t.id}
             className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-3 border-[#1a1a1a] flex items-center justify-center overflow-hidden bg-[#fffef0] shadow-[4px_4px_0px_#1a1a1a] hover:shadow-[2px_2px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
           >
-            {t.imageUrl ? (
-              <img
-                src={t.imageUrl}
-                alt={t.displayName || t.name || ""}
-                className="w-full h-full object-cover scale-110"
-                draggable={false}
-                title={`${t.displayName || t.name} — ${t.franchiseName || t.franchise}`}
-                onLoad={onLoad}
-                onError={() => onError(t.id)}
-              />
-            ) : (
-              <Disc3 className="w-8 h-8 text-[#1a1a1a]/10" />
-            )}
+            <img
+              src={t.imageUrl}
+              alt={t.displayName || t.name || ""}
+              className="w-full h-full object-cover scale-110"
+              draggable={false}
+              title={`${t.displayName || t.name} — ${t.franchiseName || t.franchise}`}
+              onError={() => hideTazo(t.id)}
+            />
           </div>
         ))}
-        {!ready && (
-          <div className="flex items-center justify-center w-full py-4">
-            <Loader2 className="w-5 h-5 animate-spin text-[#1a1a1a]/20" />
-          </div>
-        )}
       </div>
       <p className="text-center text-[8px] font-black text-[#1a1a1a]/20 uppercase tracking-[0.25em]">
-        {ready ? `${display.length} tazos · 349 total` : "Loading previews..."}
+        {display.length > 0 ? `${display.length} tazos · 349 total` : "3 franchises · 349 total"}
       </p>
     </div>
   )

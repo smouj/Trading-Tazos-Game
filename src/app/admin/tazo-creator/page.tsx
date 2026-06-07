@@ -12,6 +12,7 @@ import {
   Circle, Star, Info,
 } from "lucide-react";
 import Link from "next/link";
+import TazoDiscImage from "@/components/game/tazo-disc-image";
 
 // ── Constants ──
 const FRANCHISES = [
@@ -340,10 +341,13 @@ export default function AdminTazoCreatorPage() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   {/* Generated image */}
                   <div className="bg-[#1a1a1a] rounded-lg p-4 flex items-center justify-center">
-                    <img
+                    <TazoDiscImage
                       src={result.imageUrl}
                       alt={result.name}
-                      className="w-48 h-48 object-contain drop-shadow-lg"
+                      size={160}
+                      scale={1.12}
+                      borderWidth={3}
+                      franchiseSlug={(result as any).franchise?.slug || "minimon"}
                     />
                   </div>
 
@@ -472,9 +476,14 @@ export default function AdminTazoCreatorPage() {
                 <div className="space-y-2">
                   {recentCreations.slice(0, 6).map((t: any) => (
                     <div key={t.id} className="flex items-center gap-3 p-2 border-2 border-[#1a1a1a]/10 bg-white rounded">
-                      <div className="w-10 h-10 rounded-full overflow-hidden bg-[#1a1a1a] flex-shrink-0">
-                        {t.imageUrl && <img src={t.imageUrl} alt={t.name} className="w-full h-full object-cover" />}
-                      </div>
+                      <TazoDiscImage
+                        src={t.imageUrl}
+                        alt={t.name}
+                        size={40}
+                        scale={1.05}
+                        borderWidth={2}
+                        franchiseSlug={t.franchise?.slug || "minimon"}
+                      />
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] font-black uppercase text-[#1a1a1a] truncate">{t.name}</p>
                         <p className="text-[8px] font-bold text-[#1a1a1a]/40 uppercase">{t.franchise?.slug} · {t.rarity} · {t.role}</p>

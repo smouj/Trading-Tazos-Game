@@ -17,6 +17,39 @@ import * as THREE from "three"
 import type { Arena3DConfig, StakedTazo, AirborneTazo } from "@/lib/battle/game-loop"
 import TazoDisc3D from "../3d/tazo-disc-3d"
 
+// ─── Impact spark ring (expands on slam) ───
+function ImpactSpark({ trigger, pos }: { trigger: number; pos: [number, number, number] }) {
+  const ringRef = useRef<THREE.Mesh>(null!)
+  const timeRef = useRef(0)
+  
+  useEffect(() => {
+    if (trigger > 0) {
+      timeRef.current = 1.0
+      if (ringRef.current) {
+        ringRef.current.visible = true
+        ringRef.current.scale.setScalar(0.2)
+      }
+    }
+  }, [trigger])
+  
+  useFrame((_, delta) => {
+    if (!ringRef.current || timeRef.current <= 0) return
+    timeRef.current -= delta * 3
+    const s = 0.2 + (1 - timeRef.current) * 2.5
+    ringRef.current.scale.setScalar(Math.min(s, 3.0))
+    const mat = ringRef.current.material as THREE.MeshBasicMaterial
+    mat.opacity = Math.max(0, timeRef.current * 0.7)
+    if (timeRef.current <= 0) ringRef.current.visible = false
+  })
+
+  return (
+    <mesh ref={ringRef} position={[pos[0], 0.04, pos[2]]} rotation={[-Math.PI/2, 0, 0]} visible={false}>
+      <ringGeometry args={[0.15, 0.2, 32]} />
+      <meshBasicMaterial color="#FFCC00" transparent opacity={0.8} side={THREE.DoubleSide} depthWrite={false} />
+    </mesh>
+  )
+}
+
 // ─── Floor (arena surface with center circle) ───
 function Floor({ config }: { config: Arena3DConfig }) {
   const tex = useMemo(() => {
@@ -485,12 +518,30 @@ function Scene({
   config, stakedTazos, airborneTazo,
   gamePhase, showReticle, reticleX, reticleZ,
 }: SceneProps) {
+  const [impactCount, setImpactCount] = useState(0)
+  const prevPhase = useRef(gamePhase)
+  
+  // Trigger spark on impact
+  useEffect(() => {
+    if (gamePhase === "impact" && prevPhase.current !== "impact") {
+      setImpactCount(c => c + 1)
+    }
+    prevPhase.current = gamePhase
+  }, [gamePhase])
+
+  // Impact position: use the airborne tazo's target or center
+  const impactPos = useMemo(() => {
+    if (airborneTazo) {
+      return [airborneTazo.position[0], 0.04, airborneTazo.position[2]] as [number, number, number]
+    }
+    return [0, 0.04, 0] as [number, number, number]
+  }, [airborneTazo?.position])
   return (
     <>
-      <ambientLight intensity={0.55} />
-      <directionalLight position={[5, 14, 3]} intensity={0.75} />
-      <directionalLight position={[-4, 8, -5]} intensity={0.2} />
-      <spotLight position={[0, 14, 0]} angle={0.5} penumbra={0.5} intensity={3} color="#FFF8E0" />
+      <ambientLight intensity={0.45} />
+      <directionalLight position={[5, 14, 3]} intensity={0.7} />
+      <directionalLight position={[-4, 8, -5]} intensity={0.15} />
+      <spotLight position={[0, 12, 0]} angle={0.7} penumbra={0.6} intensity={2.5} color="#FFF5E0" />
 
       <Floor config={config} />
       <Pillars config={config} />
@@ -529,6 +580,9 @@ function Scene({
 
       {/* Impact flash light */}
       <ImpactLight impactPhase={gamePhase} />
+
+      {/* Impact spark burst */}
+      <ImpactSpark trigger={impactCount} pos={impactPos} />
     </>
   )
 }

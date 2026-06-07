@@ -129,6 +129,15 @@ export default function BattleView() {
   const [slamPhase, setSlamPhase] = useState<"aim" | "charge" | "tilt">("aim")
   const [impactMsg, setImpactMsg] = useState("")
   const [showImpact, setShowImpact] = useState(false)
+  
+  // Score popups: float up and fade
+  const [scorePopups, setScorePopups] = useState<Array<{id:number, text:string, color:string, side:'left'|'right'}>>([])
+  let popupId = useRef(0)
+  const spawnPopup = (text: string, color: string, side: 'left' | 'right') => {
+    const id = ++popupId.current
+    setScorePopups(prev => [...prev, {id, text, color, side}])
+    setTimeout(() => setScorePopups(prev => prev.filter(p => p.id !== id)), 1800)
+  }
 
   const busy = useRef(false)
   const resultSaved = useRef(false)
@@ -270,6 +279,9 @@ export default function BattleView() {
 
           setImpactMsg(impact.description)
           setShowImpact(true)
+
+          if (playerDelta > 0) spawnPopup(`+${playerDelta}`, "#29ADFF", "left")
+          if (opponentDelta > 0) spawnPopup(`+${opponentDelta}`, "#FF004D", "right")
 
           setTimeout(() => {
             setShowImpact(false)
@@ -462,6 +474,10 @@ export default function BattleView() {
       setImpactMsg(impact.description)
       setShowImpact(true)
 
+      // Score popups
+      if (playerDelta > 0) spawnPopup(`+${playerDelta}`, "#29ADFF", "left")
+      if (opponentDelta > 0) spawnPopup(`+${opponentDelta}`, "#FF004D", "right")
+
       setTimeout(() => {
         setShowImpact(false)
         setPhase("resolve_impact")
@@ -549,6 +565,20 @@ export default function BattleView() {
         reticleX={reticleX}
         reticleZ={reticleZ}
       >
+        {/* Keyframe animation for score popups */}
+        <style>{`
+          @keyframes popUp {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            20% { opacity: 1; transform: translateY(-8px) scale(1.3); }
+            60% { opacity: 0.8; transform: translateY(-30px) scale(1.1); }
+            100% { opacity: 0; transform: translateY(-60px) scale(0.8); }
+          }
+          @keyframes sparkBurst {
+            0% { opacity: 1; transform: scale(0) rotate(0deg); }
+            30% { opacity: 1; transform: scale(1.2) rotate(15deg); }
+            100% { opacity: 0; transform: scale(1.8) rotate(45deg); }
+          }
+        `}</style>
         {/* ── HUD overlay top (compact) ── */}
         <div className="absolute top-2 left-2 right-2 z-20">
           <div className="flex items-center gap-2">
@@ -577,6 +607,22 @@ export default function BattleView() {
               <span className="text-[9px] font-black text-white/60">AI</span>
             </div>
           </div>
+
+          {/* Score popups — float up beside scores */}
+          {scorePopups.map(p => (
+            <div key={p.id}
+              className={`absolute top-12 ${p.side === "left" ? "left-6" : "right-6"} animate-[popUp_1.8s_ease-out_forwards] pointer-events-none`}
+              style={{
+                color: p.color,
+                fontSize: p.text.length > 2 ? "18px" : "28px",
+                fontWeight: 900,
+                textShadow: `0 0 16px ${p.color}, 0 2px 8px rgba(0,0,0,0.8)`,
+                animation: "popUp 1.8s ease-out forwards",
+              }}
+            >
+              {p.text}
+            </div>
+          ))}
 
           {/* Phase status — centered pill */}
           <div className="flex justify-center mt-2">

@@ -97,18 +97,24 @@ export default function GameLobby({ playerTazos, onStart, isLoading, isAuthentic
     <div className="max-w-5xl mx-auto space-y-4">
 
       {/* ════════════════ BANNER ════════════════ */}
-      <div className="mag-card-yellow rounded-none px-4 py-3 flex flex-wrap items-center gap-3"
-        style={{ borderBottom: "4px solid #1a1a1a" }}>
-        <Swords className="w-5 h-5 text-[#E3350D]" />
-        <h1 className="text-sm font-black text-[#1a1a1a] uppercase tracking-tight">BATTLE ARENA</h1>
-        <div className="w-px h-5 bg-[#1a1a1a]/30" />
-        <span className="text-xs font-black text-[#E3350D]">
+      <div
+        className="px-4 py-3 flex flex-wrap items-center gap-3 relative overflow-hidden"
+        style={{
+          backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(255,255,255,0.025) 6px, rgba(255,255,255,0.025) 12px), linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 100%)`,
+          border: "3px solid #1a1a1a",
+          boxShadow: "4px 4px 0px #FFCC00",
+        }}
+      >
+        <Swords className="w-5 h-5 text-[#FFCC00]" />
+        <h1 className="text-sm font-black text-white uppercase tracking-tight">BATTLE ARENA</h1>
+        <div className="w-px h-5 bg-white/15" />
+        <span className="text-xs font-black text-[#FFCC00]">
           {tazoCount} TAZOS
         </span>
         {tazoCount < 5 && (
-          <span className="text-[9px] font-black text-[#1a1a1a]/40 ml-auto">Need 5+ tazos</span>
+          <span className="text-[9px] font-black text-white/40 ml-auto">Need 5+ tazos</span>
         )}
-        <span className="ml-auto text-[9px] font-black text-[#1a1a1a]/30 uppercase">
+        <span className="ml-auto text-[9px] font-black text-white/30 uppercase">
           {isAuthenticated ? "Ready" : "Guest"}
         </span>
       </div>

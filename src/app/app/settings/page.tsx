@@ -39,19 +39,23 @@ export default function SettingsPage() {
       {/* MAGAZINE BANNER STRIP — like Album page    */}
       {/* ═══════════════════════════════════════════ */}
       <div
-        className="mag-card-yellow rounded-none px-4 py-3 flex flex-wrap items-center gap-3"
-        style={{ borderBottom: "4px solid #1a1a1a" }}
+        className="px-4 py-3 flex flex-wrap items-center gap-3 relative overflow-hidden"
+        style={{
+          backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(255,255,255,0.025) 6px, rgba(255,255,255,0.025) 12px), linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 100%)`,
+          border: "3px solid #1a1a1a",
+          boxShadow: "4px 4px 0px #FFCC00",
+        }}
       >
         <div className="flex items-center gap-1.5">
-          <Settings className="w-5 h-5 text-[#1a1a1a]" />
-          <span className="text-sm font-black text-[#1a1a1a] tracking-tight uppercase">
+          <Settings className="w-5 h-5 text-[#FFCC00]" />
+          <span className="text-sm font-black text-white tracking-tight uppercase">
             {t.settings_title || "SETTINGS"}
           </span>
         </div>
-        <div className="w-px h-5 bg-[#1a1a1a]/30" />
+        <div className="w-px h-5 bg-white/15" />
         <div className="flex items-center gap-1">
-          <Disc3 className="w-4 h-4 text-[#E3350D]" />
-          <span className="text-sm font-black text-[#E3350D] tracking-tight">
+          <Disc3 className="w-4 h-4 text-[#FFCC00]" />
+          <span className="text-sm font-black text-[#FFCC00] tracking-tight">
             {user.tazoCount ?? 0} TAZOS
           </span>
         </div>

@@ -160,17 +160,21 @@ export default function DecksPage() {
       {/* MAGAZINE BANNER STRIP                      */}
       {/* ═══════════════════════════════════════════ */}
       <div
-        className="mag-card-yellow rounded-none px-4 py-3 flex flex-wrap items-center gap-3"
-        style={{ borderBottom: "4px solid #1a1a1a" }}
+        className="px-4 py-3 flex flex-wrap items-center gap-3 relative overflow-hidden"
+        style={{
+          backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(255,255,255,0.025) 6px, rgba(255,255,255,0.025) 12px), linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 100%)`,
+          border: "3px solid #1a1a1a",
+          boxShadow: "4px 4px 0px #FFCC00",
+        }}
       >
         <div className="flex items-center gap-1.5">
-          <Layers className="w-5 h-5 text-[#3B4CCA]" />
-          <span className="text-sm font-black text-[#1a1a1a] tracking-tight uppercase">
+          <Layers className="w-5 h-5 text-[#FFCC00]" />
+          <span className="text-sm font-black text-white tracking-tight uppercase">
             {t.decks_title}
           </span>
         </div>
-        <div className="w-px h-5 bg-[#1a1a1a]/30" />
-        <span className="text-sm font-black text-[#3B4CCA] tracking-tight">
+        <div className="w-px h-5 bg-white/15" />
+        <span className="text-sm font-black text-[#FFCC00] tracking-tight">
           {decks.length} DECKS
         </span>
         <button

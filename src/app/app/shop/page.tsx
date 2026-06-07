@@ -338,19 +338,26 @@ export default function BagShopPage() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4">
 
         {/* ── Banner ── */}
-        <div className="mag-card-yellow rounded-none px-4 py-3 flex flex-wrap items-center gap-3"
-          style={{ borderBottom: "4px solid #1a1a1a" }}>
+        <div
+          className="px-4 py-3 flex flex-wrap items-center gap-3 relative overflow-hidden"
+          style={{
+            background: "linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 100%)",
+            backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(255,255,255,0.025) 6px, rgba(255,255,255,0.025) 12px), linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 100%)`,
+            border: "3px solid #1a1a1a",
+            boxShadow: "4px 4px 0px #FFCC00",
+          }}
+        >
           <div className="flex items-center gap-2">
-            <ShoppingCart className="w-5 h-5 text-[#E3350D]" />
-            <h1 className="text-sm font-black text-[#1a1a1a] uppercase tracking-tight">
+            <ShoppingCart className="w-5 h-5 text-[#FFCC00]" />
+            <h1 className="text-sm font-black text-white uppercase tracking-tight">
               {t.shop_title || "Tazo Shop"}
             </h1>
           </div>
-          <div className="w-px h-5 bg-[#1a1a1a]/30" />
+          <div className="w-px h-5 bg-white/15" />
           <div className="flex items-center gap-1.5">
-            <Coins className="w-4 h-4 text-[#1a1a1a]" />
-            <span className="font-black text-sm text-[#1a1a1a]">{credits}</span>
-            <span className="text-[9px] font-bold text-[#1a1a1a]/40 uppercase">cr</span>
+            <Coins className="w-4 h-4 text-[#FFCC00]" />
+            <span className="font-black text-sm text-white">{credits}</span>
+            <span className="text-[9px] font-bold text-white/40 uppercase">cr</span>
           </div>
           {pendingBags > 0 && (
             <button

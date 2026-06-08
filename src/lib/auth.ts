@@ -9,7 +9,7 @@
 // ============================================================
 
 import jwt from "jsonwebtoken"
-import crypto from "crypto"
+import { scryptSync, randomBytes, timingSafeEqual } from "crypto"
 import { db } from "@/lib/db"
 
 // ── Password config (use Node.js built-in crypto — never code-split, always reliable) ──
@@ -104,8 +104,8 @@ export function verifyToken(token: string): AuthUser | null {
 // ── Password ──
 
 export function hashPassword(password: string): string {
-  const salt = crypto.randomBytes(SCRYPT_SALT_LEN)
-  const digest = crypto.scryptSync(password, salt, SCRYPT_KEYLEN, {
+  const salt = randomBytes(SCRYPT_SALT_LEN)
+  const digest = scryptSync(password, salt, SCRYPT_KEYLEN, {
     N: SCRYPT_COST,
     r: SCRYPT_BLOCK,
     p: SCRYPT_PARALLEL,
@@ -149,12 +149,12 @@ function verifyScrypt(password: string, hash: string): boolean {
   const expectedDigest = Buffer.from(parts[3], "base64url")
   if (salt.length === 0 || expectedDigest.length === 0) return false
   try {
-    const digest = crypto.scryptSync(password, salt, SCRYPT_KEYLEN, {
+    const digest = scryptSync(password, salt, SCRYPT_KEYLEN, {
       N: SCRYPT_COST,
       r: SCRYPT_BLOCK,
       p: SCRYPT_PARALLEL,
     })
-    return crypto.timingSafeEqual(digest, expectedDigest)
+    return timingSafeEqual(digest, expectedDigest)
   } catch {
     return false
   }

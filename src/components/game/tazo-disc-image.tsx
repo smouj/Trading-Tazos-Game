@@ -106,7 +106,7 @@ export default function TazoDiscImage({
         height: sizePx,
         borderRadius: "50%",
         border: `${borderWidth}px solid ${borderColor}`,
-        background: innerBg,
+        background: borderColor,
         position: "relative",
         overflow: "hidden",
         cursor: onClick || onFlip ? "pointer" : undefined,

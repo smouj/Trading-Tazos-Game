@@ -1,16 +1,18 @@
 "use client";
 
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import {
   Move, RotateCw, ZoomIn, ZoomOut, Save, Download,
   Eye, EyeOff, GripHorizontal, RefreshCw, SlidersHorizontal,
   LayoutGrid, Image as ImageIcon, ChevronLeft, ChevronRight,
   ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Disc,
-  Scissors, Gauge,
+  Scissors, Gauge, Undo2, Redo2, Lock, Unlock, Crosshair,
+  Clipboard, ClipboardCheck, BookOpen, Copy,
 } from "lucide-react";
 import LayersPanel, { ALL_LAYERS } from "@/components/admin/layers-panel";
 import CreatureViewer from "@/components/admin/creature-viewer";
 import ScratchOverlay from "@/components/admin/scratch-overlay";
+import ElementProperties from "@/components/admin/element-properties";
 
 // ── Types ──
 export interface LayoutConfig {
@@ -30,6 +32,53 @@ export const DEFAULT_LAYOUT: LayoutConfig = {
 };
 
 export type ElementKey = keyof LayoutConfig;
+
+// ── Undo/Redo hook ──
+function useHistory(initial: LayoutConfig) {
+  const [past, setPast] = useState<LayoutConfig[]>([]);
+  const [present, setPresent] = useState<LayoutConfig>(initial);
+  const [future, setFuture] = useState<LayoutConfig[]>([]);
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
+
+  const push = useCallback((next: LayoutConfig) => {
+    setPast((p) => [...p.slice(-49), present]);
+    setPresent(next);
+    setFuture([]);
+    setCanUndo(true);
+    setCanRedo(false);
+  }, [present]);
+
+  const undo = useCallback(() => {
+    if (past.length === 0) return;
+    const prev = past[past.length - 1];
+    setFuture((f) => [present, ...f]);
+    setPresent(prev);
+    setPast((p) => p.slice(0, -1));
+    setCanUndo(past.length > 1);
+    setCanRedo(true);
+  }, [past, present]);
+
+  const redo = useCallback(() => {
+    if (future.length === 0) return;
+    const next = future[0];
+    setPast((p) => [...p, present]);
+    setPresent(next);
+    setFuture((f) => f.slice(1));
+    setCanUndo(true);
+    setCanRedo(future.length > 1);
+  }, [future, present]);
+
+  const reset = useCallback((layout: LayoutConfig) => {
+    setPast([]);
+    setPresent(layout);
+    setFuture([]);
+    setCanUndo(false);
+    setCanRedo(false);
+  }, []);
+
+  return { present, push, undo, redo, reset, canUndo, canRedo };
+}
 
 const ELEMENT_LABELS: Record<ElementKey, string> = {
   badge: "Badge",
@@ -66,7 +115,11 @@ interface TazoVisualEditorProps {
   children?: React.ReactNode;
 }
 
-// ── Draggable element ──
+// ── Draggable element (enhanced with snap + coordinates display) ──
+function snapValue(val: number, grid: number): number {
+  return Math.round(val / grid) * grid;
+}
+
 function DraggableElement({
   id,
   x,
@@ -76,10 +129,13 @@ function DraggableElement({
   label,
   children,
   active,
+  locked,
   onActivate,
   onMove,
   onNudge,
   onScaleChange,
+  onDragStart,
+  onDragEnd,
 }: {
   id: ElementKey;
   x: number;
@@ -89,33 +145,52 @@ function DraggableElement({
   label: string;
   children: React.ReactNode;
   active: boolean;
+  locked: boolean;
   onActivate: () => void;
   onMove: (dx: number, dy: number) => void;
   onNudge: (dx: number, dy: number) => void;
   onScaleChange: (delta: number) => void;
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
   const startPos = useRef({ x: 0, y: 0 });
+  const [isSnapped, setIsSnapped] = useState(false);
+  const snapRef = useRef<{ x: boolean; y: boolean }>({ x: false, y: false });
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
+      if (locked) return;
       e.preventDefault();
       e.stopPropagation();
       onActivate();
+      onDragStart?.();
       dragging.current = true;
       startPos.current = { x: e.clientX, y: e.clientY };
 
       const onMouseMove = (ev: MouseEvent) => {
         if (!dragging.current) return;
-        const dx = ev.clientX - startPos.current.x;
-        const dy = ev.clientY - startPos.current.y;
+        let dx = ev.clientX - startPos.current.x;
+        let dy = ev.clientY - startPos.current.y;
+        
+        // Snap to grid when Shift held
+        if (ev.shiftKey) {
+          dx = snapValue(dx, 10);
+          dy = snapValue(dy, 10);
+          setIsSnapped(true);
+        } else {
+          setIsSnapped(false);
+        }
+        
         startPos.current = { x: ev.clientX, y: ev.clientY };
         onMove(dx, dy);
       };
 
       const onMouseUp = () => {
         dragging.current = false;
+        setIsSnapped(false);
+        onDragEnd?.();
         window.removeEventListener("mousemove", onMouseMove);
         window.removeEventListener("mouseup", onMouseUp);
       };
@@ -123,12 +198,12 @@ function DraggableElement({
       window.addEventListener("mousemove", onMouseMove);
       window.addEventListener("mouseup", onMouseUp);
     },
-    [onActivate, onMove]
+    [locked, onActivate, onMove, onDragStart, onDragEnd]
   );
 
-  // Keyboard nudging when active
+  // Keyboard nudging when active (respects lock)
   useEffect(() => {
-    if (!active) return;
+    if (!active || locked) return;
     const handler = (e: KeyboardEvent) => {
       const step = e.shiftKey ? 10 : 1;
       switch (e.key) {
@@ -142,15 +217,18 @@ function DraggableElement({
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [active, onNudge, onScaleChange]);
+  }, [active, locked, onNudge, onScaleChange]);
 
   return (
     <div
       ref={ref}
       onMouseDown={handleMouseDown}
-      className={`absolute cursor-grab active:cursor-grabbing select-none transition-shadow
+      className={`absolute select-none transition-shadow
+        ${locked ? "cursor-not-allowed opacity-50" : "cursor-grab active:cursor-grabbing"}
         ${active ? "z-50" : "z-10"}
-        ${active ? "ring-2 ring-offset-1 ring-white/80 rounded" : ""}
+        ${active ? "ring-2 ring-offset-1 ring-[#FFCC00] rounded" : ""}
+        ${isSnapped ? "ring-[#22C55E]" : ""}
+        ${locked ? "ring-[#E3350D]" : ""}
       `}
       style={{
         left: `calc(50% + ${x}px)`,
@@ -160,16 +238,18 @@ function DraggableElement({
       }}
     >
       {children}
-      {/* Active indicator */}
+      {/* Active indicator with coordinates */}
       {active && (
-        <div className="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-[#1a1a1a] text-white text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider shadow">
+        <div className="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap bg-[#1a1a1a] text-white text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider shadow-lg flex items-center gap-1.5">
+          {locked && <Lock className="w-2 h-2 text-[#E3350D]" />}
           {label}
+          <span className="text-[7px] font-mono text-white/50">({Math.round(x)}, {Math.round(y)})</span>
         </div>
       )}
       {/* Hitbox handle */}
       <div
         className="absolute inset-0 rounded-full opacity-0"
-        style={{ border: `1px dashed ${color}` }}
+        style={{ border: `1px dashed ${locked ? "#E3350D" : color}` }}
       />
     </div>
   );
@@ -262,7 +342,7 @@ export default function TazoVisualEditor({
   displayName,
   number,
   combatType,
-  layout,
+  layout: externalLayout,
   onLayoutChange,
   wearLevel: externalWearLevel = 0,
   onWearLevelChange,
@@ -270,25 +350,40 @@ export default function TazoVisualEditor({
   onSelectTazo,
   children,
 }: TazoVisualEditorProps) {
+  const history = useHistory(externalLayout);
+  const layout = history.present;
+  
   const [activeElement, setActiveElement] = useState<ElementKey | null>(null);
   const [showElements, setShowElements] = useState<Record<ElementKey, boolean>>({
     badge: true, number: true, name: true, rarity: true, creature: true,
   });
+  const [lockedElements, setLockedElements] = useState<Record<string, boolean>>({});
   const [previewSize, setPreviewSize] = useState(440);
   const [showBrowser, setShowBrowser] = useState(false);
   const [browserPage, setBrowserPage] = useState(0);
   const [showLayers, setShowLayers] = useState(true);
+  const [showProperties, setShowProperties] = useState(true);
   const [showCreature, setShowCreature] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const [wearLevel, setWearLevel] = useState(externalWearLevel);
   const [visibleLayers, setVisibleLayers] = useState<Record<string, boolean>>({});
   const [currentCreatureUrl, setCurrentCreatureUrl] = useState(creatureImageUrl);
+  const [copied, setCopied] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Sync history push to parent
+  const pushLayout = useCallback((next: LayoutConfig) => {
+    history.push(next);
+    onLayoutChange(next);
+  }, [history, onLayoutChange]);
 
   const PAGE_SIZE = 8;
 
   const handleMove = useCallback(
     (id: ElementKey, dx: number, dy: number) => {
-      onLayoutChange({
+      if (lockedElements[id]) return;
+      pushLayout({
         ...layout,
         [id]: {
           ...layout[id],
@@ -297,32 +392,34 @@ export default function TazoVisualEditor({
         },
       });
     },
-    [layout, onLayoutChange]
+    [layout, pushLayout, lockedElements]
   );
 
   const handleNudge = useCallback(
     (id: ElementKey, dx: number, dy: number) => {
+      if (lockedElements[id]) return;
       handleMove(id, dx, dy);
     },
-    [handleMove]
+    [handleMove, lockedElements]
   );
 
   const handleScaleChange = useCallback(
     (id: ElementKey, delta: number) => {
-      onLayoutChange({
+      if (lockedElements[id]) return;
+      pushLayout({
         ...layout,
         [id]: {
           ...layout[id],
-          scale: Math.max(0.3, Math.min(3, layout[id].scale + delta)),
+          scale: Math.max(0.1, Math.min(5, layout[id].scale + delta)),
         },
       });
     },
-    [layout, onLayoutChange]
+    [layout, pushLayout, lockedElements]
   );
 
   // Reset layout to default
   const resetLayout = () => {
-    onLayoutChange({ ...DEFAULT_LAYOUT });
+    pushLayout({ ...DEFAULT_LAYOUT });
   };
 
   // Save layout
@@ -339,13 +436,39 @@ export default function TazoVisualEditor({
     }
   };
 
+  // Copy layout JSON
+  const copyLayout = () => {
+    navigator.clipboard.writeText(JSON.stringify(layout, null, 2));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  // Ctrl+Z / Ctrl+Shift+Z global handler
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
+        e.preventDefault();
+        history.undo();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === "z" && e.shiftKey) {
+        e.preventDefault();
+        history.redo();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [history]);
+
   // Load saved layout
   useEffect(() => {
     if (!franchise) return;
     fetch(`/api/admin/tazo-layouts?franchise=${franchise}`, { credentials: "include" })
       .then((r) => r.json())
       .then((d) => {
-        if (d.layout) onLayoutChange(d.layout);
+        if (d.layout) {
+          history.reset(d.layout);
+          onLayoutChange(d.layout);
+        }
       })
       .catch(() => {});
   }, [franchise]);
@@ -359,40 +482,66 @@ export default function TazoVisualEditor({
   return (
     <div className="flex flex-col gap-4" ref={containerRef}>
       {/* Toolbar */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <div className="flex items-center gap-1 bg-[#1a1a1a]/5 rounded-lg p-1">
-          {(Object.keys(ELEMENT_LABELS) as ElementKey[]).map((key) => (
-            <button
-              key={key}
-              onClick={() => {
-                setActiveElement(key);
-                setShowElements((p) => ({ ...p, [key]: true }));
-              }}
-              className={`text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded transition-all flex items-center gap-1
-                ${activeElement === key
-                  ? "text-white shadow"
-                  : "text-[#1a1a1a]/40 hover:text-[#1a1a1a]/70"
-                }`}
-              style={{
-                backgroundColor: activeElement === key ? ELEMENT_COLORS[key] : undefined,
-              }}
-            >
-              <GripHorizontal className="w-3 h-3" />
-              {ELEMENT_LABELS[key]}
-            </button>
-          ))}
+      <div className="flex items-center gap-1.5 flex-wrap">
+        {/* Undo/Redo */}
+        <button
+          onClick={history.undo}
+          disabled={!history.canUndo}
+          className="p-1.5 rounded bg-[#1a1a1a]/5 hover:bg-[#1a1a1a]/10 disabled:opacity-20 text-[#1a1a1a]/50 transition-all"
+          title="Undo (Ctrl+Z)"
+        >
+          <Undo2 className="w-3.5 h-3.5" />
+        </button>
+        <button
+          onClick={history.redo}
+          disabled={!history.canRedo}
+          className="p-1.5 rounded bg-[#1a1a1a]/5 hover:bg-[#1a1a1a]/10 disabled:opacity-20 text-[#1a1a1a]/50 transition-all"
+          title="Redo (Ctrl+Shift+Z)"
+        >
+          <Redo2 className="w-3.5 h-3.5" />
+        </button>
+
+        <div className="h-6 w-px bg-[#1a1a1a]/10" />
+
+        {/* Element selectors */}
+        <div className="flex items-center gap-0.5 bg-[#1a1a1a]/5 rounded-lg p-0.5">
+          {(Object.keys(ELEMENT_LABELS) as ElementKey[]).map((key) => {
+            const isLocked = lockedElements[key];
+            return (
+              <button
+                key={key}
+                onClick={() => {
+                  setActiveElement(key);
+                  setShowElements((p) => ({ ...p, [key]: true }));
+                }}
+                className={`text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded transition-all flex items-center gap-1
+                  ${activeElement === key
+                    ? "text-white shadow"
+                    : "text-[#1a1a1a]/40 hover:text-[#1a1a1a]/70"
+                  }`}
+                style={{
+                  backgroundColor: activeElement === key ? ELEMENT_COLORS[key] : undefined,
+                }}
+              >
+                {isLocked && <Lock className="w-2 h-2" />}
+                <GripHorizontal className="w-3 h-3" />
+                {ELEMENT_LABELS[key]}
+              </button>
+            );
+          })}
         </div>
 
         <div className="h-6 w-px bg-[#1a1a1a]/10" />
 
-        <div className="flex items-center gap-1">
+        {/* Zoom */}
+        <div className="flex items-center gap-0.5">
           <button
             onClick={() => setPreviewSize((s) => Math.max(200, s - 40))}
             className="p-1.5 rounded bg-[#1a1a1a]/5 hover:bg-[#1a1a1a]/10 text-[#1a1a1a]/50"
           >
             <ZoomOut className="w-3.5 h-3.5" />
           </button>
-          <span className="text-[9px] font-bold text-[#1a1a1a]/30 w-10 text-center">{previewSize}px</span>
+          <span className="text-[9px] font-bold text-[#1a1a1a]/30 w-10 text-center tabular-nums">{previewSize}</span>
           <button
             onClick={() => setPreviewSize((s) => Math.min(800, s + 40))}
             className="p-1.5 rounded bg-[#1a1a1a]/5 hover:bg-[#1a1a1a]/10 text-[#1a1a1a]/50"
@@ -403,84 +552,127 @@ export default function TazoVisualEditor({
 
         <div className="h-6 w-px bg-[#1a1a1a]/10" />
 
-        <button
-          onClick={resetLayout}
-          className="text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded bg-[#1a1a1a]/5 hover:bg-[#1a1a1a]/10 text-[#1a1a1a]/50 flex items-center gap-1"
-        >
-          <RefreshCw className="w-3 h-3" />
-          Reset
-        </button>
-
+        {/* Save / Copy / Reset */}
         <button
           onClick={saveLayout}
-          className="text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded bg-[#22C55E]/10 hover:bg-[#22C55E]/20 text-[#22C55E] flex items-center gap-1"
+          className="text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded bg-[#22C55E]/10 hover:bg-[#22C55E]/20 text-[#22C55E] flex items-center gap-1 transition-all"
         >
-          <Save className="w-3 h-3" />
-          Save Layout
+          <Save className="w-3 h-3" /> Save
         </button>
 
-        {/* Toggle visibility */}
-        {(Object.keys(ELEMENT_LABELS) as ElementKey[]).map((key) => (
-          <button
-            key={`toggle-${key}`}
-            onClick={() => setShowElements((p) => ({ ...p, [key]: !p[key] }))}
-            className={`text-[8px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5 transition-all
-              ${showElements[key]
-                ? "bg-[#1a1a1a]/10 text-[#1a1a1a]/60"
-                : "bg-transparent text-[#1a1a1a]/20 line-through"
-              }`}
-          >
-            {showElements[key] ? <Eye className="w-2.5 h-2.5" /> : <EyeOff className="w-2.5 h-2.5" />}
-            {ELEMENT_LABELS[key][0]}
-          </button>
-        ))}
-
-        {/* Browser toggle */}
         <button
-          onClick={() => setShowBrowser(!showBrowser)}
-          className={`text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded flex items-center gap-1 transition-all
-            ${showBrowser
-              ? "bg-[#3B4CCA] text-white"
-              : "bg-[#1a1a1a]/5 text-[#1a1a1a]/50 hover:bg-[#1a1a1a]/10"
-            }`}
+          onClick={copyLayout}
+          className={`text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded flex items-center gap-1 transition-all ${
+            copied
+              ? "bg-[#22C55E]/10 text-[#22C55E]"
+              : "bg-[#1a1a1a]/5 hover:bg-[#1a1a1a]/10 text-[#1a1a1a]/50"
+          }`}
         >
-          <LayoutGrid className="w-3 h-3" />
-          Published ({publishedTazos.length})
+          {copied ? <ClipboardCheck className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+          {copied ? "Copied!" : "JSON"}
         </button>
 
-        {/* Layers toggle */}
+        <button
+          onClick={resetLayout}
+          className="text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded bg-[#E3350D]/5 hover:bg-[#E3350D]/10 text-[#E3350D]/50 flex items-center gap-1 transition-all"
+        >
+          <RefreshCw className="w-3 h-3" /> Reset
+        </button>
+
+        <div className="h-6 w-px bg-[#1a1a1a]/10" />
+
+        {/* Panel toggles */}
+        <button
+          onClick={() => setShowProperties(!showProperties)}
+          className={`text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded flex items-center gap-1 transition-all ${
+            showProperties
+              ? "bg-[#A855F7] text-white"
+              : "bg-[#1a1a1a]/5 text-[#1a1a1a]/50 hover:bg-[#1a1a1a]/10"
+          }`}
+        >
+          <SlidersHorizontal className="w-3 h-3" /> Props
+        </button>
+
         <button
           onClick={() => setShowLayers(!showLayers)}
-          className={`text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded flex items-center gap-1 transition-all
-            ${showLayers
+          className={`text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded flex items-center gap-1 transition-all ${
+            showLayers
               ? "bg-[#6366F1] text-white"
               : "bg-[#1a1a1a]/5 text-[#1a1a1a]/50 hover:bg-[#1a1a1a]/10"
-            }`}
+          }`}
         >
-          <Eye className="w-3 h-3" />
-          Layers
+          <Eye className="w-3 h-3" /> Layers
         </button>
 
-        {/* Creature viewer toggle */}
+        <button
+          onClick={() => setShowBrowser(!showBrowser)}
+          className={`text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded flex items-center gap-1 transition-all ${
+            showBrowser
+              ? "bg-[#3B4CCA] text-white"
+              : "bg-[#1a1a1a]/5 text-[#1a1a1a]/50 hover:bg-[#1a1a1a]/10"
+          }`}
+        >
+          <LayoutGrid className="w-3 h-3" /> ({publishedTazos.length})
+        </button>
+
         <button
           onClick={() => setShowCreature(!showCreature)}
-          className={`text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded flex items-center gap-1 transition-all
-            ${showCreature
+          className={`text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded flex items-center gap-1 transition-all ${
+            showCreature
               ? "bg-[#E3350D] text-white"
               : "bg-[#1a1a1a]/5 text-[#1a1a1a]/50 hover:bg-[#1a1a1a]/10"
-            }`}
+          }`}
         >
-          <Scissors className="w-3 h-3" />
-          Creature
+          <Scissors className="w-3 h-3" /> Creature
+        </button>
+
+        {/* Shortcuts help */}
+        <button
+          onClick={() => setShowShortcuts(!showShortcuts)}
+          className={`text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded flex items-center gap-1 transition-all ${
+            showShortcuts
+              ? "bg-[#FBBF24] text-[#1a1a1a]"
+              : "bg-[#1a1a1a]/5 text-[#1a1a1a]/50 hover:bg-[#1a1a1a]/10"
+          }`}
+          title="Keyboard shortcuts"
+        >
+          <BookOpen className="w-3 h-3" /> ?
         </button>
 
         {children}
       </div>
 
+      {/* Shortcuts cheatsheet */}
+      {showShortcuts && (
+        <div className="mag-card p-3 border-2 border-[#FBBF24] bg-[#FBBF24]/5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-0.5">
+            {[
+              ["🖱️ Drag", "Move element"],
+              ["🖱️ Shift+Drag", "Snap to 10px grid"],
+              ["⌨️ Arrows", "Nudge ±1px"],
+              ["⌨️ Shift+Arrow", "Nudge ±10px"],
+              ["⌨️ +/-", "Scale element"],
+              ["⌨️ Ctrl+Z", "Undo"],
+              ["⌨️ Ctrl+Shift+Z", "Redo"],
+              ["⌨️ Ctrl+←/→", "Prev/next tazo"],
+              ["🔒 Click lock icon", "Lock element"],
+              ["👁️ Click eye icon", "Toggle visibility"],
+              ["📋 Copy JSON", "Export layout"],
+              ["💾 Save", "Persist to server"],
+            ].map(([key, desc]) => (
+              <div key={key as string} className="flex items-center gap-1.5">
+                <span className="text-[8px] font-black text-[#1a1a1a]">{key}</span>
+                <span className="text-[8px] font-medium text-[#1a1a1a]/40">{desc}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="flex gap-4">
-        {/* Layers Panel (left sidebar) */}
+        {/* Left sidebar: Layers + Wear */}
         {showLayers && (
-          <div className="w-56 flex-shrink-0">
+          <div className="w-52 flex-shrink-0">
             <div className="sticky top-24 space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto">
               <LayersPanel
                 visibleLayers={visibleLayers}
@@ -494,7 +686,6 @@ export default function TazoVisualEditor({
                 }}
               />
 
-              {/* Wear Level */}
               <div className="mag-card p-3 border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a]">
                 <h3 className="text-[10px] font-black uppercase tracking-wider text-[#1a1a1a] flex items-center gap-1.5 mb-2">
                   <Gauge className="w-3.5 h-3.5" /> Wear Level
@@ -522,8 +713,8 @@ export default function TazoVisualEditor({
                 </div>
                 <div className="flex justify-between text-[7px] font-bold text-[#1a1a1a]/20 mt-1">
                   <span>Mint</span>
-                  <span>Lightly played</span>
-                  <span>Heavily played</span>
+                  <span>Played</span>
+                  <span>Heavy</span>
                   <span>Damaged</span>
                 </div>
               </div>
@@ -584,10 +775,13 @@ export default function TazoVisualEditor({
                       color={ELEMENT_COLORS.badge}
                       label="Badge"
                       active={activeElement === "badge"}
+                      locked={lockedElements["badge"] || false}
                       onActivate={() => setActiveElement("badge")}
                       onMove={(dx, dy) => handleMove("badge", dx / (previewSize / 880), dy / (previewSize / 880))}
                       onNudge={(dx, dy) => handleNudge("badge", dx, dy)}
                       onScaleChange={(d) => handleScaleChange("badge", d)}
+                      onDragStart={() => setIsDragging(true)}
+                      onDragEnd={() => setIsDragging(false)}
                     >
                       <BadgeElement combatType={combatType} />
                     </DraggableElement>
@@ -603,10 +797,13 @@ export default function TazoVisualEditor({
                       color={ELEMENT_COLORS.number}
                       label="Number"
                       active={activeElement === "number"}
+                      locked={lockedElements["number"] || false}
                       onActivate={() => setActiveElement("number")}
                       onMove={(dx, dy) => handleMove("number", dx / (previewSize / 880), dy / (previewSize / 880))}
                       onNudge={(dx, dy) => handleNudge("number", dx, dy)}
                       onScaleChange={(d) => handleScaleChange("number", d)}
+                      onDragStart={() => setIsDragging(true)}
+                      onDragEnd={() => setIsDragging(false)}
                     >
                       <NumberElement number={number} />
                     </DraggableElement>
@@ -622,10 +819,13 @@ export default function TazoVisualEditor({
                       color={ELEMENT_COLORS.name}
                       label="Name"
                       active={activeElement === "name"}
+                      locked={lockedElements["name"] || false}
                       onActivate={() => setActiveElement("name")}
                       onMove={(dx, dy) => handleMove("name", dx / (previewSize / 880), dy / (previewSize / 880))}
                       onNudge={(dx, dy) => handleNudge("name", dx, dy)}
                       onScaleChange={(d) => handleScaleChange("name", d)}
+                      onDragStart={() => setIsDragging(true)}
+                      onDragEnd={() => setIsDragging(false)}
                     >
                       <NameElement name={displayName || "Tazo Name"} />
                     </DraggableElement>
@@ -641,10 +841,13 @@ export default function TazoVisualEditor({
                       color={ELEMENT_COLORS.rarity}
                       label="Rarity"
                       active={activeElement === "rarity"}
+                      locked={lockedElements["rarity"] || false}
                       onActivate={() => setActiveElement("rarity")}
                       onMove={(dx, dy) => handleMove("rarity", dx / (previewSize / 880), dy / (previewSize / 880))}
                       onNudge={(dx, dy) => handleNudge("rarity", dx, dy)}
                       onScaleChange={(d) => handleScaleChange("rarity", d)}
+                      onDragStart={() => setIsDragging(true)}
+                      onDragEnd={() => setIsDragging(false)}
                     >
                       <RarityElement rarity={rarity} />
                     </DraggableElement>
@@ -678,41 +881,56 @@ export default function TazoVisualEditor({
               )}
             </div>
 
-            {/* Position info for active element */}
-            {activeElement && (
-              <div className="mt-3 p-3 bg-[#1a1a1a]/5 rounded-lg border border-[#1a1a1a]/10">
-                <div className="flex items-center gap-3 flex-wrap">
-                  <span className="text-[9px] font-black uppercase tracking-wider" style={{ color: ELEMENT_COLORS[activeElement] }}>
-                    {ELEMENT_LABELS[activeElement]}
-                  </span>
-                  <span className="text-[9px] font-mono font-bold text-[#1a1a1a]/50">
-                    X: {layout[activeElement].x.toFixed(0)}px &nbsp; Y: {layout[activeElement].y.toFixed(0)}px
-                  </span>
-                  <span className="text-[9px] font-mono font-bold text-[#1a1a1a]/50">
-                    Scale: {layout[activeElement].scale.toFixed(2)}x
-                  </span>
-                  <div className="flex items-center gap-0.5 ml-auto">
-                    {([
-                      [0, -1, ArrowUp],
-                      [0, 1, ArrowDown],
-                      [-1, 0, ArrowLeft],
-                      [1, 0, ArrowRight],
-                    ] as [number, number, any][]).map(([dx, dy, Icon], i) => (
-                      <button
-                        key={i}
-                        onClick={() => handleNudge(activeElement, dx * 5, dy * 5)}
-                        className="p-1 rounded hover:bg-[#1a1a1a]/10 text-[#1a1a1a]/40 hover:text-[#1a1a1a]/70"
-                        title={`Nudge ${dx > 0 ? "right" : dx < 0 ? "left" : dy > 0 ? "down" : "up"} 5px`}
-                      >
-                        <Icon className="w-3 h-3" />
-                      </button>
-                    ))}
-                  </div>
+            {/* Snap guides (visible during drag) */}
+            {isDragging && activeElement && (
+              <>
+                {/* Center snap lines */}
+                <div
+                  className="absolute pointer-events-none"
+                  style={{
+                    left: "50%",
+                    top: "50%",
+                    width: previewSize,
+                    height: previewSize,
+                    transform: "translate(-50%, -50%)",
+                  }}
+                >
+                  <div className="absolute left-1/2 top-0 bottom-0 w-px bg-[#FFCC00]/40" />
+                  <div className="absolute top-1/2 left-0 right-0 h-px bg-[#FFCC00]/40" />
+                  <div className="absolute inset-0 rounded-full border border-[#FFCC00]/20" />
                 </div>
-              </div>
+              </>
             )}
           </div>
         </div>
+
+        {/* Right sidebar: Properties */}
+        {showProperties && (
+          <div className="w-60 flex-shrink-0">
+            <div className="sticky top-24 max-h-[calc(100vh-200px)] overflow-y-auto">
+              <ElementProperties
+                activeElement={activeElement}
+                layout={layout}
+                onLayoutChange={pushLayout}
+                onNudge={handleNudge}
+                onScaleChange={handleScaleChange}
+                visibleElements={showElements}
+                onToggleVisibility={(id) =>
+                  setShowElements((p) => ({ ...p, [id]: p[id] === false ? true : false }))
+                }
+                lockedElements={lockedElements}
+                onToggleLock={(id) =>
+                  setLockedElements((p) => ({ ...p, [id]: !p[id] }))
+                }
+                undo={history.undo}
+                redo={history.redo}
+                canUndo={history.canUndo}
+                canRedo={history.canRedo}
+                onReset={resetLayout}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Published tazos browser (sidebar) */}
         {showBrowser && (

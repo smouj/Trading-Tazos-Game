@@ -1,6 +1,8 @@
 import { db } from "@/lib/db"
 import { getAuthUser } from "@/lib/auth"
 import { NextRequest, NextResponse } from "next/server"
+import fs from "fs"
+import path from "path"
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "dev@tradingtazosgame.com"
 
@@ -60,8 +62,17 @@ export async function GET(request: NextRequest) {
       take: limit,
     })
 
-    // Cache-buster for image URLs: bump when images are regenerated
-    const IMG_CACHE_BUSTER = "20260609v1"
+    // Cache-buster: combines manual bump constant + layout lastModified
+    // When user saves designer → lastModified updates → images auto-refresh
+    const LAYOUTS_FILE = path.join(process.cwd(), "prisma", "tazo-layouts.json");
+    let layoutTs = 0;
+    try {
+      if (fs.existsSync(LAYOUTS_FILE)) {
+        const layoutStore = JSON.parse(fs.readFileSync(LAYOUTS_FILE, "utf-8"));
+        layoutTs = layoutStore.lastModified || 0;
+      }
+    } catch {}
+    const cacheBuster = `20260609v1-${layoutTs}`
 
     // Flatten franchise & collection to strings + add flat metadata fields
     const flatTazos = tazos.map(t => ({
@@ -74,9 +85,9 @@ export async function GET(request: NextRequest) {
       collectionName: t.collection?.name || null,
       collectionSlug: t.collection?.slug || null,
       collectionYear: t.collection?.year || null,
-      imageUrl: t.imageUrl ? `${t.imageUrl}?v=${IMG_CACHE_BUSTER}` : null,
-      shinyImageUrl: t.shinyImageUrl ? `${t.shinyImageUrl}?v=${IMG_CACHE_BUSTER}` : null,
-      backImageUrl: t.backImageUrl ? `${t.backImageUrl}?v=${IMG_CACHE_BUSTER}` : null,
+      imageUrl: t.imageUrl ? `${t.imageUrl}?v=${cacheBuster}` : null,
+      shinyImageUrl: t.shinyImageUrl ? `${t.shinyImageUrl}?v=${cacheBuster}` : null,
+      backImageUrl: t.backImageUrl ? `${t.backImageUrl}?v=${cacheBuster}` : null,
     }))
 
     return NextResponse.json({ tazos: flatTazos, total, page, limit, totalPages: Math.ceil(total / limit) })

@@ -22,6 +22,17 @@ interface LayoutConfig {
 interface LayoutStore {
   defaults: Record<string, LayoutConfig>; // franchise → layout
   overrides: Record<string, LayoutConfig>; // tazo-slug → layout
+  lastModified: number; // unix timestamp of last layout change
+}
+
+function getLayoutLastModified(): number {
+  try {
+    if (fs.existsSync(LAYOUTS_FILE)) {
+      const store = JSON.parse(fs.readFileSync(LAYOUTS_FILE, "utf-8"));
+      return store.lastModified || 0;
+    }
+  } catch {}
+  return 0;
 }
 
 function readStore(): LayoutStore {
@@ -30,7 +41,7 @@ function readStore(): LayoutStore {
       return JSON.parse(fs.readFileSync(LAYOUTS_FILE, "utf-8"));
     }
   } catch {}
-  return { defaults: {}, overrides: {} };
+  return { defaults: {}, overrides: {}, lastModified: 0 };
 }
 
 function writeStore(store: LayoutStore) {
@@ -84,6 +95,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "franchise or slug required" }, { status: 400 });
   }
 
+  store.lastModified = Date.now();
   writeStore(store);
   return NextResponse.json({ success: true, source: slug ? "override" : "default" });
 }

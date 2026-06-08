@@ -610,7 +610,7 @@ export default function AdminTazoCreatorPage() {
                       <TazoDiscImage
                         src={result.imageUrl}
                         alt={result.name}
-                        size={140} scale={1.12} borderWidth={3}
+                        size={140} borderWidth={3}
                         franchiseSlug={(result as any).franchise?.slug || franchise}
                       />
                     </div>
@@ -720,7 +720,7 @@ export default function AdminTazoCreatorPage() {
                 <div className="space-y-2">
                   {recentCreations.slice(0, 6).map((t: any) => (
                     <div key={t.id} className="flex items-center gap-3 p-2 border-2 border-[#1a1a1a]/10 bg-white rounded">
-                      <TazoDiscImage src={t.imageUrl} alt={t.name} size={40} scale={1.05} borderWidth={2}
+                      <TazoDiscImage src={t.imageUrl} alt={t.name} size={40} borderWidth={2}
                         franchiseSlug={t.franchise?.slug || "minimon"} />
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] font-black uppercase text-[#1a1a1a] truncate">{t.name}</p>

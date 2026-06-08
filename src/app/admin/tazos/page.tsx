@@ -435,7 +435,6 @@ export default function AdminTazoManagerPage() {
                               src={tazo.imageUrl}
                               alt={tazo.name}
                               size="100%"
-                              scale={1.10}
                               borderWidth={2}
                               franchiseSlug={tazo.franchise?.slug || tazo.franchiseId}
                               number={tazo.number}
@@ -501,7 +500,6 @@ export default function AdminTazoManagerPage() {
                               src={editData.imageUrl}
                               alt={editData.name || ""}
                               size="100%"
-                              scale={1.10}
                               borderWidth={3}
                               franchiseSlug={tazo.franchise?.slug || tazo.franchiseId}
                               number={tazo.number}

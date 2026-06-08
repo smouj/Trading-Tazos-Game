@@ -729,10 +729,10 @@ function CollectionsContent({ onNavigate }: { onNavigate: (page: PageId) => void
                           alt={t.displayName || t.name || ""}
                           className="absolute"
                           style={{
-                            inset: `${i * 4}%`,
-                            width: `${100 - i * 8}%`,
-                            height: `${100 - i * 8}%`,
-                            transform: `rotate(${i * 15 - 15}deg) scale(1.21)`,
+                            inset: `${i * 3}%`,
+                            width: `${100 - i * 6}%`,
+                            height: `${100 - i * 6}%`,
+                            transform: `rotate(${i * 15 - 15}deg)`,
                             transformOrigin: "center center",
                             objectFit: "cover",
                             borderRadius: "50%",
@@ -860,7 +860,6 @@ function TazosContent() {
                     src={t.imageUrl}
                     alt={t.displayName || t.name}
                     size="100%"
-                    scale={1.12}
                     borderWidth={0}
                     lazy
                   />

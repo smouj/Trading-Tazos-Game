@@ -381,7 +381,6 @@ export default function CollectionPage() {
                       src={dt.imageUrl}
                       alt={dt.name || ""}
                       size={36}
-                      scale={1.08}
                       borderWidth={0}
                       finish={(dt as any).finish}
                       creatureVariant={(dt as any).creatureVariant}
@@ -579,7 +578,6 @@ export default function CollectionPage() {
                                 : item.tazo.imageUrl}
                               alt={isFlipped ? `Back of ${item.tazo.name || "tazo"}` : item.tazo.name || ""}
                               size="100%"
-                              scale={1.12}
                               borderWidth={2}
                               borderColor="#1a1a1a33"
                               franchiseSlug={item.tazo.franchiseSlug}

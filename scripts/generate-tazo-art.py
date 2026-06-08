@@ -549,6 +549,11 @@ def generate_tazo(tazo, bgs, fonts, base_only=False, layouts=None):
                       fill=(251,191,36,rng.randint(30,110)),
                       width=rng.randint(1,3))
 
+    # ── Crop to disc boundary (remove transparent padding) ──
+    # This ensures the image fills any circular container perfectly without CSS scale hacks
+    CROP_R = RADIUS + 20  # 460 — includes disc + black border
+    img = img.crop((CENTER - CROP_R, CENTER - CROP_R, CENTER + CROP_R, CENTER + CROP_R))
+
     return img
 
 
@@ -686,6 +691,11 @@ def generate_tazo_back(tazo, fonts, layouts=None):
     # Apply circular mask
     clipped = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
     clipped.paste(img, (0, 0), disc_mask)
+    
+    # Crop to disc boundary (remove transparent padding)
+    CROP_R = RADIUS + 20
+    clipped = clipped.crop((CENTER - CROP_R, CENTER - CROP_R, CENTER + CROP_R, CENTER + CROP_R))
+    
     return clipped
 
 

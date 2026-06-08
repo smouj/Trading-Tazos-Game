@@ -40,7 +40,6 @@ function TazoCard({ tazo }: { tazo: TazoData }) {
         src={tazo.imageUrl}
         alt={tazo.name}
         size={92}
-        scale={1.10}
         borderWidth={3}
         franchiseSlug={tazo.franchise}
         number={tazo.number}
@@ -139,7 +138,6 @@ export default function TazosCatalogPage() {
                       src={t.imageUrl}
                       alt={t.name}
                       size={72}
-                      scale={1.12}
                       borderWidth={3}
                       franchiseSlug={t.franchise}
                       number={t.number}

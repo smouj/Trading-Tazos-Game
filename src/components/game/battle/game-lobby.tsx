@@ -299,7 +299,7 @@ export default function GameLobby({ playerTazos, playerDecks, selectedDeckId, on
                     <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-full overflow-hidden border border-[#1a1a1a]/12 mb-1 bg-[#fffef0]">
                       <TazoDiscImage
                         src={t.imageUrl} alt={t.name} size="100%"
-                        scale={1.12} borderWidth={0} franchiseSlug={t.franchise}
+                        borderWidth={0} franchiseSlug={t.franchise}
                         finish={t.finish} creatureVariant={t.creatureVariant} shinyImageUrl={t.shinyImageUrl}
                         lazy className="w-full h-full"
                       />

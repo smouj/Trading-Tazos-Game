@@ -36,18 +36,32 @@ async function removeBackground(inputBuffer: Buffer): Promise<Buffer> {
   const tmpDir = os.tmpdir();
   const inputPath = path.join(tmpDir, `rembg-input-${Date.now()}.png`);
   const outputPath = path.join(tmpDir, `rembg-output-${Date.now()}.png`);
+  const scriptPath = path.join(tmpDir, `rembg-run-${Date.now()}.py`);
 
   try {
     fs.writeFileSync(inputPath, inputBuffer);
 
-    // Use rembg CLI (must be installed: pip install rembg[cli])
-    const { stderr } = await execAsync(
-      `python3 -m rembg i "${inputPath}" "${outputPath}" 2>&1`,
+    // Use Python script (more reliable than CLI for PATH issues)
+    const script = `
+import sys
+from rembg import remove, new_session
+from PIL import Image
+
+img = Image.open("${inputPath}")
+session = new_session("u2net")
+output = remove(img, session=session)
+output.save("${outputPath}", "PNG")
+print("OK")
+`;
+    fs.writeFileSync(scriptPath, script);
+
+    const { stdout, stderr } = await execAsync(
+      `python3 "${scriptPath}"`,
       { timeout: 120000 }
     );
 
-    if (!fs.existsSync(outputPath)) {
-      const errMsg = stderr || "rembg output not produced";
+    if (!fs.existsSync(outputPath) || !stdout.includes("OK")) {
+      const errMsg = stderr || stdout || "rembg output not produced";
       throw new Error(`rembg failed: ${errMsg}`);
     }
 
@@ -56,6 +70,7 @@ async function removeBackground(inputBuffer: Buffer): Promise<Buffer> {
   } finally {
     try { fs.unlinkSync(inputPath); } catch {}
     try { fs.unlinkSync(outputPath); } catch {}
+    try { fs.unlinkSync(scriptPath); } catch {}
   }
 }
 

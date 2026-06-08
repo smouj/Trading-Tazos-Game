@@ -60,6 +60,9 @@ export async function GET(request: NextRequest) {
       take: limit,
     })
 
+    // Cache-buster for image URLs: bump when images are regenerated
+    const IMG_CACHE_BUSTER = "20260608v2"
+
     // Flatten franchise & collection to strings + add flat metadata fields
     const flatTazos = tazos.map(t => ({
       ...t,
@@ -71,6 +74,9 @@ export async function GET(request: NextRequest) {
       collectionName: t.collection?.name || null,
       collectionSlug: t.collection?.slug || null,
       collectionYear: t.collection?.year || null,
+      imageUrl: t.imageUrl ? `${t.imageUrl}?v=${IMG_CACHE_BUSTER}` : null,
+      shinyImageUrl: t.shinyImageUrl ? `${t.shinyImageUrl}?v=${IMG_CACHE_BUSTER}` : null,
+      backImageUrl: t.backImageUrl ? `${t.backImageUrl}?v=${IMG_CACHE_BUSTER}` : null,
     }))
 
     return NextResponse.json({ tazos: flatTazos, total, page, limit, totalPages: Math.ceil(total / limit) })

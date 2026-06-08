@@ -70,8 +70,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    site: "@medaclaw",
-    creator: "@medaclaw",
+    site: "@tazosgame",
+    creator: "@tazosgame",
     title: `${SITE_NAME} — Collect, Trade & Battle Your Tazos`,
     description: "349 classic tazos, 3 collections, 9 combat stats, 2D collection views, and a skill-based 3D battle arena.",
     images: [`${SITE_URL}/logo/social-preview.webp`],
@@ -108,8 +108,8 @@ export default function RootLayout({
                 "url": SITE_URL,
                 "email": "support@tradingtazosgame.com",
                 "sameAs": [
-                  "https://x.com/medaclaw",
-                  "https://www.reddit.com/r/MedaclawArena/",
+                  "https://x.com/tazosgame",
+                  "https://www.reddit.com/r/tradingtazosgame/",
                   "https://t.me/tradingtazosgame",
                   "https://github.com/smouj/Trading-Tazos-Game"
                 ]

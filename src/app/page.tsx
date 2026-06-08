@@ -14,8 +14,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    site: "@medaclaw",
-    creator: "@medaclaw",
+    site: "@tazosgame",
+    creator: "@tazosgame",
     title: "Trading Tazos Game — Aim. Throw. Flip. Capture.",
     description: "349 classic tazos, 3 collections, 9 combat stats, skill-based 3D battle arena. Free to play.",
     images: ["/logo/social-preview.webp"],

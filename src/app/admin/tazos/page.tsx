@@ -12,6 +12,7 @@ import {
   AlertTriangle, Trash2, Square, CheckSquare, ArrowUpDown,
 } from "lucide-react"
 import Link from "next/link"
+import TazoDiscImage from "@/components/game/tazo-disc-image"
 
 // ── Types ──
 interface TazoFranchise { name: string; slug: string }
@@ -426,8 +427,17 @@ export default function AdminTazoManagerPage() {
                             {isSelected ? <CheckSquare className="w-4 h-4 text-[#3B4CCA]" /> : <Square className="w-4 h-4 text-zinc-400" />}
                           </button>
                           {tazo.imageUrl ? (
-                            <img src={tazo.imageUrl} alt={tazo.name} loading="lazy"
-                              className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300" />
+                            <TazoDiscImage
+                              src={tazo.imageUrl}
+                              alt={tazo.name}
+                              size="100%"
+                              scale={1.10}
+                              borderWidth={2}
+                              franchiseSlug={tazo.franchise?.slug || tazo.franchiseId}
+                              number={tazo.number}
+                              finish={tazo.finish as any}
+                              className="group-hover:scale-105 transition-transform duration-300"
+                            />
                           ) : (
                             <ImageIcon className="w-10 h-10 text-zinc-300" />
                           )}
@@ -483,7 +493,16 @@ export default function AdminTazoManagerPage() {
                       <div className="p-3 space-y-3 max-h-[80vh] overflow-y-auto">
                         <div className="relative aspect-square bg-zinc-50 rounded-lg flex items-center justify-center overflow-hidden border-2 border-zinc-200">
                           {editData?.imageUrl ? (
-                            <img src={editData.imageUrl} alt={editData.name || ""} className="w-full h-full object-contain p-2" />
+                            <TazoDiscImage
+                              src={editData.imageUrl}
+                              alt={editData.name || ""}
+                              size="100%"
+                              scale={1.10}
+                              borderWidth={3}
+                              franchiseSlug={tazo.franchise?.slug || tazo.franchiseId}
+                              number={tazo.number}
+                              finish={editData.finish as any || tazo.finish as any}
+                            />
                           ) : <ImageIcon className="w-10 h-10 text-zinc-300" />}
                           <div className="absolute top-0 left-0 right-0 h-1" style={{ background: fColor }} />
                         </div>

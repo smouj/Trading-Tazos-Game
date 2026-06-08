@@ -28,8 +28,8 @@ export const DEFAULT_LAYOUT: LayoutConfig = {
   collection: { x: 0, y: -447, scale: 1.0 },     // very top (matches Python: y=65)
   badge: { x: 0, y: -340, scale: 1.0 },          // top of disc below collection
   number: { x: 310, y: 310, scale: 1.0 },         // bottom-right (Python: 822,822)
-  name: { x: 0, y: 349, scale: 1.0 },             // bottom center (Python: y=861)
-  rarity: { x: 0, y: -335, scale: 1.0 },          // top, below badge (Python: sy=177)
+  name: { x: 0, y: 370, scale: 1.0 },             // bottom center (Python: y=861)
+  rarity: { x: 0, y: -295, scale: 1.0 },          // top, below badge with spacing
   creature: { x: 0, y: 0, scale: 1.0 },           // center
 };
 
@@ -260,72 +260,58 @@ function DraggableElement({
   );
 }
 
-// ── Badge renderer ──
+// ── Badge renderer — classic white tazo badge with black border ──
 function BadgeElement({ combatType }: { combatType?: string }) {
-  const typeColors: Record<string, { bg: string; icon: string }> = {
-    fire: { bg: "#E3350D", icon: "🔥" },
-    water: { bg: "#3B82F6", icon: "💧" },
-    electric: { bg: "#FBBF24", icon: "⚡" },
-    ghost: { bg: "#A855F7", icon: "👻" },
-    grass: { bg: "#22C55E", icon: "🌿" },
-    ice: { bg: "#06B6D4", icon: "❄️" },
-    psychic: { bg: "#EC4899", icon: "🔮" },
-    dark: { bg: "#1a1a1a", icon: "🌑" },
-    earth: { bg: "#92400E", icon: "🪨" },
-    light: { bg: "#FEF3C7", icon: "✨" },
-    human: { bg: "#F59E0B", icon: "👤" },
-    saiyan: { bg: "#E3350D", icon: "💪" },
-    namekian: { bg: "#22C55E", icon: "👽" },
-    melee: { bg: "#DC2626", icon: "⚔️" },
-    ranged: { bg: "#2563EB", icon: "🏹" },
-    hybrid: { bg: "#7C3AED", icon: "🔀" },
-    support: { bg: "#059669", icon: "💊" },
-    data: { bg: "#0EA5E9", icon: "💾" },
-    virus: { bg: "#DC2626", icon: "🦠" },
-    tech: { bg: "#6366F1", icon: "⚙️" },
+  const typeIcons: Record<string, string> = {
+    fire: "🔥", water: "💧", electric: "⚡", ghost: "👻", grass: "🌿",
+    ice: "❄️", psychic: "🔮", dark: "🌑", earth: "🪨", light: "☀️",
+    human: "👤", saiyan: "💪", namekian: "👽",
+    melee: "⚔️", ranged: "🏹", hybrid: "🔀", support: "💊",
+    data: "💾", virus: "🦠", tech: "⚙️",
   };
   const t = combatType?.toLowerCase() || "";
-  const cfg = typeColors[t] || { bg: "#6B7280", icon: "◆" };
+  const icon = typeIcons[t] || "◆";
 
   return (
     <div
-      className="flex items-center justify-center rounded-full shadow-lg border-2 border-[#1a1a1a] text-white font-black text-[10px] w-10 h-10"
-      style={{ backgroundColor: cfg.bg }}
+      className="flex items-center justify-center rounded-full shadow-lg border-[2.5px] border-[#1a1a1a] font-black text-[12px] w-12 h-12"
+      style={{
+        background: "linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%)",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.8)",
+      }}
     >
-      {cfg.icon}
+      <span style={{ filter: "drop-shadow(0 1px 1px rgba(0,0,0,0.3))" }}>{icon}</span>
     </div>
   );
 }
 
-// ── Number renderer ──
+// ── Number renderer — white pill badge with black border ──
 function NumberElement({ number }: { number: string }) {
   return (
-    <div className="bg-[#1a1a1a]/90 backdrop-blur text-white font-black text-xs px-2 py-0.5 rounded-full border border-white/20 shadow-lg">
+    <div
+      className="font-black text-[11px] px-3 py-1 rounded-full shadow-lg whitespace-nowrap"
+      style={{
+        background: "linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%)",
+        color: "#1a1a1a",
+        border: "2.5px solid #1a1a1a",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.8)",
+      }}
+    >
       #{number}
     </div>
   );
 }
 
-// ── Name renderer ──
+// ── Name renderer — white label with black border ──
 function NameElement({ name }: { name: string }) {
   return (
-    <div className="bg-[#1a1a1a]/85 backdrop-blur text-white font-black text-[10px] px-2.5 py-1 rounded-md border border-white/10 shadow-lg whitespace-nowrap tracking-wider uppercase">
-      {name}
-    </div>
-  );
-}
-
-// ── Collection label renderer ──
-function CollectionElement({ name }: { name: string }) {
-  return (
     <div
-      className="text-[8px] font-black uppercase tracking-[0.15em] whitespace-nowrap px-3 py-1 rounded-full"
+      className="font-black text-[10px] px-3 py-1.5 rounded-md shadow-lg whitespace-nowrap tracking-wider uppercase"
       style={{
-        background: "rgba(26,26,26,0.8)",
-        color: "rgba(255,255,255,0.9)",
-        border: "1px solid rgba(255,255,255,0.15)",
-        textShadow: "0 1px 2px rgba(0,0,0,0.5)",
-        backdropFilter: "blur(4px)",
+        background: "linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%)",
+        color: "#1a1a1a",
+        border: "2.5px solid #1a1a1a",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.8)",
       }}
     >
       {name}
@@ -333,22 +319,41 @@ function CollectionElement({ name }: { name: string }) {
   );
 }
 
-// ── Rarity stars renderer ──
+// ── Collection label renderer — white pill with black border ──
+function CollectionElement({ name }: { name: string }) {
+  return (
+    <div
+      className="text-[8px] font-black uppercase tracking-[0.15em] whitespace-nowrap px-3 py-1 rounded-full"
+      style={{
+        background: "linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%)",
+        color: "#1a1a1a",
+        border: "2px solid #1a1a1a",
+        boxShadow: "0 2px 4px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.8)",
+      }}
+    >
+      {name}
+    </div>
+  );
+}
+
+// ── Rarity stars renderer — gold stars with black outline ──
 function RarityElement({ rarity }: { rarity: string }) {
   const stars: Record<string, number> = {
     common: 1, uncommon: 2, rare: 3, "ultra-rare": 4, legendary: 5,
     ultra: 4,
   };
   const count = stars[rarity] || 1;
-  const color = rarity === "legendary" ? "#FBBF24" : rarity === "ultra-rare" || rarity === "ultra" ? "#A855F7" : "#EAB308";
 
   return (
     <div className="flex gap-0.5">
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="w-3 h-3 rounded-full border border-[#1a1a1a]/30 shadow"
-          style={{ backgroundColor: color }}
+          className="w-4 h-4 rounded-full border-[2px] border-[#1a1a1a] shadow-md"
+          style={{
+            background: "linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%)",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.5)",
+          }}
         />
       ))}
     </div>

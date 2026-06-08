@@ -6,7 +6,11 @@ import {
   Eye, EyeOff, GripHorizontal, RefreshCw, SlidersHorizontal,
   LayoutGrid, Image as ImageIcon, ChevronLeft, ChevronRight,
   ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Disc,
+  Scissors, Gauge,
 } from "lucide-react";
+import LayersPanel, { ALL_LAYERS } from "@/components/admin/layers-panel";
+import CreatureViewer from "@/components/admin/creature-viewer";
+import ScratchOverlay from "@/components/admin/scratch-overlay";
 
 // ── Types ──
 export interface LayoutConfig {
@@ -46,6 +50,8 @@ const ELEMENT_COLORS: Record<ElementKey, string> = {
 // ── Props ──
 interface TazoVisualEditorProps {
   tazoImageUrl?: string;
+  creatureImageUrl?: string;
+  slug?: string;
   franchise: string;
   rarity: string;
   displayName: string;
@@ -53,7 +59,9 @@ interface TazoVisualEditorProps {
   combatType?: string;
   layout: LayoutConfig;
   onLayoutChange: (layout: LayoutConfig) => void;
-  publishedTazos?: any[]; // for the browser
+  wearLevel?: number;
+  onWearLevelChange?: (level: number) => void;
+  publishedTazos?: any[];
   onSelectTazo?: (tazo: any) => void;
   children?: React.ReactNode;
 }
@@ -247,6 +255,8 @@ function RarityElement({ rarity }: { rarity: string }) {
 // ── Main Component ──
 export default function TazoVisualEditor({
   tazoImageUrl,
+  creatureImageUrl,
+  slug = "",
   franchise,
   rarity,
   displayName,
@@ -254,6 +264,8 @@ export default function TazoVisualEditor({
   combatType,
   layout,
   onLayoutChange,
+  wearLevel: externalWearLevel = 0,
+  onWearLevelChange,
   publishedTazos = [],
   onSelectTazo,
   children,
@@ -265,6 +277,11 @@ export default function TazoVisualEditor({
   const [previewSize, setPreviewSize] = useState(440);
   const [showBrowser, setShowBrowser] = useState(false);
   const [browserPage, setBrowserPage] = useState(0);
+  const [showLayers, setShowLayers] = useState(true);
+  const [showCreature, setShowCreature] = useState(false);
+  const [wearLevel, setWearLevel] = useState(externalWearLevel);
+  const [visibleLayers, setVisibleLayers] = useState<Record<string, boolean>>({});
+  const [currentCreatureUrl, setCurrentCreatureUrl] = useState(creatureImageUrl);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const PAGE_SIZE = 8;
@@ -431,10 +448,89 @@ export default function TazoVisualEditor({
           Published ({publishedTazos.length})
         </button>
 
+        {/* Layers toggle */}
+        <button
+          onClick={() => setShowLayers(!showLayers)}
+          className={`text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded flex items-center gap-1 transition-all
+            ${showLayers
+              ? "bg-[#6366F1] text-white"
+              : "bg-[#1a1a1a]/5 text-[#1a1a1a]/50 hover:bg-[#1a1a1a]/10"
+            }`}
+        >
+          <Eye className="w-3 h-3" />
+          Layers
+        </button>
+
+        {/* Creature viewer toggle */}
+        <button
+          onClick={() => setShowCreature(!showCreature)}
+          className={`text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded flex items-center gap-1 transition-all
+            ${showCreature
+              ? "bg-[#E3350D] text-white"
+              : "bg-[#1a1a1a]/5 text-[#1a1a1a]/50 hover:bg-[#1a1a1a]/10"
+            }`}
+        >
+          <Scissors className="w-3 h-3" />
+          Creature
+        </button>
+
         {children}
       </div>
 
       <div className="flex gap-4">
+        {/* Layers Panel (left sidebar) */}
+        {showLayers && (
+          <div className="w-56 flex-shrink-0">
+            <div className="sticky top-24 space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto">
+              <LayersPanel
+                visibleLayers={visibleLayers}
+                onToggleLayer={(id) =>
+                  setVisibleLayers((p) => ({ ...p, [id]: p[id] === false ? true : false }))
+                }
+                onToggleAll={(v) => {
+                  const all: Record<string, boolean> = {};
+                  ALL_LAYERS.forEach((l) => (all[l.id] = v));
+                  setVisibleLayers(all);
+                }}
+              />
+
+              {/* Wear Level */}
+              <div className="mag-card p-3 border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a]">
+                <h3 className="text-[10px] font-black uppercase tracking-wider text-[#1a1a1a] flex items-center gap-1.5 mb-2">
+                  <Gauge className="w-3.5 h-3.5" /> Wear Level
+                </h3>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={wearLevel}
+                    onChange={(e) => {
+                      const v = Number(e.target.value);
+                      setWearLevel(v);
+                      onWearLevelChange?.(v);
+                    }}
+                    className="w-full h-2 rounded-full appearance-none cursor-pointer"
+                    style={{
+                      background: `linear-gradient(to right, #22C55E ${wearLevel * 0.4}%, #FBBF24 ${wearLevel * 0.7}%, #E3350D ${wearLevel}%)`,
+                      accentColor: wearLevel > 60 ? "#E3350D" : wearLevel > 30 ? "#FBBF24" : "#22C55E",
+                    }}
+                  />
+                  <span className="text-[10px] font-black text-[#1a1a1a] w-8 text-right tabular-nums">
+                    {wearLevel}%
+                  </span>
+                </div>
+                <div className="flex justify-between text-[7px] font-bold text-[#1a1a1a]/20 mt-1">
+                  <span>Mint</span>
+                  <span>Lightly played</span>
+                  <span>Heavily played</span>
+                  <span>Damaged</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Main Editor */}
         <div className="flex-1">
           <div className="mag-card p-4 border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a]">
@@ -465,6 +561,15 @@ export default function TazoVisualEditor({
                   <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
                     <Disc className="w-16 h-16 text-zinc-700" />
                   </div>
+                )}
+
+                {/* Scratch overlay */}
+                {wearLevel > 0 && (
+                  <ScratchOverlay
+                    wearLevel={wearLevel}
+                    tazoSlug={slug}
+                    size={previewSize}
+                  />
                 )}
 
                 {/* Draggable elements layer */}
@@ -669,6 +774,20 @@ export default function TazoVisualEditor({
                   </button>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Creature Viewer (right sidebar) */}
+        {showCreature && (
+          <div className="w-72 flex-shrink-0">
+            <div className="sticky top-24 space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto">
+              <CreatureViewer
+                creatureUrl={currentCreatureUrl}
+                franchise={franchise}
+                slug={slug}
+                onCreatureProcessed={(newUrl) => setCurrentCreatureUrl(newUrl)}
+              />
             </div>
           </div>
         )}

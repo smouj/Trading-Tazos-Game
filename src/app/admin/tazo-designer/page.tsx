@@ -249,6 +249,8 @@ export default function AdminTazoDesignerPage() {
         {viewMode === "editor" && selectedTazo && (
           <TazoVisualEditor
             tazoImageUrl={selectedTazo.imageUrl}
+            creatureImageUrl={`/tazo-creatures/${selectedTazo.franchiseSlug || selectedTazo.franchise?.slug || "unknown"}/${selectedTazo.slug}.png`}
+            slug={selectedTazo.slug || ""}
             franchise={selectedTazo.franchiseSlug || selectedTazo.franchise?.slug || ""}
             rarity={selectedTazo.rarity}
             displayName={selectedTazo.displayName || selectedTazo.name}
@@ -256,6 +258,8 @@ export default function AdminTazoDesignerPage() {
             combatType={selectedTazo.combatType}
             layout={layout}
             onLayoutChange={setLayout}
+            wearLevel={selectedTazo.wearLevel || 0}
+            onWearLevelChange={(level) => setSelectedTazo((t: any) => ({ ...t, wearLevel: level }))}
             publishedTazos={publishedTazos}
             onSelectTazo={setSelectedTazo}
           >

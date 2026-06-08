@@ -202,17 +202,19 @@ def load_layouts():
     Returns { "defaults": { franchise: { element: {x,y,scale} } }, "overrides": { slug: { element: {x,y,scale} } } }
     """
     if not LAYOUTS_PATH.exists():
-        return {"defaults": {}, "overrides": {}}
+        return {"defaults": {}, "overrides": {}, "backDefaults": {}, "backOverrides": {}}
     try:
         with open(LAYOUTS_PATH) as f:
             data = json.load(f)
         return {
             "defaults": data.get("defaults", {}),
             "overrides": data.get("overrides", {}),
+            "backDefaults": data.get("backDefaults", {}),
+            "backOverrides": data.get("backOverrides", {}),
         }
     except Exception as e:
         print(f"  ⚠️ Could not load layouts: {e}")
-        return {"defaults": {}, "overrides": {}}
+        return {"defaults": {}, "overrides": {}, "backDefaults": {}, "backOverrides": {}}
 
 
 def get_layout_for_tazo(layouts, slug, franchise):
@@ -550,15 +552,158 @@ def generate_tazo(tazo, bgs, fonts, base_only=False, layouts=None):
     return img
 
 
+# ══════════════════════════════════════════════════════
+# BACK SIDE GENERATOR
+# ══════════════════════════════════════════════════════
+
+def generate_tazo_back(tazo, fonts, layouts=None):
+    """Generate a back-side tazo composite using back layout config."""
+    fs = tazo["franchise_slug"]
+    slug = tazo["slug"]
+    number = tazo.get("number", 1)
+
+    # Get back layout
+    back_layout_data = layouts.get("backDefaults", {}).get(fs, {})
+    # Also check overrides
+    overrides = layouts.get("backOverrides", {})
+    if slug in overrides:
+        back_layout_data = overrides[slug]
+
+    # If no back layout, return None (use static back image)
+    if not back_layout_data:
+        return None
+
+    # Create dark background disc
+    img = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
+    disc_mask = Image.new("L", (SIZE, SIZE), 0)
+    mask_draw = ImageDraw.Draw(disc_mask)
+    mask_draw.ellipse(
+        [CENTER - RADIUS, CENTER - RADIUS, CENTER + RADIUS, CENTER + RADIUS],
+        fill=255
+    )
+    draw = ImageDraw.Draw(img)
+
+    # Dark inner disc
+    draw.ellipse(
+        [CENTER - RADIUS, CENTER - RADIUS, CENTER + RADIUS, CENTER + RADIUS],
+        fill=(18, 18, 18, 255)
+    )
+    # Subtle rings
+    for r in range(RADIUS - 20, 0, -40):
+        draw.ellipse(
+            [CENTER - r, CENTER - r, CENTER + r, CENTER + r],
+            outline=(255, 255, 255, 5), width=1
+        )
+
+    # Black outer border
+    border_r = RADIUS + 12
+    draw.ellipse(
+        [CENTER - border_r, CENTER - border_r, CENTER + border_r, CENTER + border_r],
+        outline=(18, 18, 18, 255), width=8
+    )
+
+    def be(key, dx=0, dy=0, ds=1.0):
+        e = back_layout_data.get(key, {})
+        return CENTER + e.get("x", dx), CENTER + e.get("y", dy), e.get("scale", ds)
+
+    # ── Center Icon ──
+    if "centerIcon" in back_layout_data:
+        icons = {"minimon": "★", "cybermon": "⬡", "dracobell": "◆"}
+        ic = icons.get(fs, "●")
+        cx, cy, cs = be("centerIcon")
+        icon_font = fonts.get("large", ImageFont.load_default())
+        ibbox = draw.textbbox((0, 0), ic, font=icon_font)
+        iw, ih = ibbox[2] - ibbox[0], ibbox[3] - ibbox[1]
+        draw.text((cx - iw // 2, cy - ih // 2), ic,
+                  fill=(255, 215, 0, 255), font=icon_font,
+                  stroke_width=3, stroke_fill=(0, 0, 0, 200))
+
+    # ── Top Label ──
+    if "topLabel" in back_layout_data:
+        tx, ty, ts = be("topLabel", 0, -320)
+        txt = back_layout_data["topLabel"].get("customText", "OFFICIAL TAZO")
+        tf = fonts.get("small", ImageFont.load_default())
+        tb = draw.textbbox((0, 0), txt, font=tf)
+        tw, th = tb[2] - tb[0], tb[3] - tb[1]
+        pad = 8
+        draw.rounded_rectangle(
+            [tx - tw // 2 - pad, ty - th // 2 - pad,
+             tx + tw // 2 + pad, ty + th // 2 + pad],
+            radius=10, fill=(255, 255, 255, 240), outline=(18, 18, 18, 255), width=2
+        )
+        draw.text((tx - tw // 2, ty - th // 2), txt,
+                  fill=(26, 26, 26, 255), font=tf)
+
+    # ── Bottom Label ──
+    if "bottomLabel" in back_layout_data:
+        bx, by, bs = be("bottomLabel", 0, 320)
+        btxt = back_layout_data["bottomLabel"].get("customText", fs.upper())
+        bf = fonts.get("small", ImageFont.load_default())
+        bb = draw.textbbox((0, 0), btxt, font=bf)
+        bw, bh = bb[2] - bb[0], bb[3] - bb[1]
+        pad = 8
+        draw.rounded_rectangle(
+            [bx - bw // 2 - pad, by - bh // 2 - pad,
+             bx + bw // 2 + pad, by + bh // 2 + pad],
+            radius=10, fill=(255, 255, 255, 240), outline=(18, 18, 18, 255), width=2
+        )
+        draw.text((bx - bw // 2, by - bh // 2), btxt,
+                  fill=(26, 26, 26, 255), font=bf)
+
+    # ── Corner Badge ──
+    if "cornerBadge" in back_layout_data:
+        cbx, cby, cbs = be("cornerBadge", 280, -280)
+        cbt = back_layout_data["cornerBadge"].get("customText", "LE")
+        hexcol = back_layout_data["cornerBadge"].get("color", "#A855F7")
+        r = int(hexcol[1:3], 16) if len(hexcol) >= 3 else 168
+        g = int(hexcol[3:5], 16) if len(hexcol) >= 5 else 85
+        b = int(hexcol[5:7], 16) if len(hexcol) >= 7 else 247
+        csz = int(20 * cbs)
+        draw.ellipse(
+            [cbx - csz, cby - csz, cbx + csz, cby + csz],
+            fill=(r, g, b, 255), outline=(18, 18, 18, 255), width=2
+        )
+        cbf = fonts.get("tiny", ImageFont.load_default())
+        cbxbox = draw.textbbox((0, 0), cbt, font=cbf)
+        cw, ch = cbxbox[2] - cbxbox[0], cbxbox[3] - cbxbox[1]
+        draw.text((cbx - cw // 2, cby - ch // 2), cbt, fill=(255, 255, 255, 255), font=cbf)
+
+    # ── Number Badge ──
+    if "numberBadge" in back_layout_data:
+        nx, ny, ns = be("numberBadge", -280, 280)
+        ntxt = f"Nº {number}"
+        nf = fonts.get("tiny", ImageFont.load_default())
+        nb = draw.textbbox((0, 0), ntxt, font=nf)
+        nw, nh = nb[2] - nb[0], nb[3] - nb[1]
+        pad = 6
+        draw.rounded_rectangle(
+            [nx - nw // 2 - pad, ny - nh // 2 - pad,
+             nx + nw // 2 + pad, ny + nh // 2 + pad],
+            radius=8, fill=(255, 255, 255, 230), outline=(18, 18, 18, 255), width=2
+        )
+        draw.text((nx - nw // 2, ny - nh // 2), ntxt, fill=(26, 26, 26, 255), font=nf)
+
+    # Apply circular mask
+    clipped = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
+    clipped.paste(img, (0, 0), disc_mask)
+    return clipped
+
+
 def main():
     args = [a for a in sys.argv[1:] if a.startswith("-")]
     db_path = next((a for a in sys.argv[1:] if not a.startswith("-")), "prisma/dev.db")
     base_only = "--base-only" in args
     force = "--force" in args
+    back_mode = "--back" in args
 
-    out_dir = Path("public/tazos-base") if base_only else OUT_DIR
+    if back_mode:
+        out_dir = Path("public/tazos-backs")
+    elif base_only:
+        out_dir = Path("public/tazos-base")
+    else:
+        out_dir = OUT_DIR
 
-    print(f"DB: {db_path}  base_only={base_only}  force={force}")
+    print(f"DB: {db_path}  base_only={base_only}  back={back_mode}  force={force}")
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     tazos = [dict(r) for r in conn.execute(
@@ -597,7 +742,13 @@ def main():
             continue
         out.parent.mkdir(parents=True, exist_ok=True)
         try:
-            img = generate_tazo(t, bgs, fonts, base_only=base_only, layouts=layouts)
+            if back_mode:
+                img = generate_tazo_back(t, fonts, layouts)
+                if img is None:
+                    skipped += 1
+                    continue
+            else:
+                img = generate_tazo(t, bgs, fonts, base_only=base_only, layouts=layouts)
             img.save(str(out), "PNG", optimize=True)
             # Post-process with pngquant for 3-10x smaller files (falls back to PIL quantize)
             try:

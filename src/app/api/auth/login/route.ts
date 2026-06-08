@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
-import { verifyPassword, generateToken } from "@/lib/auth"
+import { verifyPassword, generateToken, migratePasswordIfNeeded, seedAdminUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { checkRateLimit } from "@/lib/rate-limit"
+
+// Ensure admin user exists on first request
+seedAdminUser()
 
 export async function POST(request: NextRequest) {
   // Rate limit: 5 auth attempts per minute
@@ -31,13 +34,31 @@ export async function POST(request: NextRequest) {
       where: { email: email.toLowerCase().trim() },
     })
 
+    console.log("[LOGIN] user found:", !!user)
+    if (user) console.log("[LOGIN] hash:", user.passwordHash?.substring(0,8), "oauthProvider:", user.oauthProvider)
+
     if (!user) {
       return NextResponse.json({ error: "Invalid email or password" }, { status: 401 })
     }
 
+    // OAuth-only users have no password — redirect them to OAuth login
+    if (!user.passwordHash) {
+      const provider = user.oauthProvider || "your OAuth provider"
+      return NextResponse.json({ error: `This account uses ${provider}. Please sign in with ${provider}.` }, { status: 401 })
+    }
+
     const valid = await verifyPassword(password, user.passwordHash)
+    console.log("[LOGIN] verifyPassword result:", valid, "for", email)
     if (!valid) {
       return NextResponse.json({ error: "Invalid email or password" }, { status: 401 })
+    }
+
+    // Auto-migrate legacy bcrypt hashes to scrypt (non-blocking, fire-and-forget)
+    const newHash = await migratePasswordIfNeeded(password, user.passwordHash)
+    if (newHash) {
+      db.user.update({ where: { id: user.id }, data: { passwordHash: newHash } })
+        .then(() => console.log("[LOGIN] migrated password to scrypt for", email))
+        .catch((e) => console.warn("[LOGIN] migration failed:", e.message))
     }
 
     const token = generateToken({

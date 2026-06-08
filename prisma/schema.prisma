@@ -24,11 +24,13 @@ model Franchise {
 model User {
   id           String     @id @default(cuid())
   email        String     @unique
-  passwordHash String
+  passwordHash String     @default("")
   name         String
   displayName  String?
   avatarUrl    String?
-  credits      Int        @default(100)  // Ingame currency
+  credits      Int        @default(100)
+  oauthProvider   String?   // "github" | "google" | "discord" | null
+  oauthProviderId String?   // external provider user id
   emailVerified Boolean   @default(false)
   emailVerifyToken   String?
   emailVerifyExpires DateTime?

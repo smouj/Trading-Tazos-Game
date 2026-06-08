@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create user with email verification token
-    const passwordHash = await hashPassword(password)
+    const passwordHash = hashPassword(password)
     const emailVerifyToken = crypto.randomBytes(24).toString('hex')
     const emailVerifyExpires = new Date(Date.now() + 86400000) // 24 hours
     const user = await db.user.create({

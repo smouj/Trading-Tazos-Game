@@ -11,6 +11,7 @@ interface LayoutElement {
 }
 
 interface LayoutConfig {
+  collection: LayoutElement;
   badge: LayoutElement;
   number: LayoutElement;
   name: LayoutElement;
@@ -53,10 +54,11 @@ export async function GET(req: NextRequest) {
 
   // Return hardcoded defaults
   const defaults: LayoutConfig = {
-    badge: { x: 0, y: -280, scale: 1.0 },
-    number: { x: -280, y: 250, scale: 1.0 },
-    name: { x: 0, y: 330, scale: 1.0 },
-    rarity: { x: 280, y: 250, scale: 1.0 },
+    collection: { x: 0, y: -447, scale: 1.0 },
+    badge: { x: 0, y: -340, scale: 1.0 },
+    number: { x: 310, y: 310, scale: 1.0 },
+    name: { x: 0, y: 349, scale: 1.0 },
+    rarity: { x: 0, y: -335, scale: 1.0 },
     creature: { x: 0, y: 0, scale: 1.0 },
   };
 

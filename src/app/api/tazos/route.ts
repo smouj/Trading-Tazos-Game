@@ -90,7 +90,10 @@ export async function GET(request: NextRequest) {
       backImageUrl: t.backImageUrl ? `${t.backImageUrl}?v=${cacheBuster}` : null,
     }))
 
-    return NextResponse.json({ tazos: flatTazos, total, page, limit, totalPages: Math.ceil(total / limit) })
+    return NextResponse.json(
+      { tazos: flatTazos, total, page, limit, totalPages: Math.ceil(total / limit), lastModified: cacheBuster },
+      { headers: { "Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0" } }
+    )
   } catch (error) {
     console.error("Error fetching tazos:", error)
     return NextResponse.json({ error: "Failed to fetch tazos" }, { status: 500 })

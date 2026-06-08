@@ -14,6 +14,7 @@ import { useState, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
+import { useVisibilityRefresh } from "@/lib/use-visibility-refresh"
 import {
   Download, Globe, Monitor, Apple, Terminal,
   Zap, Star, Disc3, Swords, Medal, PackageOpen,
@@ -434,12 +435,19 @@ function TazoShowcase() {
   const [tazos, setTazos] = useState<any[]>([])
   const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set())
 
-  useEffect(() => {
-    fetch("/api/tazos?limit=24")
+  const fetchShowcase = useCallback(async () => {
+    fetch(`/api/tazos?limit=24&_t=${Date.now()}`)
       .then(r => r.json())
       .then(d => setTazos(d.tazos || []))
       .catch(() => {})
   }, [])
+
+  useEffect(() => {
+    fetchShowcase()
+  }, [fetchShowcase])
+
+  // Auto-refresh when tab becomes visible
+  useVisibilityRefresh(fetchShowcase)
 
   const hideTazo = (id: string) => setHiddenIds(prev => new Set(prev).add(id))
   const display = tazos.filter(t => t.imageUrl && !hiddenIds.has(t.id)).slice(0, 8)
@@ -704,7 +712,8 @@ function CollectionsContent({ onNavigate }: { onNavigate: (page: PageId) => void
                 <img 
                   src={backArtUrl} 
                   alt={`${c.name} back art`}
-                  className="w-full h-full object-cover scale-110"
+                  className="w-full h-full object-cover"
+                  style={{ borderRadius: "50%", transform: "scale(1.16)", transformOrigin: "center center" }}
                   draggable={false}
                 />
               </div>
@@ -718,9 +727,15 @@ function CollectionsContent({ onNavigate }: { onNavigate: (page: PageId) => void
                           key={t.id}
                           src={t.imageUrl}
                           alt={t.displayName || t.name || ""}
-                          className="absolute inset-0 w-full h-full object-cover"
+                          className="absolute"
                           style={{
-                            transform: `rotate(${i * 15 - 15}deg) translateY(${i * 2}px)`,
+                            inset: `${i * 4}%`,
+                            width: `${100 - i * 8}%`,
+                            height: `${100 - i * 8}%`,
+                            transform: `rotate(${i * 15 - 15}deg) scale(1.21)`,
+                            transformOrigin: "center center",
+                            objectFit: "cover",
+                            borderRadius: "50%",
                             zIndex: franchiseTazos.length - i,
                             opacity: i === 0 ? 1 : 0.55,
                           }}
@@ -772,12 +787,18 @@ function TazosContent() {
   const [selectedTazo, setSelectedTazo] = useState<any>(null)
   const [detailOpen, setDetailOpen] = useState(false)
 
-  useEffect(() => {
-    fetch("/api/tazos?limit=60").then(r => r.json()).then(d => {
+  const fetchContent = useCallback(async () => {
+    fetch(`/api/tazos?limit=60&_t=${Date.now()}`).then(r => r.json()).then(d => {
       setTazos(d.tazos || [])
       setLoading(false)
     }).catch(() => setLoading(false))
   }, [])
+
+  useEffect(() => {
+    fetchContent()
+  }, [fetchContent])
+
+  useVisibilityRefresh(fetchContent)
 
   const filtered = tazos.filter(t =>
     (franchiseFilter === "all" || t.franchise === franchiseFilter) &&
@@ -835,8 +856,14 @@ function TazosContent() {
               <div className="aspect-square rounded-full overflow-hidden mb-1.5 mx-auto max-w-[80px] border-2 border-[#1a1a1a]/10 relative"
                 style={{ background: fc.bg }}>
                 {t.imageUrl ? (
-                  <img src={t.imageUrl} alt={t.displayName || t.name}
-                    className="w-full h-full object-cover scale-110" loading="lazy" />
+                  <TazoDiscImage
+                    src={t.imageUrl}
+                    alt={t.displayName || t.name}
+                    size="100%"
+                    scale={1.12}
+                    borderWidth={0}
+                    lazy
+                  />
                 ) : (
                   <Disc3 className="w-6 h-6 absolute inset-0 m-auto text-[#1a1a1a]/10" />
                 )}

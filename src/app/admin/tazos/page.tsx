@@ -6,6 +6,7 @@
 // ============================================================
 import { useState, useEffect, useCallback, useMemo } from "react"
 import { useAuth } from "@/lib/auth-context"
+import { useVisibilityRefresh } from "@/lib/use-visibility-refresh"
 import {
   Shield, Loader2, Search, Filter, X, Edit3, Save, RotateCcw,
   ChevronLeft, ChevronRight, Image as ImageIcon, Star, Check,
@@ -111,6 +112,9 @@ export default function AdminTazoManagerPage() {
         .then(d => setFranchises(d.franchises || []))
     }
   }, [isAdmin, fetchTazos])
+
+  // Auto-refresh when tab becomes visible
+  useVisibilityRefresh(fetchTazos, { enabled: isAdmin })
 
   // ── Sort ──
   const sortedTazos = useMemo(() => {

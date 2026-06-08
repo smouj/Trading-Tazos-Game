@@ -8,6 +8,7 @@ import PublicPageShell from "@/components/layout/public-page-shell"
 import Link from "next/link"
 import { Star, Zap, Flame, Cpu, Loader2, Package, ChevronLeft, ChevronRight } from "lucide-react"
 import TazoDiscImage from "@/components/game/tazo-disc-image"
+import { useVisibilityRefresh } from "@/lib/use-visibility-refresh"
 
 interface TazoData {
   id: string; name: string; displayName: string; number: string
@@ -60,19 +61,24 @@ export default function TazosCatalogPage() {
   const [franchise, setFranchise] = useState("all")
   const [page, setPage] = useState(1)
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch("/api/tazos?limit=500")
-        const data = await res.json()
-        setTazos((data.tazos || []).map((t: any) => ({
-          ...t,
-          franchise: t.franchiseSlug || t.franchise?.slug || "minimon",
-        })))
-      } catch { /* ignore */ }
-      setLoading(false)
-    })()
+  const fetchTazos = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/tazos?limit=500&_t=${Date.now()}`)
+      const data = await res.json()
+      setTazos((data.tazos || []).map((t: any) => ({
+        ...t,
+        franchise: t.franchiseSlug || t.franchise?.slug || "minimon",
+      })))
+    } catch { /* ignore */ }
+    setLoading(false)
   }, [])
+
+  useEffect(() => {
+    fetchTazos()
+  }, [fetchTazos])
+
+  // Auto-refresh when tab becomes visible (cache-busted)
+  useVisibilityRefresh(fetchTazos)
 
   const filtered = franchise === "all" ? tazos : tazos.filter(t =>
     t.franchise === franchise || (franchise === "dracobell" && t.franchise === "draco-bell")

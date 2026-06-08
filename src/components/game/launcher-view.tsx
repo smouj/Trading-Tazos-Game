@@ -149,21 +149,273 @@ function PageHeader({ title, onBack }: { title: string; onBack: () => void }) {
   )
 }
 
-function SectionCard({ step, color, title, children, bgColor }: {
+function SectionCard({ step, color, title, children, bgColor, preview }: {
   step?: number; color: string; title: string; children: React.ReactNode; bgColor?: string
+  preview?: React.ReactNode
 }) {
   return (
-    <div className="border-2 border-[#1a1a1a] bg-white p-5"
+    <div className="border-2 border-[#1a1a1a] bg-white overflow-hidden"
       style={{ boxShadow: "4px 4px 0 #1a1a1a" }}>
-      <div className="flex items-center gap-3 mb-3">
+      <div className="flex items-center gap-3 px-5 pt-5 pb-3">
         {step && (
           <span className="inline-flex items-center justify-center w-10 h-10 border-2 border-[#1a1a1a] text-lg font-black text-white flex-shrink-0"
             style={{ background: bgColor || color }}>{step}</span>
         )}
         <h3 className="text-base font-black uppercase text-[#1a1a1a]">{title}</h3>
       </div>
-      <div className="text-xs font-bold text-[#1a1a1a]/60 space-y-1.5 leading-relaxed">
+      {preview && (
+        <div className="relative border-t-2 border-b-2 border-[#1a1a1a]/10 bg-[#fafaf5] overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-1 mag-stripes opacity-15 z-10" />
+          <div className="p-3 flex items-center justify-center">
+            {preview}
+          </div>
+        </div>
+      )}
+      <div className="text-xs font-bold text-[#1a1a1a]/60 space-y-1.5 leading-relaxed px-5 pb-5 pt-3">
         {children}
+      </div>
+    </div>
+  )
+}
+
+// ── Preview Images for How to Play ──
+
+function SignUpPreview() {
+  return (
+    <div className="flex items-center gap-5 py-3">
+      {/* Mini registration form illustration */}
+      <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full border-2 border-[#1a1a1a]/20 flex items-center justify-center text-[10px]">👤</div>
+            <span className="text-[10px] font-black text-[#1a1a1a]/30 uppercase">Name</span>
+            <div className="w-28 h-5 border-2 border-[#FFCC00]/30 rounded bg-[#FFF9E6]" />
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full border-2 border-[#1a1a1a]/20 flex items-center justify-center text-[10px]">✉️</div>
+            <span className="text-[10px] font-black text-[#1a1a1a]/30 uppercase">Email</span>
+            <div className="w-28 h-5 border-2 border-[#1a1a1a]/10 rounded bg-white" />
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full border-2 border-[#1a1a1a]/20 flex items-center justify-center text-[10px]">🔑</div>
+            <span className="text-[10px] font-black text-[#1a1a1a]/30 uppercase">Pass</span>
+            <div className="w-28 h-5 border-2 border-[#1a1a1a]/10 rounded bg-white flex items-center px-2">
+              <span className="text-[7px] text-[#1a1a1a]/15">••••••••••</span>
+            </div>
+          </div>
+        </div>
+        <div className="h-12 w-px border-l-2 border-dashed border-[#FFCC00]/30" />
+        {/* Result: credits + badge */}
+        <div className="flex flex-col items-center gap-1">
+          <div className="w-12 h-12 rounded-full border-3 border-[#22C55E] bg-[#22C55E]/10 flex items-center justify-center">
+            <span className="text-xl">🎁</span>
+          </div>
+          <span className="text-[8px] font-black text-[#22C55E] uppercase">10 Free Bags!</span>
+          <span className="text-[7px] font-bold text-[#1a1a1a]/30">+100 credits</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function BagPreview({ tazos }: { tazos: any[] }) {
+  return (
+    <div className="flex items-center gap-4 py-2">
+      {/* Bag opening sequence: bag → tazos */}
+      <div className="flex items-center gap-3">
+        {/* Bag types */}
+        <div className="flex flex-col gap-1.5 items-center">
+          <div className="w-14 h-16 border-2 border-[#9CA3AF] rounded-lg bg-[#9CA3AF]/5 flex flex-col items-center justify-center relative overflow-hidden"
+            style={{ boxShadow: "2px 2px 0 #9CA3AF30" }}>
+            <span className="text-[7px] font-black text-[#9CA3AF] uppercase mt-1">Std</span>
+            <span className="text-[6px] font-bold text-[#9CA3AF]/50">10 cr</span>
+            <div className="absolute -bottom-1 left-0 right-0 h-3 bg-[#9CA3AF]/10 border-t border-[#9CA3AF]/20" />
+          </div>
+        </div>
+        <div className="flex flex-col gap-1.5 items-center">
+          <div className="w-14 h-16 border-2 border-[#3B82F6] rounded-lg bg-[#3B82F6]/5 flex flex-col items-center justify-center relative overflow-hidden"
+            style={{ boxShadow: "2px 2px 0 #3B82F630" }}>
+            <span className="text-[7px] font-black text-[#3B82F6] uppercase mt-1">Prem</span>
+            <span className="text-[6px] font-bold text-[#3B82F6]/50">25 cr</span>
+            <div className="absolute -bottom-1 left-0 right-0 h-3 bg-[#3B82F6]/10 border-t border-[#3B82F6]/20" />
+          </div>
+        </div>
+        <div className="flex flex-col gap-1.5 items-center">
+          <div className="w-14 h-16 border-2 border-[#A855F7] rounded-lg bg-[#A855F7]/5 flex flex-col items-center justify-center relative overflow-hidden"
+            style={{ boxShadow: "2px 2px 0 #A855F730" }}>
+            <span className="text-[7px] font-black text-[#A855F7] uppercase mt-1">Mega</span>
+            <span className="text-[6px] font-bold text-[#A855F7]/50">50 cr</span>
+            <div className="absolute -bottom-1 left-0 right-0 h-3 bg-[#A855F7]/10 border-t border-[#A855F7]/20" />
+          </div>
+        </div>
+      </div>
+      <div className="text-[18px] text-[#FF6B00]/40">→</div>
+      {/* Resulting tazos */}
+      <div className="flex items-center -space-x-3">
+        {tazos.length > 0 ? tazos.map((t: any, i: number) => (
+          <div key={t.id || i} className="w-12 h-12 rounded-full border-2 border-[#FF6B00]/30 bg-white overflow-hidden flex-shrink-0 relative"
+            style={{ zIndex: 4 - i }}>
+            {t.imageUrl ? (
+              <img src={t.imageUrl} alt={t.displayName || t.name} className="w-full h-full object-cover scale-110" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-[7px] font-black text-[#1a1a1a]/15">?</div>
+            )}
+            <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
+              style={{ background: { common: "#9CA3AF", uncommon: "#22C55E", rare: "#3B82F6", "ultra-rare": "#A855F7", legendary: "#F59E0B" }[t.rarity] || "#9CA3AF" }} />
+          </div>
+        )) : (
+          <>
+            <div className="w-12 h-12 rounded-full border-2 border-dashed border-[#FF6B00]/20 bg-[#FF6B00]/5 flex items-center justify-center">
+              <span className="text-[10px]">❓</span>
+            </div>
+            <div className="w-12 h-12 rounded-full border-2 border-dashed border-[#FF6B00]/15 bg-[#FF6B00]/5 flex items-center justify-center" />
+            <div className="w-12 h-12 rounded-full border-2 border-dashed border-[#FF6B00]/10 bg-[#FF6B00]/5 flex items-center justify-center" />
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function DeckPreview({ tazos }: { tazos: any[] }) {
+  const displayTazos = tazos.length >= 3 ? tazos.slice(0, 3) : [
+    { id: "p1", name: "ATK", color: "#E3350D", label: "ATK", value: 78 },
+    { id: "p2", name: "DEF", color: "#3B82F6", label: "DEF", value: 65 },
+    { id: "p3", name: "SPD", color: "#22C55E", label: "SPD", value: 82 },
+  ]
+  return (
+    <div className="flex items-center gap-6 py-3">
+      {/* Tazo cards in a row */}
+      <div className="flex items-center -space-x-2">
+        {displayTazos.map((t: any, i: number) => (
+          <div key={t.id || i} className="w-14 h-14 rounded-full border-2 border-[#3B4CCA]/25 bg-white overflow-hidden flex-shrink-0"
+            style={{ zIndex: 3 - i }}>
+            {t.imageUrl ? (
+              <img src={t.imageUrl} alt={t.displayName || t.name} className="w-full h-full object-cover scale-110" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center" style={{ background: (t.color || "#3B4CCA") + "10" }}>
+                <span className="text-[10px] font-black" style={{ color: t.color || "#3B4CCA" }}>{t.label || "?"}</span>
+              </div>
+            )}
+          </div>
+        ))}
+        {/* Empty slots */}
+        {Array.from({ length: Math.max(0, 5 - displayTazos.length) }).map((_, i) => (
+          <div key={`empty-${i}`} className="w-14 h-14 rounded-full border-2 border-dashed border-[#3B4CCA]/15 bg-[#3B4CCA]/5 flex items-center justify-center flex-shrink-0"
+            style={{ zIndex: 1 }}>
+            <span className="text-[20px] text-[#3B4CCA]/10">+</span>
+          </div>
+        ))}
+      </div>
+      {/* Mini stat bars */}
+      <div className="flex-1 space-y-1 min-w-[120px]">
+        {[
+          { label: "ATK", value: 78, color: "#E3350D" },
+          { label: "DEF", value: 64, color: "#3B82F6" },
+          { label: "CTRL", value: 71, color: "#FFCC00" },
+        ].map(s => (
+          <div key={s.label} className="flex items-center gap-1.5">
+            <span className="text-[7px] font-black text-[#1a1a1a]/25 w-8">{s.label}</span>
+            <div className="flex-1 h-2 bg-[#1a1a1a]/5 rounded-full overflow-hidden border border-[#1a1a1a]/10">
+              <div className="h-full rounded-full transition-all" style={{ width: `${s.value}%`, background: s.color }} />
+            </div>
+            <span className="text-[7px] font-black text-[#1a1a1a]/40 w-5 text-right">{s.value}</span>
+          </div>
+        ))}
+        <div className="text-[6px] font-bold text-[#1a1a1a]/20 text-right pt-0.5">+6 more stats</div>
+      </div>
+    </div>
+  )
+}
+
+function ArenaPreview({ tazos }: { tazos: any[] }) {
+  return (
+    <div className="flex items-center justify-center gap-6 py-3 w-full">
+      {/* Mini arena diagram */}
+      <div className="relative w-40 h-32 border-2 border-[#E3350D]/20 rounded-full bg-[#E3350D]/3 flex items-center justify-center overflow-hidden"
+        style={{ boxShadow: "inset 0 0 20px rgba(229,53,13,0.05)" }}>
+        {/* Outer ring (arena boundary) */}
+        <div className="absolute inset-2 border border-dashed border-[#E3350D]/10 rounded-full" />
+        <div className="absolute inset-6 border border-dashed border-[#E3350D]/8 rounded-full" />
+        {/* Center circle */}
+        <div className="w-10 h-10 rounded-full border-2 border-[#E3350D]/40 bg-[#E3350D]/5 flex items-center justify-center">
+          <span className="text-[7px] font-black text-[#E3350D]/40 uppercase">CIRCLE</span>
+        </div>
+        {/* Staked tazos */}
+        <div className="absolute top-[35%] left-[25%] w-7 h-7 rounded-full border-2 border-[#29ADFF]/50 bg-[#29ADFF]/5 flex items-center justify-center">
+          <span className="text-[5px] font-black text-[#29ADFF]/60">⚔️</span>
+        </div>
+        <div className="absolute top-[35%] right-[25%] w-7 h-7 rounded-full border-2 border-[#FF004D]/50 bg-[#FF004D]/5 flex items-center justify-center">
+          <span className="text-[5px] font-black text-[#FF004D]/60">🛡️</span>
+        </div>
+        {/* Crosshair */}
+        <div className="absolute bottom-[15%] left-[45%] w-4 h-4 flex items-center justify-center">
+          <div className="w-4 h-4 relative">
+            <div className="absolute top-1/2 left-0 right-0 h-px bg-[#FFCC00]" />
+            <div className="absolute left-1/2 top-0 bottom-0 w-px bg-[#FFCC00]" />
+          </div>
+        </div>
+        {/* Tazo in flight */}
+        {tazos.length > 0 && tazos[0].imageUrl ? (
+          <div className="absolute top-[10%] left-[50%] w-6 h-6 rounded-full overflow-hidden border border-[#FFCC00]/40 -translate-x-3 animate-bounce"
+            style={{ boxShadow: "0 0 8px rgba(255,204,0,0.3)" }}>
+            <img src={tazos[0].imageUrl} alt="" className="w-full h-full object-cover" />
+          </div>
+        ) : (
+          <div className="absolute top-[10%] left-[50%] w-6 h-6 rounded-full bg-[#FFCC00]/20 border border-[#FFCC00]/30 -translate-x-3 flex items-center justify-center animate-pulse">
+            <span className="text-[8px]">💥</span>
+          </div>
+        )}
+      </div>
+      {/* Phase indicators */}
+      <div className="flex flex-col gap-1.5">
+        {[
+          { label: "AIM", icon: "🎯", color: "#FFCC00" },
+          { label: "CHARGE", icon: "⚡", color: "#FF8800" },
+          { label: "SLAM", icon: "💥", color: "#E3350D" },
+        ].map(p => (
+          <div key={p.label} className="flex items-center gap-1.5 px-2 py-1 rounded border"
+            style={{ borderColor: p.color + "25", background: p.color + "08" }}>
+            <span className="text-xs">{p.icon}</span>
+            <span className="text-[8px] font-black text-[#1a1a1a]/40 uppercase">{p.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function QuestsPreview() {
+  return (
+    <div className="flex items-center gap-3 py-2 flex-wrap">
+      {/* Achievement badges */}
+      {[
+        { tier: "Bronze", color: "#CD7F32", icon: "🥉" },
+        { tier: "Silver", color: "#C0C0C0", icon: "🥈" },
+        { tier: "Gold", color: "#FFD700", icon: "🥇" },
+        { tier: "Platinum", color: "#A855F7", icon: "💎" },
+      ].map(a => (
+        <div key={a.tier} className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg border-2"
+          style={{ borderColor: a.color + "30", background: a.color + "08", boxShadow: `0 2px 8px ${a.color}15` }}>
+          <span className="text-lg">{a.icon}</span>
+          <span className="text-[8px] font-black uppercase" style={{ color: a.color }}>{a.tier}</span>
+        </div>
+      ))}
+      {/* Arrow */}
+      <div className="text-lg text-[#22C55E]/30 font-black">→</div>
+      {/* Reward */}
+      <div className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg border-2 border-[#22C55E]/30 bg-[#22C55E]/05">
+        <span className="text-lg">🪙</span>
+        <span className="text-[7px] font-black text-[#22C55E] uppercase">+Credits</span>
+      </div>
+      {/* Quest counter */}
+      <div className="flex flex-col items-center gap-1">
+        <span className="text-[28px] font-black text-[#1a1a1a]/10 leading-none">17</span>
+        <span className="text-[7px] font-bold text-[#1a1a1a]/25 uppercase">Quests</span>
+      </div>
+      <div className="flex flex-col items-center gap-1 ml-1">
+        <span className="text-[28px] font-black text-[#1a1a1a]/10 leading-none">18</span>
+        <span className="text-[7px] font-bold text-[#1a1a1a]/25 uppercase">Achievements</span>
       </div>
     </div>
   )
@@ -317,12 +569,31 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
 // ── How to Play ──
 
 function HowToPlayContent() {
+  const [previewTazos, setPreviewTazos] = useState<any[]>([])
+
+  useEffect(() => {
+    fetch("/api/tazos?limit=12")
+      .then(r => r.json())
+      .then(d => {
+        const shuffled = (d.tazos || []).sort(() => Math.random() - 0.5)
+        setPreviewTazos(shuffled.slice(0, 8))
+      })
+      .catch(() => {})
+  }, [])
+
+  const bagPreview = previewTazos.slice(0, 4)
+  const deckPreview = previewTazos.slice(4, 7)
+  const arenaPreview = previewTazos.slice(0, 3)
+
   return (
     <div className="w-full max-w-3xl mx-auto space-y-6">
-      <SectionCard step={1} color="#FFCC00" bgColor="#FFCC00" title="Create Your Account">
+      <SectionCard step={1} color="#FFCC00" bgColor="#FFCC00" title="Create Your Account"
+        preview={<SignUpPreview />}>
         <p>Sign up for free — you&apos;ll receive <strong>10 free bags</strong> with surprise tazos inside. Open them in the Shop to start your collection. No credit card required — the game is completely free to play.</p>
       </SectionCard>
-      <SectionCard step={2} color="#FF6B00" bgColor="#FF6B00" title="Open Bags & Collect Tazos">
+
+      <SectionCard step={2} color="#FF6B00" bgColor="#FF6B00" title="Open Bags & Collect Tazos"
+        preview={<BagPreview tazos={bagPreview} />}>
         <p>Each bag contains a random tazo from the collection:</p>
         <ul className="list-disc pl-5 space-y-0.5">
           <li><strong>Standard Bags</strong> — Common and uncommon tazos</li>
@@ -331,7 +602,9 @@ function HowToPlayContent() {
         </ul>
         <p>Buy more bags with credits earned by winning battles and completing quests.</p>
       </SectionCard>
-      <SectionCard step={3} color="#3B4CCA" bgColor="#3B4CCA" title="Build Your Battle Deck">
+
+      <SectionCard step={3} color="#3B4CCA" bgColor="#3B4CCA" title="Build Your Battle Deck"
+        preview={<DeckPreview tazos={deckPreview} />}>
         <p>Choose <strong>5 tazos</strong> to form your battle deck. Each tazo has <strong>9 combat stats</strong>:</p>
         <ul className="list-disc pl-5 space-y-0.5">
           <li><strong>Attack</strong> — Impact power on opponent tazos</li>
@@ -346,7 +619,9 @@ function HowToPlayContent() {
         </ul>
         <p>Balance high-attack tazos with defensive ones for the best results.</p>
       </SectionCard>
-      <SectionCard step={4} color="#E3350D" bgColor="#E3350D" title="Enter the Battle Arena">
+
+      <SectionCard step={4} color="#E3350D" bgColor="#E3350D" title="Enter the Battle Arena"
+        preview={<ArenaPreview tazos={arenaPreview} />}>
         <p>Each turn has 3 phases:</p>
         <ul className="list-disc pl-5 space-y-0.5">
           <li><strong>Aim</strong> — Position the crosshair where you want your tazo to land</li>
@@ -355,7 +630,9 @@ function HowToPlayContent() {
         </ul>
         <p>Your tazo slides across the 3D arena. Hit hard enough and you&apos;ll <strong>flip</strong> opponent tazos — capturing them for points.</p>
       </SectionCard>
-      <SectionCard step={5} color="#22C55E" bgColor="#22C55E" title="Complete Quests & Climb Ranks">
+
+      <SectionCard step={5} color="#22C55E" bgColor="#22C55E" title="Complete Quests & Climb Ranks"
+        preview={<QuestsPreview />}>
         <p>Earn credits and reputation by completing <strong>17 quests</strong> across 4 categories (Beginner, Daily, Weekly, Special). Unlock <strong>18 achievements</strong> with Bronze → Platinum tiers. Rise through the leaderboard and become the ultimate collector.</p>
       </SectionCard>
     </div>

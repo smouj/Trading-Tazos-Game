@@ -1010,7 +1010,12 @@ export default function TazoVisualEditor({
                   >
                     <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 bg-[#1a1a1a]/5 border border-[#1a1a1a]/10">
                       {tazo.imageUrl ? (
-                        <img src={tazo.imageUrl} alt={tazo.name} className="w-full h-full object-cover" />
+                        <img
+                          src={`/tazos-base/${tazo.franchiseSlug || tazo.franchise?.slug || "unknown"}/${tazo.slug}.png`}
+                          alt={tazo.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => { (e.target as HTMLImageElement).src = tazo.imageUrl; }}
+                        />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
                           <ImageIcon className="w-4 h-4 text-[#1a1a1a]/20" />

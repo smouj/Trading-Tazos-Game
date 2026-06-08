@@ -309,9 +309,10 @@ export default function AdminTazoDesignerPage() {
                         <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-[#1a1a1a]/10 group-hover:border-[#3B4CCA]/50 shadow-md bg-[#1a1a1a]/5 relative">
                           {tazo.imageUrl ? (
                             <img
-                              src={tazo.imageUrl}
+                              src={`/tazos-base/${tazo.franchiseSlug || tazo.franchise?.slug || "unknown"}/${tazo.slug}.png`}
                               alt={tazo.name}
                               className="w-full h-full object-cover"
+                              onError={(e) => { (e.target as HTMLImageElement).src = tazo.imageUrl; }}
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-[#1a1a1a]/20">

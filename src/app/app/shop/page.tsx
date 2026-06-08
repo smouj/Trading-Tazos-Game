@@ -212,10 +212,8 @@ export default function BagShopPage() {
 
   // Opening states
   const [stage, setStage] = useState<"select" | "opening" | "reveal">("select")
-  const [tearProgress, setTearProgress] = useState(0)
   const [revealedTazo, setRevealedTazo] = useState<any>(null)
   const [bonusTazo, setBonusTazo] = useState<any>(null)
-  const [openingAnim, setOpeningAnim] = useState(false)
   const [pendingBags, setPendingBags] = useState<number>(0)
   const [dailyClaimable, setDailyClaimable] = useState(false)
   const [claimingDaily, setClaimingDaily] = useState(false)
@@ -260,8 +258,8 @@ export default function BagShopPage() {
       setBagId(data.bagId)
       setBuying(false)
       setStage("opening")
-      setTearProgress(0)
-      setOpeningAnim(false)
+      
+      
       sfxEnsureUnlocked()
       playSFX('coin', { volume: 0.35 })
     } catch {
@@ -285,7 +283,7 @@ export default function BagShopPage() {
   const openBag = useCallback(async () => {
     const currentBagId = bagIdRef.current
     if (!token || !currentBagId) {
-      setStage("select"); setOpeningAnim(false)
+      setStage("select")
       setError("Something went wrong — try again")
       return
     }
@@ -302,20 +300,20 @@ export default function BagShopPage() {
           setRevealedTazo(data.tazo)
           setBonusTazo(data.bonusTazo || null)
           setStage("reveal")
-          setOpeningAnim(false)
+          
         }, 400)
       } else {
-        setError(data.error || "Failed to open"); setStage("select"); setOpeningAnim(false)
+        setError(data.error || "Failed to open"); setStage("select")
       }
     } catch {
-      setError("Connection error"); setStage("select"); setOpeningAnim(false)
+      setError("Connection error"); setStage("select")
     }
   }, [token])
 
   const handleReset = useCallback(() => {
     setStage("select"); setBagId(null); bagIdRef.current = null
     setRevealedTazo(null); setBonusTazo(null)
-    setTearProgress(0); setOpeningAnim(false); setError(null)
+    setError(null)
   }, [])
 
   // ── Guest ──
@@ -373,7 +371,7 @@ export default function BagShopPage() {
                     const first = data.bags[0]
                     setBagId(first.id)
                     setSelectedBag({ type: first.bagType || "standard", name: "Mystery Bag", cost: 0, bonusChance: 10, rareBoost: 1, color: "#FFCC00", bgColor: "#FFF8E7", franchise: first.preview?.franchise || "minimon", icon: <Gift className="w-4 h-4" />, tagline: "Free bag" })
-                    setBuying(false); setStage("opening"); setTearProgress(0); setOpeningAnim(false)
+                    setBuying(false); setStage("opening")
                     sfxEnsureUnlocked(); playSFX('coin', { volume: 0.35 })
                   }
                 } catch { setError("Failed"); setBuying(false) }
@@ -465,31 +463,24 @@ export default function BagShopPage() {
   // ── OPENING STAGE ──────────────────────────────────────
   if (stage === "opening") {
     return (
-      <div className="max-w-2xl mx-auto py-6 px-4 text-center space-y-4">
+      <div className="max-w-2xl mx-auto py-4 sm:py-6 px-3 sm:px-4 text-center space-y-3">
         <div className="space-y-1">
           <h2 className="text-lg font-black uppercase tracking-wider text-[#1a1a1a] flex items-center justify-center gap-2">
             <Scissors className="w-5 h-5 text-[#E3350D]" />
-            Tear the bag open!
+            Open your bag!
           </h2>
           <p className="text-xs font-bold text-[#1a1a1a]/30">
-            Drag your finger across the bag to rip it
+            Drag across the bag to tear it open
           </p>
         </div>
 
-        <div className="border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] overflow-hidden">
+        <div className="border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] overflow-hidden rounded">
           <BagOpener3D
             bag={{ id: bagId || "", bagType: selectedBag.type, preview: { franchise: { slug: selectedBag.franchise || "minimon" } } }}
-            opening={openingAnim}
-            progress={tearProgress}
-            onOpen={() => { setOpeningAnim(true); playSFX('bag_tear'); setTimeout(() => openBag(), 350) }}
-            onSkip={() => { playSFX('bag_tear'); setOpeningAnim(true); setTearProgress(1); setTimeout(() => openBag(), 150) }}
+            onOpen={openBag}
+            onSkip={() => openBag()}
           />
         </div>
-
-        <p className="text-[10px] font-bold text-[#1a1a1a]/25">
-          {tearProgress < 0.02 ? "Hold and drag horizontally to tear" :
-           tearProgress < 1 ? "Tearing..." : "Opening tazo..."}
-        </p>
       </div>
     )
   }

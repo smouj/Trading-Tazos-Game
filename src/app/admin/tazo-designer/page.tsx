@@ -17,7 +17,9 @@ import Link from "next/link";
 import TazoVisualEditor from "@/components/admin/tazo-visual-editor";
 import type { LayoutConfig } from "@/components/admin/tazo-visual-editor";
 import { DEFAULT_LAYOUT } from "@/components/admin/tazo-visual-editor";
-import TazoBackEditor from "@/components/admin/tazo-back-editor";
+import TazoBackEditor from "@/components/admin/tazo-back-editor"
+import TazoDiscImage from "@/components/game/tazo-disc-image"
+import type { TazoFinish, TazoCreatureVariant } from "@/lib/battle/game-loop";
 
 const FRANCHISE_ORDER = ["cybermon", "dracobell", "minimon"];
 
@@ -381,19 +383,17 @@ export default function AdminTazoDesignerPage() {
                         className="group flex flex-col items-center gap-1.5 p-2 rounded-lg hover:bg-[#3B4CCA]/5 hover:scale-105 transition-all"
                       >
                         <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-[#1a1a1a]/10 group-hover:border-[#3B4CCA]/50 shadow-md bg-[#1a1a1a]/5 relative">
-                          {tazo.imageUrl ? (
-                            <img
-                              src={`/tazos-base/${tazo.franchiseSlug || tazo.franchise?.slug || "unknown"}/${tazo.slug}.png?v=${IMG_CACHE_BUSTER}`}
-                              alt={tazo.name}
-                              className="w-full h-full object-cover"
-                              style={{ borderRadius: '50%' }}
-                              onError={(e) => { (e.target as HTMLImageElement).src = tazo.imageUrl; }}
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-[#1a1a1a]/20">
-                              <Eye className="w-6 h-6" />
-                            </div>
-                          )}
+                          <TazoDiscImage
+                            src={tazo.imageUrl}
+                            alt={tazo.name || ""}
+                            size="100%"
+                            borderWidth={0}
+                            franchiseSlug={tazo.franchiseSlug}
+                            finish={tazo.finish as TazoFinish || "normal"}
+                            creatureVariant={tazo.creatureVariant as TazoCreatureVariant || "standard"}
+                            shinyImageUrl={tazo.shinyImageUrl}
+                            wear={tazo.wear || 0}
+                          />
                           {/* Rarity dot */}
                           <div
                             className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 rounded-full border border-white/50 shadow"

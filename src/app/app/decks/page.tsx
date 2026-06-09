@@ -6,6 +6,8 @@ import { useAuth } from "@/lib/auth-context"
 import { useI18n } from "@/lib/i18n"
 import { Layers, Plus, Trash2, Star, Swords, Edit3, Disc3, TrendingUp, Shield, Zap } from "lucide-react"
 import DeckBuilder from "@/components/game/deck-builder"
+import TazoDiscImage from "@/components/game/tazo-disc-image"
+import type { TazoFinish, TazoCreatureVariant } from "@/lib/battle/game-loop"
 
 // ── Types ──────────────────────────────────────────────
 interface DeckTazo {
@@ -14,6 +16,10 @@ interface DeckTazo {
   weight: number; stability: number; spin: number
   control: number; bounce: number; precision: number
   rarity: string; role?: string | null; number: string | number
+  finish?: string | null
+  creatureVariant?: string | null
+  shinyImageUrl?: string | null
+  wear?: number
 }
 interface Deck {
   id: string; name: string; isActive: boolean; tazoCount: number; tazos: DeckTazo[]
@@ -298,16 +304,17 @@ export default function DecksPage() {
                             )}
                             <div className="h-1" style={{ background: borderColor }} />
                             <div className="p-1.5 flex items-center justify-center bg-[#fffef0]" style={{ aspectRatio: "1" }}>
-                              {tazo.imageUrl ? (
-                                <img
-                                  src={tazo.imageUrl}
-                                  alt={tazo.name || ""}
-                                  className="w-full h-full object-cover rounded-full"
-                                  loading="lazy"
-                                />
-                              ) : (
-                                <span className="text-xl font-black text-[#1a1a1a]/15">?</span>
-                              )}
+                              <TazoDiscImage
+                                src={tazo.imageUrl}
+                                alt={tazo.name || ""}
+                                size="100%"
+                                borderWidth={0}
+                                franchiseSlug={tazo.franchiseSlug}
+                                finish={tazo.finish as TazoFinish || "normal"}
+                                creatureVariant={tazo.creatureVariant as TazoCreatureVariant || "standard"}
+                                shinyImageUrl={tazo.shinyImageUrl}
+                                wear={tazo.wear || 0}
+                              />
                             </div>
                             <div className="p-1">
                               <p className="text-[8px] font-black text-[#1a1a1a] truncate leading-tight">

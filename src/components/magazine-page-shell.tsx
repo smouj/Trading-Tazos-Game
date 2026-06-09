@@ -16,7 +16,6 @@ import LanguageSwitcher from "@/components/ui/language-switcher"
 import {
   BookOpen, Swords, BarChart3, ShoppingBag, Disc3,
   Target, Layers, LogOut, Home, Settings, Shield, Coins,
-  Monitor, Terminal, Apple, Download, Globe,
 } from "lucide-react"
 
 type TabId = "battle" | "stats" | "shop" | "quests" | "collection" | "decks" | "settings"
@@ -205,32 +204,8 @@ export default function MagazinePageShell({
       {/* ═══════════════════════════════════════ */}
       {showFooter && (
         <footer className="bg-[#1a1a1a] border-t-[3px] border-[#FFCC00]">
-          {/* Platform badges */}
-          <div className="flex items-center justify-center gap-2 sm:gap-3 px-3 py-2.5 border-b border-white/10">
-            <div className="flex items-center gap-1.5 px-2 py-1 bg-white border-2 border-[#1a1a1a] shadow-[2px_2px_0_#1a1a1a]">
-              <Globe className="w-3 h-3 text-[#1a1a1a]" />
-              <span className="text-[9px] font-black text-[#1a1a1a] uppercase tracking-wider">Browser</span>
-            </div>
-            <div className="flex items-center gap-1.5 px-2 py-1 bg-white border-2 border-[#1a1a1a] shadow-[2px_2px_0_#1a1a1a]">
-              <Monitor className="w-3 h-3 text-[#1a1a1a]" />
-              <span className="text-[9px] font-black text-[#1a1a1a] uppercase tracking-wider">PC</span>
-            </div>
-            <div className="flex items-center gap-1.5 px-2 py-1 bg-white border-2 border-[#1a1a1a] shadow-[2px_2px_0_#1a1a1a]">
-              <Apple className="w-3 h-3 text-[#1a1a1a]" />
-              <span className="text-[9px] font-black text-[#1a1a1a] uppercase tracking-wider">Mac</span>
-            </div>
-            <div className="flex items-center gap-1.5 px-2 py-1 bg-white border-2 border-[#1a1a1a] shadow-[2px_2px_0_#1a1a1a]">
-              <Terminal className="w-3 h-3 text-[#1a1a1a]" />
-              <span className="text-[9px] font-black text-[#1a1a1a] uppercase tracking-wider">Linux</span>
-            </div>
-            <Link href="/download"
-              className="flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-black text-[#1a1a1a] bg-[#FFCC00] uppercase tracking-wider border-2 border-white/20 hover:bg-[#FFE566] transition-colors">
-              <Download className="w-3 h-3" /> Download
-            </Link>
-          </div>
-
           {/* Links + social */}
-          <div className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-2.5 gap-2">
+          <div className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-3 gap-3">
             <div className="flex items-center gap-3 sm:gap-4">
               <Link href="/tazos" className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Tazos</Link>
               <Link href="/?page=how-to-play" className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Battle</Link>
@@ -239,7 +214,7 @@ export default function MagazinePageShell({
               <span className="text-white/10">|</span>
               {SOCIAL_LINKS.map(s => (
                 <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label}
-                  className={`flex items-center justify-center w-6 h-6 border border-white/15 text-zinc-400 ${s.hoverColor} transition-all`}>
+                  className={`flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-white/20 text-zinc-400 ${s.hoverColor} transition-all`}>
                   <DiscIcon label={s.label} />
                 </a>
               ))}

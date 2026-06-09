@@ -702,6 +702,15 @@ def main():
     base_only = "--base-only" in args
     force = "--force" in args
     back_mode = "--back" in args
+    
+    # ── Single tazo generation (--franchise minimon --slug aquafin) ──
+    franchise_filter = None
+    slug_filter = None
+    for a in sys.argv[1:]:
+        if a.startswith("--franchise="):
+            franchise_filter = a.split("=", 1)[1]
+        elif a.startswith("--slug="):
+            slug_filter = a.split("=", 1)[1]
 
     if back_mode:
         out_dir = Path("public/tazos-backs")
@@ -711,15 +720,30 @@ def main():
         out_dir = OUT_DIR
 
     print(f"DB: {db_path}  base_only={base_only}  back={back_mode}  force={force}")
+    if franchise_filter:
+        print(f"  Filter: franchise={franchise_filter} slug={slug_filter}")
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
+    
+    # Build WHERE clause for optional filters
+    where_parts = []
+    where_params = []
+    if franchise_filter:
+        where_parts.append("f.slug = ?")
+        where_params.append(franchise_filter)
+    if slug_filter:
+        where_parts.append("t.slug = ?")
+        where_params.append(slug_filter)
+    where_clause = " AND ".join(where_parts) if where_parts else "1=1"
+    
     tazos = [dict(r) for r in conn.execute(
-        "SELECT t.number, t.slug, t.name, t.displayName, t.rarity, "
-        "t.combatType, t.evolutionFrom, t.evolutionTo, t.transformStage, "
-        "f.slug as franchise_slug "
-        "FROM Tazo t JOIN Franchise f ON t.franchiseId = f.id "
-        "WHERE 1=1 "
-        "ORDER BY f.slug, t.number"
+        f"SELECT t.number, t.slug, t.name, t.displayName, t.rarity, "
+        f"t.combatType, t.evolutionFrom, t.evolutionTo, t.transformStage, "
+        f"f.slug as franchise_slug "
+        f"FROM Tazo t JOIN Franchise f ON t.franchiseId = f.id "
+        f"WHERE {where_clause} "
+        f"ORDER BY f.slug, t.number",
+        where_params
     )]
     conn.close()
     print(f"Total tazos: {len(tazos)}")

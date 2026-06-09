@@ -296,7 +296,7 @@ export default function GameLobby({ playerTazos, playerDecks, selectedDeckId, on
                         : "border-[#1a1a1a]/6 opacity-55 hover:opacity-85 hover:border-[#1a1a1a]/20"
                     }`}
                   >
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-full overflow-hidden border border-[#1a1a1a]/12 mb-1 bg-[#fffef0]">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-full overflow-hidden border-0 mb-1 bg-[#1a1a1a]">
                       <TazoDiscImage
                         src={t.imageUrl} alt={t.name} size="100%"
                         borderWidth={0} franchiseSlug={t.franchise}

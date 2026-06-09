@@ -83,7 +83,7 @@ function ListingCard({ listing, onBuy, onCancel, buying, isOwn, credits }: {
     <div className="p-3 bg-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] flex items-center gap-3 group hover:shadow-[4px_4px_0px_#1a1a1a] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all">
       {/* Tazo image */}
       <div className="w-16 h-16 shrink-0 rounded-full border-2 border-[#1a1a1a] overflow-hidden relative"
-        style={{ background: t.franchise?.color || "#FFCC00" }}>
+        style={{ background: "#1a1a1a" }}>
         {t.imageUrl ? (
           <img src={t.imageUrl} alt={t.displayName || t.name} className="w-full h-full object-cover" />
         ) : (
@@ -172,7 +172,7 @@ function SellTazoCard({ ut, onSell, selling }: {
     <div className="p-3 bg-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] space-y-2">
       <div className="flex items-center gap-3">
         <div className="w-14 h-14 shrink-0 rounded-full border-2 border-[#1a1a1a] overflow-hidden"
-          style={{ background: t.franchise?.color || "#FFCC00" }}>
+          style={{ background: "#1a1a1a" }}>
           {t.imageUrl ? (
             <img src={t.imageUrl} alt={t.displayName || t.name} className="w-full h-full object-cover" />
           ) : <div className="w-full h-full flex items-center justify-center text-[#1a1a1a]/20">?</div>}
@@ -279,7 +279,7 @@ function OffersTab({ token }: { token: string | null }) {
         <div key={o.id} className="flex items-center gap-3 p-3 bg-white border-2 border-[#1a1a1a]/10 shadow-[2px_2px_0px_rgba(26,26,26,0.06)]">
           {/* Offered tazo */}
           <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden border-2 border-[#22C55E]/30"
-            style={{ background: o.offeredTazo?.tazo?.franchise?.color || '#1a1a1a' }}>
+            style={{ background: '#1a1a1a' }}>
             {o.offeredTazo?.tazo?.imageUrl && (
               <img src={o.offeredTazo.tazo.imageUrl} alt="" className="w-full h-full object-contain" />
             )}
@@ -288,7 +288,7 @@ function OffersTab({ token }: { token: string | null }) {
           <ArrowUpDown className="w-4 h-4 flex-shrink-0 text-[#1a1a1a]/15" />
           {/* Requested tazo */}
           <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden border-2 border-[#E3350D]/30"
-            style={{ background: o.requestedTazo?.franchise?.color || '#1a1a1a' }}>
+            style={{ background: '#1a1a1a' }}>
             {o.requestedTazo?.imageUrl && (
               <img src={o.requestedTazo.imageUrl} alt="" className="w-full h-full object-contain" />
             )}
@@ -421,9 +421,9 @@ function HistoryTab({ token }: { token: string | null }) {
         return (
           <div key={h.id} className="flex items-center gap-3 p-3 bg-white border-2 border-[#1a1a1a]/10 shadow-[2px_2px_0px_rgba(26,26,26,0.06)]">
             {/* Tazo image */}
-            <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden border-2 border-[#1a1a1a]/10"
+            <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden"
               style={{
-                background: h.userTazo?.tazo?.franchise?.color || '#1a1a1a',
+                background: '#1a1a1a',
               }}>
               {h.userTazo?.tazo?.imageUrl && (
                 <img src={h.userTazo.tazo.imageUrl} alt="" className="w-full h-full object-contain" />

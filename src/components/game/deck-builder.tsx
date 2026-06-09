@@ -344,8 +344,8 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel }: DeckBuild
                       <div className="flex items-center gap-2">
                         {/* Mini disc */}
                         <div
-                          className="w-10 h-10 rounded-full flex-shrink-0 border-2 border-[#1a1a1a]/20 flex items-center justify-center overflow-hidden"
-                          style={{ background: franchiseBorder + "20" }}
+                          className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden"
+                          style={{ background: "#1a1a1a" }}
                         >
                           <TazoDiscImage src={tazo.imageUrl} alt={tazo.name} size="100%" borderWidth={0} franchiseSlug={tazo.franchiseSlug} finish={(tazo as any).finish} creatureVariant={(tazo as any).creatureVariant} shinyImageUrl={(tazo as any).shinyImageUrl} lazy className="w-full h-full" />
                         </div>
@@ -484,8 +484,8 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel }: DeckBuild
                   <div className="p-2">
                     <div className="flex items-center gap-2">
                       <div
-                        className="w-10 h-10 rounded-full flex-shrink-0 border-2 border-[#1a1a1a]/20 flex items-center justify-center overflow-hidden"
-                        style={{ background: franchiseBorder + "20" }}
+                        className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden"
+                        style={{ background: "#1a1a1a" }}
                       >
                         <TazoDiscImage src={tazo.imageUrl} alt={tazo.name} size="100%" borderWidth={0} franchiseSlug={tazo.franchiseSlug} finish={(tazo as any).finish} creatureVariant={(tazo as any).creatureVariant} shinyImageUrl={(tazo as any).shinyImageUrl} lazy className="w-full h-full" />
                       </div>
@@ -615,7 +615,7 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel }: DeckBuild
                   const fColor = FRANCHISE_COLORS[t.franchiseSlug] || "#1a1a1a"
                   return (
                     <div key={t.id} className="flex items-center gap-1.5 p-1.5 border-2 border-[#1a1a1a] bg-white">
-                      <div className="w-8 h-8 rounded-full border border-[#1a1a1a]/20 overflow-hidden flex-shrink-0" style={{ background: fColor + "20" }}>
+                      <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0" style={{ background: "#1a1a1a" }}>
                         <TazoDiscImage src={t.imageUrl} alt={t.name} size="100%" borderWidth={0} franchiseSlug={t.franchiseSlug} finish={(t as any).finish} creatureVariant={(t as any).creatureVariant} shinyImageUrl={(t as any).shinyImageUrl} lazy className="w-full h-full" />
                       </div>
                       <div>

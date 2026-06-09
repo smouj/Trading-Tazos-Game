@@ -255,7 +255,7 @@ function BagPreview({ tazos }: { tazos: any[] }) {
       {/* Resulting tazos */}
       <div className="flex items-center -space-x-3">
         {tazos.length > 0 ? tazos.map((t: any, i: number) => (
-          <div key={t.id || i} className="w-12 h-12 rounded-full border-2 border-[#FF6B00]/30 bg-white overflow-hidden flex-shrink-0 relative"
+          <div key={t.id || i} className="w-12 h-12 rounded-full border-2 border-[#1a1a1a] bg-[#1a1a1a] overflow-hidden flex-shrink-0 relative"
             style={{ zIndex: 4 - i }}>
             {t.imageUrl ? (
               <img src={t.imageUrl} alt={t.displayName || t.name} className="w-full h-full object-cover" style={{ borderRadius: '50%' }} />
@@ -290,7 +290,7 @@ function DeckPreview({ tazos }: { tazos: any[] }) {
       {/* Tazo cards in a row */}
       <div className="flex items-center -space-x-2">
         {displayTazos.map((t: any, i: number) => (
-          <div key={t.id || i} className="w-14 h-14 rounded-full border-2 border-[#3B4CCA]/25 bg-white overflow-hidden flex-shrink-0"
+          <div key={t.id || i} className="w-14 h-14 rounded-full border-2 border-[#1a1a1a] bg-[#1a1a1a] overflow-hidden flex-shrink-0"
             style={{ zIndex: 3 - i }}>
             {t.imageUrl ? (
               <img src={t.imageUrl} alt={t.displayName || t.name} className="w-full h-full object-cover" style={{ borderRadius: '50%' }} />
@@ -708,7 +708,7 @@ function CollectionsContent({ onNavigate }: { onNavigate: (page: PageId) => void
             {/* Tazo + Back art showcase */}
             <div className="p-3 grid grid-cols-2 gap-2 bg-[#fffef0] border-b-2 border-[#1a1a1a]/10">
               {/* Back art of franchise */}
-              <div className="rounded-full border-2 border-[#1a1a1a]/15 overflow-hidden aspect-square flex items-center justify-center bg-white shadow-[1px_1px_0px_#1a1a1a10]">
+              <div className="rounded-full overflow-hidden aspect-square flex items-center justify-center bg-[#1a1a1a] shadow-[1px_1px_0px_#1a1a1a10]">
                 <img 
                   src={backArtUrl} 
                   alt={`${c.name} back art`}
@@ -718,7 +718,7 @@ function CollectionsContent({ onNavigate }: { onNavigate: (page: PageId) => void
                 />
               </div>
               {/* Sample front tazo — or more backs if no tazos loaded */}
-              <div className="rounded-full border-2 border-[#1a1a1a]/15 overflow-hidden aspect-square flex items-center justify-center bg-white shadow-[1px_1px_0px_#1a1a1a10]">
+              <div className="rounded-full overflow-hidden aspect-square flex items-center justify-center bg-[#1a1a1a] shadow-[1px_1px_0px_#1a1a1a10]">
                 {franchiseTazos.length > 0 ? (
                   <div className="relative w-full h-full">
                     {franchiseTazos.slice(0, 3).map((t: any, i: number) => (

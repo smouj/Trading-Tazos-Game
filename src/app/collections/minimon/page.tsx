@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import PublicPageShell from "@/components/layout/public-page-shell"
 import Link from "next/link"
 import { FRANCHISE_BY_SLUG } from "@/lib/franchise-config"
+import { TazoCollectionShowcase } from "../_tazo-showcase"
 
 export const metadata: Metadata = {
   title: "Minimon Collection",
@@ -48,6 +49,9 @@ export default function MinimonCollectionPage() {
           <span className="text-lg font-bold text-[#1a1a1a]/40">of {minimon.total} tazos</span>
           <span className="text-xs font-bold bg-[#FFCC00] px-2 py-1 border-2 border-[#1a1a1a]">Matutano 2000</span>
         </div>
+
+        {/* ── Featured Tazos ── */}
+        <TazoCollectionShowcase franchise="minimon" color={FRANCHISE_COLOR} />
 
         {/* ── World ── */}
         <div className="border-3 border-[#1a1a1a] bg-[#fafafa] p-6 sm:p-8 mb-8 shadow-[6px_6px_0px_#1a1a1a]">

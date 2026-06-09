@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import PublicPageShell from "@/components/layout/public-page-shell"
 import Link from "next/link"
 import { FRANCHISE_BY_SLUG } from "@/lib/franchise-config"
+import { TazoCollectionShowcase } from "../_tazo-showcase"
 
 export const metadata: Metadata = {
   title: "Dracobell Collection",
@@ -78,6 +79,9 @@ export default function DracobellCollectionPage() {
           <span className="text-lg font-bold text-[#1a1a1a]/40">of {dracobell.total} tazos</span>
           <span className="text-xs font-bold bg-[#FFCC00] px-2 py-1 border-2 border-[#1a1a1a]">Matutano 1995</span>
         </div>
+
+        {/* ── Featured Tazos ── */}
+        <TazoCollectionShowcase franchise="dracobell" color={FRANCHISE_COLOR} />
 
         {/* ── World ── */}
         <div className="border-3 border-[#1a1a1a] bg-[#1a0a00] p-6 sm:p-8 mb-8 shadow-[6px_6px_0px_#1a1a1a]">
@@ -206,7 +210,7 @@ export default function DracobellCollectionPage() {
             href="/tazos?collection=dracobell"
             className="mag-btn inline-block bg-[#E3350D] text-white border-2 border-[#1a1a1a] px-8 py-4 text-sm font-black uppercase tracking-wider shadow-[6px_6px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_#1a1a1a] transition-all"
           >
-            Browse All 11 Dracobell Tazos
+            Browse All {dracobell.count} Dracobell Tazos
           </Link>
         </div>
 

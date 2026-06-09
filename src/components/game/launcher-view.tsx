@@ -532,20 +532,20 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
             Open digital bags, build your 20-tazo deck and enter a physics-based arena where every throw counts.
           </p>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons — single primary action */}
           <div className="relative flex flex-wrap gap-2 w-full justify-center md:justify-start">
             <button onClick={onPlay}
-              className="mag-btn bg-[#FFCC00] text-[#1a1a1a] px-6 sm:px-8 py-3 sm:py-3.5 text-sm font-black uppercase tracking-wider border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#1a1a1a] transition-all flex items-center gap-2">
-              <Zap className="w-4 h-4" /> Play Now
+              onMouseEnter={() => setHoverPlay(true)} onMouseLeave={() => { setHoverPlay(false); setPressPlay(false) }}
+              onMouseDown={() => setPressPlay(true)} onMouseUp={() => setPressPlay(false)}
+              className="relative select-none"
+              style={{ transform: pressPlay ? "translate(2px,2px)" : hoverPlay ? "translate(-1px,-1px)" : "none", transition: "transform 0.1s" }}>
+              <div className="absolute inset-0 translate-x-1.5 translate-y-1.5 bg-[#1a1a1a]" />
+              <div className="relative px-8 sm:px-12 py-3 sm:py-4 border-3 border-[#1a1a1a] bg-[#FFCC00] flex items-center gap-2"
+                style={{ background: hoverPlay ? "linear-gradient(180deg, #FFE566 0%, #FFCC00 100%)" : "#FFCC00" }}>
+                <span className="text-base sm:text-lg font-black text-[#1a1a1a] uppercase tracking-[0.08em]">PLAY NOW</span>
+                <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-[#1a1a1a]" />
+              </div>
             </button>
-            <Link href="/app/shop"
-              className="mag-btn bg-white text-[#1a1a1a] px-4 sm:px-5 py-3 sm:py-3.5 text-xs font-black uppercase tracking-wider border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#1a1a1a] transition-all flex items-center gap-1.5">
-              <PackageOpen className="w-3.5 h-3.5" /> Open Bags
-            </Link>
-            <Link href="/app/collection"
-              className="mag-btn bg-white text-[#1a1a1a] px-4 sm:px-5 py-3 sm:py-3.5 text-xs font-black uppercase tracking-wider border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#1a1a1a] transition-all flex items-center gap-1.5">
-              <Disc3 className="w-3.5 h-3.5" /> Collection
-            </Link>
           </div>
 
           {/* Platform chips */}
@@ -582,24 +582,10 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
             </div>
 
             <div className="p-4 sm:p-5 space-y-4">
-              {/* Status + Play */}
-              <div className="flex items-center gap-3">
-                <div className="flex-1">
-                  <p className="text-[10px] font-black text-[#1a1a1a]/30 uppercase tracking-[0.15em]">{user ? "Ready for battle" : "Guest access"}</p>
-                  <p className="text-xs font-bold text-[#1a1a1a]/40">Active mode: <span className="text-[#E3350D]">Practice Arena</span></p>
-                </div>
-                <button onClick={onPlay}
-                  onMouseEnter={() => setHoverPlay(true)} onMouseLeave={() => { setHoverPlay(false); setPressPlay(false) }}
-                  onMouseDown={() => setPressPlay(true)} onMouseUp={() => setPressPlay(false)}
-                  className="relative select-none"
-                  style={{ transform: pressPlay ? "translate(2px,2px)" : hoverPlay ? "translate(-1px,-1px)" : "none", transition: "transform 0.1s" }}>
-                  <div className="absolute inset-0 translate-x-1.5 translate-y-1.5 bg-[#1a1a1a]" />
-                  <div className="relative px-5 py-2 border-2 border-[#1a1a1a] bg-[#FFCC00] flex items-center gap-1.5"
-                    style={{ background: hoverPlay ? "linear-gradient(180deg, #FFE566 0%, #FFCC00 100%)" : "#FFCC00" }}>
-                    <span className="text-sm font-black text-[#1a1a1a] uppercase tracking-[0.08em]">PLAY</span>
-                    <Zap className="w-3.5 h-3.5 text-[#1a1a1a]" />
-                  </div>
-                </button>
+              {/* Status */}
+              <div>
+                <p className="text-[10px] font-black text-[#1a1a1a]/30 uppercase tracking-[0.15em]">{user ? "Ready for battle" : "Guest access"}</p>
+                <p className="text-xs font-bold text-[#1a1a1a]/40">Active mode: <span className="text-[#E3350D]">Practice Arena</span></p>
               </div>
 
               {/* Quick Actions — 2×2 grid */}
@@ -1650,7 +1636,6 @@ export default function LauncherView() {
                 <HowItWorksHome />
                 <BattlePreviewHome />
                 <SeriesPreviewHome onNavigate={navigate} />
-                <DownloadStripHome onNavigate={navigate} />
               </>
             )}
             

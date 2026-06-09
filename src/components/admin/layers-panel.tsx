@@ -15,7 +15,6 @@ export const ALL_LAYERS: LayerInfo[] = [
   { id: "bg", name: "Background", category: "disc", description: "Base frontal background texture", color: "#6366F1" },
   { id: "creature", name: "Creature Art", category: "creature", description: "AI-generated creature illustration", color: "#E3350D" },
   { id: "ring-black", name: "Black Border", category: "disc", description: "Outermost black ring (R+12 w8)", color: "#1a1a1a" },
-  { id: "ring-rarity", name: "Rarity Ring", category: "disc", description: "Colored ring matching rarity tier", color: "#FBBF24" },
   { id: "ring-dark", name: "Dark Separator", category: "disc", description: "Inner dark separator ring (R-6 w3)", color: "#374151" },
   { id: "ring-deco1", name: "Deco Ring Outer", category: "disc", description: "Decorative white ring (R-16 w1)", color: "#E5E7EB" },
   { id: "ring-deco2", name: "Deco Ring Mid", category: "disc", description: "Decorative colored ring (R-26 w1)", color: "#FBBF24" },

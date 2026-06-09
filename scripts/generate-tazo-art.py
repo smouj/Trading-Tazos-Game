@@ -305,9 +305,6 @@ def generate_tazo(tazo, bgs, fonts, base_only=False, layouts=None):
     # Black outer border (tazo disc edge)
     draw.ellipse([CENTER-R-12, CENTER-R-12, CENTER+R+12, CENTER+R+12],
                  outline=(18,18,18), width=8)
-    # Rarity-colored ring
-    draw.ellipse([CENTER-R-5, CENTER-R-5, CENTER+R+5, CENTER+R+5],
-                 outline=border_color, width=8)
     # Dark inner separator
     draw.ellipse([CENTER-R+6, CENTER-R+6, CENTER+R-6, CENTER+R-6],
                  outline=(26,26,26), width=3)

@@ -44,12 +44,15 @@ export async function GET(request: NextRequest) {
     if (owned !== null && owned !== "") where.isOwned = owned === "true"
     if (search) where.name = { contains: search }
 
-    const orderBy: Record<string, string> = {}
+    const orderBy: any[] = []
     const allowedSorts = ["name", "number", "rarity", "condition", "category", "sourceStatus", "attack", "defense", "resistance", "weight", "stability", "spin", "control", "bounce", "precision", "role", "createdAt"]
     if (allowedSorts.includes(sortBy)) {
-      orderBy[sortBy] = sortOrder === "desc" ? "desc" : "asc"
+      // Default franchise ordering first, then user-specified sort
+      orderBy.push({ franchise: { slug: "asc" } })
+      orderBy.push({ [sortBy]: sortOrder === "desc" ? "desc" : "asc" })
     } else {
-      orderBy.number = "asc"
+      orderBy.push({ franchise: { slug: "asc" } })
+      orderBy.push({ number: "asc" })
     }
 
     const total = await db.tazo.count({ where })

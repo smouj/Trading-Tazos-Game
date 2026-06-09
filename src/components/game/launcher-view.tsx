@@ -916,14 +916,20 @@ function CollectionsContent({ onNavigate }: { onNavigate: (page: PageId) => void
   const [showcaseTazos, setShowcaseTazos] = useState<Record<string, any[]>>({})
 
   useEffect(() => {
-    fetch("/api/tazos?limit=6")
-      .then(r => r.json())
-      .then(d => {
+    // Fetch tazos for all 3 franchises to populate panels
+    Promise.all([
+      fetch("/api/tazos?franchise=cybermon&publishStatus=published&limit=4").then(r => r.json()),
+      fetch("/api/tazos?franchise=dracobell&publishStatus=published&limit=4").then(r => r.json()),
+      fetch("/api/tazos?franchise=minimon&publishStatus=published&limit=4").then(r => r.json()),
+    ])
+      .then(results => {
         const byFranchise: Record<string, any[]> = {}
-        for (const t of (d.tazos || [])) {
-          const f = t.franchise || t.franchiseSlug || "minimon"
-          if (!byFranchise[f]) byFranchise[f] = []
-          if (byFranchise[f].length < 4) byFranchise[f].push(t)
+        for (const d of results) {
+          for (const t of (d.tazos || [])) {
+            const f = t.franchise || t.franchiseSlug || "minimon"
+            if (!byFranchise[f]) byFranchise[f] = []
+            if (byFranchise[f].length < 4) byFranchise[f].push(t)
+          }
         }
         setShowcaseTazos(byFranchise)
       })

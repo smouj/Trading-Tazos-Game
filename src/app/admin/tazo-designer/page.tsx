@@ -323,6 +323,9 @@ export default function AdminTazoDesignerPage() {
                 onWearLevelChange={(level) => setSelectedTazo((t: any) => ({ ...t, wearLevel: level }))}
                 publishedTazos={publishedTazos}
                 onSelectTazo={setSelectedTazo}
+                finish={selectedTazo.finish || "normal"}
+                creatureVariant={selectedTazo.creatureVariant || "standard"}
+                shinyImageUrl={selectedTazo.shinyImageUrl}
               >
                 <div className="flex items-center gap-2 ml-auto">
                   <button

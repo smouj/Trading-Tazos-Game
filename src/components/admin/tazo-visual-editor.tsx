@@ -118,6 +118,9 @@ interface TazoVisualEditorProps {
   publishedTazos?: any[];
   onSelectTazo?: (tazo: any) => void;
   children?: React.ReactNode;
+  finish?: string;
+  creatureVariant?: string;
+  shinyImageUrl?: string;
 }
 
 // ── Draggable element (enhanced with snap + coordinates display) ──
@@ -378,6 +381,9 @@ export default function TazoVisualEditor({
   publishedTazos = [],
   onSelectTazo,
   children,
+  finish = "normal",
+  creatureVariant = "standard",
+  shinyImageUrl,
 }: TazoVisualEditorProps) {
   const history = useHistory(externalLayout);
   const layout = history.present;
@@ -400,6 +406,16 @@ export default function TazoVisualEditor({
   const [copied, setCopied] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // ── Finish & variant classes for preview canvas ──
+  const finishClass = `tazo-finish-${finish || "normal"}`;
+  const variantClass = creatureVariant && creatureVariant !== "standard"
+    ? `tazo-variant-${creatureVariant}` : "";
+  const wearTierClass = !wearLevel ? "tazo-wear-mint"
+    : wearLevel <= 15 ? "tazo-wear-light_play"
+    : wearLevel <= 40 ? "tazo-wear-played"
+    : wearLevel <= 70 ? "tazo-wear-heavy_play"
+    : "tazo-wear-damaged";
 
   // Sync history push to parent
   const pushLayout = useCallback((next: LayoutConfig) => {
@@ -760,7 +776,7 @@ export default function TazoVisualEditor({
             >
               {/* Disc background */}
               <div
-                className="absolute rounded-full overflow-hidden shadow-2xl"
+                className={`absolute rounded-full overflow-hidden shadow-2xl ${finishClass} ${variantClass} ${wearTierClass}`}
                 style={{
                   width: previewSize,
                   height: previewSize,
@@ -770,14 +786,13 @@ export default function TazoVisualEditor({
                 }}
               >
                 {/* Tazo image — scaled to fill the circular container */}
+                <div className="tazo-disc-image-inner absolute inset-0">
                 {tazoImageUrl ? (
-                  <div
-                    className="w-full h-full"
-                  >
+                  <div className="w-full h-full">
                     <img
-                      src={tazoImageUrl}
+                      src={shinyImageUrl && creatureVariant === "shiny" ? shinyImageUrl : tazoImageUrl}
                       alt={displayName || "Tazo"}
-                      className="w-full h-full"
+                      className={`w-full h-full tazo-character ${variantClass}`}
                       style={{ objectFit: "cover" }}
                       draggable={false}
                     />
@@ -786,6 +801,18 @@ export default function TazoVisualEditor({
                   <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
                     <Disc className="w-16 h-16 text-zinc-700" />
                   </div>
+                )}
+                </div>
+
+                {/* ── Finish layers (between image and overlay elements) ── */}
+                {finish !== "normal" && tazoImageUrl && (
+                  <>
+                    <div className="tazo-finish-layer" />
+                    <div className="tazo-finish-layer-2" />
+                    <div className="tazo-gloss-layer" />
+                    <div className="tazo-print-grain" />
+                    <div className="tazo-condition-layer" />
+                  </>
                 )}
 
                 {/* Scratch overlay */}

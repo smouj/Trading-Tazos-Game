@@ -80,7 +80,7 @@ export default function TazoDiscImage({
   const sizePx = typeof size === "number" ? `${size}px` : size
   const fallbackBg = franchiseSlug ? (FRANCHISE_FALLBACK_BG[franchiseSlug] || "#FFCC00") : "#FFCC00"
   const fallbackText = franchiseSlug ? (FRANCHISE_FALLBACK_TEXT[franchiseSlug] || "#7C2D12") : "#7C2D12"
-  const innerBg = bgColor || (isBack ? "#111" : fallbackBg)
+  const innerBg = bgColor || (isBack ? "#fff" : fallbackBg)
   const effectiveFinish = finish || "normal"
   const effectiveVariant = creatureVariant || "standard"
 

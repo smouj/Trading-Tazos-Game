@@ -1229,9 +1229,11 @@ function ShopContent() {
                     <span className="text-[8px] font-black text-[#1a1a1a]/25 uppercase tracking-wider">Example tazos</span>
                     <div className="flex gap-1.5 mt-1">
                       {examples.map((t: any) => (
-                        <div key={t.id} className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-[#1a1a1a]/15 overflow-hidden bg-[#1a1a1a]/5 flex-shrink-0 hover:border-[#FFCC00] hover:scale-110 transition-all" title={t.displayName || t.name}>
+                        <div key={t.id} className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-[#1a1a1a]/15 overflow-hidden flex-shrink-0 hover:border-[#FFCC00] hover:scale-110 transition-all" title={t.displayName || t.name}>
                           <div className="w-full h-full rounded-full overflow-hidden relative">
-                            <img src={t.imageUrl || `/tazos-generated/${t.franchiseSlug || "minimon"}/${t.slug}.png`} alt={t.displayName || t.name} className="w-full h-full object-cover" loading="lazy" />
+                            <TazoDiscImage src={t.imageUrl} alt={t.displayName || t.name} size="100%" borderWidth={0}
+                              franchiseSlug={t.franchiseSlug || t.franchise?.slug}
+                              finish={t.finish} creatureVariant={t.creatureVariant} shinyImageUrl={t.shinyImageUrl} lazy />
                           </div>
                         </div>
                       ))}

@@ -25,6 +25,9 @@ ssh "$VPS" << 'ENDSSH'
 set -euo pipefail
 cd /home/smouj/apps/ttg/Trading-Tazos-Game
 
+# Fix DATABASE_URL to VPS path (prevent stale WSL paths in standalone .env)
+sed -i 's|file:/home/smouj/.openclaw/workspace/Trading-Tazos-Game/prisma/dev.db|file:/home/smouj/apps/ttg/Trading-Tazos-Game/prisma/dev.db|' .next/standalone/.env
+
 # Copy static assets to standalone (Next.js standalone bug workaround)
 cp -r .next/static/* .next/standalone/.next/static/
 
@@ -67,7 +70,7 @@ do
   code=$(curl -s -o /dev/null -w '%{http_code}' "$url")
   echo "  $code → $url"
 done
-# Deploy note: Fix VPS DATABASE_URL in standalone .env
+# Fix VPS DATABASE_URL in standalone .env
 sed -i 's|file:/home/smouj/.openclaw/workspace/Trading-Tazos-Game/prisma/dev.db|file:/home/smouj/apps/ttg/Trading-Tazos-Game/prisma/dev.db|' .next/standalone/.env 2>/dev/null || true
 
 # Symlink DB to avoid stale standalone copy

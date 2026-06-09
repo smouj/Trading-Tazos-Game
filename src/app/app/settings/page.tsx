@@ -166,7 +166,6 @@ export default function SettingsPage() {
         body: JSON.stringify({ displayName: displayName || null, avatarUrl: avatarUrl || null }),
       })
       if (res.ok) {
-        const data = await res.json()
         // Update user state via refresh
         if (refresh) refresh()
         setEditingName(false)

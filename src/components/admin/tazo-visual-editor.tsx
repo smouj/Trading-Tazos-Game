@@ -783,10 +783,11 @@ export default function TazoVisualEditor({
                   left: "50%",
                   top: "50%",
                   transform: "translate(-50%, -50%)",
+                  background: "#1a1a1a",
                 }}
               >
                 {/* Tazo image — scaled to fill the circular container */}
-                <div className="tazo-disc-image-inner absolute inset-0">
+                <div className="tazo-disc-image-inner absolute inset-0 rounded-full overflow-hidden">
                 {tazoImageUrl ? (
                   <div className="w-full h-full">
                     <img
@@ -798,18 +799,22 @@ export default function TazoVisualEditor({
                     />
                   </div>
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
-                    <Disc className="w-16 h-16 text-zinc-700" />
+                  <div className="w-full h-full bg-[#1a1a1a] flex items-center justify-center">
+                    <Disc className="w-16 h-16 text-zinc-600" />
                   </div>
                 )}
                 </div>
 
-                {/* ── Finish layers (between image and overlay elements) ── */}
-                {finish !== "normal" && tazoImageUrl && (
+                {/* ── Finish layers (above image, below draggable elements) ── */}
+                {tazoImageUrl && (
                   <>
-                    <div className="tazo-finish-layer" />
-                    <div className="tazo-finish-layer-2" />
-                    <div className="tazo-gloss-layer" />
+                    {finish !== "normal" && (
+                      <>
+                        <div className="tazo-finish-layer" />
+                        <div className="tazo-finish-layer-2" />
+                        <div className="tazo-gloss-layer" />
+                      </>
+                    )}
                     <div className="tazo-print-grain" />
                     <div className="tazo-condition-layer" />
                   </>
@@ -824,8 +829,8 @@ export default function TazoVisualEditor({
                   />
                 )}
 
-                {/* Draggable elements layer */}
-                <div className="absolute inset-0" style={{ pointerEvents: "auto" }}>
+                {/* Draggable elements layer — above finishes (z-indexes 3-6) */}
+                <div className="absolute inset-0 z-10" style={{ pointerEvents: "auto" }}>
                   {/* Collection Label */}
                   {showElements.collection && (
                     <DraggableElement

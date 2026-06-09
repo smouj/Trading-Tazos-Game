@@ -21,6 +21,7 @@ interface TazoData {
   id: string; name: string; displayName: string | null; description: string | null; slug: string
   franchiseId: string; number: string; rarity: string
   imageUrl: string | null; backImageUrl: string | null; finish: string; creatureVariant: string
+  shinyImageUrl?: string | null; wear?: number
   skill: string | null; skillDesc: string | null; role: string | null; combatType: string | null
   category: string | null
   attack: number; defense: number; resistance: number; weight: number
@@ -439,6 +440,9 @@ export default function AdminTazoManagerPage() {
                               franchiseSlug={tazo.franchise?.slug || tazo.franchiseId}
                               number={tazo.number}
                               finish={tazo.finish as any}
+                              creatureVariant={tazo.creatureVariant as any}
+                              shinyImageUrl={tazo.shinyImageUrl}
+                              wear={tazo.wear || 0}
                               className="group-hover:scale-105 transition-transform duration-300"
                             />
                           ) : (
@@ -504,6 +508,9 @@ export default function AdminTazoManagerPage() {
                               franchiseSlug={tazo.franchise?.slug || tazo.franchiseId}
                               number={tazo.number}
                               finish={editData.finish as any || tazo.finish as any}
+                              creatureVariant={editData.creatureVariant as any || tazo.creatureVariant as any}
+                              shinyImageUrl={editData.shinyImageUrl || tazo.shinyImageUrl}
+                              wear={editData.wear || tazo.wear || 0}
                             />
                           ) : <ImageIcon className="w-10 h-10 text-zinc-300" />}
                           <div className="absolute top-0 left-0 right-0 h-1" style={{ background: fColor }} />

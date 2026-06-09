@@ -10,17 +10,16 @@
 "use client"
 
 import { useRef, useState, useMemo, useCallback, useEffect, Suspense } from "react"
-import { Canvas, useFrame, useThree } from "@react-three/fiber"
+import { Canvas, useFrame } from "@react-three/fiber"
 import { Line } from "@react-three/drei"
 import * as THREE from "three"
 import PotatoChipBag3D, {
   BAG_W_TOP, BAG_H, BAG_D,
+  TOP_CRIMP, BOT_CRIMP, BODY_H,
 } from "./3d/potato-chip-bag-3d"
 import { pickBagVariant } from "@/lib/bag-variants"
 import { playSFX } from "@/lib/audio/sfx-engine"
 
-// Bag body center Y (computed from exported constants)
-const TOP_CRIMP = 0.14, BOT_CRIMP = 0.12
 const bodyY = (TOP_CRIMP - BOT_CRIMP) / 2
 
 // ══════════════════════════════════════════════════════════
@@ -138,7 +137,10 @@ function CutGuide({ color, visible }: { color: string; visible: boolean }) {
 function TearIndicator({ points, color }: { points: {x:number;y:number}[]; color:string }) {
   const pts3D = useMemo(() => {
     if (points.length < 2) return []
-    return points.map(p => new THREE.Vector3(p.x, p.y, BAG_D/2 + 0.018))
+    // Map bag-UV coords back to 3D body surface (same formula as potato-chip-bag-3d)
+    return points.map(p => {
+      return new THREE.Vector3(p.x, bodyY + p.y + BODY_H / 2, BAG_D/2 + 0.018)
+    })
   }, [points])
   if (pts3D.length < 2) return null
   return (

@@ -643,13 +643,13 @@ function HowToPlayContent() {
 
       <SectionCard step={4} color="#E3350D" bgColor="#E3350D" title="Enter the Battle Arena"
         preview={<ArenaPreview tazos={arenaPreview} />}>
-        <p>Each turn has 3 phases:</p>
+        <p>Each turn uses the <strong>Vertical Slam</strong> system with 3 phases:</p>
         <ul className="list-disc pl-5 space-y-0.5">
-          <li><strong>Aim</strong> — Position the crosshair where you want your tazo to land</li>
-          <li><strong>Power</strong> — Charge your throw strength with timing-based precision</li>
-          <li><strong>Spin</strong> — Choose topspin, backspin, sidespin, or none</li>
+          <li><strong>Aim</strong> — Lock your crosshair on the target area where you want your tazo to land</li>
+          <li><strong>Charge</strong> — Time your power bar for maximum slam force</li>
+          <li><strong>Tilt</strong> — Angle your throw for precise landing control</li>
         </ul>
-        <p>Your tazo slides across the 3D arena. Hit hard enough and you&apos;ll <strong>flip</strong> opponent tazos — capturing them for points.</p>
+        <p>Your tazo drops from above, slamming into the arena. Hit hard enough and you&apos;ll <strong>flip</strong> face-down opponent tazos — capturing them for points. First to <strong>5 points</strong> wins!</p>
       </SectionCard>
 
       <SectionCard step={5} color="#22C55E" bgColor="#22C55E" title="Complete Quests & Climb Ranks"
@@ -1044,9 +1044,9 @@ function DownloadContent() {
 // ── FAQ ──
 
 const FAQS = [
-  { q: "What is Trading Tazos Game?", a: "A browser-based skill game where you collect and battle with digital tazos. Open bags to discover 349 unique tazos across 3 franchises. Build decks of 5, then enter the 3D arena where aim, power, and spin determine victory." },
+  { q: "What is Trading Tazos Game?", a: "A browser-based skill game where you collect and battle with digital tazos. Open bags to discover 349 unique tazos across 3 franchises. Build decks of 5, then enter the 3D arena where you aim, charge, and slam your tazos to flip opponent discs and capture them for points." },
   { q: "Is it free to play?", a: "Yes, completely free. Start with 10 free bags and earn credits by battling, completing quests, and daily logins — no credit card required." },
-  { q: "How does the battle system work?", a: "Each turn you aim a crosshair, charge your throw power, and select a spin type (topspin, backspin, sidespin, or none). Your tazo slides across the arena — hit opponent tazos hard enough and they flip, capturing them." },
+  { q: "How does the battle system work?", a: "Use the Vertical Slam system: aim your crosshair at the target zone, charge the power bar for slam force, then tilt to control your landing angle. Your tazo drops from above — hit opponent tazos hard enough and they flip, scoring points. First to 5 points wins!" },
   { q: "What are the combat stats?", a: "Each tazo has 9 stats: Attack, Defense, Resistance, Weight, Stability, Spin, Control, Bounce, and Precision. Building a balanced deck with complementary stats is key." },
   { q: "Can I play on mobile?", a: "Yes! Visit tradingtazosgame.com on your phone, install as PWA, and play full-screen. Desktop versions also available." },
   { q: "How do credits work?", a: "Credits buy tazo bags in the Shop. Earn them by winning battles, completing quests, and daily login bonuses." },

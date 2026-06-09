@@ -13,6 +13,7 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1")
     const limit = Math.min(Math.max(1, parseInt(searchParams.get("limit") || "50", 10) || 50), 500)
     const offset = (page - 1) * limit
+    const includeDecks = searchParams.get("includeDecks") === "true"
 
     const where: any = { userId: user.id }
     if (franchise) {
@@ -49,51 +50,99 @@ export async function GET(request: NextRequest) {
       franchiseSummary.set(slug, (franchiseSummary.get(slug) || 0) + ut.quantity)
     }
 
-    return NextResponse.json({
-      items: items.map((ut) => ({
-        id: ut.id,
-        quantity: ut.quantity,
-        isFavorite: ut.isFavorite,
-        obtainedFrom: ut.obtainedFrom,
-        acquiredAt: ut.acquiredAt,
-        wear: ut.wear,
-        battleCount: ut.battleCount,
-        tazo: {
-          id: ut.tazo.id,
-          name: ut.tazo.name,
-          displayName: ut.tazo.displayName,
-          slug: ut.tazo.slug,
-          number: ut.tazo.number,
-          imageUrl: ut.tazo.imageUrl,
-          shinyImageUrl: ut.tazo.shinyImageUrl,
-          rarity: ut.tazo.rarity,
-          finish: ut.tazo.finish,
-          creatureVariant: ut.tazo.creatureVariant,
-          category: ut.tazo.category,
-          franchise: ut.tazo.franchise.name,
-          franchiseSlug: ut.tazo.franchise.slug,
-          collection: ut.tazo.collection.name,
-          attack: ut.tazo.attack,
-          defense: ut.tazo.defense,
-          resistance: ut.tazo.resistance,
-          weight: ut.tazo.weight,
-          stability: ut.tazo.stability,
-          spin: ut.tazo.spin,
-          control: ut.tazo.control,
-          bounce: ut.tazo.bounce,
-          precision: ut.tazo.precision,
-          role: ut.tazo.role,
-          battleWins: ut.tazo.battleWins,
-          battleLosses: ut.tazo.battleLosses,
-        },
-      })),
+    // Helper: map a tazo DB row to the API shape
+    const mapTazo = (ut: any) => ({
+      id: ut.id,
+      quantity: ut.quantity,
+      isFavorite: ut.isFavorite,
+      obtainedFrom: ut.obtainedFrom,
+      acquiredAt: ut.acquiredAt,
+      wear: ut.wear,
+      battleCount: ut.battleCount,
+      tazo: {
+        id: ut.tazo.id,
+        name: ut.tazo.name,
+        displayName: ut.tazo.displayName,
+        slug: ut.tazo.slug,
+        number: ut.tazo.number,
+        imageUrl: ut.tazo.imageUrl,
+        shinyImageUrl: ut.tazo.shinyImageUrl,
+        rarity: ut.tazo.rarity,
+        finish: ut.tazo.finish,
+        creatureVariant: ut.tazo.creatureVariant,
+        category: ut.tazo.category,
+        franchise: ut.tazo.franchise.name,
+        franchiseSlug: ut.tazo.franchise.slug,
+        collection: ut.tazo.collection.name,
+        attack: ut.tazo.attack,
+        defense: ut.tazo.defense,
+        resistance: ut.tazo.resistance,
+        weight: ut.tazo.weight,
+        stability: ut.tazo.stability,
+        spin: ut.tazo.spin,
+        control: ut.tazo.control,
+        bounce: ut.tazo.bounce,
+        precision: ut.tazo.precision,
+        role: ut.tazo.role,
+        battleWins: ut.tazo.battleWins,
+        battleLosses: ut.tazo.battleLosses,
+      },
+    })
+
+    // Build response
+    const response: any = {
+      items: items.map(mapTazo),
       total,
       totalUnique: uniqueCount,
       page,
       limit,
       totalPages: Math.ceil(total / limit),
       franchiseSummary: Object.fromEntries(franchiseSummary),
-    })
+    }
+
+    // Optionally include decks
+    if (includeDecks) {
+      const userDecks = await db.deck.findMany({
+        where: { userId: user.id },
+        include: {
+          deckTazos: {
+            include: { tazo: { include: { franchise: true } } },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      })
+      response.decks = userDecks.map((d: any) => ({
+        id: d.id,
+        name: d.name,
+        isActive: d.isActive,
+        color: d.settings ? (JSON.parse(d.settings).color || null) : null,
+        starterIds: d.settings ? (JSON.parse(d.settings).starterIds || []) : [],
+        tazos: d.deckTazos.map((dt: any) => ({
+          id: dt.tazo.id,
+          name: dt.tazo.name,
+          displayName: dt.tazo.displayName,
+          slug: dt.tazo.slug,
+          number: dt.tazo.number,
+          imageUrl: dt.tazo.imageUrl,
+          shinyImageUrl: dt.tazo.shinyImageUrl,
+          rarity: dt.tazo.rarity,
+          finish: dt.tazo.finish,
+          creatureVariant: dt.tazo.creatureVariant,
+          franchiseSlug: dt.tazo.franchise?.slug,
+          attack: dt.tazo.attack,
+          defense: dt.tazo.defense,
+          resistance: dt.tazo.resistance,
+          weight: dt.tazo.weight,
+          stability: dt.tazo.stability,
+          spin: dt.tazo.spin,
+          control: dt.tazo.control,
+          bounce: dt.tazo.bounce,
+          precision: dt.tazo.precision,
+        })),
+      }))
+    }
+
+    return NextResponse.json(response)
   } catch (error) {
     if (error instanceof Response) throw error
     console.error("Collection GET error:", error)

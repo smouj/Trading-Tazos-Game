@@ -1163,17 +1163,24 @@ const BAGS = [
 const RC: Record<string, string> = { Common:"#9CA3AF", Uncommon:"#22C55E", Rare:"#3B82F6","Ultra Rare":"#A855F7", Legendary:"#F59E0B" }
 
 function ShopContent() {
-  const [tazos, setTazos] = useState<any[]>([])
+  const [tazosByF, setTazosByF] = useState<Record<string, any[]>>({})
   useEffect(() => {
-    fetch("/api/tazos?limit=15&publishStatus=published")
-      .then(r => r.json()).then(d => setTazos(d.tazos || [])).catch(() => {})
+    Promise.all([
+      fetch("/api/tazos?franchise=cybermon&publishStatus=published&limit=4").then(r => r.json()),
+      fetch("/api/tazos?franchise=dracobell&publishStatus=published&limit=4").then(r => r.json()),
+      fetch("/api/tazos?franchise=minimon&publishStatus=published&limit=4").then(r => r.json()),
+    ]).then(results => {
+      const byF: Record<string, any[]> = {}
+      for (const d of results) {
+        for (const t of (d.tazos || [])) {
+          const f = t.franchise || t.franchiseSlug || "minimon"
+          if (!byF[f]) byF[f] = []
+          if (byF[f].length < 3) byF[f].push(t)
+        }
+      }
+      setTazosByF(byF)
+    }).catch(() => {})
   }, [])
-
-  const byF: Record<string, any[]> = {}
-  for (const t of tazos) {
-    const f = t.franchiseSlug || t.franchise?.slug || t.franchise
-    if (f) { if (!byF[f]) byF[f] = []; if (byF[f].length < 3) byF[f].push(t) }
-  }
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-8 sm:space-y-10">
@@ -1197,7 +1204,7 @@ function ShopContent() {
       <section className="grid md:grid-cols-3 gap-4 sm:gap-6">
         {BAGS.map(bag => {
           const Icon = bag.icon
-          const examples = byF[bag.franchise] || []
+          const examples = tazosByF[bag.franchise] || []
           return (
             <div key={bag.type} className="mag-card border-3 border-[#1a1a1a] bg-white overflow-hidden" style={{ boxShadow: `4px 4px 0px ${bag.border}40` }}>
               <div className="px-4 sm:px-5 py-4 border-b-2 border-[#1a1a1a]/10" style={{ backgroundColor: bag.bg }}>

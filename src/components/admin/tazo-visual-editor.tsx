@@ -13,6 +13,7 @@ import LayersPanel, { ALL_LAYERS } from "@/components/admin/layers-panel";
 import CreatureViewer from "@/components/admin/creature-viewer";
 import ScratchOverlay from "@/components/admin/scratch-overlay";
 import ElementProperties from "@/components/admin/element-properties";
+import TazoDiscImage from "@/components/game/tazo-disc-image";
 
 // ── Types ──
 export interface LayoutConfig {
@@ -408,9 +409,6 @@ export default function TazoVisualEditor({
   const containerRef = useRef<HTMLDivElement>(null);
 
   // ── Finish & variant classes for preview canvas ──
-  const finishClass = `tazo-finish-${finish || "normal"}`;
-  const variantClass = creatureVariant && creatureVariant !== "standard"
-    ? `tazo-variant-${creatureVariant}` : "";
   const wearTierClass = !wearLevel ? "tazo-wear-mint"
     : wearLevel <= 15 ? "tazo-wear-light_play"
     : wearLevel <= 40 ? "tazo-wear-played"
@@ -776,7 +774,7 @@ export default function TazoVisualEditor({
             >
               {/* Disc background */}
               <div
-                className={`absolute rounded-full overflow-hidden shadow-2xl ${finishClass} ${variantClass} ${wearTierClass}`}
+                className="absolute rounded-full overflow-hidden shadow-2xl"
                 style={{
                   width: previewSize,
                   height: previewSize,
@@ -786,39 +784,21 @@ export default function TazoVisualEditor({
                   background: "#1a1a1a",
                 }}
               >
-                {/* Tazo image — scaled to fill the circular container */}
-                <div className="tazo-disc-image-inner absolute inset-0 rounded-full overflow-hidden">
-                {tazoImageUrl ? (
-                  <div className="w-full h-full">
-                    <img
-                      src={shinyImageUrl && creatureVariant === "shiny" ? shinyImageUrl : tazoImageUrl}
-                      alt={displayName || "Tazo"}
-                      className={`w-full h-full tazo-character ${variantClass}`}
-                      style={{ objectFit: "cover" }}
-                      draggable={false}
-                    />
-                  </div>
-                ) : (
-                  <div className="w-full h-full bg-[#1a1a1a] flex items-center justify-center">
-                    <Disc className="w-16 h-16 text-zinc-600" />
-                  </div>
-                )}
-                </div>
-
-                {/* ── Finish layers (above image, below draggable elements) ── */}
-                {tazoImageUrl && (
-                  <>
-                    {finish !== "normal" && (
-                      <>
-                        <div className="tazo-finish-layer" />
-                        <div className="tazo-finish-layer-2" />
-                        <div className="tazo-gloss-layer" />
-                      </>
-                    )}
-                    <div className="tazo-print-grain" />
-                    <div className="tazo-condition-layer" />
-                  </>
-                )}
+              {/* Tazo disc rendered via the canonical TazoDiscImage —
+                  same finish system used across the entire site */}
+              <div className="absolute inset-0">
+                <TazoDiscImage
+                  src={shinyImageUrl && creatureVariant === "shiny" ? shinyImageUrl : tazoImageUrl}
+                  alt={displayName || "Tazo"}
+                  size="100%"
+                  borderWidth={0}
+                  franchiseSlug={franchise}
+                  finish={finish as any}
+                  creatureVariant={creatureVariant as any}
+                  shinyImageUrl={shinyImageUrl}
+                  wear={wearLevel}
+                />
+              </div>
 
                 {/* Scratch overlay */}
                 {wearLevel > 0 && (

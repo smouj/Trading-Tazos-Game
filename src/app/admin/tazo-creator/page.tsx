@@ -611,6 +611,9 @@ export default function AdminTazoCreatorPage() {
                         alt={result.name}
                         size={140} borderWidth={3}
                         franchiseSlug={(result as any).franchise?.slug || franchise}
+                        finish={(result as any).finish || "normal"}
+                        creatureVariant={(result as any).creatureVariant || "standard"}
+                        shinyImageUrl={(result as any).shinyImageUrl}
                       />
                     </div>
                     {result.backImageUrl && (

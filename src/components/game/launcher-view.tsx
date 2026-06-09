@@ -479,9 +479,8 @@ function TazoShowcase() {
               src={t.imageUrl}
               alt={t.displayName || t.name || ""}
               size="100%"
-              borderWidth={3}
+              borderWidth={0}
               franchiseSlug={typeof t.franchise === "string" ? t.franchise : t.franchiseSlug}
-              number={t.number}
               onClick={() => {}}
             />
           </div>
@@ -730,10 +729,8 @@ function CollectionsContent({ onNavigate }: { onNavigate: (page: PageId) => void
                   <div className="relative w-full h-full">
                     {franchiseTazos.slice(0, 3).map((t: any, i: number) => (
                       t.imageUrl ? (
-                        <img
+                        <div
                           key={t.id}
-                          src={t.imageUrl}
-                          alt={t.displayName || t.name || ""}
                           className="absolute"
                           style={{
                             inset: `${i * 3}%`,
@@ -741,13 +738,18 @@ function CollectionsContent({ onNavigate }: { onNavigate: (page: PageId) => void
                             height: `${100 - i * 6}%`,
                             transform: `rotate(${i * 15 - 15}deg)`,
                             transformOrigin: "center center",
-                            objectFit: "cover",
-                            borderRadius: "50%",
                             zIndex: franchiseTazos.length - i,
                             opacity: i === 0 ? 1 : 0.55,
                           }}
-                          draggable={false}
-                        />
+                        >
+                          <TazoDiscImage
+                            src={t.imageUrl}
+                            alt={t.displayName || t.name || ""}
+                            size="100%"
+                            borderWidth={0}
+                            franchiseSlug={typeof t.franchise === "string" ? t.franchise : t.franchiseSlug}
+                          />
+                        </div>
                       ) : null
                     ))}
                   </div>

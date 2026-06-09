@@ -40,7 +40,7 @@ function TazoCard({ tazo }: { tazo: TazoData }) {
         src={tazo.imageUrl}
         alt={tazo.name}
         size={92}
-        borderWidth={3}
+        borderWidth={0}
         franchiseSlug={tazo.franchise}
         number={tazo.number}
       />

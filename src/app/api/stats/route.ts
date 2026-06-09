@@ -10,6 +10,7 @@ export async function GET() {
         db.franchise.count(),
         db.collection.count(),
         db.tazo.findMany({
+          where: { publishStatus: "published" },
           select: {
             rarity: true,
             condition: true,

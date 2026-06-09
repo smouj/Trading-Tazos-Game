@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
         orderBy: { userTazos: { _count: "desc" } },
         take: limit,
       })
-      users = users.map(u => ({ ...u, score: u._count.userTazos, rankField: "tazos" }))
+      users = users.map(u => ({ ...u, score: u._count.userTazos, rankField: "tazos", tazoCount: u._count.userTazos }))
       break
     case "battles":
       {

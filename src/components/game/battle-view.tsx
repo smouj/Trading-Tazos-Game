@@ -553,7 +553,7 @@ export default function BattleView() {
   }, [])
 
   if (loading) return (
-    <div className="flex items-center justify-center py-28">
+    <div className="flex items-center justify-center py-28 px-4 sm:px-6">
       <Disc3 className="w-12 h-12 animate-spin text-[#FFCC00]" />
     </div>
   )
@@ -571,7 +571,7 @@ export default function BattleView() {
   )
 
   if (phase === "match_end" && result) return (
-    <div className="max-w-md mx-auto space-y-4">
+    <div className="max-w-md mx-auto px-4 sm:px-6 py-6 space-y-6">
       <BattleResultPanel result={{
         winner: result.winner,
         victoryType: toPanelVictoryType(result.victoryType),
@@ -595,13 +595,39 @@ export default function BattleView() {
   const showReticle = isAiming || phase === "placing_stakes"
 
   return (
-    <div ref={containerRef} className="w-full relative" style={{ height: isFullscreen ? "100vh" : "calc(100vh - 56px)" }}>
+    <div ref={containerRef} className="w-full relative" style={{ height: isFullscreen ? "100vh" : "calc(100vh - 110px)" }}>
       {/* Fullscreen toggle — top-right corner */}
       <button onClick={toggleFullscreen}
         className="absolute top-2 right-2 z-30 p-2 bg-black/40 hover:bg-black/60 rounded-full border border-white/10 text-white/50 hover:text-white/80 transition-all"
         title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}>
         {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
       </button>
+      {/* Keyframe animation for score popups */}
+      <style>{`
+        @keyframes popUp {
+          0% { opacity: 1; transform: translateY(0) scale(1); }
+          20% { opacity: 1; transform: translateY(-8px) scale(1.3); }
+          60% { opacity: 0.8; transform: translateY(-30px) scale(1.1); }
+          100% { opacity: 0; transform: translateY(-60px) scale(0.8); }
+        }
+        @keyframes sparkBurst {
+          0% { opacity: 1; transform: scale(0) rotate(0deg); }
+          30% { opacity: 1; transform: scale(1.2) rotate(15deg); }
+          100% { opacity: 0; transform: scale(1.8) rotate(45deg); }
+        }
+        @keyframes particleFly {
+          0% { opacity: 1; transform: translate(0, 0) scale(1); }
+          100% { opacity: 0; transform: translate(var(--px), var(--py)) scale(0); }
+        }
+        @keyframes slamBounce {
+          0% { transform: scale(1); }
+          15% { transform: scale(1.08); }
+          30% { transform: scale(0.95); }
+          50% { transform: scale(1.03); }
+          70% { transform: scale(0.98); }
+          100% { transform: scale(1); }
+        }
+      `}</style>
       <BattleArena3D
         config={cfg?.arena || DEFAULT_ARENA_3D}
         stakedTazos={staked}
@@ -611,32 +637,6 @@ export default function BattleView() {
         reticleX={reticleX}
         reticleZ={reticleZ}
       >
-        {/* Keyframe animation for score popups */}
-        <style>{`
-          @keyframes popUp {
-            0% { opacity: 1; transform: translateY(0) scale(1); }
-            20% { opacity: 1; transform: translateY(-8px) scale(1.3); }
-            60% { opacity: 0.8; transform: translateY(-30px) scale(1.1); }
-            100% { opacity: 0; transform: translateY(-60px) scale(0.8); }
-          }
-          @keyframes sparkBurst {
-            0% { opacity: 1; transform: scale(0) rotate(0deg); }
-            30% { opacity: 1; transform: scale(1.2) rotate(15deg); }
-            100% { opacity: 0; transform: scale(1.8) rotate(45deg); }
-          }
-          @keyframes particleFly {
-            0% { opacity: 1; transform: translate(0, 0) scale(1); }
-            100% { opacity: 0; transform: translate(var(--px), var(--py)) scale(0); }
-          }
-          @keyframes slamBounce {
-            0% { transform: scale(1); }
-            15% { transform: scale(1.08); }
-            30% { transform: scale(0.95); }
-            50% { transform: scale(1.03); }
-            70% { transform: scale(0.98); }
-            100% { transform: scale(1); }
-          }
-        `}</style>
         {/* ── HUD overlay top (compact) ── */}
         <div className="absolute top-2 left-2 right-2 z-20">
           <div className="flex items-center gap-2">
@@ -816,9 +816,9 @@ export default function BattleView() {
               onBack={back}
             />
           ) : (
-            <div className="flex justify-center p-3">
+            <div className="absolute bottom-0 left-0 right-0 z-20 flex justify-center p-4">
               <button onClick={back}
-                className="px-4 py-2 text-[10px] font-black text-white/40 bg-black/40 hover:bg-black/60 hover:text-white/70 border border-white/10 rounded uppercase tracking-wider transition-colors">
+                className="px-5 py-2.5 text-[10px] font-black text-white/40 bg-black/60 hover:bg-black/80 hover:text-white/70 border border-white/15 uppercase tracking-wider transition-colors">
                 Leave Battle
               </button>
             </div>

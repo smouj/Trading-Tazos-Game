@@ -97,7 +97,7 @@ export default function GameLobby({ playerTazos, playerDecks, selectedDeckId, on
   const tazoCount = playerTazos.length
 
   return (
-    <div className="max-w-5xl mx-auto space-y-4">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
 
       {/* ════════════════ BANNER ════════════════ */}
       <div
@@ -290,7 +290,7 @@ export default function GameLobby({ playerTazos, playerDecks, selectedDeckId, on
                   <button
                     key={t.id}
                     onClick={() => toggle(i)}
-                    className={`p-1.5 border-2 text-center transition-all rounded ${
+                    className={`p-1.5 border-2 text-center transition-all ${
                       selected
                         ? "border-[#FFCC00] bg-[#FFCB050a] shadow-[2px_2px_0px_#FFCC00]"
                         : "border-[#1a1a1a]/6 opacity-55 hover:opacity-85 hover:border-[#1a1a1a]/20"

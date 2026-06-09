@@ -4,9 +4,10 @@ import { useEffect, useState, useCallback } from "react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
 import { useI18n } from "@/lib/i18n"
-import { Layers, Plus, Trash2, Star, Swords, Edit3, Shield, Zap } from "lucide-react"
+import { Layers, Plus, Trash2, Star, Swords, Edit3, Shield, Zap, PackageOpen } from "lucide-react"
 import DeckBuilder from "@/components/game/deck-builder"
 import TazoDiscImage from "@/components/game/tazo-disc-image"
+import BattleTubePreview from "@/components/tubes/BattleTubePreview"
 import type { TazoFinish, TazoCreatureVariant } from "@/lib/battle/game-loop"
 
 // ── Types ──────────────────────────────────────────────
@@ -135,9 +136,9 @@ export default function DecksPage() {
     return (
       <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-4 sm:py-6 space-y-4">
         <div className="flex items-center gap-2">
-          <Layers className="w-5 h-5 text-[#3B4CCA]" />
+          <PackageOpen className="w-5 h-5 text-[#FFCC00]" />
           <h2 className="text-lg font-black uppercase text-[#1a1a1a] tracking-wide">
-            {editingDeck ? `Edit: ${editingDeck.name}` : "Deck Builder"}
+            {editingDeck ? `Edit: ${editingDeck.name}` : "Battle Tube Builder"}
           </h2>
         </div>
         <DeckBuilder
@@ -170,21 +171,21 @@ export default function DecksPage() {
         }}
       >
         <div className="flex items-center gap-1.5">
-          <Layers className="w-5 h-5 text-[#FFCC00]" />
+          <PackageOpen className="w-5 h-5 text-[#FFCC00]" />
           <h1 className="text-sm sm:text-lg font-black text-white uppercase tracking-tight">
-            {t.decks_title}
+            Battle Tubes
           </h1>
         </div>
         <div className="w-px h-5 bg-white/15" />
         <span className="text-sm font-black text-[#FFCC00] tracking-tight">
-          {decks.length} DECKS
+          {decks.length} TUBES
         </span>
         <button
           onClick={() => setShowBuilder(true)}
           className="ml-auto mag-btn bg-[#3B4CCA] text-white flex items-center gap-1.5 px-4 py-2 text-[10px] font-black uppercase tracking-wider border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#1a1a1a] transition-all"
         >
           <Plus className="w-3.5 h-3.5" />
-          {t.decks_create}
+          Create Battle Tube
         </button>
       </div>
 
@@ -213,12 +214,24 @@ export default function DecksPage() {
 
                 <div className="p-4 sm:p-5">
                   {/* Header */}
-                  <div className="flex items-start gap-3 mb-4">
-                    {/* Color indicator */}
-                    <div
-                      className="w-10 h-10 rounded-full border-3 border-[#1a1a1a] flex-shrink-0 shadow-[2px_2px_0px_#1a1a1a]"
-                      style={{ background: deck.color || "#3B4CCA" }}
-                    />
+                  <div className="flex items-start gap-4">
+                    {/* Tube preview */}
+                    <div className="flex-shrink-0">
+                      <BattleTubePreview
+                        name={deck.name}
+                        color={deck.color || "#3B4CCA"}
+                        count={deck.tazoCount}
+                        maxCount={20}
+                        tazos={deck.tazos.slice(0, 8).map(t => ({
+                          id: t.id, name: t.name, displayName: t.displayName,
+                          imageUrl: t.imageUrl, franchiseSlug: t.franchiseSlug || t.franchise,
+                          finish: t.finish, creatureVariant: t.creatureVariant, shinyImageUrl: t.shinyImageUrl,
+                        }))}
+                        starters={deck.starters || []}
+                        size="sm"
+                        showCap
+                      />
+                    </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
@@ -354,24 +367,28 @@ export default function DecksPage() {
           })}
         </div>
       ) : (
-        /* Empty state */
-        <div
-          className="text-center py-20 border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a]"
-          style={{ background: "#fffef0" }}
-        >
-          <Layers className="w-20 h-20 text-[#1a1a1a]/15 mx-auto mb-4" />
-          <h2 className="text-2xl font-black text-[#E3350D] mb-2 uppercase tracking-wider mag-stroke-sm">
-            {t.decks_empty}
+        /* Empty state — Battle Tube illustration */
+        <div className="text-center py-20 border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a]" style={{ background: "#fffef0" }}>
+          <div className="flex justify-center mb-6">
+            <div className="relative">
+              <BattleTubePreview name="" color="#E3350D" count={0} maxCount={20} size="lg" showCap showLabel={false} />
+              <div className="absolute -bottom-3 -right-3 w-10 h-10 bg-[#1a1a1a] border-3 border-[#FFCC00] flex items-center justify-center rounded-full shadow-[3px_3px_0px_#1a1a1a]">
+                <span className="text-[#FFCC00] text-lg font-black">?</span>
+              </div>
+            </div>
+          </div>
+          <h2 className="text-2xl font-black text-[#E3350D] mb-2 uppercase tracking-wider">
+            No Battle Tubes Yet
           </h2>
           <p className="text-xs font-bold text-[#1a1a1a]/40 max-w-xs mx-auto mb-5">
-            Build a deck of up to 20 tazos, choose 5 battle starters, and enter the arena.
+            Build a 20-tazo tube, pick 5 starters, and seal it for battle.
           </p>
           <button
             onClick={() => setShowBuilder(true)}
             className="inline-block mt-4 py-3 px-8 mag-btn bg-[#3B4CCA] text-white text-sm font-black uppercase tracking-widest border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_#1a1a1a] transition-all"
           >
             <Plus className="w-4 h-4 inline mr-1.5" />
-            {t.decks_create}
+            Create Battle Tube
           </button>
         </div>
       )}

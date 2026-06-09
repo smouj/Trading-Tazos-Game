@@ -499,89 +499,146 @@ function TazoShowcase() {
   )
 }
 
+// ── Compact Featured Tazos Row ──
+
+function FeaturedTazosRow() {
+  const [tazos, setTazos] = useState<any[]>([])
+
+  useEffect(() => {
+    fetch(`/api/tazos?limit=12&_t=${Date.now()}`)
+      .then(r => r.json())
+      .then(d => {
+        const shuffled = (d.tazos || []).sort(() => Math.random() - 0.5)
+        setTazos(shuffled.slice(0, 8))
+      })
+      .catch(() => {})
+  }, [])
+
+  if (tazos.length === 0) return null
+
+  return (
+    <div className="flex flex-col items-center gap-1.5 w-full pt-1">
+      <span className="text-[7px] font-black text-[#1a1a1a]/15 uppercase tracking-[0.25em]">Featured Tazos</span>
+      <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+        {tazos.map((t: any) => (
+          <div key={t.id}
+            className="w-[52px] h-[52px] sm:w-[60px] sm:h-[60px] shadow-[3px_3px_0px_#1a1a1a15] rounded-full overflow-hidden"
+          >
+            <TazoDiscImage
+              src={t.imageUrl}
+              alt={t.displayName || t.name || ""}
+              size="100%"
+              borderWidth={0}
+              franchiseSlug={typeof t.franchise === "string" ? t.franchise : t.franchiseSlug}
+              finish={t.finish}
+              creatureVariant={t.creatureVariant}
+              shinyImageUrl={t.shinyImageUrl}
+              lazy
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // ── Home Hero ──
 
 function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
   const [hoverPlay, setHoverPlay] = useState(false)
   const [pressPlay, setPressPlay] = useState(false)
+
   return (
-    <div className="max-w-lg mx-auto w-full flex flex-col items-center gap-4 sm:gap-5 px-2 py-4 sm:py-6">
-      {/* Logo + Title */}
-      <div className="flex flex-col items-center gap-3">
-        <img src="/logo/logo-icon-black.webp" alt="TTG"
-          className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-[4px_4px_0_rgba(26,26,26,0.25)]" />
-        <div className="text-center">
-          <h1 className="text-xl sm:text-2xl font-black text-[#1a1a1a] uppercase tracking-[0.04em] leading-tight">
-            <span className="text-[#E3350D]">Trading</span>{" "}
-            <span className="text-[#FFCC00]">Tazos</span>{" "}
-            <span className="text-[#00A1E9]">Game</span>
-          </h1>
-          <p className="text-[9px] sm:text-[10px] font-bold text-[#1a1a1a]/35 uppercase tracking-[0.15em] mt-0.5">
-            Collect · Trade · Battle
-          </p>
-        </div>
-      </div>
+    <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 flex flex-col justify-center"
+      style={{ minHeight: "calc(100vh - 66px - 52px)" }}>
 
-      {/* Stat badges */}
-      <div className="flex items-center gap-2">
-        <StatBadge number="349" label="Tazos" color="#FFCC00" />
-        <StatBadge number="3" label="Series" color="#E3350D" />
-        <StatBadge number="9" label="Stats" color="#00A1E9" />
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[9px] font-black uppercase border-2 border-[#1a1a1a]"
-          style={{ background: "#22C55E", color: "#fff" }}>
-          FREE
-        </span>
-      </div>
+      {/* ═══ MAIN HORIZONTAL SPLIT ═══ */}
+      <div className="flex flex-col md:flex-row items-center md:items-start gap-5 md:gap-8 lg:gap-12">
 
-      {/* Play Now Button */}
-      <button onClick={onPlay}
-        onMouseEnter={() => setHoverPlay(true)} onMouseLeave={() => { setHoverPlay(false); setPressPlay(false) }}
-        onMouseDown={() => setPressPlay(true)} onMouseUp={() => setPressPlay(false)}
-        onTouchStart={() => setPressPlay(true)} onTouchEnd={() => setPressPlay(false)}
-        className="group relative select-none"
-        style={{ transform: pressPlay ? "translate(3px, 3px)" : hoverPlay ? "translate(-2px, -2px)" : "translate(0, 0)", transition: "transform 0.15s ease" }}>
-        <div className="absolute inset-0 translate-x-2 translate-y-2 rounded" style={{ background: "#1a1a1a" }} />
-        <div className="relative px-16 sm:px-20 py-3.5 sm:py-4 border-3 border-[#1a1a1a] rounded overflow-hidden"
-          style={{
-            background: (hoverPlay || pressPlay)
-              ? "linear-gradient(180deg, #FFE566 0%, #FFCC00 50%, #F5B800 100%)"
-              : "linear-gradient(180deg, #FFCC00 0%, #F0A800 100%)",
-            boxShadow: (hoverPlay || pressPlay)
-              ? "inset 0 -4px 0 rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.3)"
-              : "inset 0 -3px 0 rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.25)",
-          }}>
-          <span className="relative text-base sm:text-lg font-black text-[#1a1a1a] uppercase tracking-[0.12em] whitespace-nowrap">
-            <span className="inline-flex items-center gap-1.5">Play Now <Zap className="w-3.5 h-3.5 inline" /></span>
-          </span>
-          <div className="mag-halftone absolute inset-0 opacity-20 pointer-events-none" />
-        </div>
-      </button>
-
-      <p className="text-[9px] sm:text-[10px] font-black text-[#1a1a1a]/30 uppercase tracking-wider text-center">
-        {user ? "Ready — jump into battle!" : "No download · No signup needed"}
-      </p>
-
-      {/* Feature cards — 2×2 grid */}
-      <div className="grid grid-cols-2 gap-2 w-full max-w-xs">
-        {[
-          { icon: PackageOpen, label: "Open Bags", desc: "32 tazos", color: "#FFCC00" },
-          { icon: Swords, label: "Practice", desc: "AI battles", color: "#E3350D" },
-          { icon: Disc3, label: "Collect", desc: "All series", color: "#00A1E9" },
-          { icon: Medal, label: "Ranked", desc: "Leaderboard", color: "#22C55E" },
-        ].map(({ icon: Icon, label, desc, color }) => (
-          <div key={label}
-            className="flex items-center gap-2 p-2 sm:p-2.5 border-2 border-[#1a1a1a]/15 bg-white/80 hover:bg-white hover:border-[#FFCC00] transition-colors cursor-default"
-            style={{ boxShadow: "2px 2px 0 #1a1a1a10" }}
-          >
-            <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center border-2 border-[#1a1a1a]/20 rounded" style={{ backgroundColor: `${color}20` }}>
-              <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" style={{ color }} />
-            </div>
-            <div className="min-w-0">
-              <p className="text-[10px] sm:text-[11px] font-black text-[#1a1a1a] uppercase leading-none">{label}</p>
-              <p className="text-[8px] font-bold text-[#1a1a1a]/35 uppercase mt-0.5">{desc}</p>
-            </div>
+        {/* ── LEFT: Logo + Branding ── */}
+        <div className="flex flex-col items-center md:items-start gap-3 md:gap-4 shrink-0">
+          <img src="/logo/logo-icon-black.webp" alt="TTG"
+            className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 drop-shadow-[6px_6px_0_rgba(26,26,26,0.25)]" />
+          <div className="text-center md:text-left">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#1a1a1a] uppercase tracking-[0.04em] leading-none">
+              <span className="text-[#E3350D]">Trading</span>{" "}
+              <span className="text-[#FFCC00]">Tazos</span>{" "}
+              <span className="text-[#00A1E9]">Game</span>
+            </h1>
+            <p className="text-[9px] sm:text-[10px] font-bold text-[#1a1a1a]/35 uppercase tracking-[0.15em] mt-1">
+              Collect · Trade · Battle
+            </p>
           </div>
-        ))}
+        </div>
+
+        {/* ── RIGHT: Stats + CTA + Feature Cards ── */}
+        <div className="flex-1 flex flex-col items-center md:items-start gap-4 md:gap-5 w-full">
+
+          {/* Stats row — compact, horizontal */}
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+            <StatBadge number="349" label="Tazos" color="#FFCC00" />
+            <StatBadge number="3" label="Series" color="#E3350D" />
+            <StatBadge number="9" label="Stats" color="#00A1E9" />
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[9px] font-black uppercase border-2 border-[#1a1a1a]"
+              style={{ background: "#22C55E", color: "#fff" }}>FREE</span>
+          </div>
+
+          {/* Play Now Button */}
+          <div className="w-full flex justify-center md:justify-start">
+            <button onClick={onPlay}
+              onMouseEnter={() => setHoverPlay(true)} onMouseLeave={() => { setHoverPlay(false); setPressPlay(false) }}
+              onMouseDown={() => setPressPlay(true)} onMouseUp={() => setPressPlay(false)}
+              onTouchStart={() => setPressPlay(true)} onTouchEnd={() => setPressPlay(false)}
+              className="group relative select-none"
+              style={{ transform: pressPlay ? "translate(3px, 3px)" : hoverPlay ? "translate(-2px, -2px)" : "translate(0, 0)", transition: "transform 0.15s ease" }}>
+              <div className="absolute inset-0 translate-x-2 translate-y-2" style={{ background: "#1a1a1a" }} />
+              <div className="relative px-12 sm:px-16 lg:px-20 py-3 sm:py-3.5 border-3 border-[#1a1a1a] overflow-hidden"
+                style={{
+                  background: (hoverPlay || pressPlay)
+                    ? "linear-gradient(180deg, #FFE566 0%, #FFCC00 50%, #F5B800 100%)"
+                    : "linear-gradient(180deg, #FFCC00 0%, #F0A800 100%)",
+                  boxShadow: (hoverPlay || pressPlay)
+                    ? "inset 0 -4px 0 rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.3)"
+                    : "inset 0 -3px 0 rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.25)",
+                }}>
+                <span className="relative text-base sm:text-lg font-black text-[#1a1a1a] uppercase tracking-[0.12em] whitespace-nowrap">
+                  <span className="inline-flex items-center gap-1.5">Play Now <Zap className="w-3.5 h-3.5 inline" /></span>
+                </span>
+                <div className="mag-halftone absolute inset-0 opacity-20 pointer-events-none" />
+              </div>
+            </button>
+          </div>
+
+          <p className="text-[9px] sm:text-[10px] font-black text-[#1a1a1a]/25 uppercase tracking-wider text-center md:text-left w-full">
+            {user ? "Ready — jump into battle!" : "No download · No signup needed"}
+          </p>
+
+          {/* Feature cards — horizontal row on desktop, 2×2 on mobile */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full">
+            {[
+              { icon: PackageOpen, label: "Open Bags", desc: "32 tazos", color: "#FFCC00" },
+              { icon: Swords, label: "Practice", desc: "AI battles", color: "#E3350D" },
+              { icon: Disc3, label: "Collect", desc: "All series", color: "#00A1E9" },
+              { icon: Medal, label: "Ranked", desc: "Leaderboard", color: "#22C55E" },
+            ].map(({ icon: Icon, label, desc, color }) => (
+              <div key={label}
+                className="flex items-center gap-2 p-2 sm:p-2.5 border-2 border-[#1a1a1a]/12 bg-white/70 hover:bg-white hover:border-[#FFCC00] transition-colors cursor-default"
+                style={{ boxShadow: "2px 2px 0 #1a1a1a10" }}
+              >
+                <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center border-2 border-[#1a1a1a]/20 bg-white" style={{ boxShadow: `1px 1px 0 ${color}20` }}>
+                  <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" style={{ color }} />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[10px] sm:text-[11px] font-black text-[#1a1a1a] uppercase leading-none">{label}</p>
+                  <p className="text-[8px] font-bold text-[#1a1a1a]/30 uppercase mt-0.5">{desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* ── Compact Featured Tazos Row ── */}
+          <FeaturedTazosRow />
+        </div>
       </div>
     </div>
   )
@@ -1416,10 +1473,7 @@ export default function LauncherView() {
 
           <div className={`${isHome ? "space-y-8 pb-8" : "pb-8"}`}>
             {currentPage === "home" && (
-              <>
-                <HomeHero user={user} onPlay={handlePlay} />
-                <TazoShowcase />
-              </>
+              <HomeHero user={user} onPlay={handlePlay} />
             )}
             
             {currentPage === "how-to-play" && (

@@ -1,33 +1,55 @@
+// ============================================================
+// Trading Tazos Game — Healthcheck API
+// GET /api/health — monitoring endpoint for uptime, DB, stats
+// ============================================================
 import { NextResponse } from "next/server"
-import { db } from "@/lib/db"
-import { version } from "@/../package.json"
-
-export const dynamic = "force-dynamic"
+import { db as prisma } from "@/lib/db"
 
 export async function GET() {
-  const startedAt = Date.now()
-
   try {
-    await db.$queryRaw`SELECT 1`
+    const start = Date.now()
+
+    // DB health check: run counts (validates connection)
+    let dbConnected = false
+    let tazoCount = 0, userCount = 0, deckCount = 0, questCount = 0
+    
+    try {
+      [tazoCount, userCount, deckCount, questCount] = await Promise.all([
+        prisma.tazo.count({ where: { publishStatus: "published" } }),
+        prisma.user.count(),
+        prisma.deck.count(),
+        prisma.quest.count(),
+      ])
+      dbConnected = true
+    } catch {
+      dbConnected = false
+    }
+    const dbLatency = Date.now() - start
 
     return NextResponse.json({
       status: "ok",
-      service: "trading-tazos-game",
-      version,
-      db: "ok",
-      responseMs: Date.now() - startedAt,
+      version: "0.5.0",
+      uptime: process.uptime(),
+      db: { connected: dbConnected, latencyMs: dbLatency },
+      counts: { tazos: tazoCount, users: userCount, decks: deckCount, quests: questCount },
       timestamp: new Date().toISOString(),
-    })
-  } catch {
-    return NextResponse.json(
-      {
-        status: "error",
-        service: "trading-tazos-game",
-        db: "error",
-        responseMs: Date.now() - startedAt,
-        timestamp: new Date().toISOString(),
+    }, {
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+        "Access-Control-Allow-Origin": "*",
       },
-      { status: 503 },
-    )
+    })
+  } catch (err: any) {
+    return NextResponse.json({
+      status: "error",
+      error: err.message || "Unknown error",
+      timestamp: new Date().toISOString(),
+    }, {
+      status: 500,
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+        "Access-Control-Allow-Origin": "*",
+      },
+    })
   }
 }

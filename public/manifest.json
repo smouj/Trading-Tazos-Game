@@ -1,7 +1,7 @@
 {
   "name": "Trading Tazos Game",
   "short_name": "TTG",
-  "description": "Collect, trade and battle with 349 classic tazos from Minimon, Dracobell, and Cybermon. Build a 2D album, open tazo bags, and compete in a skill-based 3D battle arena.",
+  "description": "Collect, trade and battle with classic tazos from Minimon, Dracobell, and Cybermon. Build a 2D album, open tazo bags, and compete in a skill-based 3D battle arena.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -30,6 +30,12 @@
       "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/pwa-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
   "screenshots": [

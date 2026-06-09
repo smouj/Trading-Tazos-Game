@@ -1,17 +1,17 @@
 # Trading Tazos Game — Full Documentation for AI Crawlers
 
-> Last updated: 2026-06-09
+> Last updated: 2026-06-09 v0.5.0
 
 ## What is Trading Tazos Game?
 
-Trading Tazos Game (TTG) is a browser-based digital collectible and battle game. Players open virtual bags to discover tazos (pogs/caps), build decks, and compete in a 3D physics-based vertical slam battle arena. The game draws inspiration from 90s snack toy collections popular in Spain and Latin America.
+Trading Tazos Game (TTG) is a browser-based digital collectible and battle game. Players open virtual bags to discover tazos (pogs/caps), build Battle Tubes of 20 stacked discs with 5 starters, and compete in a 3D physics-based vertical slam battle arena. The game draws inspiration from 90s snack toy collections popular in Spain and Latin America.
 
 ## Gameplay
 
 ### Collections
 - **3 franchises**: Minimon (61 tazos, Matutano 2000), Dracobell (128 tazos, Matutano 1995), Cybermon (160 tazos, Magic Box 2000)
-- **349 total tazos** planned, 32 currently published
-- Each tazo has a creature image, combat stats, rarity, and physical finish effect
+- **349 total tazos** planned, 30 currently published
+- Each tazo has a creature image, 9 combat stats, rarity, and physical finish effect (18 types)
 
 ### Battle System (Vertical Slam)
 1. **Aim** — Lock crosshair on target zone
@@ -20,10 +20,16 @@ Trading Tazos Game (TTG) is a browser-based digital collectible and battle game.
 4. **Slam** — Tazo drops from above, flips face-down opponent tazos
 5. **Score** — Flip your own: +1pt, flip opponent's: +2pts, double flip bonus: +1pt. First to 5 wins.
 
+### Battle Tubes (Deck System)
+- Physical tube visualization (2.5D CSS): colored cap, transparent body, stacked discs
+- 20-slot tubes: fill with collected tazos, pick 5 starters for battle
+- Sealed badge when full (20/20)
+- 8 cap color options: Red, Blue, Yellow, Green, Orange, Purple, Cyan, Pink
+
 ### Combat Stats (9 per tazo)
 Attack, Defense, Resistance, Weight, Stability, Spin, Control, Bounce, Precision
 
-### Tazo Finishes (18 types)
+### Tazo Finishes (18 types — CSS shader layers with mix-blend-mode)
 normal, matte, glossy, holo, reverse_holo, foil, prismatic, metallic, chrome, gold, rainbow, glitter, stardust, aurora, cracked_ice, oil_slick, lenticular, pearlescent
 
 ### Creature Variants
@@ -32,13 +38,24 @@ standard, shiny, shadow, golden
 ### Rarities
 common, uncommon, rare, ultra, legendary, epic
 
+## Bag Shop
+- **Classic Bag** (10 credits): Minimon tazos, 12% bonus, ×1 rare boost
+- **Premium Bag** (10 credits): Cybermon tazos, 18% bonus, ×2 rare boost
+- **Mega Bag** (20 credits): Dracobell tazos, 30% bonus, ×4 rare boost
+- Each bag has rarity breakdown bars (Common→Legendary %)
+
+## Quest System
+17 quests across categories: beginner, daily, weekly, special. Users track progress per quest, claim credit rewards on completion.
+
 ## Technical Architecture
 
-- **Frontend**: Next.js 16 App Router, React 19, Tailwind CSS 4, Three.js / React Three Fiber, Zustand
-- **Backend**: Next.js API routes, Prisma ORM, SQLite database, JWT auth, bcrypt
-- **Deployment**: VPS (Linux), PM2 process manager (cluster mode), Caddy reverse proxy
+- **Frontend**: Next.js 16 App Router, React 19, Tailwind CSS 4, Three.js / React Three Fiber, Zustand, Lucide icons
+- **Backend**: Next.js API routes, Prisma ORM 6.19, SQLite database, JWT auth, bcrypt
+- **Deployment**: VPS (Linux 76.13.37.123), PM2 process manager (cluster mode), Caddy reverse proxy
 - **WebSocket**: ws-server.js (PM2-managed) for real-time matchmaking
-- **PWA**: Full Progressive Web App support with install prompts, offline capability, push notifications
+- **PWA**: Full Progressive Web App support with install prompts
+- **CI/CD**: GitHub Actions (typecheck + build on push/PR)
+- **Backups**: Daily cron at 4AM, 7-day rotation on VPS
 - **Domain**: tradingtazosgame.com (HTTPS via Let's Encrypt)
 
 ## Page Structure
@@ -46,47 +63,59 @@ common, uncommon, rare, ultra, legendary, epic
 ### Public (SEO)
 | Route | Description |
 |-------|------------|
-| `/` | Magazine-style landing with hero, tazo showcase, how-to-play, collections, leaderboard, FAQ |
-| `/how-to-play` | Vertical Slam battle tutorial |
-| `/tazos` | Filterable public tazo catalog |
-| `/collections/minimon` | Minimon franchise landing page |
-| `/collections/dracobell` | Dracobell franchise landing page |
-| `/collections/cybermon` | Cybermon franchise landing page |
-| `/leaderboard` | Public top player rankings |
-| `/download` | Desktop app downloads |
-| `/shop` | Public bag shop preview |
-| `/login` / `/register` | Auth pages |
+| `/` | Magazine launcher landing — hero, how-to-play, battle preview, series preview |
+| `/?page=how-to-play` | Vertical Slam tutorial (Aim→Charge→Tilt→Slam) |
+| `/?page=tazos` | Filterable tazo catalog (30 published) |
+| `/?page=collections` | Franchise collection browser |
+| `/?page=leaderboard` | Rankings (credits, tazos, battles) |
+| `/?page=shop` | Bag shop preview with rarity breakdowns |
+| `/?page=faq` | Frequently asked questions |
+| `/?page=download` | Desktop app downloads |
+| `/collections/minimon` | Minimon standalone SEO page |
+| `/collections/dracobell` | Dracobell standalone SEO page |
+| `/collections/cybermon` | Cybermon standalone SEO page |
+| `/login` / `/register` | Auth pages with OAuth (GitHub, Google, Discord) |
 | `/privacy` `/terms` `/cookies` `/disclaimer` `/contact` | Legal pages |
 
-### Authenticated (App)
+### Authenticated (/app)
 | Route | Description |
 |-------|------------|
-| `/app` | Game hub / launcher (redirects to collection) |
-| `/app/collection` | 2D album viewer with drag-and-drop, stack, zoom |
-| `/app/decks` | Deck builder — create and manage 5-tazo battle decks |
-| `/app/battle` | 3D vertical slam arena (vs AI or PvP) |
-| `/app/shop` | Bag shop with reveal animations |
-| `/app/leaderboard` | Detailed rankings with filters |
-| `/app/marketplace` | Player-to-player trading |
+| `/app/collection` | User tazo collection with finish shaders and Active Deck badge |
+| `/app/decks` | Battle Tubes shelf — 2.5D CSS physical tube visualization |
+| `/app/battle` | 3D vertical slam arena (Three.js/R3F, vs AI) |
+| `/app/shop` | Bag opening with animated reveals |
+| `/app/quests` | Quest tracker (17 quests, progress bars) |
+| `/app/stats` | Player statistics dashboard |
+| `/app/scanner` | Tazo scanner (upload→detect→crop with sharp) |
 | `/app/settings` | Account settings |
+| `/app/marketplace` | Player-to-player trading |
 
-### Admin (Developer Only)
+### Admin
 | Route | Description |
 |-------|------------|
-| `/admin` | Protected admin panel |
+| `/admin` | Protected dashboard |
 | `/admin/tazos` | Tazo CRUD, batch operations, publish control |
-| `/admin/tazo-creator` | Form-based tazo creation wizard |
-| `/admin/tazo-designer` | Visual drag-and-drop tazo layout editor with finish shader preview |
+| `/admin/tazo-creator` | Form-based tazo creation with AI art generation |
+| `/admin/tazo-designer` | Visual drag-and-drop layout editor with finish shader preview |
 
-## API Routes (Public)
-- `GET /api/tazos` — Paginated tazo catalog (query: ?publishStatus, ?franchise, ?rarity, ?finish, ?search)
-- `GET /api/tazos/[slug]` — Single tazo detail
-- `GET /api/leaderboard` — Top players by wins, collection size, score
-- `GET /api/quests` — Available quest definitions
-- `GET /api/decks` — Public deck showcase
-- `POST /api/auth/login` — Email + password authentication
-- `POST /api/auth/register` — Account creation (grants 10 free bags)
+## API Routes
+
+### Public
+- `GET /api/tazos?publishStatus=published&limit=&franchise=&rarity=&search=` — Tazo catalog
+- `GET /api/leaderboard?sort=credits|tazos|battles` — Rankings (real DB data)
+- `GET /api/quests` — Quest definitions
+- `GET /api/stats` — Global stats (published tazo count, rarity distribution)
+- `GET /api/health` — Healthcheck (DB status, uptime, counts, version)
+- `POST /api/auth/login` — Email + password auth
+- `POST /api/auth/register` — Account creation (grants starter credits)
 - `GET /api/auth/oauth/*` — OAuth flow (GitHub, Google, Discord)
+
+### Authenticated
+- `GET /api/collection?includeDecks=true` — User collection with Active Deck data
+- `GET /api/decks` — User's Battle Tubes
+- `POST /api/decks` — Create tube (color, starterIds in settings JSON)
+- `PATCH /api/decks/:id` — Update tube (merge settings)
+- `POST /api/bags/open` — Open bag (bag type, returns tazos with rarity roll)
 
 ## Social & Community
 - X/Twitter: https://x.com/tazosgame (@tazosgame)
@@ -98,10 +127,10 @@ common, uncommon, rare, ultra, legendary, epic
 - Support email: support@tradingtazosgame.com
 
 ## SEO Assets
-- robots.txt: allows all crawlers, disallows /api/, /_next/, /admin
+- robots.txt: allows all crawlers incl. Mediapartners-Google + AdsBot-Google
 - sitemap.xml: 20 URLs with priorities and change frequencies
-- llms.txt / llms-full.txt: AI crawler discoverability
+- ads.txt: Google AdSense pub-4932643710484609
+- llms.txt / llms-full.txt: AI crawler discoverability (Anthropic standard)
 - JSON-LD structured data: VideoGame schema
-- Open Graph + Twitter Card tags
+- Open Graph + Twitter Card tags per page
 - PWA manifest with app shortcuts and screenshots
-- geo.region / geo.placename meta tags

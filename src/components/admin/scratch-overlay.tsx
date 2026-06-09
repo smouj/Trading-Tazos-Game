@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
 // Seeded random for deterministic scratch patterns
 function seededRandom(seed: number) {
@@ -49,7 +49,7 @@ function generateScratches(wearPct: number, seed: number, size: number): Scratch
 }
 
 // Edge wear: little nicks around the border
-function generateEdgeWear(wearPct: number, seed: number, size: number, radius: number) {
+function generateEdgeWear(wearPct: number, seed: number, _size: number, radius: number) {
   const rng = seededRandom(seed + 9999);
   const count = Math.floor(wearPct * 0.6);
   const nicks: { angle: number; depth: number; width: number; opacity: number }[] = [];

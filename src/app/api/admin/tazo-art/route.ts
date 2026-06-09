@@ -338,12 +338,9 @@ export async function POST(req: NextRequest) {
 
     // ── Step 3: Composite onto official tazo-art-studio background ──
     let finalImageBuffer: Buffer;
-    let usedBgFile = "none";
 
     if (creatureBuffer) {
       try {
-        const bgFiles = FRONTAL_BG_FILES[fSlug] || [];
-        usedBgFile = bgFiles[Math.floor(Math.random() * bgFiles.length)] || "unknown";
         finalImageBuffer = await compositeTazo(fSlug, creatureBuffer);
       } catch (compositeErr: any) {
         console.error("Composite failed, using raw creature:", compositeErr?.message);

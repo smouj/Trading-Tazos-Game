@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { hashPassword, generateToken } from "@/lib/auth"
-import { db, isoNow } from "@/lib/db"
+import { db } from "@/lib/db"
 import crypto from "crypto"
 import { checkRateLimit } from "@/lib/rate-limit"
 

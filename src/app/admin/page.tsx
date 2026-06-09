@@ -6,7 +6,7 @@
 // ============================================================
 import { useState, useEffect } from "react"
 import { useAuth } from "@/lib/auth-context"
-import { Shield, Users, Package, Database, Server, Activity, Loader2, AlertTriangle, Check, Wand2, Image as ImageIcon, Grid3X3, LayoutGrid } from "lucide-react"
+import { Shield, Users, Package, Database, Server, Activity, Loader2, Check, Wand2, Image as ImageIcon, Grid3X3, LayoutGrid } from "lucide-react"
 import Link from "next/link"
 
 interface OverviewData {

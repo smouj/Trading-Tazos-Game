@@ -10,12 +10,11 @@ import { useI18n } from "@/lib/i18n"
 import { useAuth } from "@/lib/auth-context"
 import Link from "next/link"
 import {
-  ShoppingBag, Coins, Zap, Star, Gift, Loader2, X, Sparkles,
+  ShoppingBag, Coins, Zap, Star, Gift, Loader2, X,
   Crosshair, Trophy, Calendar, ShoppingCart, Scissors, ChevronRight,
-  Flame, Shield, Swords, Store, Tag,
+  Flame, Swords, Store,
 } from "lucide-react"
 import ConfettiBurst from "@/components/game/confetti-burst"
-import type { BagData } from "@/components/game/bag-opener-3d"
 import { pickBagVariant } from "@/lib/bag-variants"
 import { playSFX, sfxEnsureUnlocked } from "@/lib/audio/sfx-engine"
 import TazoDiscImage from "@/components/game/tazo-disc-image"
@@ -66,10 +65,6 @@ const RARITY_GRADIENT: Record<string, string> = {
 const RARITY_LABELS: Record<string, string> = {
   common: "Common", uncommon: "Uncommon", rare: "Rare",
   "ultra-rare": "Ultra Rare", legendary: "Legendary",
-}
-const RARITY_COLOR: Record<string, string> = {
-  common: "#9CA3AF", uncommon: "#22C55E", rare: "#3B82F6",
-  "ultra-rare": "#A855F7", legendary: "#F59E0B",
 }
 
 const RARITY_STARS: Record<string, number> = {
@@ -497,7 +492,6 @@ export default function BagShopPage() {
     const rndRarity = revealedTazo.rarity
     const isHighRarity = rndRarity === "rare" || rndRarity === "ultra-rare" || rndRarity === "legendary"
     // const franchiseSlug = revealedTazo.franchiseSlug || revealedTazo.franchise || "minimon"
-    const franchiseColor = (revealedTazo as any).franchiseColor || "#FFCC00"
 
     return (
       <div className="max-w-lg mx-auto py-6 sm:py-8 px-4 space-y-6 text-center">

@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback } from "react";
 import {
   Scissors, Upload, Download, Image as ImageIcon,
-  Loader2, Check, RefreshCw, ZoomIn, ZoomOut,
+  Loader2, Check, ZoomIn, ZoomOut,
 } from "lucide-react";
 
 interface CreatureViewerProps {

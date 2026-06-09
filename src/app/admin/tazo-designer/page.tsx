@@ -10,8 +10,8 @@ const IMG_CACHE_BUSTER = "v3";
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/lib/auth-context";
 import {
-  Shield, Wand2, Loader2, LayoutGrid, RefreshCw,
-  ArrowLeft, Download, Save, Eye, Zap, FlipHorizontal, FlipVertical,
+  Shield, Wand2, Loader2, LayoutGrid,
+  ArrowLeft, Save, Zap, FlipHorizontal, FlipVertical,
 } from "lucide-react";
 import Link from "next/link";
 import TazoVisualEditor from "@/components/admin/tazo-visual-editor";

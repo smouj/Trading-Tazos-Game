@@ -4,24 +4,6 @@ import { refreshUserProgress } from '@/lib/progression'
 import { NextRequest, NextResponse } from 'next/server'
 import { checkRateLimit } from '@/lib/rate-limit'
 
-// ── Quest progression: increment any quest with battle requirements ──
-async function progressBattleQuests(userId: string) {
-  try {
-    const quests = await db.quest.findMany({ where: { requirement: { in: ['battle_played', 'battle_won', 'battles_played', 'battles_won'] } } })
-    for (const q of quests) {
-      const uq = await db.userQuest.findUnique({ where: { userId_questId: { userId, questId: q.id } } })
-      if (uq && !uq.completed) {
-        const newProgress = uq.progress + 1
-        const completed = newProgress >= q.target
-        await db.userQuest.update({
-          where: { id: uq.id },
-          data: { progress: newProgress, completed, completedAt: completed ? new Date() : null },
-        })
-      }
-    }
-  } catch { /* non-critical */ }
-}
-
 // --- Type advantage table for Minimon-style combat ---
 const TYPE_ADVANTAGES: Record<string, string[]> = {
   fire: ['grass'],
@@ -528,9 +510,6 @@ export async function POST(request: NextRequest) {
       if (!result.opponentAlive) {
         winner = 'player'
         // Determine victory type
-        const lastKo = [...battleLog]
-          .reverse()
-          .find((e) => e.type === 'knockout' && e.actor === 'player')
         const lastRingOut = [...battleLog]
           .reverse()
           .find((e) => e.type === 'ring_out' && e.actor === 'opponent')

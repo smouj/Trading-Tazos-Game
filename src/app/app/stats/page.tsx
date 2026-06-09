@@ -3,7 +3,7 @@
 // Stats view — served at /app/stats
 // MagazinePageShell provided by /app/layout.tsx
 
-import { Suspense, useState, useEffect } from "react"
+import { Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import StatsPanel from "@/components/game/stats-panel"
 import { BarChart3 } from "lucide-react"

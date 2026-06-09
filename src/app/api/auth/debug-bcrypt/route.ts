@@ -1,11 +1,11 @@
 // Temporary debug route — DELETE AFTER TEST
-import { NextRequest, NextResponse } from "next/server"
-import { hashPassword, verifyPassword, generateToken } from "@/lib/auth"
+import { NextResponse } from "next/server"
+import { hashPassword, verifyPassword } from "@/lib/auth"
 import { db } from "@/lib/db"
 
 export const dynamic = "force-dynamic"
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const pwd = "test123"
   
   // Test 1: hash + verify

@@ -8,7 +8,7 @@ import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 import { ScannerView } from "@/components/game/scanner-view"
-import { Loader2, Shield } from "lucide-react"
+import { Loader2 } from "lucide-react"
 
 export default function ScannerPage() {
   const { user, loading } = useAuth()

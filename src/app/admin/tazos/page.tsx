@@ -8,7 +8,7 @@ import { useState, useEffect, useCallback, useMemo } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { useVisibilityRefresh } from "@/lib/use-visibility-refresh"
 import {
-  Shield, Loader2, Search, Filter, X, Edit3, Save, RotateCcw,
+  Shield, Loader2, Search, X, Edit3, Save, RotateCcw,
   ChevronLeft, ChevronRight, Image as ImageIcon, Star, Check,
   AlertTriangle, Trash2, Square, CheckSquare, ArrowUpDown,
 } from "lucide-react"

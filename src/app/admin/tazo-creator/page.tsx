@@ -124,19 +124,6 @@ function DiscPreview({ franchise, rarity }: { franchise: string; rarity: string 
   );
 }
 
-// ── Stat bar ──
-function StatBar({ value, color, label }: { value: number; color: string; label: string }) {
-  return (
-    <div className="flex items-center gap-1.5">
-      <span className="text-[8px] font-black w-9 text-right" style={{ color }}>{label}</span>
-      <div className="flex-1 h-1.5 rounded-full bg-[#1a1a1a]/10 overflow-hidden border border-[#1a1a1a]/10">
-        <div className="h-full rounded-full transition-all duration-300"
-          style={{ width: `${Math.min(value, 99)}%`, background: color }} />
-      </div>
-      <span className="text-[8px] font-bold w-6 text-right text-[#1a1a1a]/40 tabular-nums">{value}</span>
-    </div>
-  );
-}
 
 // ── Main component ──
 export default function AdminTazoCreatorPage() {

@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
 import { useI18n } from "@/lib/i18n"
-import { Layers, Plus, Trash2, Star, Swords, Edit3, Disc3, TrendingUp, Shield, Zap } from "lucide-react"
+import { Layers, Plus, Trash2, Star, Swords, Edit3, Shield, Zap } from "lucide-react"
 import DeckBuilder from "@/components/game/deck-builder"
 import TazoDiscImage from "@/components/game/tazo-disc-image"
 import type { TazoFinish, TazoCreatureVariant } from "@/lib/battle/game-loop"
@@ -28,10 +28,6 @@ interface Deck {
 
 const FRANCHISE_BORDER: Record<string, string> = {
   minimon: "#FFCB05", cybermon: "#00A1E9", dracobell: "#FF6B00",
-}
-
-const RARITY_COLOR: Record<string, string> = {
-  common: "#9CA3AF", uncommon: "#22C55E", rare: "#3B82F6", ultra: "#A855F7", legendary: "#F59E0B",
 }
 
 function totalPower(t: DeckTazo): number {

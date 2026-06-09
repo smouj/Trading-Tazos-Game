@@ -3,8 +3,8 @@
 import { useState } from "react";
 import type { ElementKey, LayoutConfig } from "@/components/admin/tazo-visual-editor";
 import {
-  GripHorizontal, ArrowUp, ArrowDown, ArrowLeft, ArrowRight,
-  RotateCw, Eye, EyeOff, Lock, Unlock, Copy, ChevronDown,
+  ArrowUp, ArrowDown, ArrowLeft, ArrowRight,
+  Eye, EyeOff, Lock, Unlock,
   SlidersHorizontal,
 } from "lucide-react";
 
@@ -48,7 +48,7 @@ export default function ElementProperties({
   layout,
   onLayoutChange,
   onNudge,
-  onScaleChange,
+  onScaleChange: _onScaleChange,
   visibleElements,
   onToggleVisibility,
   lockedElements,

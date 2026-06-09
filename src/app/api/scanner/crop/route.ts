@@ -26,8 +26,6 @@ export async function POST(request: NextRequest) {
       imageUrl.replace(/^\//, '')
     )
 
-    const size = Math.min(region.width, region.height)
-
     // Crop the region
     let croppedImage = sharp(sourcePath).extract({
       left: Math.round(region.x),

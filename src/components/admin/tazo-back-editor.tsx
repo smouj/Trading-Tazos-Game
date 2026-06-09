@@ -14,9 +14,9 @@
 
 import React, { useState, useRef, useCallback, useEffect } from "react"
 import {
-  Disc, Star, Crown, Flame, Zap, Cpu, Save,
+  Save,
   Undo2, Redo2, Lock, Unlock, Eye, EyeOff,
-  Plus, Minus, RotateCcw, Copy, Check, HelpCircle,
+  Plus, Minus, Copy, Check, HelpCircle,
 } from "lucide-react"
 
 // ── Types ──

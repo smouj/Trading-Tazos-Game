@@ -41,16 +41,6 @@ interface LayoutStore {
   lastModified: number; // unix timestamp of last layout change
 }
 
-function getLayoutLastModified(): number {
-  try {
-    if (fs.existsSync(LAYOUTS_FILE)) {
-      const store = JSON.parse(fs.readFileSync(LAYOUTS_FILE, "utf-8"));
-      return store.lastModified || 0;
-    }
-  } catch {}
-  return 0;
-}
-
 function readStore(): LayoutStore {
   try {
     if (fs.existsSync(LAYOUTS_FILE)) {

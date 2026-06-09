@@ -13,7 +13,6 @@ export async function POST(
     if (!authUser) return NextResponse.json({ error: 'Login required' }, { status: 401 })
 
     const { id } = await params
-    const { acceptedUserTazoId } = await request.json()
 
     const offer = await db.tradeOffer.findUnique({ where: { id } })
     if (!offer) return NextResponse.json({ error: 'Offer not found' }, { status: 404 })

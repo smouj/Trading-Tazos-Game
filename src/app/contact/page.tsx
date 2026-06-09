@@ -2,7 +2,7 @@
 // Trading Tazos Game — Contact Page
 // ============================================================
 import PublicPageShell from "@/components/layout/public-page-shell"
-import { Mail, Github, MessageCircle, Shield, Bug, HelpCircle } from "lucide-react"
+import { Mail, MessageCircle, Shield, Bug, HelpCircle } from "lucide-react"
 
 const CONTACT_CHANNELS = [
   {

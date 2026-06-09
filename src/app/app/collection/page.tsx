@@ -9,7 +9,7 @@ import {
   Package, Swords, Star, TrendingUp, ArrowUpDown,
   Clock, ChevronRight, BookOpen, Sparkles,
   ShoppingBag, Gift, Camera, Search, Eye, Heart, PlusCircle,
-  Disc3, Layers, Target,
+  Disc3,
 } from "lucide-react"
 
 // ── Types ──────────────────────────────────────────────
@@ -63,9 +63,6 @@ function timeAgo(iso: string): string {
   if (hours < 24) return `${hours}h ago`
   const days = Math.floor(hours / 24)
   return `${days}d ago`
-}
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
 }
 
 // ── Component ──────────────────────────────────────────
@@ -128,8 +125,8 @@ export default function CollectionPage() {
   }, [token, user])
 
   // ── Derived data ──────────────────────────────────────
-  const { strongest, rarest, recentTazos, deckTazos, duplicateTazos, favoriteTazos, listedTazos, franchiseItems } = useMemo(() => {
-    if (!data?.items.length) return { strongest: null, rarest: null, recentTazos: [], deckTazos: [], duplicateTazos: [], favoriteTazos: [], listedTazos: [], franchiseItems: {} as Record<string, CollectionTazo[]> }
+  const { strongest, rarest, recentTazos, deckTazos, duplicateTazos, favoriteTazos, listedTazos } = useMemo(() => {
+    if (!data?.items.length) return { strongest: null, rarest: null, recentTazos: [], deckTazos: [], duplicateTazos: [], favoriteTazos: [], listedTazos: [] }
     const byRarity = [...data.items].sort((a, b) => rarityOrder(b.tazo.rarity) - rarityOrder(a.tazo.rarity))
     const byPower = [...data.items].sort((a, b) => totalPower(b.tazo) - totalPower(a.tazo))
     const recent = [...data.items].sort((a, b) => new Date(b.acquiredAt).getTime() - new Date(a.acquiredAt).getTime()).slice(0, 8)
@@ -137,14 +134,7 @@ export default function CollectionPage() {
     const dupes = data.items.filter(i => i.quantity > 1)
     const favs = data.items.filter(i => i.isFavorite)
     const listed = data.items.filter(i => listedUserTazoIds.has(i.id))
-    // Group by franchise
-    const fi: Record<string, CollectionTazo[]> = {}
-    for (const item of data.items) {
-      const slug = item.tazo.franchiseSlug || item.tazo.franchise || "unknown"
-      if (!fi[slug]) fi[slug] = []
-      fi[slug].push(item)
-    }
-    return { strongest: byPower[0] || null, rarest: byRarity[0] || null, recentTazos: recent, deckTazos: inDeck, duplicateTazos: dupes, favoriteTazos: favs, listedTazos: listed, franchiseItems: fi }
+    return { strongest: byPower[0] || null, rarest: byRarity[0] || null, recentTazos: recent, deckTazos: inDeck, duplicateTazos: dupes, favoriteTazos: favs, listedTazos: listed }
   }, [data])
 
   const filteredItems = useMemo(() => {

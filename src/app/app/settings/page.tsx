@@ -10,7 +10,7 @@ import { useAuth } from "@/lib/auth-context"
 import { useI18n } from "@/lib/i18n"
 import {
   User, Settings, LogOut, Disc3, Layers, Coins,
-  Mail, Calendar, Shield, Star, Activity, Zap,
+  Mail, Calendar, Shield,
 } from "lucide-react"
 
 export default function SettingsPage() {
@@ -173,10 +173,10 @@ export default function SettingsPage() {
       {/* ═══════════════════════════════════════════ */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { icon: Disc3, label: "Tazos", value: user.tazoCount ?? 0, color: "#E3350D", bg: "#E3350D08" },
-          { icon: Layers, label: "Decks", value: user.deckCount ?? 0, color: "#3B4CCA", bg: "#3B4CCA08" },
-          { icon: Coins, label: "Credits", value: credits != null ? credits : "...", color: "#F59E0B", bg: "#F59E0B08" },
-        ].map(({ icon: Icon, label, value, color, bg }) => (
+          { icon: Disc3, label: "Tazos", value: user.tazoCount ?? 0, color: "#E3350D" },
+          { icon: Layers, label: "Decks", value: user.deckCount ?? 0, color: "#3B4CCA" },
+          { icon: Coins, label: "Credits", value: credits != null ? credits : "...", color: "#F59E0B" },
+        ].map(({ icon: Icon, label, value, color }) => (
           <div
             key={label}
             className="border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] p-4 text-center"

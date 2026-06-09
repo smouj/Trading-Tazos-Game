@@ -109,13 +109,6 @@ function TubeModel({ textureUrl, color, rotationSpeed = 0.15, showTazos = false,
         <torusGeometry args={[CAP_RADIUS, 0.015, 16, 48]} />
       </mesh>
 
-      {/* ═══ LABEL STRIP (decorative ring near top) ═══ */}
-      <mesh position={[0, TUBE_HEIGHT * 0.28, 0]} material={ringMaterial}>
-        <torusGeometry args={[TUBE_RADIUS + 0.008, 0.01, 8, 48]} />
-      </mesh>
-      <mesh position={[0, TUBE_HEIGHT * 0.25, 0]} material={ringMaterial}>
-        <torusGeometry args={[TUBE_RADIUS + 0.008, 0.01, 8, 48]} />
-      </mesh>
     </group>
   )
 }

@@ -569,7 +569,6 @@ export default function CollectionPage() {
                               alt={isFlipped ? `Back of ${item.tazo.name || "tazo"}` : item.tazo.name || ""}
                               size="100%"
                               borderWidth={0}
-                              borderColor="#1a1a1a33"
                               franchiseSlug={item.tazo.franchiseSlug}
                               number={item.tazo.number}
                               finish={(item.tazo as any).finish}

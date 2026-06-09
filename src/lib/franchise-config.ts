@@ -33,7 +33,7 @@ export const FRANCHISES: FranchiseConfig[] = [
   {
     slug: "dracobell",
     name: "Dracobell",
-    count: 11,
+    count: 10,
     total: 128,
     year: 1995,
     origin: "Matutano",
@@ -43,7 +43,7 @@ export const FRANCHISES: FranchiseConfig[] = [
   {
     slug: "cybermon",
     name: "Cybermon",
-    count: 11,
+    count: 10,
     total: 160,
     year: 2000,
     origin: "Magic Box",

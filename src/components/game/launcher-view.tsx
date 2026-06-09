@@ -732,18 +732,22 @@ function SeriesPreviewHome({ onNavigate }: { onNavigate: (page: PageId) => void 
   const [seriesTazos, setSeriesTazos] = useState<Record<string, any[]>>({})
 
   useEffect(() => {
-    fetch("/api/tazos?limit=12")
-      .then(r => r.json())
-      .then(d => {
-        const byFranchise: Record<string, any[]> = {}
-        for (const t of (d.tazos || [])) {
-          const f = t.franchise || t.franchiseSlug || "minimon"
-          if (!byFranchise[f]) byFranchise[f] = []
-          if (byFranchise[f].length < 4) byFranchise[f].push(t)
-        }
-        setSeriesTazos(byFranchise)
-      })
-      .catch(() => {})
+    // Fetch 4 tazos per franchise for preview
+    const franchises = ["minimon", "dracobell", "cybermon"]
+    Promise.all(
+      franchises.map(f =>
+        fetch(`/api/tazos?limit=4&franchise=${f}&publishStatus=published`)
+          .then(r => r.json())
+          .then(d => ({ franchise: f, tazos: d.tazos || [] }))
+          .catch(() => ({ franchise: f, tazos: [] }))
+      )
+    ).then(results => {
+      const byFranchise: Record<string, any[]> = {}
+      for (const r of results) {
+        byFranchise[r.franchise] = r.tazos
+      }
+      setSeriesTazos(byFranchise)
+    }).catch(() => {})
   }, [])
 
   const series = [
@@ -770,11 +774,11 @@ function SeriesPreviewHome({ onNavigate }: { onNavigate: (page: PageId) => void 
             <div className="p-3 sm:p-4">
               {/* Tazo grid */}
               <div className="flex items-center justify-center gap-1.5 mb-3">
-                {tazos.slice(0, 4).map((t, i) => (
-                  <div key={t.id || i} className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 border-[#1a1a1a]/10 bg-[#1a1a1a] group-hover:border-[#1a1a1a]/30 transition-colors">
+                {tazos.slice(0, 3).map((t, i) => (
+                  <div key={t.id || i} className="w-11 h-11 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-[#1a1a1a]/30 bg-white group-hover:border-[#1a1a1a]/60 transition-colors" style={{ boxShadow: "0 2px 6px rgba(0,0,0,0.12)" }}>
                     {t.imageUrl ? (
-                      <TazoDiscImage src={t.imageUrl} alt="" size="100%" borderWidth={0}
-                        franchiseSlug={typeof t.franchise === "string" ? t.franchise : t.franchiseSlug}
+                      <TazoDiscImage src={t.imageUrl} alt={t.name || ''} size="100%" borderWidth={0}
+                        franchiseSlug={t.franchiseSlug || (typeof t.franchise === "string" ? t.franchise : "minimon")}
                         finish={t.finish} creatureVariant={t.creatureVariant} shinyImageUrl={t.shinyImageUrl} lazy />
                     ) : null}
                   </div>

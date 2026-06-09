@@ -116,8 +116,6 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: 
   const rarityConfig = RARITY_CONFIG[tazo.rarity as Rarity]
   const conditionConfig = CONDITION_CONFIG[tazo.condition as TazoCondition]
 
-  const isHolo = tazo.condition === 'holo'
-  const isMetallic = tazo.condition === 'metallic'
   const isLegendary = tazo.rarity === 'legendary'
   const isWorn = tazo.condition === 'worn'
   const totalBattles = tazo.battleWins + tazo.battleLosses
@@ -132,10 +130,6 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: 
     tazo.control +
     tazo.bounce +
     tazo.precision
-
-  let circleBorderClass = ''
-  if (isHolo) circleBorderClass = 'holo-border'
-  else if (isLegendary) circleBorderClass = 'legendary-glow'
 
   const rarityHex = RARITY_HEX[tazo.rarity as Rarity] || '#9CA3AF'
   const conditionHex = CONDITION_HEX[tazo.condition as TazoCondition] || '#94A3B8'
@@ -246,7 +240,7 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned }: 
           <div className="flex flex-col items-center">
             {/* The Big Disc */}
             <div
-              className={`ttg-bg-disc relative w-[180px] h-[180px] sm:w-[220px] sm:h-[220px] rounded-full flex items-center justify-center overflow-hidden ${circleBorderClass} ${bgClasses}`}
+              className={`ttg-bg-disc relative w-[180px] h-[180px] sm:w-[220px] sm:h-[220px] rounded-full flex items-center justify-center overflow-hidden ${bgClasses}`}
             >
               <TazoDiscImage
                 src={tazo.imageUrl}

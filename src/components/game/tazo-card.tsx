@@ -82,19 +82,12 @@ export default function TazoCard({ tazo, onClick, forceFlipped }: TazoCardProps)
   }, [tazo, franchiseSlug])
   const bgClasses = getTazoBackgroundClasses(bgConfig)
 
-  const isHolo = tazo.condition === 'holo'
-  const isMetallic = tazo.condition === 'metallic'
   const isLegendary = tazo.rarity === 'legendary'
-  const isWorn = tazo.condition === 'worn'
   const isNotOwned = !tazo.isOwned
   const sourceConfig = SOURCE_STATUS_CONFIG[tazo.sourceStatus as SourceStatus]
   const sourceIcon = tazo.sourceStatus === 'verified' ? ShieldCheck : tazo.sourceStatus === 'partial' ? ScanEye : AlertTriangle
   const obtainedFromConfig = tazo.obtainedFrom ? OBTAINED_FROM_CONFIG[tazo.obtainedFrom as ObtainedFrom] : null
   const obtainedIcon = tazo.obtainedFrom === 'bag' ? ShoppingBag : tazo.obtainedFrom === 'starter' ? Gift : Camera
-
-  let circleBorderClass = ''
-  if (isHolo) circleBorderClass = 'holo-border'
-  else if (isLegendary) circleBorderClass = 'legendary-glow'
 
   return (
     <div
@@ -147,7 +140,7 @@ export default function TazoCard({ tazo, onClick, forceFlipped }: TazoCardProps)
           {/* ===== FRONT FACE ===== */}
           <div className="tazo-flip-front">
             <div
-              className={`ttg-bg-disc relative w-full h-full rounded-full flex items-center justify-center shrink-0 overflow-hidden ${circleBorderClass} ${bgClasses}`}
+              className={`ttg-bg-disc relative w-full h-full rounded-full flex items-center justify-center shrink-0 overflow-hidden ${bgClasses}`}
             >
               <TazoDiscImage
                 src={tazo.imageUrl}
@@ -183,32 +176,33 @@ export default function TazoCard({ tazo, onClick, forceFlipped }: TazoCardProps)
 
           {/* ===== BACK FACE ===== */}
           <div className="tazo-flip-back">
-            <TazoDiscImage
-              src={backArt}
-              alt={`${franchiseSlug} series back`}
-              size="112px"
-              borderWidth={3}
-              borderColor="#1a1a1a"
-              isBack
-              finish="normal"
-              number={tazo.number}
-              overlay={
-                <div
-                  className="absolute top-0 left-0 right-0 text-center py-1"
-                  style={{
-                    background: 'rgba(26,26,26,0.75)',
-                    borderBottom: '1px solid rgba(255,255,255,0.2)',
-                  }}
-                >
-                  <span
-                    className="text-[7px] font-black uppercase tracking-[0.12em]"
-                    style={{ color: franchiseColors.strip }}
+            <div className="w-full h-full rounded-full overflow-hidden">
+              <TazoDiscImage
+                src={backArt}
+                alt={`${franchiseSlug} series back`}
+                size="100%"
+                borderWidth={0}
+                isBack
+                finish="normal"
+                number={tazo.number}
+                overlay={
+                  <div
+                    className="absolute top-0 left-0 right-0 text-center py-1"
+                    style={{
+                      background: 'rgba(26,26,26,0.75)',
+                      borderBottom: '1px solid rgba(255,255,255,0.2)',
+                    }}
                   >
-                    {tazo.franchiseName || franchiseSlug}
-                  </span>
-                </div>
-              }
-            />
+                    <span
+                      className="text-[7px] font-black uppercase tracking-[0.12em]"
+                      style={{ color: franchiseColors.strip }}
+                    >
+                      {tazo.franchiseName || franchiseSlug}
+                    </span>
+                  </div>
+                }
+              />
+            </div>
           </div>
         </div>
 

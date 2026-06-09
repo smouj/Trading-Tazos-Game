@@ -77,10 +77,26 @@ const FINISHES = [
 ];
 
 const COMBAT_TYPES = [
-  { slug: "melee", name: "Melee" },
-  { slug: "ranged", name: "Ranged" },
-  { slug: "hybrid", name: "Hybrid" },
-  { slug: "support", name: "Support" },
+  // Minimon
+  { slug: "fire", name: "Fire" },
+  { slug: "water", name: "Water" },
+  { slug: "grass", name: "Grass" },
+  { slug: "electric", name: "Electric" },
+  { slug: "psychic", name: "Psychic" },
+  { slug: "ghost", name: "Ghost" },
+  { slug: "dragon", name: "Dragon" },
+  { slug: "normal", name: "Normal" },
+  // Cybermon
+  { slug: "data", name: "Data" },
+  { slug: "virus", name: "Virus" },
+  { slug: "vaccine", name: "Vaccine" },
+  { slug: "free", name: "Free" },
+  // Dracobell
+  { slug: "saiyan", name: "Saiyan" },
+  { slug: "namekian", name: "Namekian" },
+  { slug: "human", name: "Human" },
+  { slug: "android", name: "Android" },
+  { slug: "fusion", name: "Fusion" },
 ];
 
 const CATEGORIES = [
@@ -135,7 +151,7 @@ export default function AdminTazoCreatorPage() {
   const [franchise, setFranchise] = useState("minimon");
   const [rarity, setRarity] = useState("common");
   const [role, setRole] = useState("balanced");
-  const [combatType, setCombatType] = useState("hybrid");
+  const [combatType, setCombatType] = useState("data");
   const [finish, setFinish] = useState("normal");
   const [category, setCategory] = useState("creature");
   const [skillName, setSkillName] = useState("");

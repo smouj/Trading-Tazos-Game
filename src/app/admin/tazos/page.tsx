@@ -34,7 +34,14 @@ interface Franchise { id: string; name: string; slug: string }
 const RARITIES = ["common", "uncommon", "rare", "ultra", "legendary", "epic"]
 const FINISHES = ["normal", "holo", "reverse_holo", "prismatic", "foil", "glossy", "metallic", "chrome", "gold", "rainbow", "glitter", "stardust", "aurora", "cracked_ice", "oil_slick", "lenticular", "pearlescent", "matte"]
 const ROLES = ["attacker", "tank", "technical", "bouncer", "heavy", "light", "balanced", "special"]
-const COMBAT_TYPES = ["melee", "ranged", "hybrid", "support"]
+const COMBAT_TYPES = [
+  // Minimon
+  "fire", "water", "grass", "electric", "psychic", "ghost", "dragon", "normal",
+  // Cybermon  
+  "data", "virus", "vaccine", "free",
+  // Dracobell
+  "saiyan", "namekian", "human", "android", "fusion",
+]
 const CATEGORIES = ["creature", "trainer", "equipment", "arena", "special"]
 
 const FRANCHISE_COLORS: Record<string, string> = {

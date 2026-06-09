@@ -91,11 +91,11 @@ export async function GET(req: NextRequest) {
 
   // Return hardcoded defaults (matches DEFAULT_LAYOUT in tazo-visual-editor.tsx)
   const defaults: LayoutConfig = {
-    collection: { x: 0, y: -447, scale: 1.0 },
-    badge: { x: 0, y: -340, scale: 1.0 },
-    number: { x: 310, y: 310, scale: 1.0 },
-    name: { x: 0, y: 370, scale: 1.0 },
-    rarity: { x: 0, y: -295, scale: 1.0 },
+    collection: { x: 0, y: -300, scale: 1.0 },
+    badge: { x: 290, y: 0, scale: 1.0 },
+    number: { x: -290, y: 0, scale: 1.0 },
+    name: { x: 0, y: 300, scale: 1.0 },
+    rarity: { x: 0, y: -250, scale: 1.0 },
     creature: { x: 0, y: 0, scale: 1.0 },
   };
 

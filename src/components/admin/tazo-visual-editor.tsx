@@ -26,12 +26,12 @@ export interface LayoutConfig {
 }
 
 export const DEFAULT_LAYOUT: LayoutConfig = {
-  collection: { x: 0, y: -447, scale: 1.0 },     // very top (matches Python: y=65)
-  badge: { x: 0, y: -340, scale: 1.0 },          // top of disc below collection
-  number: { x: 310, y: 310, scale: 1.0 },         // bottom-right (Python: 822,822)
-  name: { x: 0, y: 370, scale: 1.0 },             // bottom center (Python: y=861)
-  rarity: { x: 0, y: -295, scale: 1.0 },          // top, below badge with spacing
-  creature: { x: 0, y: 0, scale: 1.0 },           // center
+  collection: { x: 0, y: -300, scale: 1.0 },
+  badge: { x: 290, y: 0, scale: 1.0 },
+  number: { x: -290, y: 0, scale: 1.0 },
+  name: { x: 0, y: 300, scale: 1.0 },
+  rarity: { x: 0, y: -250, scale: 1.0 },
+  creature: { x: 0, y: 0, scale: 1.0 },
 };
 
 export type ElementKey = keyof LayoutConfig;

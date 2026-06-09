@@ -3,31 +3,31 @@
     "minimon": {
       "collection": {
         "x": 0,
-        "y": -447,
+        "y": -300,
         "scale": 1.0,
         "visible": true
       },
       "badge": {
-        "x": 0,
-        "y": -340,
+        "x": 290,
+        "y": 0,
         "scale": 1.0,
         "visible": true
       },
       "number": {
-        "x": 310,
-        "y": 310,
+        "x": -290,
+        "y": 0,
         "scale": 1.0,
         "visible": true
       },
       "name": {
         "x": 0,
-        "y": 370,
+        "y": 300,
         "scale": 1.0,
         "visible": true
       },
       "rarity": {
         "x": 0,
-        "y": -295,
+        "y": -250,
         "scale": 1.0,
         "visible": true
       },
@@ -41,31 +41,31 @@
     "cybermon": {
       "collection": {
         "x": 0,
-        "y": -447,
+        "y": -300,
         "scale": 1.0,
         "visible": true
       },
       "badge": {
-        "x": 0,
-        "y": -340,
+        "x": 290,
+        "y": 0,
         "scale": 1.0,
         "visible": true
       },
       "number": {
-        "x": 310,
-        "y": 310,
+        "x": -290,
+        "y": 0,
         "scale": 1.0,
         "visible": true
       },
       "name": {
         "x": 0,
-        "y": 370,
+        "y": 300,
         "scale": 1.0,
         "visible": true
       },
       "rarity": {
         "x": 0,
-        "y": -295,
+        "y": -250,
         "scale": 1.0,
         "visible": true
       },
@@ -79,31 +79,31 @@
     "dracobell": {
       "collection": {
         "x": 0,
-        "y": -447,
+        "y": -300,
         "scale": 1.0,
         "visible": true
       },
       "badge": {
-        "x": 0,
-        "y": -340,
+        "x": 290,
+        "y": 0,
         "scale": 1.0,
         "visible": true
       },
       "number": {
-        "x": 310,
-        "y": 310,
+        "x": -290,
+        "y": 0,
         "scale": 1.0,
         "visible": true
       },
       "name": {
         "x": 0,
-        "y": 370,
+        "y": 300,
         "scale": 1.0,
         "visible": true
       },
       "rarity": {
         "x": 0,
-        "y": -295,
+        "y": -250,
         "scale": 1.0,
         "visible": true
       },

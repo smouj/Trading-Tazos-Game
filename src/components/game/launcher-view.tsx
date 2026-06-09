@@ -258,7 +258,7 @@ function BagPreview({ tazos }: { tazos: any[] }) {
       {/* Resulting tazos */}
       <div className="flex items-center -space-x-3">
         {tazos.length > 0 ? tazos.map((t: any, i: number) => (
-          <div key={t.id || i} className="w-12 h-12 rounded-full border-2 border-[#1a1a1a] bg-[#1a1a1a] overflow-hidden flex-shrink-0 relative"
+          <div key={t.id || i} className="w-12 h-12 rounded-full border-2 border-white/5 bg-transparent overflow-hidden flex-shrink-0 relative"
             style={{ zIndex: 4 - i }}>
             {t.imageUrl ? (
               <TazoDiscImage src={t.imageUrl} alt={t.displayName || t.name} size="100%" borderWidth={0}
@@ -295,7 +295,7 @@ function DeckPreview({ tazos }: { tazos: any[] }) {
       {/* Tazo cards in a row */}
       <div className="flex items-center -space-x-2">
         {displayTazos.map((t: any, i: number) => (
-          <div key={t.id || i} className="w-14 h-14 rounded-full border-2 border-[#1a1a1a] bg-[#1a1a1a] overflow-hidden flex-shrink-0"
+          <div key={t.id || i} className="w-14 h-14 rounded-full border-2 border-white/5 bg-transparent overflow-hidden flex-shrink-0"
             style={{ zIndex: 3 - i }}>
             {t.imageUrl ? (
               <TazoDiscImage src={t.imageUrl} alt={t.displayName || t.name} size="100%" borderWidth={0}
@@ -367,7 +367,7 @@ function ArenaPreview({ tazos }: { tazos: any[] }) {
         {/* Tazo in flight */}
         {tazos.length > 0 && tazos[0].imageUrl ? (
           <div className="absolute top-[10%] left-[50%] w-6 h-6 rounded-full overflow-hidden border border-[#FFCC00]/40 -translate-x-3 animate-bounce"
-            style={{ boxShadow: "0 0 8px rgba(255,204,0,0.3)", background: "#1a1a1a" }}>
+            style={{ boxShadow: "0 0 8px rgba(255,204,0,0.3)", background: "transparent" }}>
             <TazoDiscImage src={tazos[0].imageUrl} alt="" size="100%" borderWidth={0}
               franchiseSlug={tazos[0].franchiseSlug || tazos[0].franchise?.slug}
               finish={tazos[0].finish} creatureVariant={tazos[0].creatureVariant} shinyImageUrl={tazos[0].shinyImageUrl}
@@ -460,7 +460,7 @@ function FeaturedTazoCard({ tazo, featured }: { tazo: any; featured?: boolean })
   return (
     <>
       <button onClick={() => setOpen(true)}
-        className={`rounded-full overflow-hidden border-2 border-[#1a1a1a] bg-[#1a1a1a] transition-all duration-200 hover:scale-110 hover:-translate-y-1 hover:shadow-[5px_5px_0px_#1a1a1a30] ${
+        className={`rounded-full overflow-hidden border-2 border-white/5 bg-transparent transition-all duration-200 hover:scale-110 hover:-translate-y-1 hover:shadow-[5px_5px_0px_#1a1a1a30] ${
           featured ? "w-[72px] h-[72px] sm:w-[88px] sm:h-[88px] shadow-[4px_4px_0px_#1a1a1a20]" : "w-[60px] h-[60px] sm:w-[72px] sm:h-[72px] shadow-[3px_3px_0px_#1a1a1a15]"
         }`}>
         {tazo.imageUrl ? (

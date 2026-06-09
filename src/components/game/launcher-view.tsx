@@ -16,7 +16,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 import { useVisibilityRefresh } from "@/lib/use-visibility-refresh"
 import {
-  Download, Globe, Monitor, Apple, Terminal,
+  Download, Globe, Monitor, Apple, Terminal, Smartphone,
   Zap, Star, Disc3, Swords, Medal, PackageOpen,
   ExternalLink,
   Trophy, Coins, Package, ArrowLeft, Loader2,
@@ -981,62 +981,146 @@ function LeaderboardContent() {
 // ── Download ──
 
 const GITHUB_URL = "https://github.com/smouj/Trading-Tazos-Game"
-const RELEASE_TAG = "v0.4.0"
-const RELEASE_VER = "0.4.0"
-const RELEASES_URL = `${GITHUB_URL}/releases`
 
-const DOWNLOADS: { id: string; icon: typeof Monitor; color: string; label: string; badge: string; badgeColor: string; url: string; formats: { label: string; path: string }[] }[] = [
-  { id: "windows", icon: Monitor, color: "#00A4EF", label: "Windows", badge: "Coming Soon", badgeColor: "#F59E0B",
-    url: "#", formats: [] },
-  { id: "mac", icon: Apple, color: "#1a1a1a", label: "macOS", badge: "Coming Soon", badgeColor: "#F59E0B",
-    url: "#", formats: [] },
-  { id: "linux", icon: Terminal, color: "#FCC624", label: "Linux", badge: "Coming Soon", badgeColor: "#F59E0B",
-    url: "#", formats: [] },
+const DESKTOP_PLATFORMS = [
+  { id: "windows", icon: Monitor, color: "#00A4EF", label: "Windows", hint: "Installer for Windows 10/11" },
+  { id: "mac", icon: Apple, color: "#1a1a1a", label: "macOS", hint: "DMG for Apple Silicon & Intel" },
+  { id: "linux", icon: Terminal, color: "#FCC624", label: "Linux", hint: "AppImage for any distro" },
 ]
 
 function DownloadContent() {
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-5">
-      <p className="text-xs font-bold text-[#1a1a1a]/50 uppercase tracking-wider">
-        Play instantly in your browser — no download required · Desktop apps coming soon
-      </p>
-      <div className="grid md:grid-cols-3 gap-4">
-        {DOWNLOADS.map(d => {
-          const Icon = d.icon
-          const isComingSoon = d.badge === "Coming Soon"
-          return (
-            <div key={d.id} className={`flex flex-col border-2 border-dashed border-[#1a1a1a]/15 bg-white p-5 ${isComingSoon ? "opacity-60" : ""}`}
-              style={isComingSoon ? {} : { boxShadow: "4px 4px 0 #1a1a1a" }}>
-              <div className="flex items-center gap-2 mb-3">
-                <Icon className="w-5 h-5 flex-shrink-0" style={{ color: d.color }} />
-                <h3 className="text-sm font-black text-[#1a1a1a] uppercase">{d.label}</h3>
-                <span className="ml-auto text-[8px] font-black text-white px-1.5 py-0.5 uppercase" style={{ background: d.badgeColor }}>{d.badge}</span>
+    <div className="w-full max-w-5xl mx-auto space-y-8">
+
+      {/* ═══ SECTION 1: Play Now — Browser ═══ */}
+      <div className="border-[3px] border-[#1a1a1a] bg-[#FFCC00] overflow-hidden"
+        style={{ boxShadow: "6px 6px 0 #1a1a1a" }}>
+        <div className="px-6 py-5 sm:px-8 sm:py-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-[#1a1a1a] flex items-center justify-center">
+              <Globe className="w-7 h-7 sm:w-8 sm:h-8 text-[#FFCC00]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <h2 className="text-lg sm:text-xl font-black text-[#1a1a1a] uppercase leading-none">
+                  Play in Your Browser
+                </h2>
+                <span className="text-[8px] font-black text-[#1a1a1a] bg-white/70 border border-[#1a1a1a]/30 px-1.5 py-0.5 uppercase tracking-wider">
+                  Available Now
+                </span>
               </div>
-              <div className="flex-1 flex items-center justify-center py-4">
-                {isComingSoon ? (
-                  <p className="text-[10px] font-bold text-[#1a1a1a]/25 uppercase">Play in browser for now</p>
-                ) : (
-                  <>
-                    {d.formats.map(f => (
-                      <a key={f.label} href={`${RELEASES_URL}/download/${RELEASE_TAG}/${encodeURIComponent(f.path)}`} target="_blank" rel="noopener"
-                        className="block text-[10px] font-bold text-[#1a1a1a]/55 hover:text-[#E3350D] transition-colors leading-relaxed">
-                        {f.label} <ExternalLink className="w-2.5 h-2.5 inline opacity-30" />
-                      </a>
-                    ))}
-                    <a href={d.url} target="_blank" rel="noopener"
-                      className="inline-flex items-center gap-1.5 px-4 py-2 text-[10px] font-black text-[#1a1a1a] bg-[#FFCC00] uppercase border-2 border-[#1a1a1a] hover:bg-[#FFE566] transition-all mt-2">
-                      <Download className="w-3 h-3" /> Download
-                    </a>
-                  </>
-                )}
+              <p className="text-xs sm:text-sm font-bold text-[#1a1a1a]/70 mt-1 leading-relaxed">
+                Create a free account, open your starter bags, build a deck, and jump into the 3D arena — all from your browser.
+              </p>
+              <div className="flex flex-wrap items-center gap-3 mt-3">
+                <Link href="/register"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-black text-[#1a1a1a] bg-white uppercase border-2 border-[#1a1a1a] hover:bg-[#FFF9E6] transition-colors"
+                  style={{ boxShadow: "3px 3px 0 #1a1a1a" }}>
+                  <Zap className="w-3.5 h-3.5" /> Play Free
+                </Link>
+                <span className="text-[10px] font-black text-[#1a1a1a]/50 uppercase tracking-wider">
+                  tradingtazosgame.com
+                </span>
               </div>
             </div>
-          )
-        })}
+          </div>
+        </div>
+
+        {/* PWA install hint */}
+        <div className="border-t-[3px] border-[#1a1a1a] px-6 py-3 sm:px-8 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+          <span className="text-[9px] font-black text-[#1a1a1a]/60 uppercase tracking-wider">
+            📱 Install as PWA:
+          </span>
+          <span className="text-[10px] sm:text-[11px] font-bold text-[#1a1a1a]/70">
+            Open in Safari/Chrome → tap <strong className="text-[#1a1a1a]">Share</strong> → <strong className="text-[#1a1a1a]">Add to Home Screen</strong> → play fullscreen like a native app!
+          </span>
+        </div>
       </div>
-      <p className="text-center text-[10px] font-bold text-[#1a1a1a]/30">
-        Source code on <a href={GITHUB_URL} className="underline hover:text-[#E3350D]">GitHub</a>
-      </p>
+
+      {/* ═══ SECTION 2: Mobile App Stores ═══ */}
+      <div>
+        <div className="flex items-center gap-3 mb-4">
+          <Smartphone className="w-5 h-5 text-[#E3350D]" />
+          <h3 className="text-sm font-black text-[#1a1a1a] uppercase tracking-wider">Mobile Apps</h3>
+          <span className="text-[8px] font-black text-white bg-[#F59E0B] px-1.5 py-0.5 uppercase">Coming Soon</span>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-4">
+          {/* Google Play */}
+          <div className="border-2 border-dashed border-[#1a1a1a]/20 bg-white p-5 sm:p-6 opacity-75">
+            <div className="flex items-center gap-3">
+              <div className="shrink-0 w-10 h-10 rounded-sm bg-[#1a1a1a] flex items-center justify-center">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-white">
+                  <path d="M1.752 1.094a.78.78 0 0 0-.257.155.86.86 0 0 0-.235.402C1.09 2.296 1 3.089 1 4v16c0 .915.09 1.706.26 2.349a.86.86 0 0 0 .234.402.78.78 0 0 0 .258.155L13.43 12 1.752 1.094zM14.984 10.53l3.897-3.65a.84.84 0 0 1 .12 1.063l-2.184 3.348a.175.175 0 0 0 0 .204l2.184 3.348a.84.84 0 0 1-.12 1.063l-3.897-3.65a.35.35 0 0 1 0-.528zM1.752 22.906a.86.86 0 0 0 .542.09L13.43 12 1.752 1.094a.86.86 0 0 0-.542.09.85.85 0 0 0-.327.427c-.16.604-.25 1.346-.26 2.254v16.27c.01.908.1 1.65.26 2.254.065.258.184.398.327.427z"/>
+                </svg>
+              </div>
+              <div>
+                <div className="text-[9px] font-bold text-[#1a1a1a]/40 uppercase tracking-wider">coming to</div>
+                <div className="text-base font-black text-[#1a1a1a] uppercase leading-tight">Google Play</div>
+              </div>
+            </div>
+            <p className="mt-3 text-[10px] font-bold text-[#1a1a1a]/35 leading-relaxed">
+              Android app with offline collection viewer, push battle notifications, and exclusive mobile-only tazo drops.
+            </p>
+          </div>
+
+          {/* App Store */}
+          <div className="border-2 border-dashed border-[#1a1a1a]/20 bg-white p-5 sm:p-6 opacity-75">
+            <div className="flex items-center gap-3">
+              <div className="shrink-0 w-10 h-10 rounded-sm bg-[#1a1a1a] flex items-center justify-center">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-white">
+                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                </svg>
+              </div>
+              <div>
+                <div className="text-[9px] font-bold text-[#1a1a1a]/40 uppercase tracking-wider">coming to</div>
+                <div className="text-base font-black text-[#1a1a1a] uppercase leading-tight">App Store</div>
+              </div>
+            </div>
+            <p className="mt-3 text-[10px] font-bold text-[#1a1a1a]/35 leading-relaxed">
+              Native iOS experience with haptic feedback, iCloud sync for your collection, Game Center leaderboards, and AR tazo viewer.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ═══ SECTION 3: Desktop Apps ═══ */}
+      <div>
+        <div className="flex items-center gap-3 mb-4">
+          <Monitor className="w-5 h-5 text-[#1a1a1a]" />
+          <h3 className="text-sm font-black text-[#1a1a1a] uppercase tracking-wider">Desktop Apps</h3>
+          <span className="text-[8px] font-black text-white bg-[#F59E0B] px-1.5 py-0.5 uppercase">Coming Soon</span>
+        </div>
+        <div className="grid sm:grid-cols-3 gap-4">
+          {DESKTOP_PLATFORMS.map(d => {
+            const Icon = d.icon
+            return (
+              <div key={d.id} className="border-2 border-dashed border-[#1a1a1a]/20 bg-white p-5 opacity-75">
+                <div className="flex items-center gap-3 mb-3">
+                  <Icon className="w-8 h-8 flex-shrink-0" style={{ color: d.color }} />
+                  <div>
+                    <h4 className="text-sm font-black text-[#1a1a1a] uppercase leading-tight">{d.label}</h4>
+                    <p className="text-[9px] font-bold text-[#1a1a1a]/30">{d.hint}</p>
+                  </div>
+                </div>
+                <p className="text-[10px] font-bold text-[#1a1a1a]/25 uppercase text-center">
+                  Play in browser for now
+                </p>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* ═══ GitHub link ═══ */}
+      <div className="flex items-center justify-center gap-2 pt-2">
+        <span className="text-[10px] font-bold text-[#1a1a1a]/30">
+          Open source —{" "}
+          <a href={GITHUB_URL} target="_blank" rel="noopener" className="underline hover:text-[#E3350D] transition-colors">
+            GitHub
+          </a>
+        </span>
+        <ExternalLink className="w-2.5 h-2.5 text-[#1a1a1a]/20" />
+      </div>
     </div>
   )
 }

@@ -15,6 +15,7 @@ interface TazoData {
   franchise: string; franchiseSlug?: string
   imageUrl: string | null; rarity: string
   attack?: number; defense?: number; bounce?: number; spin?: number; precision?: number
+  finish?: string; creatureVariant?: string; shinyImageUrl?: string | null
 }
 
 const FRANCHISE_STYLE: Record<string, { bg: string; text: string; gradient: string; icon: typeof Zap }> = {
@@ -43,6 +44,9 @@ function TazoCard({ tazo }: { tazo: TazoData }) {
         borderWidth={0}
         franchiseSlug={tazo.franchise}
         number={tazo.number}
+        finish={tazo.finish as any}
+        creatureVariant={tazo.creatureVariant as any}
+        shinyImageUrl={tazo.shinyImageUrl}
       />
       <p className="text-[10px] font-black text-[#1a1a1a] text-center leading-tight truncate w-full">{tazo.name}</p>
       <div className="flex items-center gap-1">
@@ -141,6 +145,9 @@ export default function TazosCatalogPage() {
                       borderWidth={3}
                       franchiseSlug={t.franchise}
                       number={t.number}
+                      finish={t.finish as any}
+                      creatureVariant={t.creatureVariant as any}
+                      shinyImageUrl={t.shinyImageUrl}
                     />
                     <p className="text-[10px] sm:text-[11px] font-black text-[#1a1a1a] text-center leading-tight line-clamp-2">{t.name}</p>
                     <span className="text-[8px] font-black uppercase px-1.5 py-0.5 border border-[#1a1a1a]"

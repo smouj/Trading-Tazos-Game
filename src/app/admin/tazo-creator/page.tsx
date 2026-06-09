@@ -720,7 +720,8 @@ export default function AdminTazoCreatorPage() {
                   {recentCreations.slice(0, 6).map((t: any) => (
                     <div key={t.id} className="flex items-center gap-3 p-2 border-2 border-[#1a1a1a]/10 bg-white rounded">
                       <TazoDiscImage src={t.imageUrl} alt={t.name} size={40} borderWidth={2}
-                        franchiseSlug={t.franchise?.slug || "minimon"} />
+                        franchiseSlug={t.franchise?.slug || "minimon"}
+                        finish={t.finish} creatureVariant={t.creatureVariant} shinyImageUrl={t.shinyImageUrl} />
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] font-black uppercase text-[#1a1a1a] truncate">{t.name}</p>
                         <p className="text-[8px] font-bold text-[#1a1a1a]/40 uppercase">{t.franchise?.slug} &middot; {t.rarity} &middot; {t.role}{t.combatType ? ` &middot; ${t.combatType}` : ''}</p>

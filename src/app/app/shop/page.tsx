@@ -529,7 +529,7 @@ export default function BagShopPage() {
             {revealedTazo.displayName || revealedTazo.name}
           </h3>
           <p className="text-xs font-bold text-[#1a1a1a]/35 uppercase tracking-wider">
-            #{(revealedTazo as any).number || revealedTazo.id?.slice(-3)} · {(revealedTazo as any).franchiseName || selectedBag.franchise}
+            #{revealedTazo.number || revealedTazo.id?.slice(-3)} · {revealedTazo.franchiseName || selectedBag.franchise}
           </p>
         </div>
 

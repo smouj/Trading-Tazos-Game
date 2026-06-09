@@ -830,6 +830,9 @@ function CollectionsContent({ onNavigate }: { onNavigate: (page: PageId) => void
                             size="100%"
                             borderWidth={0}
                             franchiseSlug={typeof t.franchise === "string" ? t.franchise : t.franchiseSlug}
+                            finish={t.finish}
+                            creatureVariant={t.creatureVariant}
+                            shinyImageUrl={t.shinyImageUrl}
                           />
                         </div>
                       ) : null
@@ -951,6 +954,10 @@ function TazosContent() {
                     alt={t.displayName || t.name}
                     size="100%"
                     borderWidth={0}
+                    franchiseSlug={typeof t.franchise === "string" ? t.franchise : t.franchiseSlug}
+                    finish={t.finish}
+                    creatureVariant={t.creatureVariant}
+                    shinyImageUrl={t.shinyImageUrl}
                     lazy
                   />
                 ) : (

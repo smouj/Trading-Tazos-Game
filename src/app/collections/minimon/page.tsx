@@ -1,6 +1,13 @@
+import type { Metadata } from "next"
 import PublicPageShell from "@/components/layout/public-page-shell"
 import Link from "next/link"
 import { FRANCHISE_BY_SLUG } from "@/lib/franchise-config"
+
+export const metadata: Metadata = {
+  title: "Minimon Collection",
+  description: "Explore the original Minimon tazo collection — 61 classic creature companions from Matutano 2000. Balanced stats, nostalgic designs, and the foundation of Trading Tazos Game.",
+  openGraph: { title: "Minimon Collection — The Original Tazos | Trading Tazos Game", description: "61 classic Minimon tazos from Matutano 2000. The collection that started it all." },
+}
 
 const minimon = FRANCHISE_BY_SLUG.minimon
 

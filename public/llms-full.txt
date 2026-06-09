@@ -1,0 +1,107 @@
+# Trading Tazos Game — Full Documentation for AI Crawlers
+
+> Last updated: 2026-06-09
+
+## What is Trading Tazos Game?
+
+Trading Tazos Game (TTG) is a browser-based digital collectible and battle game. Players open virtual bags to discover tazos (pogs/caps), build decks, and compete in a 3D physics-based vertical slam battle arena. The game draws inspiration from 90s snack toy collections popular in Spain and Latin America.
+
+## Gameplay
+
+### Collections
+- **3 franchises**: Minimon (61 tazos, Matutano 2000), Dracobell (128 tazos, Matutano 1995), Cybermon (160 tazos, Magic Box 2000)
+- **349 total tazos** planned, 32 currently published
+- Each tazo has a creature image, combat stats, rarity, and physical finish effect
+
+### Battle System (Vertical Slam)
+1. **Aim** — Lock crosshair on target zone
+2. **Charge** — Time power bar for slam force
+3. **Tilt** — Angle throw for landing precision
+4. **Slam** — Tazo drops from above, flips face-down opponent tazos
+5. **Score** — Flip your own: +1pt, flip opponent's: +2pts, double flip bonus: +1pt. First to 5 wins.
+
+### Combat Stats (9 per tazo)
+Attack, Defense, Resistance, Weight, Stability, Spin, Control, Bounce, Precision
+
+### Tazo Finishes (18 types)
+normal, matte, glossy, holo, reverse_holo, foil, prismatic, metallic, chrome, gold, rainbow, glitter, stardust, aurora, cracked_ice, oil_slick, lenticular, pearlescent
+
+### Creature Variants
+standard, shiny, shadow, golden
+
+### Rarities
+common, uncommon, rare, ultra, legendary, epic
+
+## Technical Architecture
+
+- **Frontend**: Next.js 16 App Router, React 19, Tailwind CSS 4, Three.js / React Three Fiber, Zustand
+- **Backend**: Next.js API routes, Prisma ORM, SQLite database, JWT auth, bcrypt
+- **Deployment**: VPS (Linux), PM2 process manager (cluster mode), Caddy reverse proxy
+- **WebSocket**: ws-server.js (PM2-managed) for real-time matchmaking
+- **PWA**: Full Progressive Web App support with install prompts, offline capability, push notifications
+- **Domain**: tradingtazosgame.com (HTTPS via Let's Encrypt)
+
+## Page Structure
+
+### Public (SEO)
+| Route | Description |
+|-------|------------|
+| `/` | Magazine-style landing with hero, tazo showcase, how-to-play, collections, leaderboard, FAQ |
+| `/how-to-play` | Vertical Slam battle tutorial |
+| `/tazos` | Filterable public tazo catalog |
+| `/collections/minimon` | Minimon franchise landing page |
+| `/collections/dracobell` | Dracobell franchise landing page |
+| `/collections/cybermon` | Cybermon franchise landing page |
+| `/leaderboard` | Public top player rankings |
+| `/download` | Desktop app downloads |
+| `/shop` | Public bag shop preview |
+| `/login` / `/register` | Auth pages |
+| `/privacy` `/terms` `/cookies` `/disclaimer` `/contact` | Legal pages |
+
+### Authenticated (App)
+| Route | Description |
+|-------|------------|
+| `/app` | Game hub / launcher (redirects to collection) |
+| `/app/collection` | 2D album viewer with drag-and-drop, stack, zoom |
+| `/app/decks` | Deck builder — create and manage 5-tazo battle decks |
+| `/app/battle` | 3D vertical slam arena (vs AI or PvP) |
+| `/app/shop` | Bag shop with reveal animations |
+| `/app/leaderboard` | Detailed rankings with filters |
+| `/app/marketplace` | Player-to-player trading |
+| `/app/settings` | Account settings |
+
+### Admin (Developer Only)
+| Route | Description |
+|-------|------------|
+| `/admin` | Protected admin panel |
+| `/admin/tazos` | Tazo CRUD, batch operations, publish control |
+| `/admin/tazo-creator` | Form-based tazo creation wizard |
+| `/admin/tazo-designer` | Visual drag-and-drop tazo layout editor with finish shader preview |
+
+## API Routes (Public)
+- `GET /api/tazos` — Paginated tazo catalog (query: ?publishStatus, ?franchise, ?rarity, ?finish, ?search)
+- `GET /api/tazos/[slug]` — Single tazo detail
+- `GET /api/leaderboard` — Top players by wins, collection size, score
+- `GET /api/quests` — Available quest definitions
+- `GET /api/decks` — Public deck showcase
+- `POST /api/auth/login` — Email + password authentication
+- `POST /api/auth/register` — Account creation (grants 10 free bags)
+- `GET /api/auth/oauth/*` — OAuth flow (GitHub, Google, Discord)
+
+## Social & Community
+- X/Twitter: https://x.com/tazosgame (@tazosgame)
+- Reddit: https://www.reddit.com/r/tradingtazosgame/
+- Telegram: https://t.me/tradingtazosgame
+- Discord: https://discord.gg/4mUhnc2REb
+- Instagram: https://www.instagram.com/tradingtazosgame/
+- GitHub: https://github.com/smouj/Trading-Tazos-Game
+- Support email: support@tradingtazosgame.com
+
+## SEO Assets
+- robots.txt: allows all crawlers, disallows /api/, /_next/, /admin
+- sitemap.xml: 20 URLs with priorities and change frequencies
+- llms.txt / llms-full.txt: AI crawler discoverability
+- JSON-LD structured data: VideoGame schema
+- Open Graph + Twitter Card tags
+- PWA manifest with app shortcuts and screenshots
+- geo.region / geo.placename meta tags

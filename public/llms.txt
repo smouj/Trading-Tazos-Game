@@ -1,0 +1,34 @@
+# Trading Tazos Game — llms.txt
+
+> A browser-based collectible battling game with 349 tazos across 3 franchises.
+> Built with Next.js 16, Three.js, Tailwind CSS.
+
+## Quick Links
+- Home: https://tradingtazosgame.com
+- How to Play: https://tradingtazosgame.com/how-to-play
+- Collections: https://tradingtazosgame.com/collections/minimon | dracobell | cybermon
+- Tazo Catalog: https://tradingtazosgame.com/tazos
+- Battle: https://tradingtazosgame.com/app/battle (login required)
+- Shop: https://tradingtazosgame.com/shop
+- Leaderboard: https://tradingtazosgame.com/leaderboard
+- GitHub: https://github.com/smouj/Trading-Tazos-Game
+
+## Project
+- **Name**: Trading Tazos Game (TTG)
+- **Stack**: Next.js 16 App Router, Three.js/R3F, Tailwind CSS 4, Prisma + SQLite, PM2
+- **Description**: Digital tazo (pog) collection and battle game. Players collect 349 tazos from Minimon, Dracobell, and Cybermon franchises. The game features a 2D album viewer, bag-opening shop, deck builder, and a 3D physics-based vertical slam battle arena.
+
+## Key Pages
+- `/` — Magazine-style landing with hero, tazo showcase, how-to-play, collections, leaderboard
+- `/collections/{franchise}` — Standalone SEO landing per franchise (minimon, dracobell, cybermon)
+- `/tazos` — Filterable public tazo catalog (search by name, franchise, rarity)
+- `/how-to-play` — Vertical Slam battle tutorial (Aim → Charge → Tilt → Slam)
+- `/download` — Desktop app downloads (Linux, Windows, macOS)
+- `/app` — Authenticated game hub (collection, decks, battle, shop, leaderboard)
+- `/login` / `/register` — Auth pages with email + OAuth (GitHub, Google, Discord)
+- `/privacy` `/terms` `/cookies` `/disclaimer` — Legal pages
+
+## API (public)
+- `GET /api/tazos?publishStatus=published` — Public tazo catalog
+- `GET /api/leaderboard` — Public leaderboard rankings
+- `GET /api/quests` — Quest definitions (public)

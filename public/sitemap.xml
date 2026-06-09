@@ -1,39 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Primary landing -->
-  <url><loc>https://tradingtazosgame.com</loc><lastmod>2026-06-08</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://tradingtazosgame.com</loc><lastmod>2026-06-09</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
 
-  <!-- Public game pages (launcher tabs) -->
-  <url><loc>https://tradingtazosgame.com/?page=how-to-play</loc><lastmod>2026-06-08</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://tradingtazosgame.com/?page=collections</loc><lastmod>2026-06-08</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://tradingtazosgame.com/?page=tazos</loc><lastmod>2026-06-08</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://tradingtazosgame.com/?page=faq</loc><lastmod>2026-06-08</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <!-- Public game pages (launcher tabs — canonical via redirects to ?page=) -->
+  <url><loc>https://tradingtazosgame.com/?page=how-to-play</loc><lastmod>2026-06-09</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://tradingtazosgame.com/?page=collections</loc><lastmod>2026-06-09</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://tradingtazosgame.com/?page=tazos</loc><lastmod>2026-06-09</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://tradingtazosgame.com/?page=leaderboard</loc><lastmod>2026-06-09</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://tradingtazosgame.com/?page=download</loc><lastmod>2026-06-09</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://tradingtazosgame.com/?page=faq</loc><lastmod>2026-06-09</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 
-  <!-- Collection detail pages (standalone SEO) -->
-  <url><loc>https://tradingtazosgame.com/collections/minimon</loc><lastmod>2026-06-08</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://tradingtazosgame.com/collections/dracobell</loc><lastmod>2026-06-08</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://tradingtazosgame.com/collections/cybermon</loc><lastmod>2026-06-08</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-
-  <!-- Rankings & download -->
-  <url><loc>https://tradingtazosgame.com/?page=leaderboard</loc><lastmod>2026-06-08</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://tradingtazosgame.com/?page=download</loc><lastmod>2026-06-08</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <!-- Collection detail pages (standalone SEO — rendered directly, not redirected) -->
+  <url><loc>https://tradingtazosgame.com/collections/minimon</loc><lastmod>2026-06-09</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://tradingtazosgame.com/collections/dracobell</loc><lastmod>2026-06-09</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://tradingtazosgame.com/collections/cybermon</loc><lastmod>2026-06-09</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
   <!-- Shop (public SEO) -->
-  <url><loc>https://tradingtazosgame.com/shop</loc><lastmod>2026-06-08</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://tradingtazosgame.com/shop</loc><lastmod>2026-06-09</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
 
   <!-- Auth -->
-  <url><loc>https://tradingtazosgame.com/login</loc><lastmod>2026-06-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://tradingtazosgame.com/register</loc><lastmod>2026-06-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://tradingtazosgame.com/forgot-password</loc><lastmod>2026-06-08</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://tradingtazosgame.com/reset-password</loc><lastmod>2026-06-08</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://tradingtazosgame.com/verify-email</loc><lastmod>2026-06-08</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://tradingtazosgame.com/login</loc><lastmod>2026-06-09</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://tradingtazosgame.com/register</loc><lastmod>2026-06-09</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://tradingtazosgame.com/forgot-password</loc><lastmod>2026-06-09</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://tradingtazosgame.com/reset-password</loc><lastmod>2026-06-09</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://tradingtazosgame.com/verify-email</loc><lastmod>2026-06-09</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>
 
   <!-- Legal -->
-  <url><loc>https://tradingtazosgame.com/terms</loc><lastmod>2026-06-08</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
-  <url><loc>https://tradingtazosgame.com/privacy</loc><lastmod>2026-06-08</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
-  <url><loc>https://tradingtazosgame.com/cookies</loc><lastmod>2026-06-08</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
-  <url><loc>https://tradingtazosgame.com/disclaimer</loc><lastmod>2026-06-08</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://tradingtazosgame.com/privacy</loc><lastmod>2026-06-09</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://tradingtazosgame.com/terms</loc><lastmod>2026-06-09</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://tradingtazosgame.com/cookies</loc><lastmod>2026-06-09</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://tradingtazosgame.com/disclaimer</loc><lastmod>2026-06-09</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
 
   <!-- Contact -->
-  <url><loc>https://tradingtazosgame.com/contact</loc><lastmod>2026-06-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://tradingtazosgame.com/contact</loc><lastmod>2026-06-09</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
 </urlset>

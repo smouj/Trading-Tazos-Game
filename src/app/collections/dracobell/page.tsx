@@ -1,6 +1,13 @@
+import type { Metadata } from "next"
 import PublicPageShell from "@/components/layout/public-page-shell"
 import Link from "next/link"
 import { FRANCHISE_BY_SLUG } from "@/lib/franchise-config"
+
+export const metadata: Metadata = {
+  title: "Dracobell Collection",
+  description: "Discover the Dracobell tazo collection — 128 martial arts warriors across 6 unique categories from Matutano 1995. Home to rare Holo 3D and Mastertazo variants.",
+  openGraph: { title: "Dracobell Collection — Legendary Warriors | Trading Tazos Game", description: "128 Dracobell tazos across 6 categories. Rare Holo 3D variants, highest attack stats, Matutano 1995." },
+}
 
 const dracobell = FRANCHISE_BY_SLUG.dracobell
 

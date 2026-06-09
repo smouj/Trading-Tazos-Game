@@ -1,6 +1,13 @@
+import type { Metadata } from "next"
 import PublicPageShell from "@/components/layout/public-page-shell"
 import Link from "next/link"
 import { FRANCHISE_BY_SLUG } from "@/lib/franchise-config"
+
+export const metadata: Metadata = {
+  title: "Cybermon Collection",
+  description: "Browse the Cybermon tazo collection — 160 digital companions in cap format from Magic Box 2000. Complex evolution trees and the highest precision stats in the game.",
+  openGraph: { title: "Cybermon Collection — Digital Companions | Trading Tazos Game", description: "160 Cybermon tazos with complex evolution trees. Highest precision stats, cap format, Magic Box 2000." },
+}
 
 const cybermon = FRANCHISE_BY_SLUG.cybermon
 

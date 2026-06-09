@@ -130,10 +130,10 @@ function PlatformBadge({ icon: Icon, label }: { icon: typeof Monitor; label: str
 
 function StatBadge({ number, label, color }: { number: string; label: string; color: string }) {
   return (
-    <div className="flex flex-col items-center px-3 py-2 border-2 border-[#1a1a1a] bg-white"
+    <div className="flex flex-col items-center px-3.5 py-2 border-2 border-[#1a1a1a] bg-white"
       style={{ boxShadow: `3px 3px 0 ${color}40` }}>
       <span className="text-lg sm:text-xl font-black text-[#1a1a1a] leading-none">{number}</span>
-      <span className="text-[8px] font-black text-[#1a1a1a]/60 uppercase tracking-wider mt-0.5">{label}</span>
+      <span className="text-[9px] font-black text-[#1a1a1a]/55 uppercase tracking-wider mt-0.5">{label}</span>
     </div>
   )
 }
@@ -517,12 +517,16 @@ function FeaturedTazosRow() {
   if (tazos.length === 0) return null
 
   return (
-    <div className="flex flex-col items-center gap-1.5 w-full pt-1">
-      <span className="text-[7px] font-black text-[#1a1a1a]/15 uppercase tracking-[0.25em]">Featured Tazos</span>
-      <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+    <div className="flex flex-col items-center gap-2 w-full pt-1.5">
+      <div className="flex items-center gap-2 w-full">
+        <div className="flex-1 h-px bg-[#1a1a1a]/6" />
+        <span className="text-[8px] font-black text-[#1a1a1a]/20 uppercase tracking-[0.25em] whitespace-nowrap">Featured Tazos</span>
+        <div className="flex-1 h-px bg-[#1a1a1a]/6" />
+      </div>
+      <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5">
         {tazos.map((t: any) => (
           <div key={t.id}
-            className="w-[52px] h-[52px] sm:w-[60px] sm:h-[60px] shadow-[3px_3px_0px_#1a1a1a15] rounded-full overflow-hidden"
+            className="w-[56px] h-[56px] sm:w-[64px] sm:h-[64px] shadow-[3px_3px_0px_#1a1a1a12] rounded-full overflow-hidden hover:scale-110 hover:shadow-[4px_4px_0px_#1a1a1a20] transition-all duration-200"
           >
             <TazoDiscImage
               src={t.imageUrl}
@@ -550,37 +554,46 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
 
   return (
     <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 flex flex-col justify-center"
-      style={{ minHeight: "calc(100vh - 66px - 52px)" }}>
+      style={{ minHeight: "calc(100vh - 66px - 56px)" }}>
 
       {/* ═══ MAIN HORIZONTAL SPLIT ═══ */}
-      <div className="flex flex-col md:flex-row items-center md:items-start gap-5 md:gap-8 lg:gap-12">
+      <div className="flex flex-col md:flex-row items-center md:items-center gap-6 md:gap-8 lg:gap-14">
 
         {/* ── LEFT: Logo + Branding ── */}
-        <div className="flex flex-col items-center md:items-start gap-3 md:gap-4 shrink-0">
+        <div className="flex flex-col items-center gap-4 shrink-0 relative">
+          {/* Radial glow behind logo */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            style={{
+              background: "radial-gradient(circle at 50% 40%, rgba(255,204,0,0.18) 0%, rgba(255,204,0,0.05) 40%, transparent 70%)",
+              width: "200%", height: "200%", top: "-50%", left: "-50%"
+            }} />
           <img src="/logo/logo-icon-black.webp" alt="TTG"
-            className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 drop-shadow-[6px_6px_0_rgba(26,26,26,0.25)]" />
-          <div className="text-center md:text-left">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#1a1a1a] uppercase tracking-[0.04em] leading-none">
+            className="relative w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32 drop-shadow-[6px_6px_0_rgba(26,26,26,0.3)]" />
+          <div className="relative text-center">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black text-[#1a1a1a] uppercase tracking-[0.04em] leading-none">
               <span className="text-[#E3350D]">Trading</span>{" "}
               <span className="text-[#FFCC00]">Tazos</span>{" "}
               <span className="text-[#00A1E9]">Game</span>
             </h1>
-            <p className="text-[9px] sm:text-[10px] font-bold text-[#1a1a1a]/35 uppercase tracking-[0.15em] mt-1">
+            <p className="text-[10px] sm:text-[11px] font-bold text-[#1a1a1a]/40 uppercase tracking-[0.15em] mt-1">
               Collect · Trade · Battle
             </p>
           </div>
         </div>
 
+        {/* ── DIVIDER ── */}
+        <div className="hidden md:block w-px h-40 sm:h-48 lg:h-56 bg-[#1a1a1a]/10 shrink-0" />
+
         {/* ── RIGHT: Stats + CTA + Feature Cards ── */}
         <div className="flex-1 flex flex-col items-center md:items-start gap-4 md:gap-5 w-full">
 
-          {/* Stats row — compact, horizontal */}
+          {/* Stats row — bold, unified banner */}
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
             <StatBadge number="349" label="Tazos" color="#FFCC00" />
             <StatBadge number="3" label="Series" color="#E3350D" />
             <StatBadge number="9" label="Stats" color="#00A1E9" />
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[9px] font-black uppercase border-2 border-[#1a1a1a]"
-              style={{ background: "#22C55E", color: "#fff" }}>FREE</span>
+            <span className="inline-flex items-center gap-1 px-3 py-2 text-[9px] font-black uppercase border-2 border-[#1a1a1a]"
+              style={{ background: "#22C55E", color: "#fff", boxShadow: "3px 3px 0 rgba(34,197,94,0.3)" }}>FREE</span>
           </div>
 
           {/* Play Now Button */}
@@ -592,13 +605,13 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
               className="group relative select-none"
               style={{ transform: pressPlay ? "translate(3px, 3px)" : hoverPlay ? "translate(-2px, -2px)" : "translate(0, 0)", transition: "transform 0.15s ease" }}>
               <div className="absolute inset-0 translate-x-2 translate-y-2" style={{ background: "#1a1a1a" }} />
-              <div className="relative px-12 sm:px-16 lg:px-20 py-3 sm:py-3.5 border-3 border-[#1a1a1a] overflow-hidden"
+              <div className="relative px-14 sm:px-20 lg:px-28 py-3.5 sm:py-4 border-3 border-[#1a1a1a] overflow-hidden"
                 style={{
                   background: (hoverPlay || pressPlay)
                     ? "linear-gradient(180deg, #FFE566 0%, #FFCC00 50%, #F5B800 100%)"
                     : "linear-gradient(180deg, #FFCC00 0%, #F0A800 100%)",
                   boxShadow: (hoverPlay || pressPlay)
-                    ? "inset 0 -4px 0 rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.3)"
+                    ? "inset 0 -4px 0 rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.3), 0 4px 16px rgba(255,204,0,0.35)"
                     : "inset 0 -3px 0 rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.25)",
                 }}>
                 <span className="relative text-base sm:text-lg font-black text-[#1a1a1a] uppercase tracking-[0.12em] whitespace-nowrap">
@@ -614,23 +627,27 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
           </p>
 
           {/* Feature cards — horizontal row on desktop, 2×2 on mobile */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-2.5 w-full">
             {[
-              { icon: PackageOpen, label: "Open Bags", desc: "32 tazos", color: "#FFCC00" },
-              { icon: Swords, label: "Practice", desc: "AI battles", color: "#E3350D" },
-              { icon: Disc3, label: "Collect", desc: "All series", color: "#00A1E9" },
-              { icon: Medal, label: "Ranked", desc: "Leaderboard", color: "#22C55E" },
-            ].map(({ icon: Icon, label, desc, color }) => (
+              { icon: PackageOpen, label: "Open Bags", desc: "32 tazos", color: "#FFCC00", bgFrom: "#FFF9E6", bgTo: "#FFF0B3" },
+              { icon: Swords, label: "Practice", desc: "AI battles", color: "#E3350D", bgFrom: "#FFF5F5", bgTo: "#FFE8E8" },
+              { icon: Disc3, label: "Collect", desc: "All series", color: "#00A1E9", bgFrom: "#F5FAFF", bgTo: "#E0F2FF" },
+              { icon: Medal, label: "Ranked", desc: "Leaderboard", color: "#22C55E", bgFrom: "#F5FFF7", bgTo: "#E0FFE8" },
+            ].map(({ icon: Icon, label, desc, color, bgFrom, bgTo }) => (
               <div key={label}
-                className="flex items-center gap-2 p-2 sm:p-2.5 border-2 border-[#1a1a1a]/12 bg-white/70 hover:bg-white hover:border-[#FFCC00] transition-colors cursor-default"
-                style={{ boxShadow: "2px 2px 0 #1a1a1a10" }}
+                className="group/card flex items-center gap-2 p-2.5 sm:p-3 border-2 border-[#1a1a1a]/10 hover:border-[#1a1a1a]/25 cursor-default transition-all duration-200 hover:-translate-y-0.5"
+                style={{
+                  background: `linear-gradient(135deg, ${bgFrom} 0%, ${bgTo} 100%)`,
+                  boxShadow: "2px 2px 0 rgba(26,26,26,0.06)",
+                }}
               >
-                <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center border-2 border-[#1a1a1a]/20 bg-white" style={{ boxShadow: `1px 1px 0 ${color}20` }}>
+                <div className="flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center border-2 border-[#1a1a1a]/20 bg-white rounded-full group-hover/card:scale-110 transition-transform duration-200"
+                  style={{ boxShadow: `1px 1px 0 ${color}30` }}>
                   <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" style={{ color }} />
                 </div>
                 <div className="min-w-0">
                   <p className="text-[10px] sm:text-[11px] font-black text-[#1a1a1a] uppercase leading-none">{label}</p>
-                  <p className="text-[8px] font-bold text-[#1a1a1a]/30 uppercase mt-0.5">{desc}</p>
+                  <p className="text-[8px] font-bold text-[#1a1a1a]/30 uppercase mt-0.5 group-hover/card:text-[#1a1a1a]/50 transition-colors">{desc}</p>
                 </div>
               </div>
             ))}

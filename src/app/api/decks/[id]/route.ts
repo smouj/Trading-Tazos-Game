@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getAuthUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 
-/** PATCH /api/decks/[id] — Update deck name, tazos, or activate */
+/** PATCH /api/decks/[id] — Update deck name, tazos, settings, or activate */
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -62,6 +62,22 @@ export async function PATCH(
       })
     }
 
+    // Update settings (color, starterIds)
+    if (body.color !== undefined || body.starterIds !== undefined) {
+      let settingsParsed: Record<string, any> = {}
+      try {
+        if (deck.settings) settingsParsed = JSON.parse(deck.settings)
+      } catch { /* ignore */ }
+      if (body.color !== undefined) settingsParsed.color = body.color
+      if (body.starterIds !== undefined) {
+        settingsParsed.starterIds = (body.starterIds || []).slice(0, 5)
+      }
+      await db.deck.update({
+        where: { id },
+        data: { settings: JSON.stringify(settingsParsed) },
+      })
+    }
+
     // Activate/deactivate
     if (body.isActive !== undefined) {
       await db.deck.update({ where: { id }, data: { isActive: body.isActive } })
@@ -81,13 +97,22 @@ export async function PATCH(
       id: updated!.id,
       name: updated!.name,
       isActive: updated!.isActive,
+      color: (() => { try { return updated!.settings ? JSON.parse(updated!.settings).color || null : null } catch { return null } })(),
+      starters: (() => { try { return updated!.settings ? JSON.parse(updated!.settings).starterIds || [] : [] } catch { return [] } })(),
       tazoCount: updated!.deckTazos.length,
       tazos: updated!.deckTazos.map((dt) => ({
         id: dt.tazo.id,
         name: dt.tazo.name,
         displayName: dt.tazo.displayName,
+        slug: dt.tazo.slug,
+        number: dt.tazo.number,
         imageUrl: dt.tazo.imageUrl,
+        shinyImageUrl: dt.tazo.shinyImageUrl,
+        rarity: dt.tazo.rarity,
+        finish: dt.tazo.finish,
+        creatureVariant: dt.tazo.creatureVariant,
         franchise: dt.tazo.franchise.name,
+        franchiseSlug: dt.tazo.franchise.slug,
         attack: dt.tazo.attack,
         defense: dt.tazo.defense,
         resistance: dt.tazo.resistance,

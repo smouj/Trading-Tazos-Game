@@ -153,6 +153,7 @@ model Deck {
   user      User       @relation(fields: [userId], references: [id])
   name      String
   isActive  Boolean    @default(false)
+  settings  String?    // JSON: { color, starterIds }
   deckTazos DeckTazo[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt

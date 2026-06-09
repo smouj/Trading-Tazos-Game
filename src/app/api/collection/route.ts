@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
       where.tazo = { franchise: { slug: franchise } }
     }
 
-    const [items, total] = await Promise.all([
+    const [items, total, uniqueCount] = await Promise.all([
       db.userTazo.findMany({
         where,
         include: {
@@ -30,6 +30,8 @@ export async function GET(request: NextRequest) {
         take: limit,
       }),
       db.userTazo.count({ where }),
+      // Count distinct tazos owned (not rows)
+      db.userTazo.groupBy({ by: ["tazoId"], where }).then(r => r.length),
     ])
 
     const summaryItems = await db.userTazo.findMany({
@@ -86,6 +88,7 @@ export async function GET(request: NextRequest) {
         },
       })),
       total,
+      totalUnique: uniqueCount,
       page,
       limit,
       totalPages: Math.ceil(total / limit),

@@ -13,7 +13,7 @@ import {
 } from "lucide-react"
 
 // ── Types ──────────────────────────────────────────────
-interface DeckTazo { id: string; name: string; displayName: string; number: string; imageUrl: string; rarity: string; franchiseSlug: string; attack: number; defense: number; resistance: number }
+interface DeckTazo { id: string; name: string; displayName: string; slug: string; number: string; imageUrl: string; rarity: string; franchiseSlug: string; attack: number; defense: number; resistance: number }
 interface Deck { id: string; name: string; isActive: boolean; tazos: DeckTazo[] }
 interface CollectionTazo { id: string; tazoId: string; quantity: number; acquiredAt: string; obtainedFrom?: string | null; isFavorite: boolean; inDeckId?: string | null; deckName?: string | null; wear?: number; battleCount?: number; tazo: DeckTazo & { precision: number; bounce: number; control: number; spin: number; stability: number; weight: number; franchise: string; imageUrl?: string | null; number?: string | number; franchiseColor?: string } }
 interface CollectionData { items: CollectionTazo[]; total: number; totalUnique: number; decks: Deck[]; franchiseSummary: Record<string, number> }
@@ -682,7 +682,7 @@ export default function CollectionPage() {
                             {/* Quick actions */}
                             <div className="flex gap-1 pt-1.5 border-t border-[#1a1a1a]/10">
                               <Link
-                                href={`/?page=tazos&highlight=${item.tazoId}`}
+                                href={`/?page=tazos&highlight=${item.tazo.slug || item.tazo.id}`}
                                 className="flex-1 text-[7px] font-black uppercase text-center py-1.5 border border-[#1a1a1a]/20 hover:bg-[#1a1a1a]/5 transition-colors flex items-center justify-center gap-0.5"
                                 title="View details"
                               >

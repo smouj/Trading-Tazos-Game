@@ -11,9 +11,9 @@ import * as THREE from "three"
 import { OrbitControls } from "@react-three/drei"
 
 // ── Tube dimensions ──────────────────────────────
-const TUBE_RADIUS = 0.48
-const TUBE_HEIGHT = 1.55
-const CAP_HEIGHT = 0.12
+const TUBE_RADIUS = 0.40
+const TUBE_HEIGHT = 1.40
+const CAP_HEIGHT = 0.10
 const CAP_RADIUS = TUBE_RADIUS + 0.02
 
 interface TubeCylinderProps {
@@ -89,8 +89,8 @@ function TubeModel({ textureUrl, color, rotationSpeed = 0.15, showTazos = false,
       {showTazos && (
         <>
           {/* Glass window on front */}
-          <mesh position={[0, 0, TUBE_RADIUS * 0.85]} material={glassMaterial}>
-            <planeGeometry args={[TUBE_RADIUS * 0.9, TUBE_HEIGHT * 0.45]} />
+          <mesh position={[0, 0.05, TUBE_RADIUS * 0.88]} material={glassMaterial}>
+            <planeGeometry args={[TUBE_RADIUS * 1.2, TUBE_HEIGHT * 0.55]} />
           </mesh>
           {/* Tazo stack visible through window */}
           {tazoImageUrls.slice(0, 3).map((url, i) => (
@@ -120,18 +120,27 @@ function TubeModel({ textureUrl, color, rotationSpeed = 0.15, showTazos = false,
   )
 }
 
-// ── Small tazo disc floating inside the tube ──────────
+// ── Small tazo disc flat inside the tube ──────────
 function TazoDiscInTube({ url, index }: { url: string; index: number }) {
   const texture = useLoader(THREE.TextureLoader, url)
   texture.colorSpace = THREE.SRGBColorSpace
 
-  const yOffset = -0.15 + index * 0.12
-  const zOffset = 0.38 // Inside the tube, near the window
+  // Stack horizontally: lowest tazo at bottom, each one 0.10 higher
+  const yOffset = -0.25 + index * 0.10
 
   return (
-    <mesh position={[0, yOffset, zOffset]} rotation={[0, 0, 0]}>
-      <circleGeometry args={[0.14, 32]} />
-      <meshStandardMaterial map={texture} side={THREE.DoubleSide} transparent opacity={0.9} />
+    <mesh
+      position={[0, yOffset, 0]}
+      rotation={[-Math.PI / 2, 0, 0]}
+    >
+      <circleGeometry args={[TUBE_RADIUS * 0.85, 32]} />
+      <meshStandardMaterial
+        map={texture}
+        side={THREE.DoubleSide}
+        transparent
+        opacity={0.85}
+        roughness={0.3}
+      />
     </mesh>
   )
 }
@@ -146,7 +155,7 @@ export default function TubeCylinder3D({ className = "", style, ...props }: Tube
   return (
     <div className={className} style={style}>
       <Canvas
-        camera={{ position: [0, 0.2, 2.2], fov: 38 }}
+        camera={{ position: [0, 0.2, 3.0], fov: 40 }}
         style={{ background: "transparent" }}
         gl={{ antialias: true, alpha: true }}
       >
@@ -174,7 +183,7 @@ export function TubeCylinder3DStatic({ className = "", style, ...props }: TubeCy
   return (
     <div className={className} style={style}>
       <Canvas
-        camera={{ position: [0, 0.2, 2.2], fov: 38 }}
+        camera={{ position: [0, 0.2, 3.0], fov: 40 }}
         style={{ background: "transparent" }}
         gl={{ antialias: true, alpha: true }}
       >

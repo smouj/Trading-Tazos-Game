@@ -30,6 +30,12 @@ export type TazoFinish =
   | "gold"
   | "rainbow"
   | "glitter"
+  | "stardust"
+  | "aurora"
+  | "cracked_ice"
+  | "oil_slick"
+  | "lenticular"
+  | "pearlescent"
 
 export type TazoCreatureVariant =
   | "standard"

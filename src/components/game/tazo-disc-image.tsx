@@ -181,12 +181,15 @@ export default function TazoDiscImage({
       {/* ── Finish layers (above image, below overlay) ── */}
       {!isBack && renderImage && imgLoaded && (
         <>
-          {/* Holo/prismatic/foil/rainbow layer */}
+          {/* Primary finish layer (holo, prismatic, foil, etc.) */}
           <div className="tazo-finish-layer" />
-          {/* Glossy/reverse_holo layer */}
+          {/* Secondary finish layer (micro-lines, crinkle, sparkle, etc.) */}
+          <div className="tazo-finish-layer-2" />
+          {/* Glossy/reverse_holo overlay */}
           <div className="tazo-gloss-layer" />
           {/* Subtle print texture (all tazos) */}
           <div className="tazo-print-grain" />
+          {/* Wear/condition degradation */}
           <div className="tazo-condition-layer" />
         </>
       )}

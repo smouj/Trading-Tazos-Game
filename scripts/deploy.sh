@@ -66,5 +66,12 @@ do
   code=$(curl -s -o /dev/null -w '%{http_code}' "$url")
   echo "  $code → $url"
 done
-# Deploy note: After deploy to VPS, fix DATABASE_URL in .next/standalone/.env
-# Run on VPS: sed -i 's|file:/home/smouj/.openclaw/workspace/Trading-Tazos-Game/prisma/dev.db|file:/home/smouj/apps/ttg/Trading-Tazos-Game/prisma/dev.db|' .next/standalone/.env
+# Deploy note: Fix VPS DATABASE_URL in standalone .env
+sed -i 's|file:/home/smouj/.openclaw/workspace/Trading-Tazos-Game/prisma/dev.db|file:/home/smouj/apps/ttg/Trading-Tazos-Game/prisma/dev.db|' .next/standalone/.env 2>/dev/null || true
+
+# Symlink DB to avoid stale standalone copy
+if [ -f .next/standalone/prisma/dev.db ] && [ ! -L .next/standalone/prisma/dev.db ]; then
+  rm .next/standalone/prisma/dev.db
+  ln -s ../../../prisma/dev.db .next/standalone/prisma/dev.db
+  echo "  → DB symlinked"
+fi

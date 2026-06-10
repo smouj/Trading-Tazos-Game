@@ -9,6 +9,7 @@
 "use client"
 
 import { useState, useEffect, useCallback, useRef } from "react"
+import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 import {
   DEFAULT_ARENA_3D, createAirborneTazo, simulateSlam,
@@ -22,6 +23,7 @@ import type {
 import type { BattleFinalResult } from "@/lib/battle"
 import { useBattleEngine } from "@/lib/battle/use-battle-engine"
 import type { BattleContext } from "@/lib/battle/state-machine"
+import type { PvPWebSocket, TurnAction } from "@/lib/battle/use-pvp-websocket"
 import GameLobby from "./battle/game-lobby"
 import BattleArena3D from "./battle/battle-arena-3d"
 import SlamControls from "./battle/slam-controls"
@@ -85,8 +87,9 @@ async function fetchTazos(token: string): Promise<{ tazos: TazoCard[]; decks: an
   return { tazos, decks: [] }
 }
 
-export default function BattleView() {
+export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
   const { user, token } = useAuth()
+  const router = useRouter()
   const engine = useBattleEngine()
   const { ctx } = engine
 
@@ -221,6 +224,17 @@ export default function BattleView() {
   //  START MATCH — wiring to FSM
   // ═══════════════════════════════════════════════
   const start = useCallback((mode: "practice" | "pvp_ranked" | "pvp_friend", diff: any, d: TazoCard[]) => {
+    // Route PvP modes to their respective pages
+    if (mode === "pvp_friend") {
+      router.push("/game/friend/new")
+      return
+    }
+    if (mode === "pvp_ranked") {
+      // TODO: join matchmaking queue via WebSocket
+      router.push("/game/friend/ranked")
+      return
+    }
+
     const shuffled = [...d].sort(() => Math.random() - 0.5)
     const hand = shuffled.slice(0, Math.min(5, shuffled.length))
     setDeck(d)
@@ -421,6 +435,175 @@ export default function BattleView() {
       }, 1500)
     }, fallTimeMs * 0.75)
   }, [engine, cfg, ctx, deck, airborne])
+
+  // ═══════════════════════════════════════════════
+  //  PVP INTEGRATION — WebSocket relay for multiplayer
+  // ═══════════════════════════════════════════════
+
+  // –– Process incoming opponent turn actions ––
+  const pvpActionRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!pvp || !cfg) return
+    const action = pvp.state.lastOpponentAction
+    if (!action || engine.ui.busy) return
+    const key = JSON.stringify(action)
+    if (pvpActionRef.current === key) return
+    pvpActionRef.current = key
+
+    engine.setBusy(true)
+
+    // Opponent's slam — simulate it locally to see the result
+    if (action.slamParams) {
+      const oppTazo = cfg.opponentDeck.find(t => t.id === action.slamParams!.tazoId) || cfg.opponentDeck[0]
+      const slam: SlamParams = {
+        tazoId: action.slamParams.tazoId,
+        impactX: action.slamParams.impactX,
+        impactZ: action.slamParams.impactZ,
+        verticalForce: action.slamParams.verticalForce,
+        timingAccuracy: action.slamParams.timingAccuracy,
+        tilt: action.slamParams.tilt as SlamParams["tilt"],
+        tiltIntensity: action.slamParams.tiltIntensity,
+        spinIntensity: action.slamParams.spinIntensity,
+        aimPrecision: action.slamParams.aimPrecision,
+      }
+
+      // Brief delay for "AI" feel
+      setTimeout(() => {
+        if (!engine.ctx || !cfg) { engine.setBusy(false); return }
+        playSfx("slam_impact", 0.5)
+        const { result: impact } = simulateSlam(oppTazo, slam, engine.ctx.stakedTazos, cfg.arena, "opponent")
+        const scoring = scoreBettingImpact(impact, "opponent")
+        engine.resolveImpact(impact, "opponent")
+        engine.setImpactMsg(impact.description)
+        engine.setShowImpact(true)
+
+        if (scoring.opponentDelta > 0) { spawnPopup(`+${scoring.opponentDelta}`, "#FF004D", "right"); playSfx("score_pop", 0.3) }
+        if (scoring.playerDelta > 0) { spawnPopup(`+${scoring.playerDelta}`, "#29ADFF", "left"); playSfx("score_pop", 0.3) }
+        if (scoring.playerLostTazos > 0) { spawnPopup(`-${scoring.playerLostTazos} tazo`, "#FF004D", "left"); playSfx("damage_taken", 0.35) }
+
+        setTimeout(() => {
+          engine.setShowImpact(false)
+          const c2 = engine.ctx
+          const newPS = (c2?.player.score ?? 0) + scoring.playerDelta
+          const newOS = (c2?.opponent.score ?? 0) + scoring.opponentDelta
+          const end = checkMatchEnd(newPS, newOS,
+            Math.max(0, (c2?.playerRemaining ?? 0) - scoring.playerLostTazos),
+            Math.max(0, (c2?.opponentRemaining ?? 0) - scoring.opponentLostTazos))
+          if (end) {
+            engine.showResult()
+          } else {
+            engine.nextRound()
+          }
+          engine.setBusy(false)
+        }, 1500)
+      }, 800)
+    }
+  }, [pvp?.state.lastOpponentAction, cfg, engine])
+
+  // –– Process incoming opponent result confirmation ––
+  const pvpResultRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!pvp) return
+    const result = pvp.state.lastOpponentResult
+    if (!result) return
+    const key = JSON.stringify(result)
+    if (pvpResultRef.current === key) return
+    pvpResultRef.current = key
+    if (result.gameOver) {
+      // Opponent claims game is over
+      const winner = result.winner === pvp.state.yourSide ? "player" : "opponent"
+      engine.forfeit(winner as "player" | "opponent")
+    }
+  }, [pvp?.state.lastOpponentResult, pvp, engine])
+
+  // –– Override handleSlamRelease for PvP ––
+  const slamRef = useRef(handleSlamRelease)
+  useEffect(() => { slamRef.current = handleSlamRelease }, [handleSlamRelease])
+
+  const handleSlamForPvP = useCallback(() => {
+    if (!pvp) return slamRef.current()
+
+    if (engine.ui.busy || !cfg) return
+    engine.setBusy(true)
+
+    const t = ctx?.playerBetTazo || (deck.length > 0 ? deck[0] : null)
+    if (!t) { engine.setBusy(false); return }
+
+    const { tiltDeg, tiltIntensity, reticleX, reticleZ, charge, spinIntensity } = engine.ui
+    const absDeg = ((tiltDeg % 360) + 360) % 360
+    let tiltDir: SlamParams["tilt"] = "flat"
+    if (tiltIntensity > 0.12) {
+      if (absDeg < 45 || absDeg > 315) tiltDir = "right"
+      else if (absDeg >= 45 && absDeg < 135) tiltDir = "forward"
+      else if (absDeg >= 135 && absDeg < 225) tiltDir = "left"
+      else tiltDir = "backward"
+    }
+
+    // Animate airborne falling
+    if (airborne) {
+      const chargeHeight = cfg.arena.maxLaunchHeight * (0.2 + charge * 0.8)
+      setAirborne({
+        ...airborne, state: "falling",
+        position: [reticleX * 0.3, chargeHeight, reticleZ * 0.3],
+        tilt: [tiltIntensity * Math.cos(tiltDeg * Math.PI / 180) * 0.5, 0,
+              tiltIntensity * Math.sin(tiltDeg * Math.PI / 180) * 0.5],
+        angularVelocity: [0, spinIntensity * 8, 0],
+        charge, targetX: reticleX, targetZ: reticleZ,
+      })
+    }
+
+    // Send to opponent via WebSocket
+    pvp.sendTurnAction({
+      phase: "slam",
+      betTazoId: t.id,
+      slamParams: { tazoId: t.id, impactX: reticleX, impactZ: reticleZ, verticalForce: charge,
+        timingAccuracy: charge > 0.6 && charge < 0.82 ? 0.95 : 0.6,
+        tilt: tiltDir, tiltIntensity, spinIntensity,
+        aimPrecision: Math.max(0.2, (t.precision || 50) / 100) },
+    })
+
+    // Simulate locally
+    const fallHeight = cfg.arena.maxLaunchHeight * (0.2 + charge * 0.8)
+    const fallTimeMs = Math.sqrt(2 * fallHeight / cfg.arena.gravity) * 1000
+
+    setTimeout(() => {
+      if (!engine.ctx || !cfg) { engine.setBusy(false); return }
+      playSfx("slam_impact", 0.6)
+      const slam: SlamParams = { tazoId: t.id, impactX: reticleX, impactZ: reticleZ, verticalForce: charge,
+        timingAccuracy: charge > 0.6 && charge < 0.82 ? 0.95 : 0.6,
+        tilt: tiltDir, tiltIntensity, spinIntensity,
+        aimPrecision: Math.max(0.2, (t.precision || 50) / 100) }
+      const { result: impact } = simulateSlam(t, slam, engine.ctx.stakedTazos, cfg.arena, "player")
+      const scoring = scoreBettingImpact(impact, "player")
+      engine.resolveImpact(impact, "player")
+      setAirborne(null)
+      engine.setImpactMsg(impact.description)
+      engine.setShowImpact(true)
+
+      if (scoring.playerDelta > 0) { spawnPopup(`+${scoring.playerDelta}`, "#29ADFF", "left"); playSfx("score_pop", 0.3) }
+      if (scoring.opponentDelta > 0) { spawnPopup(`+${scoring.opponentDelta}`, "#FF004D", "right"); playSfx("score_pop", 0.3) }
+
+      const newPS = engine.ctx!.player.score + scoring.playerDelta
+      const newOS = engine.ctx!.opponent.score + scoring.opponentDelta
+      const end = checkMatchEnd(newPS, newOS,
+        Math.max(0, (engine.ctx?.playerRemaining ?? 0) - scoring.playerLostTazos),
+        Math.max(0, (engine.ctx?.opponentRemaining ?? 0) - scoring.opponentLostTazos))
+
+      setTimeout(() => {
+        engine.setShowImpact(false)
+        if (end) {
+          engine.showResult()
+          pvp.sendGameOver({ winner: end.winner, score: `${newPS}-${newOS}` })
+        } else {
+          engine.nextRound()
+        }
+        engine.setBusy(false)
+      }, 1500)
+    }, fallTimeMs * 0.75)
+  }, [engine, cfg, ctx, deck, airborne, pvp])
+
+  // Use PvP slam handler when in PvP mode
+  const effectiveSlamRelease = pvp ? handleSlamForPvP : handleSlamRelease
 
   const rematch = () => { resultSaved.current = false; setCreditsEarned(0); if (cfg) start(cfg.mode, cfg.aiDifficulty, deck) }
   const back = () => { resultSaved.current = false; setCreditsEarned(0); setAirborne(null); engine.resetToLobby() }
@@ -667,10 +850,10 @@ export default function BattleView() {
                 return
               }
               if (engine.ui.slamPhase === "charge") {
-                handleSlamRelease()
+                effectiveSlamRelease()
                 return
               }
-              handleSlamRelease()
+              effectiveSlamRelease()
             }}
             onBack={back}
           />

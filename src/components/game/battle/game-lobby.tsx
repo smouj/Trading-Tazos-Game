@@ -42,8 +42,7 @@ const MODES = [
     color: "#E3350D",
     gradient: "linear-gradient(135deg, #E3350D, #C62828)",
     badge: "RANKED",
-    available: false,
-    comingSoon: "Matchmaking in development",
+    available: true,
   },
   {
     id: "pvp_friend" as const,
@@ -53,8 +52,7 @@ const MODES = [
     color: "#3B4CCA",
     gradient: "linear-gradient(135deg, #3B4CCA, #283593)",
     badge: "DIRECT",
-    available: false,
-    comingSoon: "Room codes coming soon",
+    available: true,
   },
 ]
 
@@ -181,14 +179,6 @@ export default function GameLobby({ playerTazos, playerDecks, selectedDeckId, on
               <Icon className="w-5 h-5 mb-2.5" style={{ color: active ? opt.color : "#1a1a1a20" }} />
               <h3 className="font-black text-xs uppercase text-[#1a1a1a] mb-1">{opt.title}</h3>
               <p className="text-[9px] font-bold text-[#1a1a1a]/35">{opt.desc}</p>
-
-              {/* Coming soon indicator */}
-              {!opt.available && opt.comingSoon && (
-                <div className="mt-2 flex items-center gap-1 text-[8px] font-black uppercase text-[#E3350D]">
-                  <Sparkles className="w-2.5 h-2.5" />
-                  {opt.comingSoon}
-                </div>
-              )}
 
               {active && (
                 <div className="absolute bottom-0 left-0 right-0 h-1.5" style={{ background: opt.gradient }} />

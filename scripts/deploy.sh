@@ -53,8 +53,13 @@ cp -r public/tazos-generated/* .next/standalone/public/tazos-generated/ 2>/dev/n
 cp -r public/tazos-backs/* .next/standalone/public/tazos-backs/  2>/dev/null || true
 cp -r public/tazos-artgen/* .next/standalone/public/tazos-artgen/  2>/dev/null || true
 
+# Copy DB to standalone (rsync --delete removes it)
+cp prisma/dev.db .next/standalone/prisma/dev.db
+
 # Restart PM2
 pm2 restart ttg
+
+echo "  → DB synced to standalone"
 ENDSSH
 
 echo "✅ Deploy complete!"
@@ -65,17 +70,9 @@ for url in \
   "https://tradingtazosgame.com/" \
   "https://tradingtazosgame.com/?page=tazos" \
   "https://tradingtazosgame.com/?page=collections" \
+  "https://tradingtazosgame.com/api/tazos?publishStatus=published" \
   "https://tradingtazosgame.com/admin/tazo-designer"
 do
   code=$(curl -s -o /dev/null -w '%{http_code}' "$url")
   echo "  $code → $url"
 done
-# Fix VPS DATABASE_URL in standalone .env
-sed -i 's|file:/home/smouj/.openclaw/workspace/Trading-Tazos-Game/prisma/dev.db|file:/home/smouj/apps/ttg/Trading-Tazos-Game/prisma/dev.db|' .next/standalone/.env 2>/dev/null || true
-
-# Symlink DB to avoid stale standalone copy
-if [ -f .next/standalone/prisma/dev.db ] && [ ! -L .next/standalone/prisma/dev.db ]; then
-  rm .next/standalone/prisma/dev.db
-  ln -s ../../../prisma/dev.db .next/standalone/prisma/dev.db
-  echo "  → DB symlinked"
-fi

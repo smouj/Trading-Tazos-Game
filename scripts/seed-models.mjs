@@ -110,7 +110,16 @@ async function main() {
   if (existingTubes > 0) {
     console.log(`⚠️  ${existingTubes} TubeModel(s) already exist — skipping tube seed`)
   } else {
-    console.log("ℹ️  No tube textures found — skipping TubeModel seed (manual via /admin/tubes)")
+    // Default tube models using existing textures
+    const TUBE_MODELS = [
+      { name: "Minimon Tube", textureUrl: "/tazos-tubes/tube-minimon.png", franchise: "minimon", sortOrder: 0 },
+      { name: "Cybermon Tube", textureUrl: "/tazos-tubes/tube-cybermon.png", franchise: "cybermon", sortOrder: 1 },
+      { name: "Dracobell Tube", textureUrl: "/tazos-tubes/tube-dracobell.png", franchise: "dracobell", sortOrder: 2 },
+    ]
+    for (const tube of TUBE_MODELS) {
+      await prisma.tubeModel.create({ data: tube })
+    }
+    console.log(`✅ Seeded ${TUBE_MODELS.length} TubeModels`)
   }
 
   console.log("\n✨ Seed complete!")

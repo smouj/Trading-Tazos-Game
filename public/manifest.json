@@ -42,7 +42,7 @@
     {
       "src": "/logo/social-preview.webp",
       "sizes": "1200x630",
-      "type": "image/png",
+      "type": "image/webp",
       "form_factor": "wide",
       "label": "Trading Tazos Game - Landing"
     }

@@ -78,6 +78,10 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: SITE_URL,
+    languages: {
+      "en": SITE_URL,
+      "es": `${SITE_URL}/?lang=es`,
+    },
   },
 };
 
@@ -118,6 +122,32 @@ export default function RootLayout({
               "numberOfPlayers": { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 2 },
               "gamePlatform": ["Web Browser", "Linux"],
               "inLanguage": "en",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+              }
+            }),
+          }}
+        />
+        {/* JSON-LD WebSite + SearchAction for Google Sitelinks */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Trading Tazos Game",
+              "url": SITE_URL,
+              "description": SITE_DESC,
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": {
+                  "@type": "EntryPoint",
+                  "urlTemplate": `${SITE_URL}/?page=tazos&q={search_term_string}`
+                },
+                "query-input": "required name=search_term_string"
+              }
             }),
           }}
         />

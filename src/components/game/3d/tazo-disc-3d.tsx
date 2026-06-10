@@ -6,7 +6,7 @@
 // ============================================================
 "use client"
 
-import { useRef, useMemo, useEffect, useState, useCallback } from "react"
+import { useRef, useMemo, useEffect, useState } from "react"
 import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 
@@ -44,8 +44,8 @@ function loadTexture(url: string, onLoaded?: (tex: THREE.Texture) => void): THRE
       },
       undefined,
       () => {
+        // Image load error: clean up, let component fallback handle display
         pendingLoads.delete(url)
-        onLoaded?.(makeFallbackTexture("", ""))  // signal error
       }
     )
   }

@@ -531,7 +531,7 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
                 FREE-TO-PLAY
               </span>
               <span className="text-[8px] sm:text-[9px] font-black text-[#1a1a1a]/25 uppercase tracking-[0.15em]">
-                ISSUE #001
+                BETA
               </span>
             </div>
 

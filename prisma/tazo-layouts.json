@@ -4,37 +4,37 @@
       "collection": {
         "x": 0,
         "y": -300,
-        "scale": 1.0,
+        "scale": 1,
         "visible": true
       },
       "badge": {
         "x": 290,
         "y": 0,
-        "scale": 1.0,
+        "scale": 1,
         "visible": true
       },
       "number": {
         "x": -290,
         "y": 0,
-        "scale": 1.0,
+        "scale": 1,
         "visible": true
       },
       "name": {
         "x": 0,
         "y": 300,
-        "scale": 1.0,
+        "scale": 1,
         "visible": true
       },
       "rarity": {
         "x": 0,
         "y": -250,
-        "scale": 1.0,
+        "scale": 1,
         "visible": true
       },
       "creature": {
         "x": 0,
         "y": 0,
-        "scale": 1.0,
+        "scale": 1,
         "visible": true
       }
     },
@@ -42,37 +42,37 @@
       "collection": {
         "x": 0,
         "y": -300,
-        "scale": 1.0,
+        "scale": 1,
         "visible": true
       },
       "badge": {
         "x": 290,
         "y": 0,
-        "scale": 1.0,
+        "scale": 1,
         "visible": true
       },
       "number": {
         "x": -290,
         "y": 0,
-        "scale": 1.0,
+        "scale": 1,
         "visible": true
       },
       "name": {
         "x": 0,
         "y": 300,
-        "scale": 1.0,
+        "scale": 1,
         "visible": true
       },
       "rarity": {
         "x": 0,
         "y": -250,
-        "scale": 1.0,
+        "scale": 1,
         "visible": true
       },
       "creature": {
         "x": 0,
         "y": 0,
-        "scale": 1.0,
+        "scale": 1,
         "visible": true
       }
     },
@@ -80,43 +80,43 @@
       "collection": {
         "x": 0,
         "y": -300,
-        "scale": 1.0,
+        "scale": 1,
         "visible": true
       },
       "badge": {
         "x": 290,
         "y": 0,
-        "scale": 1.0,
+        "scale": 1,
         "visible": true
       },
       "number": {
         "x": -290,
         "y": 0,
-        "scale": 1.0,
+        "scale": 1,
         "visible": true
       },
       "name": {
         "x": 0,
         "y": 300,
-        "scale": 1.0,
+        "scale": 1,
         "visible": true
       },
       "rarity": {
         "x": 0,
         "y": -250,
-        "scale": 1.0,
+        "scale": 1,
         "visible": true
       },
       "creature": {
         "x": 0,
         "y": 0,
-        "scale": 1.0,
+        "scale": 1,
         "visible": true
       }
     }
   },
   "overrides": {},
-  "lastModified": 1717968000,
+  "lastModified": 1781129214263,
   "backDefaults": {
     "minimon": {
       "centerIcon": {
@@ -147,28 +147,28 @@
     },
     "cybermon": {
       "centerIcon": {
-        "x": 0,
-        "y": 0,
-        "scale": 1
+        "x": 235,
+        "y": 525,
+        "scale": 0.7000000000000001
       },
       "topLabel": {
-        "x": 0,
-        "y": -280,
-        "scale": 1
+        "x": 435,
+        "y": 155,
+        "scale": 0.9
       },
       "bottomLabel": {
-        "x": 0,
-        "y": 280,
-        "scale": 1
+        "x": 435,
+        "y": 670,
+        "scale": 0.8
       },
       "cornerBadge": {
-        "x": 280,
-        "y": -280,
+        "x": 635,
+        "y": 525,
         "scale": 1
       },
       "numberBadge": {
-        "x": -280,
-        "y": -280,
+        "x": 435,
+        "y": 535,
         "scale": 1
       }
     },

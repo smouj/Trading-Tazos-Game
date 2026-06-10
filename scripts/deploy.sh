@@ -15,7 +15,27 @@ if [ ! -d ".next" ]; then
   exit 1
 fi
 
-# 2. Sync .next/ to VPS
+# 3. Post-deploy steps on VPS
+echo "→ Running post-deploy on VPS..."
+ssh "$VPS" << 'ENDSSH'
+set -euo pipefail
+cd /home/smouj/apps/ttg/Trading-Tazos-Game
+
+# Backup live user-edited layout JSON before rsync overwrites it
+LAYOUTS_BACKUP="/tmp/tazo-layouts-backup-$$.json"
+if [ -f .next/standalone/prisma/tazo-layouts.json ]; then
+  cp .next/standalone/prisma/tazo-layouts.json "$LAYOUTS_BACKUP"
+  echo "  → Backed up live tazo-layouts.json"
+fi
+ENDSSH
+
+# 2b. rsync needs to happen on VPS side? No — it already ran above.
+# We need to re-order: back up BEFORE rsync!
+# Let's do the backup in a separate SSH call before rsync
+echo "→ Backing up VPS live layouts before sync..."
+ssh "$VPS" 'if [ -f /home/smouj/apps/ttg/Trading-Tazos-Game/.next/standalone/prisma/tazo-layouts.json ]; then cp /home/smouj/apps/ttg/Trading-Tazos-Game/.next/standalone/prisma/tazo-layouts.json /tmp/tazo-layouts-live.json 2>/dev/null && echo "  → Live layouts backed up"; else echo "  → No live layouts to back up"; fi' || true
+
+# 2. Sync .next/ to VPS (must happen AFTER backup)
 echo "→ Syncing .next/ to VPS..."
 rsync -avz --delete .next/ "$VPS:$VPS_APP/.next/"
 
@@ -40,8 +60,14 @@ sed -i 's|file:/home/smouj/.openclaw/workspace/Trading-Tazos-Game/prisma/dev.db|
 # Copy static assets to standalone (Next.js standalone bug workaround)
 cp -r .next/static/* .next/standalone/.next/static/
 
-# Copy layout JSON (only if not already present — preserves user saves)
-if [ ! -f .next/standalone/prisma/tazo-layouts.json ]; then
+# Copy layout JSON — RESTORE LIVE BACKUP so user edits survive deploys
+if [ -f /tmp/tazo-layouts-live.json ]; then
+  cp /tmp/tazo-layouts-live.json .next/standalone/prisma/tazo-layouts.json
+  # Also sync back to repo so WSL source stays in sync
+  cp /tmp/tazo-layouts-live.json prisma/tazo-layouts.json
+  rm -f /tmp/tazo-layouts-live.json
+  echo "  → Live tazo-layouts.json restored (user edits preserved)"
+elif [ ! -f .next/standalone/prisma/tazo-layouts.json ]; then
   cp prisma/tazo-layouts.json .next/standalone/prisma/
   echo "  → Fresh tazo-layouts.json copied"
 else

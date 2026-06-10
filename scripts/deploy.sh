@@ -25,19 +25,20 @@ ssh "$VPS" << 'ENDSSH'
 set -euo pipefail
 cd /home/smouj/apps/ttg/Trading-Tazos-Game
 
-# Fix DATABASE_URL to VPS path (prevent stale WSL paths in standalone .env)
-sed -i 's|file:/home/smouj/.openclaw/workspace/Trading-Tazos-Game/prisma/dev.db|file:/home/smouj/apps/ttg/Trading-Tazos-Game/prisma/dev.db|' .next/standalone/.env
-
-# Copy static assets to standalone (Next.js standalone bug workaround)
-cp -r .next/static/* .next/standalone/.next/static/
-
-# Ensure directories exist
+# Ensure directories exist (MUST be first — cp/mkdir order matters with set -e)
+mkdir -p .next/standalone/.next/static
 mkdir -p .next/standalone/prisma
 mkdir -p .next/standalone/public/tazos-base
 mkdir -p .next/standalone/public/tazos-generated
 mkdir -p .next/standalone/public/tazos-backs
 mkdir -p .next/standalone/public/tazos-artgen/backs
 mkdir -p .next/standalone/public/tazos-tubes
+
+# Fix DATABASE_URL to VPS path (prevent stale WSL paths in standalone .env)
+sed -i 's|file:/home/smouj/.openclaw/workspace/Trading-Tazos-Game/prisma/dev.db|file:/home/smouj/apps/ttg/Trading-Tazos-Game/prisma/dev.db|' .next/standalone/.env
+
+# Copy static assets to standalone (Next.js standalone bug workaround)
+cp -r .next/static/* .next/standalone/.next/static/
 
 # Copy layout JSON (only if not already present — preserves user saves)
 if [ ! -f .next/standalone/prisma/tazo-layouts.json ]; then

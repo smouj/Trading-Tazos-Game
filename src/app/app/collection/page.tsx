@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState, useMemo, useRef, useCallback } from "react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
 import { useI18n } from "@/lib/i18n"
@@ -63,6 +63,82 @@ function timeAgo(iso: string): string {
   if (hours < 24) return `${hours}h ago`
   const days = Math.floor(hours / 24)
   return `${days}d ago`
+}
+
+// ── Tiltable Disc Component ─────────────────────────────
+function TazoDiscTilt({
+  children, isFlipped, wear,
+}: {
+  children: React.ReactNode
+  isFlipped: boolean
+  wear: number
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [angles, setAngles] = useState({ rx: 0, ry: 0, hovering: false, lx: 0.5, ly: 0.3 })
+
+  const onMove = useCallback((e: React.MouseEvent) => {
+    if (!ref.current) return
+    const rect = ref.current.getBoundingClientRect()
+    const cx = rect.left + rect.width / 2
+    const cy = rect.top + rect.height / 2
+    // Normalize to [-1, 1] range with smooth falloff
+    const nx = ((e.clientX - cx) / (rect.width / 2))
+    const ny = ((e.clientY - cy) / (rect.height / 2))
+    const maxDeg = 18
+    setAngles({
+      rx: -ny * maxDeg,
+      ry: nx * maxDeg,
+      hovering: true,
+      lx: (nx + 1) / 2,
+      ly: (ny + 1) / 2,
+    })
+  }, [])
+
+  const onLeave = useCallback(() => {
+    setAngles({ rx: 0, ry: 0, hovering: false, lx: 0.5, ly: 0.3 })
+  }, [])
+
+  const fx = angles.rx.toFixed(2)
+  const fy = angles.ry.toFixed(2)
+  const isTransitioning = !angles.hovering
+
+  // For damaged tazos, reduce tilt — the plastic is warped anyway
+  const tiltDampen = wear >= 70 ? 0.35 : wear >= 40 ? 0.65 : 1.0
+
+  const cssVars = {
+    "--tilt-lx": `${(angles.lx * 100).toFixed(0)}%`,
+    "--tilt-ly": `${(angles.ly * 100).toFixed(0)}%`,
+    "--tilt-intensity": angles.hovering ? "1" : "0",
+  } as React.CSSProperties
+
+  return (
+    <div
+      ref={ref}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      className="flex items-center justify-center bg-[#fffef0]"
+      style={{
+        aspectRatio: "1",
+        perspective: "700px",
+        cursor: isFlipped ? "pointer" : "grab",
+        ...cssVars,
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          transform: `perspective(700px) rotateX(${fx}deg) rotateY(${fy}deg) scale(${angles.hovering ? 1.04 : 1})`,
+          transition: isTransitioning
+            ? "transform 0.5s cubic-bezier(0.23, 1, 0.32, 1)"
+            : "transform 0.08s ease-out",
+          filter: tiltDampen < 1 ? `brightness(${0.9 + tiltDampen * 0.1})` : undefined,
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  )
 }
 
 // ── Component ──────────────────────────────────────────
@@ -560,8 +636,8 @@ export default function CollectionPage() {
                           {/* Franchise strip */}
                           <div className="h-1.5" style={{ background: gradient }} />
 
-                          {/* TazoDiscImage — ⚠️ Flip keyed by item.id (not tazoId) */}
-                          <div className="p-3 flex items-center justify-center bg-[#fffef0]" style={{ aspectRatio: "1" }}>
+                          {/* TazoDiscImage with mouse-tracking tilt for finish effects */}
+                          <TazoDiscTilt isFlipped={isFlipped} wear={item.wear || 0}>
                             <TazoDiscImage
                               src={isFlipped
                                 ? (FRANCHISE_BACK[item.tazo.franchiseSlug] || FRANCHISE_BACK.minimon)
@@ -586,7 +662,7 @@ export default function CollectionPage() {
                               }
                               lazy
                             />
-                          </div>
+                          </TazoDiscTilt>
 
                           {/* Flip hint */}
                           <div className="text-center bg-[#fffef0] border-t border-[#1a1a1a]/10">

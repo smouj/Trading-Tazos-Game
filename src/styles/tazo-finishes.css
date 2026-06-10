@@ -934,6 +934,110 @@
 }
 
 /* ═══════════════════════════════════════════════════════
+   DYNAMIC TILT LIGHT-FOLLOW (collection cards)
+   When the card tilts via TazoDiscTilt, CSS variables
+   shift the finish highlights to follow the mouse.
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── Glossy light follows tilt ─── */
+[style*="--tilt-lx"] .tazo-finish-glossy .tazo-gloss-layer {
+  background: radial-gradient(
+    ellipse 60% 40% at var(--tilt-lx, 25%) var(--tilt-ly, 15%),
+    rgba(255,255,255,0.45) 0%,
+    rgba(255,255,255,0.08) 30%,
+    transparent 55%
+  ) !important;
+}
+
+[style*="--tilt-lx"] .tazo-finish-glossy .tazo-finish-layer {
+  background: radial-gradient(
+    ellipse 120% 80% at var(--tilt-lx, 30%) var(--tilt-ly, 20%),
+    rgba(255,255,255,0.28) 0%,
+    rgba(255,255,255,0.06) 35%,
+    transparent 55%,
+    rgba(0,0,0,0.03) 80%,
+    rgba(0,0,0,0.10) 100%
+  ) !important;
+}
+
+/* ─── Foil sheen follows tilt ─── */
+[style*="--tilt-lx"] .tazo-finish-foil .tazo-gloss-layer {
+  background: radial-gradient(
+    ellipse 80% 50% at var(--tilt-lx, 20%) var(--tilt-ly, 18%),
+    rgba(255,255,255,0.30) 0%,
+    rgba(255,255,255,0.06) 25%,
+    transparent 45%
+  ) !important;
+}
+
+[style*="--tilt-lx"] .tazo-finish-foil .tazo-finish-layer {
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255,255,255,0.0) calc(var(--tilt-lx, 50%) - 8%),
+    rgba(255,255,255,0.45) var(--tilt-lx, 44%),
+    rgba(255,255,255,0.10) calc(var(--tilt-lx, 48%) + 2%),
+    rgba(255,255,255,0.0) calc(var(--tilt-lx, 52%) + 6%),
+    transparent 100%
+  ) !important;
+}
+
+/* ─── Holo sparkle follows tilt ─── */
+[style*="--tilt-lx"] .tazo-finish-holo .tazo-gloss-layer {
+  background: radial-gradient(
+    circle at var(--tilt-lx, 18%) var(--tilt-ly, 14%),
+    rgba(255, 255, 255, 0.40) 0%,
+    rgba(255, 210, 255, 0.20) 8%,
+    rgba(255, 255, 255, 0.06) 18%,
+    transparent 35%
+  ) !important;
+}
+
+/* ─── Prismatic sparkle follows tilt ─── */
+[style*="--tilt-lx"] .tazo-finish-prismatic .tazo-finish-layer-2 {
+  background: radial-gradient(
+    ellipse 70% 50% at var(--tilt-lx, 70%) var(--tilt-ly, 22%),
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 210, 255, 0.08) 18%,
+    transparent 40%
+  ) !important;
+}
+
+/* ─── Chrome horizon follows tilt ─── */
+[style*="--tilt-lx"] .tazo-finish-chrome .tazo-finish-layer-2 {
+  background: linear-gradient(
+    180deg,
+    transparent calc(var(--tilt-ly, 47%) - 8%),
+    rgba(255,255,255,0.30) var(--tilt-ly, 47%),
+    rgba(35,45,55,0.28) calc(var(--tilt-ly, 51%) + 2%),
+    rgba(255,255,255,0.22) calc(var(--tilt-ly, 55%) + 4%),
+    transparent calc(var(--tilt-ly, 60%) + 6%)
+  ) !important;
+}
+
+/* ─── Gold shimmer follows tilt ─── */
+[style*="--tilt-lx"] .tazo-finish-gold .tazo-gloss-layer {
+  background: radial-gradient(
+    ellipse 60% 35% at var(--tilt-lx, 28%) var(--tilt-ly, 20%),
+    rgba(255,255,240,0.42) 0%,
+    rgba(255,240,180,0.12) 20%,
+    transparent 40%
+  ) !important;
+}
+
+/* ─── Metallic reflection follows tilt ─── */
+[style*="--tilt-lx"] .tazo-finish-metallic .tazo-finish-layer {
+  background: linear-gradient(
+    125deg,
+    rgba(255,255,255,0.08) 0%,
+    rgba(255,255,255,0.42) calc(var(--tilt-lx, 28%) - 2%),
+    rgba(60,60,70,0.15) calc(var(--tilt-lx, 50%)),
+    rgba(255,255,255,0.22) calc(var(--tilt-lx, 68%) + 2%),
+    rgba(40,40,50,0.10) 100%
+  ) !important;
+}
+
+/* ═══════════════════════════════════════════════════════
    GLOBAL DISC VIGNETTE — Profundidad en el borde del tazo
    Aplicado al ::after del contenedor exterior para estar
    por encima de todas las capas de finish.

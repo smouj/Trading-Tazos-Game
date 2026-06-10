@@ -88,6 +88,8 @@ function MagazineSplash({ onFinish }: { onFinish: () => void }) {
           src="/logo/logo-icon-black.webp"
           alt="Trading Tazos"
           className="w-28 h-28 sm:w-36 sm:h-36 relative z-10"
+          loading="lazy"
+          fetchPriority="low"
           style={{ filter: "drop-shadow(6px 6px 0 rgba(26,26,26,0.3))" }}
         />
       </div>
@@ -1922,7 +1924,7 @@ export default function LauncherView() {
             </div>
 
             {/* Desktop nav */}
-            <nav className="hidden sm:flex items-center gap-1">
+            <nav className="hidden sm:flex items-center gap-1" role="navigation" aria-label="Main navigation">
               {([
                 ["home", "Home"],
                 ["how-to-play", "How to Play"],

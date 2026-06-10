@@ -49,7 +49,7 @@ export default function GameShell({
       </div>
 
       {/* Game canvas area — fills remaining space */}
-      <div className="flex-1 min-h-0 overflow-hidden relative">
+      <div className="flex-1 min-h-0 overflow-hidden relative" role="main" aria-label="Game content">
         {children}
       </div>
     </div>

@@ -1,10 +1,11 @@
 // ============================================================
 // Trading Tazos Game — Leaderboard API
-// GET /api/leaderboard?sort=credits|tazos|battles|level
+// GET /api/leaderboard?sort=credits|tazos|battles|elo
 // ============================================================
 
 import { NextRequest, NextResponse } from "next/server"
 import { db as prisma } from "@/lib/db"
+import { getRank } from "@/lib/battle/elo"
 
 export async function GET(req: NextRequest) {
   const sort = req.nextUrl.searchParams.get("sort") || "credits"
@@ -46,6 +47,29 @@ export async function GET(req: NextRequest) {
       })).then(rows => rows.filter(Boolean) as any[])
       break
       }
+    case "elo": {
+      const rankedRatings = await prisma.rankedRating.findMany({
+        take: limit,
+        orderBy: { elo: "desc" },
+        include: { user: { select: { name: true, displayName: true, avatarUrl: true } } },
+      })
+      return NextResponse.json({
+        leaderboard: rankedRatings.map((r, i) => ({
+          rank: i + 1,
+          userId: r.userId,
+          name: r.user.displayName || r.user.name || "Unknown",
+          avatarUrl: r.user.avatarUrl,
+          elo: r.elo,
+          wins: r.wins,
+          losses: r.losses,
+          rankInfo: getRank(r.elo),
+          score: r.elo,
+          rankField: "elo",
+        })),
+        sort: "elo",
+        total: rankedRatings.length,
+      }, { headers: { "Cache-Control": "public, max-age=60" } })
+    }
     case "credits":
     default:
       users = await prisma.user.findMany({

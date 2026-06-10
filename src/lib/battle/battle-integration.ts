@@ -143,6 +143,27 @@ export async function persistBattleResult(
   }
 
   result.creditsEarned += matchResult.xpEarned
+
+  // 5. Report to ranked Elo system (PvP ranked only)
+  if (mode === "pvp_ranked") {
+    try {
+      await fetch("/api/ranked", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          playerScore: matchResult.playerScore,
+          opponentScore: matchResult.opponentScore,
+          opponentUserId: (ctx.opponent as any).userId || null,
+        }),
+      })
+    } catch {
+      // Non-critical: Elo update can fail
+    }
+  }
+
   return result
 }
 

@@ -273,7 +273,28 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned, on
             <div
               className={`ttg-bg-disc relative w-[180px] h-[180px] sm:w-[220px] sm:h-[220px] rounded-full flex items-center justify-center overflow-hidden ${bgClasses}`}
             >
-              {viewMode === 'back' && tazo.isOwned ? (
+              {!tazo.isOwned ? (
+                /* Unowned — show BACK face (hidden until discovered) */
+                <div className="w-full h-full rounded-full overflow-hidden bg-white relative">
+                  <TazoDiscImage
+                    src={tazo.backImageUrl || `/tazos-artgen/backs/${franchiseSlug}-back.png`}
+                    alt="Undiscovered"
+                    size="100%"
+                    borderWidth={0}
+                    isBack
+                    number={null}
+                    franchiseSlug={franchiseSlug}
+                  />
+                  {/* Lock badge — top-right corner, not blocking center */}
+                  <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-[#1a1a1a]/85 flex items-center justify-center border-2 border-[#FFCC00]/60 shadow-[0_0_8px_rgba(0,0,0,0.5)]">
+                    <Lock className="w-4 h-4 text-[#FFCC00]" />
+                  </div>
+                  {/* "Undiscovered" label */}
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-[#1a1a1a]/80 rounded-full border border-white/10">
+                    <span className="text-[8px] font-black text-white/50 uppercase tracking-wider">Undiscovered</span>
+                  </div>
+                </div>
+              ) : viewMode === 'back' ? (
                 /* Back face — franchise back art */
                 <div className="w-full h-full rounded-full overflow-hidden bg-white">
                   <TazoDiscImage
@@ -286,7 +307,7 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned, on
                     franchiseSlug={franchiseSlug}
                   />
                 </div>
-              ) : viewMode === '3d' && tazo.isOwned ? (
+              ) : viewMode === '3d' ? (
                 /* 3D rotating view */
                 <div className="w-full h-full relative" style={{
                   perspective: '600px',
@@ -317,12 +338,7 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned, on
                   creatureVariant={tazo.creatureVariant as TazoCreatureVariant || "standard"}
                   shinyImageUrl={tazo.shinyImageUrl}
                   wear={tazo.wear || 0}
-                  number={!tazo.isOwned ? null : tazo.number}
-                  overlay={!tazo.isOwned ? (
-                    <div className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center">
-                      <Lock className="w-12 h-12 text-white/70" />
-                    </div>
-                  ) : undefined}
+                  number={tazo.number}
                 />
               )}
             </div>

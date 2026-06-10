@@ -1164,9 +1164,25 @@ function TazosContent() {
             }[t.rarity] || "#9CA3AF"
             return (
             <button key={t.id} onClick={() => handleTazoClick(t, idx)}
-              className="text-left border-2 border-[#1a1a1a]/10 bg-white p-2.5 hover:bg-[#FFF9E6] hover:border-[#FFCC00] hover:shadow-[3px_3px_0px_#1a1a1a] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all group">
-              {/* Disc */}
-              <div className="aspect-square rounded-full overflow-hidden mb-1.5 mx-auto max-w-[92px] relative">
+              className="tazo-tilt-card text-left border-2 border-[#1a1a1a]/10 bg-white p-2.5 hover:bg-[#FFF9E6] hover:border-[#FFCC00] hover:shadow-[3px_3px_0px_#1a1a1a] transition-all duration-200 group"
+              style={{ perspective: "500px" }}>
+              {/* Disc — mouse-tracking tilt */}
+              <div className="aspect-square rounded-full overflow-hidden mb-1.5 mx-auto max-w-[92px] relative"
+                style={{
+                  transition: "transform 0.15s ease-out",
+                }}
+                onMouseMove={e => {
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  const cx = rect.left + rect.width / 2
+                  const cy = rect.top + rect.height / 2
+                  const nx = (e.clientX - cx) / (rect.width / 2)
+                  const ny = (e.clientY - cy) / (rect.height / 2)
+                  e.currentTarget.style.transform = `perspective(500px) rotateX(${-ny * 14}deg) rotateY(${nx * 14}deg) scale(1.06)`
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.transform = "perspective(500px) rotateX(0deg) rotateY(0deg) scale(1)"
+                }}
+              >
                 {t.imageUrl ? (
                   <TazoDiscImage
                     src={t.imageUrl}

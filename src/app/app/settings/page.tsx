@@ -10,6 +10,7 @@ import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
 import { useI18n } from "@/lib/i18n"
 import { type Lang } from "@/lib/i18n/types"
+import { TOTAL_PLANNED } from "@/lib/franchise-config"
 import {
   User, Settings, LogOut, Disc3, Layers, Coins,
   Mail, Calendar, Shield, Edit3, Check, X,
@@ -299,14 +300,14 @@ export default function SettingsPage() {
               <div>
                 <div className="flex justify-between mb-1">
                   <span className="text-[10px] font-black uppercase text-[#E3350D] flex items-center gap-1"><Disc3 className="w-3.5 h-3.5" /> Tazos Collected</span>
-                  <span className="text-[10px] font-black text-[#1a1a1a]">{user.tazoCount ?? 0} / 349</span>
+                  <span className="text-[10px] font-black text-[#1a1a1a]">{user.tazoCount ?? 0} / {TOTAL_PLANNED}</span>
                 </div>
                 <div className="h-3.5 border-2 border-[#1a1a1a] bg-[#fffef0] overflow-hidden">
                   <div className="h-full transition-all duration-500"
                     style={{
-                      width: `${Math.min(100, ((user.tazoCount ?? 0) / 349) * 100)}%`,
+                      width: `${Math.min(100, ((user.tazoCount ?? 0) / TOTAL_PLANNED) * 100)}%`,
                       background: "repeating-linear-gradient(-45deg, #E3350D, #E3350D 3px, #CC2200 3px, #CC2200 6px)",
-                      borderRight: (user.tazoCount ?? 0) > 0 && (user.tazoCount ?? 0) < 349 ? "2px solid #1a1a1a" : "none",
+                      borderRight: (user.tazoCount ?? 0) > 0 && (user.tazoCount ?? 0) < TOTAL_PLANNED ? "2px solid #1a1a1a" : "none",
                     }} />
                 </div>
               </div>

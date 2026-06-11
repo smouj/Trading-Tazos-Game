@@ -8,6 +8,7 @@ import { useSearchParams } from "next/navigation"
 import StatsPanel from "@/components/game/stats-panel"
 import BattleHistory from "@/components/game/battle-history"
 import { BarChart3 } from "lucide-react"
+import { TOTAL_PLANNED } from "@/lib/franchise-config"
 
 function StatsContent() {
   const searchParams = useSearchParams()
@@ -29,7 +30,7 @@ function StatsContent() {
           <h1 className="text-sm sm:text-lg font-black text-white uppercase tracking-tight">GLOBAL STATS</h1>
         </div>
         <div className="w-px h-5 bg-white/15" />
-        <span className="text-sm font-black text-[#3B4CCA] tracking-tight">349 TAZOS</span>
+        <span className="text-sm font-black text-[#3B4CCA] tracking-tight">{TOTAL_PLANNED} SEASON 1 TAZOS</span>
       </div>
       <StatsPanel refreshKey={refreshKey} />
       <BattleHistory />

@@ -15,14 +15,16 @@
 [![Status](https://img.shields.io/badge/status-Live-brightgreen)](https://tradingtazosgame.com)
 [![PWA](https://img.shields.io/badge/PWA-Ready-5A0FC8?logo=pwa)](https://tradingtazosgame.com/manifest.json)
 [![i18n](https://img.shields.io/badge/i18n-10_languages-8B5CF6)](./src/lib/i18n/locales/)
-[![Version](https://img.shields.io/badge/version-v0.5.0-FFCC00)](#changelog)
+[![Version](https://img.shields.io/badge/version-v0.6.0-FFCC00)](#changelog)
 [![Design](https://img.shields.io/badge/design-Magazine_Game-FFCC00)]()
 
 <br/>
 
 **Aim. Throw. Flip. Capture. Collect.**
 
-Trading Tazos Game is a browser-based digital tazo (pog) battle game designed entirely with a 90s gaming magazine aesthetic — cream paper backgrounds, yellow mastheads, halftone dot patterns, bold comic typography, and 3px black border cards with drop shadows. You don't just compare stats — you stake tazos face-down in a 3D arena, charge up a vertical slam from above, and watch physics resolve flips, wobbles, and captures in real time. Features **30 published tazos** across 3 collections (Minimon, Dracobell & Cybermon) with **319 more generated** in the pipeline, 9 combat stats, holographic/foil/prismatic finishes, a unified 3D physics battle engine with AI opponents, real potato chip bag opening with 3D textures, and a full progression system with quests and achievements.
+Trading Tazos Game is a browser-based digital tazo (pog) battle game designed entirely with a 90s gaming magazine aesthetic — cream paper backgrounds, yellow mastheads, halftone dot patterns, bold comic typography, and 3px black border cards with drop shadows. You don't just compare stats — you stake tazos face-down in a 3D arena, charge up a vertical slam from above, and watch physics resolve flips, wobbles, and captures in real time.
+
+The public catalog currently exposes **26 verified published tazos** across Minimon, Dracobell, and Cybermon. The canonical Season 1 target is **150 original TTG tazos** (50 per franchise); unfinished art remains hidden until it passes visual QA.
 
 🌐 **[tradingtazosgame.com](https://tradingtazosgame.com)** &nbsp;|&nbsp; 📧 **support@tradingtazosgame.com**
 
@@ -36,7 +38,7 @@ Trading Tazos Game is a browser-based digital tazo (pog) battle game designed en
 
 | Landing Page | Tazo Catalog | Practice Battle |
 |:---:|:---:|:---:|
-| <img src="docs/screenshots/home.png" width="320" alt="Magazine-style landing with hero and collections"> | <img src="docs/screenshots/tazos.png" width="320" alt="Public catalog with 349 tazos across three collections"> | <img src="docs/screenshots/battle.png" width="320" alt="Practice battle with 3D arena and aim controls"> |
+| <img src="docs/screenshots/home.png" width="320" alt="Magazine-style landing with hero and collections"> | <img src="docs/screenshots/tazos.png" width="320" alt="Public catalog with verified published tazos across three collections"> | <img src="docs/screenshots/battle.png" width="320" alt="Practice battle with 3D arena and aim controls"> |
 
 | Leaderboard | Download | Sign In |
 |:---:|:---:|:---:|
@@ -87,7 +89,7 @@ It's a game of **physical tazo throwing** — aim, power, physics, chain rebound
 ### Collection & Progression
 | Feature | Detail |
 |---------|--------|
-| Tazo Database | 349 tazos: 61 Minimon, 128 Dracobell, 160 Cybermon |
+| Tazo Database | 26 verified published tazos live; 150 canonical Season 1 tazos planned |
 | Personal Collection | Track owned tazos, mark favorites, view acquisition dates |
 | Decks | Build, name, and activate battle decks (5 tazos each) |
 | Welcome Pack | 10 starter tazos + pre-built deck on registration |
@@ -143,12 +145,12 @@ It's a game of **physical tazo throwing** — aim, power, physics, chain rebound
 
 | # | Collection | Origin | Tazos |
 |:--:|-----------|--------|:-----:|
-| 1 | **Minimon** — inspired by Pokémon Tazos 1 (Matutano, 2000) | Spain | 61 |
-| 2 | **Dracobell** — inspired by Dragon Ball Z (Matutano, 1995) | Spain | 128 |
-| 3 | **Cybermon** — inspired by Digimon Magic Box (2000) | Spain | 160 |
-| | | **Total** | **349** |
+| 1 | **Minimon** — Luminara / Vital Spark lineage | TTG Season 1 | 50 |
+| 2 | **Dracobell** — Bellora / Roar Aura resonance | TTG Season 1 | 50 |
+| 3 | **Cybermon** — Neon Grid / Soul Protocol awakening | TTG Season 1 | 50 |
+| | | **Season 1 target** | **150** |
 
-All 349 tazos verified against original Spanish physical collections. Each tazo has 9 balanced combat stats, a tactical role, and evolutive relationships (pre-evolution, evolution, transformation stage). Names have been minimally tweaked to avoid IP conflicts while staying instantly recognizable.
+Published tazos are original TTG visuals with verified front art. Season 1 drafts stay private as `pending_review` until the generated creature art, circular composition, back art, stats, and metadata are checked.
 
 ---
 
@@ -188,7 +190,7 @@ All 349 tazos verified against original Spanish physical collections. Each tazo 
 | 3D Rendering | Three.js + @react-three/fiber + @react-three/drei (battle-only) |
 | Battle Graphics | Three.js 3D physics arena (2D for collection, stats, shop) |
 | ORM | Prisma 6.x (12 models, automated migrations) |
-| Database | SQLite (zero-config, portable, ~400 KB with 349 tazos) |
+| Database | SQLite (zero-config, portable, with published/draft visibility states) |
 | Auth | JWT (jsonwebtoken) + bcryptjs (12 rounds) + httpOnly cookies |
 | Multiplayer | WebSocket (ws) with JWT auth and room system |
 | Desktop | Electron with animated splash, system tray, single-instance lock |
@@ -203,7 +205,7 @@ All 349 tazos verified against original Spanish physical collections. Each tazo 
 Trading-Tazos-Game/
 ├── prisma/
 │   ├── schema.prisma        # 12 models + automated migrations
-│   ├── seed.ts              # 349 tazos (seed data)
+│   ├── seed.ts              # starter data + quests + achievements
 │   └── seed-quests.ts       # 17 quests + 18 achievements
 ├── src/
 │   ├── proxy.ts              # Auth route protection + legacy redirects
@@ -282,7 +284,7 @@ cd Trading-Tazos-Game
 bun install                              # Dependencies
 cp .env.example .env                     # Set your JWT_SECRET
 bunx prisma db push                      # Create database
-bun run seed                             # 349 tazos + 17 quests + 18 achievements
+bun run seed                             # starter tazos + 17 quests + 18 achievements
 
 bun run dev                              # http://localhost:3000
 ```
@@ -393,6 +395,14 @@ tazos battle --seed 42   # Simulate a physics battle
 
 ## Changelog
 
+### v0.6.0 — Season 1 Canon + Public Catalog Safety (Jun 2026)
+- **Season 1 canon**: Minimon, Dracobell, and Cybermon now use the original TTG lore bible with 50 tazos each.
+- **Published visibility**: Public APIs expose only `published + verified` tazos; draft/pending visual checks stay hidden.
+- **Collection pages**: Launcher collection pages now describe Luminara, Bellora, and the Neon Grid canon consistently.
+- **Canonical rendering**: Shared tazo card/disc rendering avoids duplicate names, nested buttons, and inconsistent fill.
+- **CI smoke data**: GitHub Actions seeds a disposable SQLite DB before API smoke checks.
+- **Environment audit**: WSL, VPS, GitHub, npm, and production state documented in `docs/audits/`.
+
 ### v0.5.0 — Admin Panel + Tazo Designer + Asset Renewal + Visual Polish (Jun 2026)
 - **Admin panel**: Full CRUD at `/admin/tazos` — publish/unpublish, edit all fields, view tazo inventory
 - **Tazo Designer v2.0**: Drag-and-drop visual layout editor at `/admin/tazo-designer` — 6 elements (Collection, Badge, Number, Name, Rarity Stars, Creature) with X/Y/Scale controls, 50-step undo/redo, snap guides, layers panel (16 layers), scratch overlay (wear 0-100%), quick presets + keyboard shortcuts
@@ -425,7 +435,7 @@ tazos battle --seed 42   # Simulate a physics battle
 ### v0.3.1 — Vertical Slam Physics + Finish System + Deck Integration (Jun 2026)
 - **Vertical slam mechanic**: Tazos fall from above — no more air hockey. Stake face-down, aim, charge, tilt, slam.
 - **Physical finish system**: 12 finishes (holo, foil, prismatic, gold, chrome, rainbow, etc.) + 7 creature variants (shiny, shadow, golden, promo, first_edition, misprint) — all CSS-only, no extra images
-- **349 tazos with finishes**: Every tazo in the DB has a rarity-appropriate finish
+- **Tazo finish system**: Every visible tazo can use a rarity-appropriate finish
 - **Battle ↔ Decks integration**: BattleView loads from user's active deck instead of all DB tazos
 - **Deterministic RNG**: Seed-based random for future PvP sync — no more `Math.random()` in combat
 - **3D geometry fix**: Tazo discs render as proper flat discs (not rotated cylinders), stakes separated correctly
@@ -476,7 +486,7 @@ tazos battle --seed 42   # Simulate a physics battle
 - Canonical franchise naming (Minimon, Dracobell, Cybermon)
 
 ### v0.1.0 — Initial Launch
-- 349 verified tazos across 3 collections
+- Season 1 franchise foundation across 3 original TTG collections
 - 3D battle arena with physics simulation (Three.js / R3F)
 - Deterministic battle engine
 - 90s Nintendo Power magazine aesthetic

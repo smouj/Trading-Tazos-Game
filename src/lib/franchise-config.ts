@@ -60,5 +60,5 @@ export const FRANCHISE_BY_SLUG: Record<string, FranchiseConfig> = Object.fromEnt
 /** Total canonical Season 1 tazos across all franchises */
 export const TOTAL_PLANNED = FRANCHISES.reduce((sum, f) => sum + f.total, 0)
 
-/** Total canonical Season 1 tazos across all franchises */
+/** Current static Season 1 target; runtime published counts come from /api/stats */
 export const TOTAL_PUBLISHED = FRANCHISES.reduce((sum, f) => sum + f.count, 0)

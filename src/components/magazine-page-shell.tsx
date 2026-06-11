@@ -13,6 +13,7 @@ import { useAuth } from "@/lib/auth-context"
 import { useI18n } from "@/lib/i18n"
 import { sfxEnsureUnlocked } from "@/lib/audio/sfx-engine"
 import LanguageSwitcher from "@/components/ui/language-switcher"
+import { TOTAL_PLANNED } from "@/lib/franchise-config"
 import {
   BookOpen, Swords, BarChart3, ShoppingBag, Disc3,
   Target, Layers, LogOut, Settings, Shield, Coins,
@@ -44,7 +45,7 @@ function GameHUD({ credits, tazoCount }: { credits?: number; tazoCount?: number 
           </span>
         </div>
         <div className="flex items-center gap-3 sm:gap-4">
-          <span className="text-[#1a1a1a]/40">{tazoCount != null ? `${tazoCount}/349` : ""} TAZOS</span>
+          <span className="text-[#1a1a1a]/40">{tazoCount != null ? `${tazoCount}/${TOTAL_PLANNED}` : ""} TAZOS</span>
           <span className="text-[#1a1a1a]/25 text-[7px] sm:text-[8px] tracking-[0.15em]">v0.6.0</span>
         </div>
       </div>

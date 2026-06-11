@@ -7,6 +7,13 @@ const nextConfig: NextConfig = {
     root: __dirname,
   },
 
+  // Force-include packages that static analysis misses
+  experimental: {
+    outputFileTracingIncludes: {
+      "/**/*": ["nodemailer"],
+    },
+  },
+
   // ── Security Headers ──
   async headers() {
     return [

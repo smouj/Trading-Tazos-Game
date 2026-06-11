@@ -56,7 +56,21 @@ mkdir -p .next/standalone/public/tazos-tubes
 
 # Fix DATABASE_URL to VPS path (prevent stale WSL paths in standalone .env)
 # Match ANY path that isn't the correct VPS standalone path
-sed -i 's|DATABASE_URL=.*|DATABASE_URL="file:/home/smouj/apps/ttg/Trading-Tazos-Game/.next/standalone/prisma/dev.db"|' .next/standalone/.env
+sed -i 's|^DATABASE_URL=.*|DATABASE_URL=file:/home/smouj/apps/ttg/Trading-Tazos-Game/.next/standalone/prisma/dev.db|' .next/standalone/.env
+
+# Ensure email (SMTP) env vars are present
+if ! grep -q '^SMTP_HOST=' .next/standalone/.env; then
+  cat >> .next/standalone/.env << 'SMTPEOF'
+# ── Email (SMTP via Hostinger) ──
+SMTP_HOST=smtp.hostinger.com
+SMTP_PORT=465
+SMTP_SECURE=true
+SMTP_USER=support@tradingtazosgame.com
+SMTP_PASS=MqN7Q8icrT22BVDSFs5yRvkDecO0nBmYaIYWSP3Y6253cac1
+MAIL_FROM_NAME=Trading Tazos Game Support
+MAIL_FROM_EMAIL=support@tradingtazosgame.com
+SMTPEOF
+fi
 
 # Copy static assets to standalone (Next.js standalone bug workaround)
 cp -r .next/static/* .next/standalone/.next/static/

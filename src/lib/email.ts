@@ -1,4 +1,5 @@
 import { SITE_CONFIG } from "@/lib/site-config"
+import nodemailer from "nodemailer"
 
 export type EmailTemplateKey =
   | "welcome"
@@ -62,39 +63,155 @@ export function buildEmailVerificationUrl(token: string): string {
 }
 
 export function isTransactionalEmailConfigured(): boolean {
-  return Boolean(process.env.HOSTINGER_EMAIL_API_URL && process.env.HOSTINGER_EMAIL_API_TOKEN)
+  return Boolean(
+    (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) ||
+    (process.env.HOSTINGER_EMAIL_API_URL && process.env.HOSTINGER_EMAIL_API_TOKEN)
+  )
 }
 
+function buildHtmlBody(template: EmailTemplateKey, variables: Record<string, any>): string {
+  const sig = OFFICIAL_EMAIL_SIGNATURE
+  const vars = { ...variables }
+
+  let body = ""
+  switch (template) {
+    case "welcome":
+      body = `
+        <h2>Welcome to ${SITE_CONFIG.name}, ${vars.name || "Trainer"}!</h2>
+        <p>Your account has been created. Start collecting tazos, building decks, and battling.</p>
+        ${vars.emailVerificationUrl ? `<p><a href="${vars.emailVerificationUrl}" style="display:inline-block;padding:10px 20px;background:#E3350D;color:#fff;text-decoration:none;font-weight:bold;border-radius:4px;">Verify Your Email</a></p>` : ""}
+        <p>Or copy this link: ${vars.emailVerificationUrl || ""}</p>
+      `
+      break
+    case "passwordReset":
+      body = `
+        <h2>Password Reset Request</h2>
+        <p>Hi ${vars.name || "Trainer"}, you requested a password reset.</p>
+        <p><a href="${vars.resetUrl}" style="display:inline-block;padding:10px 20px;background:#E3350D;color:#fff;text-decoration:none;font-weight:bold;border-radius:4px;">Reset Your Password</a></p>
+        <p>This link expires in ${vars.expiresIn || "1 hour"}.</p>
+        <p>If you didn't request this, ignore this email.</p>
+      `
+      break
+    case "tradeConfirmation":
+      body = `
+        <h2>Trade Confirmed!</h2>
+        <p>Hi ${vars.name || "Trainer"}, your trade has been processed successfully.</p>
+        <p>${vars.tradeDetails || ""}</p>
+        <p>Check your collection to see your new tazos.</p>
+      `
+      break
+    case "supportAutoReply":
+      body = `
+        <h2>We Received Your Message</h2>
+        <p>Hi ${vars.name || "Trainer"}, thanks for contacting ${SITE_CONFIG.name} Support.</p>
+        <p>We'll get back to you as soon as possible.</p>
+      `
+      break
+  }
+
+  return `
+    <div style="max-width:600px;margin:0 auto;font-family:Arial,sans-serif;color:#1a1a1a;">
+      <div style="background:#1a1a1a;padding:16px;text-align:center;">
+        <h1 style="color:#FFCC00;margin:0;font-size:20px;">${SITE_CONFIG.name}</h1>
+        <p style="color:#fff;margin:4px 0 0;font-size:12px;">${SITE_CONFIG.tagline}</p>
+      </div>
+      <div style="padding:24px;background:#fff;border:2px solid #1a1a1a;">
+        ${body}
+      </div>
+      <div style="padding:16px;background:#f5f5f5;border:2px solid #1a1a1a;border-top:0;">
+        ${sig.html}
+      </div>
+    </div>
+  `
+}
+
+function buildTextBody(template: EmailTemplateKey, variables: Record<string, any>): string {
+  const sig = OFFICIAL_EMAIL_SIGNATURE
+  const vars = { ...variables }
+
+  let body = ""
+  switch (template) {
+    case "welcome":
+      body = `Welcome to ${SITE_CONFIG.name}, ${vars.name || "Trainer"}!\n\nYour account has been created. Verify your email: ${vars.emailVerificationUrl || ""}\n\nStart collecting tazos, building decks, and battling at ${SITE_URL}`
+      break
+    case "passwordReset":
+      body = `Hi ${vars.name || "Trainer"},\n\nReset your password: ${vars.resetUrl}\n\nThis link expires in ${vars.expiresIn || "1 hour"}.\n\nIf you didn't request this, ignore this email.`
+      break
+    case "tradeConfirmation":
+      body = `Hi ${vars.name || "Trainer"},\n\nYour trade has been processed.\n${vars.tradeDetails || ""}\n\nCheck your collection: ${SITE_URL}/app/collection`
+      break
+    case "supportAutoReply":
+      body = `Hi ${vars.name || "Trainer"},\n\nWe received your message. ${SITE_CONFIG.name} Support will get back to you soon.\n\n${SITE_URL}`
+      break
+  }
+
+  return `${body}\n\n---\n${sig.text}`
+}
+
+/** Primary: SMTP via nodemailer. Fallback: Hostinger HTTP API. */
 export async function sendTransactionalEmail(input: SendEmailInput): Promise<SendEmailResult> {
+  const template = EMAIL_TEMPLATES[input.template]
+  const vars = {
+    siteName: SITE_CONFIG.name,
+    siteUrl: SITE_URL,
+    supportEmail: SITE_CONFIG.supportEmail,
+    tagline: SITE_CONFIG.tagline,
+    ...input.variables,
+  }
+
+  // ── SMTP (primary) ──
+  const smtpHost = process.env.SMTP_HOST
+  const smtpUser = process.env.SMTP_USER
+  const smtpPass = process.env.SMTP_PASS
+
+  if (smtpHost && smtpUser && smtpPass) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: smtpHost,
+        port: parseInt(process.env.SMTP_PORT || "465"),
+        secure: process.env.SMTP_SECURE !== "false",
+        auth: { user: smtpUser, pass: smtpPass },
+      })
+
+      await transporter.sendMail({
+        from: { name: FROM_NAME, address: FROM_EMAIL },
+        replyTo: SITE_CONFIG.supportEmail,
+        to: input.to,
+        subject: template.defaultSubject,
+        html: buildHtmlBody(input.template, vars),
+        text: buildTextBody(input.template, vars),
+      })
+
+      console.log(`[email] ${input.template} sent to ${input.to} via SMTP`)
+      return { sent: true }
+    } catch (error) {
+      console.error(`[email] ${input.template} SMTP failed:`, error)
+      // Fall through to HTTP API
+    }
+  }
+
+  // ── HTTP API (fallback) ──
   const endpoint = process.env.HOSTINGER_EMAIL_API_URL
   const token = process.env.HOSTINGER_EMAIL_API_TOKEN
 
   if (!endpoint || !token) {
-    console.warn(`[email] skipped ${input.template}: Hostinger email API is not configured`)
+    console.warn(`[email] skipped ${input.template}: SMTP failed and HTTP API is not configured`)
     return { sent: false, reason: "not_configured" }
   }
 
-  const template = EMAIL_TEMPLATES[input.template]
   const templateId = process.env[template.envTemplateId]
   const payload = {
     template: template.hostingerName,
     templateId,
     subject: template.defaultSubject,
-    from: {
-      name: FROM_NAME,
-      email: FROM_EMAIL,
-    },
+    from: { name: FROM_NAME, email: FROM_EMAIL },
     replyTo: SITE_CONFIG.supportEmail,
     to: input.to,
     variables: {
-      siteName: SITE_CONFIG.name,
-      siteUrl: SITE_URL,
-      supportEmail: SITE_CONFIG.supportEmail,
-      tagline: SITE_CONFIG.tagline,
+      ...vars,
       signatureName: OFFICIAL_EMAIL_SIGNATURE.name,
       signatureHtml: OFFICIAL_EMAIL_SIGNATURE.html,
       signatureText: OFFICIAL_EMAIL_SIGNATURE.text,
-      ...input.variables,
     },
   }
 
@@ -110,13 +227,14 @@ export async function sendTransactionalEmail(input: SendEmailInput): Promise<Sen
 
     if (!response.ok) {
       const body = await response.text().catch(() => "")
-      console.error(`[email] ${input.template} failed: ${response.status} ${body.slice(0, 300)}`)
+      console.error(`[email] ${input.template} HTTP API failed: ${response.status} ${body.slice(0, 300)}`)
       return { sent: false, reason: "request_failed" }
     }
 
+    console.log(`[email] ${input.template} sent to ${input.to} via HTTP API`)
     return { sent: true }
   } catch (error) {
-    console.error(`[email] ${input.template} failed:`, error)
+    console.error(`[email] ${input.template} HTTP API failed:`, error)
     return { sent: false, reason: "request_failed" }
   }
 }

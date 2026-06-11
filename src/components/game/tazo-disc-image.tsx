@@ -84,15 +84,6 @@ export default function TazoDiscImage({
   const effectiveFinish = finish || "normal"
   const effectiveVariant = creatureVariant || "standard"
 
-  // Per-franchise scale: some franchises have creatures with more transparent
-  // padding in source art. Boost scale so they fill the disc equally.
-  const franchiseBoost: Record<string, number> = {
-    minimon: 1.0,    // already fills ~42% — looks great
-    dracobell: 1.35, // ~29% fill → needs +35% zoom
-    cybermon: 1.45,  // ~25% fill → needs +45% zoom
-  }
-  const discScale = 1.14 * (franchiseSlug ? (franchiseBoost[franchiseSlug] || 1.0) : 1.0)
-
   // Resolve which image to show for shiny
   const displaySrc = (effectiveVariant === "shiny" && shinyImageUrl) ? shinyImageUrl : src
   const renderImage = displaySrc && !imgError
@@ -142,7 +133,7 @@ export default function TazoDiscImage({
             style={{
               objectFit: "cover",
               display: "block",
-              transform: `scale(${isBack ? 1.03 * scale : discScale * scale})`,
+              transform: `scale(${isBack ? 1.03 * scale : 1.14 * scale})`,
               transformOrigin: "center center",
               opacity: imgLoaded ? 1 : 0,
               transition: "opacity 0.2s ease-in",

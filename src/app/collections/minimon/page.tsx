@@ -51,17 +51,21 @@ export default function MinimonCollectionPage() {
         </div>
 
         {/* ── Franchise Banner ── */}
-        <div className="border-3 border-[#1a1a1a] bg-gradient-to-br from-yellow-50 to-amber-100 p-6 mb-8 shadow-[6px_6px_0px_#1a1a1a] overflow-hidden relative">
-          <div className="flex items-center gap-6">
+        <div className="border-3 border-[#1a1a1a] bg-gradient-to-br from-yellow-50 to-amber-100 p-6 sm:p-8 mb-8 shadow-[6px_6px_0px_#1a1a1a] overflow-hidden relative">
+          {/* Background wallpaper from franchise back art */}
+          <div className="absolute inset-0 opacity-[0.08] pointer-events-none">
+            <img src="/tazos-artgen/backs/minimon-back.png" alt="" className="w-full h-full object-cover" />
+          </div>
+          <div className="relative z-10 flex items-center gap-6">
             <div className="w-24 h-24 sm:w-32 sm:h-32 border-3 border-[#1a1a1a] bg-white rounded-full shadow-[4px_4px_0px_#1a1a1a] flex items-center justify-center shrink-0 overflow-hidden">
-              <img src="/tazos-artgen/backs/minimon-back.png" alt="Minimon Logo" className="w-full h-full object-contain" />
+              <img src="/tazos-artgen/backs/minimon-back.png" alt="Minimon Logo" className="w-full h-full object-contain p-2" />
             </div>
             <div>
-              <h2 className="text-lg sm:text-xl font-black uppercase text-[#1a1a1a] tracking-wider">Minimon Logo</h2>
-              <p className="text-xs font-bold text-[#1a1a1a]/50 mt-1">Official franchise insignia from the Luminara series</p>
+              <h2 className="text-lg sm:text-xl font-black uppercase text-[#1a1a1a] tracking-wider">Franchise Insignia</h2>
+              <p className="text-xs font-bold text-[#1a1a1a]/50 mt-1 leading-relaxed max-w-md">Official Pathfinder seal — bearing the mark of Luminara, the land where Life Sparks awaken and Minimon are born.</p>
               <div className="flex gap-2 mt-3">
-                {["#FFCC00","#FF6B00","#00A1E9","#E3350D","#4CAF50"].map(c => (
-                  <div key={c} className="w-5 h-5 border-2 border-[#1a1a1a] rounded-full" style={{backgroundColor:c}} />
+                {["#FFCC00","#FF8C00","#4CAF50","#E3350D","#3B82F6"].map(c => (
+                  <div key={c} className="w-5 h-5 border-2 border-[#1a1a1a] rounded-full" style={{backgroundColor:c}} title="Region color" />
                 ))}
               </div>
             </div>

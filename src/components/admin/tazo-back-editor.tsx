@@ -316,9 +316,9 @@ function BackNumberBadge({ number }: { number: string }) {
 
 // ── Franchise info for back text ──
 const FRANCHISE_INFO: Record<string, { name: string; series: string; year: string }> = {
-  minimon: { name: "MINIMON", series: "SERIES 1", year: "© 2000 MATUTANO" },
-  cybermon: { name: "CYBERMON", series: "SERIES 1", year: "© 2000 MATUTANO" },
-  dracobell: { name: "DRACOBELL", series: "SERIES 1", year: "© 2000 MATUTANO" },
+  minimon: { name: "MINIMON", series: "SEASON 1", year: "© 2026 TAZOFORGE" },
+  cybermon: { name: "CYBERMON", series: "SEASON 1", year: "© 2026 TAZOFORGE" },
+  dracobell: { name: "DRACOBELL", series: "SEASON 1", year: "© 2026 TAZOFORGE" },
 }
 
 // ── Props ──

@@ -6,8 +6,8 @@ import { TazoCollectionShowcase } from "../_tazo-showcase"
 
 export const metadata: Metadata = {
   title: "Cybermon Collection",
-  description: "Browse the Cybermon tazo collection — digital companions from the Neon Grid with complex evolution trees. 48 tazos with high precision combat stats.",
-  openGraph: { title: "Cybermon Collection — Digital Companions | Trading Tazos Game", description: "48 Cybermon tazos from the Neon Grid. Living code, emotional links, and shifting forms." },
+  description: "Browse the Cybermon tazo collection — digital companions from the Neon Grid with complex evolution through Shifts. 50 tazos with high precision combat stats.",
+  openGraph: { title: "Cybermon Collection — Digital Companions | Trading Tazos Game", description: "50 Cybermon tazos from the Neon Grid. Living code, emotional links, and shifting forms." },
 }
 
 const cybermon = FRANCHISE_BY_SLUG.cybermon
@@ -53,17 +53,21 @@ export default function CybermonCollectionPage() {
         </div>
 
         {/* ── Franchise Banner ── */}
-        <div className="border-3 border-[#1a1a1a] bg-gradient-to-br from-cyan-100 to-blue-200 p-6 mb-8 shadow-[6px_6px_0px_#1a1a1a] overflow-hidden relative">
-          <div className="flex items-center gap-6">
+        <div className="border-3 border-[#1a1a1a] bg-gradient-to-br from-cyan-100 to-blue-200 p-6 sm:p-8 mb-8 shadow-[6px_6px_0px_#1a1a1a] overflow-hidden relative">
+          {/* Background wallpaper from franchise back art */}
+          <div className="absolute inset-0 opacity-[0.08] pointer-events-none">
+            <img src="/tazos-artgen/backs/cybermon-back.png" alt="" className="w-full h-full object-cover" />
+          </div>
+          <div className="relative z-10 flex items-center gap-6">
             <div className="w-24 h-24 sm:w-32 sm:h-32 border-3 border-[#1a1a1a] bg-white rounded-full shadow-[4px_4px_0px_#1a1a1a] flex items-center justify-center shrink-0 overflow-hidden">
-              <img src="/tazos-artgen/backs/cybermon-back.png" alt="Cybermon Logo" className="w-full h-full object-contain" />
+              <img src="/tazos-artgen/backs/cybermon-back.png" alt="Cybermon Logo" className="w-full h-full object-contain p-2" />
             </div>
             <div>
-              <h2 className="text-lg sm:text-xl font-black uppercase text-[#1a1a1a] tracking-wider">Cybermon Insignia</h2>
-              <p className="text-xs font-bold text-[#1a1a1a]/50 mt-1">Official protocol seal from the Neon Grid series</p>
+              <h2 className="text-lg sm:text-xl font-black uppercase text-[#1a1a1a] tracking-wider">Protocol Seal</h2>
+              <p className="text-xs font-bold text-[#1a1a1a]/50 mt-1 leading-relaxed max-w-md">The digital insignia of the Neon Grid — a signal mark that identifies living code, Soul Protocols, and Cybermon across all sectors.</p>
               <div className="flex gap-2 mt-3">
                 {["#00A1E9","#00B4D8","#7B2D8E","#E3350D","#00FF88"].map(c => (
-                  <div key={c} className="w-5 h-5 border-2 border-[#1a1a1a] rounded-full" style={{backgroundColor:c}} />
+                  <div key={c} className="w-5 h-5 border-2 border-[#1a1a1a] rounded-full" style={{backgroundColor:c}} title="Sector color" />
                 ))}
               </div>
             </div>

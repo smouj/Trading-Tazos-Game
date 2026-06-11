@@ -773,8 +773,8 @@ function SeriesPreviewHome({ onNavigate }: { onNavigate: (page: PageId) => void 
   }, [])
 
   const series = [
-    { name: "Minimon", slug: "minimon", count: stats?.byFranchise?.Minimon ?? 50, planned: FRANCHISE_BY_SLUG.minimon.total, year: 2026, color: "#FFCC00", desc: "Natural creatures born from Vital Sparks in Luminara. They grow through trust, purpose, and lineage awakening." },
-    { name: "Dracobell", slug: "dracobell", count: stats?.byFranchise?.Dracobell ?? 50, planned: FRANCHISE_BY_SLUG.dracobell.total, year: 2026, color: "#FF6B00", desc: "Martial fighters from Bellora. Roar Aura, clan discipline, Bell Shards, and Crown Bell mastery." },
+    { name: "Minimon", slug: "minimon", count: stats?.byFranchise?.Minimon ?? 50, planned: FRANCHISE_BY_SLUG.minimon.total, year: 2026, color: "#FFCC00", desc: "Natural creatures born from Life Sparks in Luminara. Pathfinders form Bond Marks with them, and each one grows through Blooming." },
+    { name: "Dracobell", slug: "dracobell", count: stats?.byFranchise?.Dracobell ?? 50, planned: FRANCHISE_BY_SLUG.dracobell.total, year: 2026, color: "#FF6B00", desc: "Martial fighters from Bellora. Roar Aura, clan discipline, Bell Shards, and Dragon Bell mastery." },
     { name: "Cybermon", slug: "cybermon", count: stats?.byFranchise?.Cybermon ?? 49, planned: FRANCHISE_BY_SLUG.cybermon.total, year: 2026, color: "#00B4D8", desc: "Living digital monsters from the Neon Grid. Soul Protocols shift through patches, surges, cores, and prime forms." },
   ]
 
@@ -916,21 +916,21 @@ const { minimon: fMinimon, dracobell: fDracobell, cybermon: fCybermon } = FRANCH
 const COLLECTION_DATA = [
   {
     name: "Minimon", slug: "minimon", count: fMinimon.count, total: fMinimon.total, year: 2026, origin: "TazoForge", color: "#FFCC00",
-    categories: ["Luma", "Ember", "Bubble", "Thornleaf", "Stormbud"],
-    desc: "Minimon awaken when Vital Sparks settle into natural forms across Luminara. Pathfinders do not capture them; they follow signs, build trust, and help each lineage remember its next form.",
-    highlights: ["Vital Spark origin", "Pathfinder bonds", `${fMinimon.total} Season 1 tazos`, "Lineage awakening"]
+    categories: ["Tiny Form", "Trail Form", "Guardian Form", "Mythic Bloom"],
+    desc: "Minimon awaken when Life Sparks settle into natural forms across Luminara. Pathfinders don't capture them — they form Bond Marks, travel together, and help each lineage unlock its next Bloom.",
+    highlights: ["Life Spark origin", "Pathfinder Bond Marks", `${fMinimon.total} Season 1 tazos`, "Blooming evolution"]
   },
   {
     name: "Dracobell", slug: "dracobell", count: fDracobell.count, total: fDracobell.total, year: 2026, origin: "TazoForge", color: "#FF6B00",
-    categories: ["Base Phase", "Resonant", "Ascendant", "Overchime", "Crown Bell"],
-    desc: "Dracobell warriors train in Bellora, where combat is rhythm, breath, discipline, and will. Their Roar Aura resonates through phases as Bell Shards reshape the fate of the clans.",
-    highlights: ["Roar Aura resonance", "Bell Shard conflict", `${fDracobell.total} Season 1 tazos`, "Crown Bell legends"]
+    categories: ["Base Fighter", "Aura Release", "Clan Ascension", "Champion Ascension", "Dragon Bell"],
+    desc: "Dracobell warriors train in Bellora, where combat is rhythm, breath, discipline, and will. Their Roar Aura fuels Ascensions as Bell Shards reshape the fate of the clans.",
+    highlights: ["Roar Aura resonance", "Bell Shard conflict", `${fDracobell.total} Season 1 tazos`, "Grand Bell Tournament"]
   },
   {
     name: "Cybermon", slug: "cybermon", count: fCybermon.count, total: fCybermon.total, year: 2026, origin: "TazoForge", color: "#00B4D8",
-    categories: ["Boot", "Patch", "Surge", "Core", "Prime"],
-    desc: "Cybermon are living digital monsters with Soul Protocols, born from memory, signals, lost files, and errors that learned to breathe inside the Neon Grid.",
-    highlights: ["Soul Protocol identity", "Blackout Drift threat", `${fCybermon.total} Season 1 tazos`, "Core Gate mystery"]
+    categories: ["Boot Form", "Link Form", "Overdrive", "Prime Form", "Omega Patch"],
+    desc: "Cybermon are living digital creatures with Soul Protocols, born from memory, signals, lost files, and errors that learned to breathe inside the Neon Grid. Linkers synchronize with them through the Link Pulse.",
+    highlights: ["Soul Protocol identity", "Null Signal threat", `${fCybermon.total} Season 1 tazos`, "Kernel Tower mystery"]
   },
 ]
 
@@ -1756,72 +1756,76 @@ const COLLECTION_DETAILS: Record<string, {
   minimon: {
     name: "Minimon", count: FRANCHISE_BY_SLUG.minimon.count, total: FRANCHISE_BY_SLUG.minimon.total, year: 2026, origin: "TazoForge", color: "#FFCC00",
     world: "Luminara",
-    worldDesc: "Luminara is a living territory where nature stores memory. Forests, coasts, caves, mountains, ruins, clouds, and dawn light can gather small natural energies called Vital Sparks. When a Vital Spark finds a stable shape, a Minimon awakens.",
+    worldDesc: "Luminara is a luminous land of colorful regions, winding paths, small villages, natural laboratories, and places where elemental energy takes shape. It is not medieval or futuristic — it is a world of adventure, discovery, and wonder. Centuries ago, Luminara was filled with an invisible energy called Life Spark. This energy flowed through trees, rivers, caves, clouds, and mountains. When Life Spark accumulated in one place for a long time, a Minimon was born.",
     sections: [
-      { title: "Signs of Discovery", items: [
-        { name: "Glowing leaf", detail: "A leaf shines at night near a sleeping lineage" },
-        { name: "Reverse bubbles", detail: "Water bubbles drift against the wind" },
-        { name: "Soft heartbeat stones", detail: "Round stones pulse when a rock lineage is close" },
-        { name: "Answering clouds", detail: "Low clouds respond to song and movement" },
-        { name: "Dawn trails", detail: "Small traces of light mark a Pathfinder route" },
-        { name: "Ancient nodes", detail: "Old Luminara Nodes reveal forgotten forms" },
+      { title: "Blooming Phases", items: [
+        { name: "Tiny Form", detail: "Small, tender, and fragile — the first expression of a Life Spark" },
+        { name: "Trail Form", detail: "Adventurous with more defined abilities and purpose" },
+        { name: "Guardian Form", detail: "Strong, protective, and mature — bonded deeply to a Pathfinder" },
+        { name: "Mythic Bloom", detail: "Legendary, rare, nearly one-of-a-kind — Luminara's highest form" },
       ]},
-      { title: "Lineage Awakening", items: [
-        { name: "First form", detail: "Small, expressive, and tied to a single Vital Spark" },
-        { name: "Middle form", detail: "Purpose becomes clearer through travel and trust" },
-        { name: "Guardian form", detail: "Protective, majestic, and linked to a restored node" },
-        { name: "Singular mythic", detail: "Ancient light remembered by Luminara itself" },
+      { title: "Regions of Luminara", items: [
+        { name: "Sunnyvale Fields", detail: "Rolling fields, farms, small villages — Normal, Solar, Plant types" },
+        { name: "Mossdeep Woods", detail: "Ancient forests with deep roots — Plant, Insect, Earth, Mystic" },
+        { name: "Bluefin Coast", detail: "Beaches, reefs, lighthouses — Water, Wind, Soft Ice" },
+        { name: "Cinderpop Hills", detail: "Warm hills and volcanic caves — Fire, Rock, Metal" },
+        { name: "Stormtail Ridge", detail: "Storm-swept mountain peaks — Electric, Flying, Lesser Dragon" },
+        { name: "Aurora Summit", detail: "Legendary endgame region — Rare forms and guardians" },
       ]},
     ],
-    features: ["Pathfinders discover, not capture", "Natural lineages and biomes", "Luminara Nodes are fading", "Gentle adventure and growth"],
-    motto: "Find the spark. Awaken the lineage. Protect Luminara.",
+    features: ["Pathfinders discover, not capture", "Life Spark bonds and Blooming evolution", "Luminara Nodes connect regions", "The Stillness threatens growth"],
+    motto: "Find them. Bond with them. Watch them bloom.",
     cta: `Browse All ${FRANCHISE_BY_SLUG.minimon.count} Minimon Tazos`,
   },
   dracobell: {
     name: "Dracobell", count: FRANCHISE_BY_SLUG.dracobell.count, total: FRANCHISE_BY_SLUG.dracobell.total, year: 2026, origin: "TazoForge", color: "#FF6B00",
     world: "Bellora",
-    worldDesc: "Bellora is a world of suspended temples, sonic mountains, tournament arenas, and martial clans. Combat is not empty violence: it is rhythm, breath, discipline, and will. Every fighter carries Roar Aura, an inner resonance that vibrates like an ancient bell.",
+    worldDesc: "Bellora is a world of combat regions governed by clans. Each clan protects a technique, a philosophy, and a fragment of an ancient sonic relic — the Dracobell. The Dracobell is a legendary bell forged from meteorite metal and ancient dragon scales. When the complete bell rings, it can awaken the true potential of any warrior. But it was shattered during a war between clans. Its fragments — the Bell Shards — are now scattered across Bellora.",
     sections: [
-      { title: "Resonance System", items: [
-        { name: "Base Phase", detail: "Initial discipline, stance, breath, and first style" },
-        { name: "Resonant Phase", detail: "Roar Aura begins to vibrate and sharpen timing" },
-        { name: "Ascendant Phase", detail: "The clan style becomes visible through aura and marks" },
-        { name: "Overchime", detail: "Extreme, unstable resonance for decisive tournament moments" },
-        { name: "Crown Bell", detail: "Legendary mastery when will, technique, and purpose align" },
+      { title: "Ascension Phases", items: [
+        { name: "Base Fighter", detail: "The warrior's normal form — discipline, stance, breath" },
+        { name: "Aura Release", detail: "First release of inner Roar Aura energy" },
+        { name: "Clan Ascension", detail: "Form bonded to the clan, its technique, and its Bell Shard" },
+        { name: "Champion Ascension", detail: "High-tournament form — earned through combat" },
+        { name: "Dragon Bell", detail: "Legendary form linked to the complete Dracobell" },
       ]},
-      { title: "Bell Shard Conflict", items: [
-        { name: "Restore the Great Bell", detail: "Some clans seek balance after the central bell fractured" },
-        { name: "Claim the rhythm", detail: "Other clans want shards to impose their own order" },
-        { name: "Hidden suspicion", detail: "The bell may have sealed an older resonance" },
-        { name: "Tournament destiny", detail: "Rivalries decide which sound Bellora follows" },
+      { title: "Clans of Bellora", items: [
+        { name: "Ember Fist", detail: "Ember Valley — Fire, direct attack" },
+        { name: "Storm Fang", detail: "Storm Peaks — Lightning, speed" },
+        { name: "Iron Horn", detail: "Iron Plateau — Defense, endurance" },
+        { name: "Frost Scale", detail: "Frost Temple — Control, precision" },
+        { name: "Shadow Claw", detail: "Shadow Basin — Counterattack, stealth" },
+        { name: "Golden Roar", detail: "Golden Shrine — Aura, mastery" },
       ]},
     ],
-    features: ["Roar Aura phases", "Clan discipline and rivalries", "Bell Shards shape the world conflict", "Crown Bell legendary states"],
-    motto: "Feel the resonance. Break your limits. Make Bellora ring.",
+    features: ["Roar Aura fuels Ascension", "Bell Shards shape the world conflict", "Grand Bell Tournament decides fate", "The Silent Clan opposes the bell's restoration"],
+    motto: "Train hard. Ring loud. Rise beyond.",
     cta: `Browse All ${FRANCHISE_BY_SLUG.dracobell.count} Dracobell Tazos`,
   },
   cybermon: {
     name: "Cybermon", count: FRANCHISE_BY_SLUG.cybermon.count, total: FRANCHISE_BY_SLUG.cybermon.total, year: 2026, origin: "TazoForge", color: "#00B4D8",
     world: "The Neon Grid",
-    worldDesc: "The Neon Grid is a dimension of data, memory, lost signals, fossil files, and errors that learned to breathe. Cybermon are not robots or ordinary programs: each one carries a Soul Protocol, a living digital signature that defines instinct, form, behavior, and cyber-evolution.",
+    worldDesc: "The Neon Grid is a hidden digital dimension behind all networks. It is not simply the internet — it is a living dimension formed by forgotten data, lost signals, ancient code, abandoned games, machine memories, and protocols that developed consciousness. During the Awakening Upload, millions of data fragments mixed with human emotions. That fusion produced something unexpected: code with instinct. The first Cybermon were not created — they awakened on their own.",
     sections: [
-      { title: "Cyber-Evolution", items: [
-        { name: "Boot Form", detail: "First stable startup of a Soul Protocol" },
-        { name: "Patch Form", detail: "Repaired form with cleaner modules and survival fixes" },
-        { name: "Surge Form", detail: "Controlled overload, faster and more aggressive" },
-        { name: "Core Form", detail: "Open core state that can alter nearby data" },
-        { name: "Prime Form", detail: "Superior protocol with near-autonomous Grid presence" },
-        { name: "Omega Patch", detail: "Legendary anomaly or maximum restoration" },
+      { title: "Shift Phases", items: [
+        { name: "Boot Form", detail: "First stable startup — newly activated Soul Protocol" },
+        { name: "Link Form", detail: "Form synchronized with a human Linker via Link Pulse" },
+        { name: "Overdrive", detail: "Temporary combat overclock — faster, more aggressive" },
+        { name: "Prime Form", detail: "Full protocol unlocked — near-autonomous Grid presence" },
+        { name: "Corrupt", detail: "Form damaged by Null Signal — dangerous but powerful" },
+        { name: "Omega Patch", detail: "Restored after overcoming corruption — maximum restoration" },
       ]},
-      { title: "Grid Crisis", items: [
-        { name: "Blackout Drift", detail: "Dead data erases routes, names, memory, and bodies" },
-        { name: "Core Gates", detail: "Master gates that hold the Neon Grid together" },
-        { name: "Linkers", detail: "Humans who synchronize without treating Cybermon as machines" },
-        { name: "Ancient protocols", detail: "Old executions that some legends exist to prevent" },
+      { title: "Sectors of the Neon Grid", items: [
+        { name: "Boot Fields", detail: "Starting zone: stable, simple code — Basic Cybermon" },
+        { name: "Pixel Ruins", detail: "Ruins of ancient games and lost systems — Pixel, Glitch" },
+        { name: "Volt Highway", detail: "Highways of pure electricity — Volt, Speed, Signal" },
+        { name: "Firewall Citadel", detail: "Fortified defensive stronghold — Armor, Shield, Core" },
+        { name: "Data Ocean", detail: "Endless sea of flowing information — Aqua-data, Memory" },
+        { name: "Kernel Tower", detail: "The core of the entire digital world — Advanced forms" },
       ]},
     ],
-    features: ["Living digital monsters, not robots", "Organic circuits and glowing cores", "Blackout Drift corruption", "Core Gate restoration"],
-    motto: "Sync the core. Break the error. Awaken the protocol.",
+    features: ["Living digital creatures, not robots", "Soul Protocols as digital identity", "Null Signal corrupts into Null Shells", "Linkers synchronize through Link Pulse"],
+    motto: "Log in. Link up. Break the Null.",
     cta: `Browse All ${FRANCHISE_BY_SLUG.cybermon.count} Cybermon Tazos`,
   },
 }

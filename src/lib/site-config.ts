@@ -30,7 +30,7 @@ export const SITE_CONFIG = {
       year: 2026,
       realm: "Luminara",
       description:
-        "Natural creatures born from Vital Sparks in the luminous realm of Luminara. They grow through trust, purpose, and lineage awakening.",
+        "Natural creatures born from Life Sparks in the luminous realm of Luminara. Pathfinders form Bond Marks with them, and each one grows through the Blooming process.",
     },
     {
       id: "dracobell",
@@ -41,7 +41,7 @@ export const SITE_CONFIG = {
       year: 2026,
       realm: "Bellora",
       description:
-        "Martial fighters from the Bellora clan lands. Roar Aura, clan discipline, Bell Shards, and Crown Bell mastery fuel their fighting spirit.",
+        "Martial fighters from the Bellora clan lands. Roar Aura, clan discipline, Bell Shards, and Dragon Bell mastery fuel their fighting spirit.",
     },
     {
       id: "cybermon",

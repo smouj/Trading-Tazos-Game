@@ -81,17 +81,21 @@ export default function DracobellCollectionPage() {
         </div>
 
         {/* ── Franchise Banner ── */}
-        <div className="border-3 border-[#1a1a1a] bg-gradient-to-br from-orange-100 to-red-100 p-6 mb-8 shadow-[6px_6px_0px_#1a1a1a] overflow-hidden relative">
-          <div className="flex items-center gap-6">
+        <div className="border-3 border-[#1a1a1a] bg-gradient-to-br from-orange-100 to-red-100 p-6 sm:p-8 mb-8 shadow-[6px_6px_0px_#1a1a1a] overflow-hidden relative">
+          {/* Background wallpaper from franchise back art */}
+          <div className="absolute inset-0 opacity-[0.08] pointer-events-none">
+            <img src="/tazos-artgen/backs/dracobell-back.png" alt="" className="w-full h-full object-cover" />
+          </div>
+          <div className="relative z-10 flex items-center gap-6">
             <div className="w-24 h-24 sm:w-32 sm:h-32 border-3 border-[#1a1a1a] bg-white rounded-full shadow-[4px_4px_0px_#1a1a1a] flex items-center justify-center shrink-0 overflow-hidden">
-              <img src="/tazos-artgen/backs/dracobell-back.png" alt="Dracobell Logo" className="w-full h-full object-contain" />
+              <img src="/tazos-artgen/backs/dracobell-back.png" alt="Dracobell Logo" className="w-full h-full object-contain p-2" />
             </div>
             <div>
-              <h2 className="text-lg sm:text-xl font-black uppercase text-[#1a1a1a] tracking-wider">Dracobell Insignia</h2>
-              <p className="text-xs font-bold text-[#1a1a1a]/50 mt-1">Official clan crest from the Bellora series</p>
+              <h2 className="text-lg sm:text-xl font-black uppercase text-[#1a1a1a] tracking-wider">Clan Crest</h2>
+              <p className="text-xs font-bold text-[#1a1a1a]/50 mt-1 leading-relaxed max-w-md">The insignia carried by warriors of Bellora — forged from meteorite metal and dragon scales, bearing the mark of the shattered Dracobell.</p>
               <div className="flex gap-2 mt-3">
                 {["#FF6B00","#E3350D","#FFCC00","#1a1a1a","#7B2D8E"].map(c => (
-                  <div key={c} className="w-5 h-5 border-2 border-[#1a1a1a] rounded-full" style={{backgroundColor:c}} />
+                  <div key={c} className="w-5 h-5 border-2 border-[#1a1a1a] rounded-full" style={{backgroundColor:c}} title="Clan color" />
                 ))}
               </div>
             </div>

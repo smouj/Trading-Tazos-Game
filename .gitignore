@@ -113,3 +113,10 @@ scripts/generate_tazo_art.py
 # VPS-specific (not in repo)
 prisma/tazo-layouts.json
 prisma/dev.db.bak.*
+
+# Generated assets (large, regenerated via pipeline)
+public/tazos-backs/
+public/tazos-base/
+public/tazos-generated/
+public/tazos-artgen/
+public/tazos-tubes/

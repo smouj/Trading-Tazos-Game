@@ -6,8 +6,8 @@ import { TazoCollectionShowcase } from "../_tazo-showcase"
 
 export const metadata: Metadata = {
   title: "Cybermon Collection",
-  description: "Browse the Cybermon tazo collection — 160 digital companions in cap format from Magic Box 2000. Complex evolution trees and the highest precision stats in the game.",
-  openGraph: { title: "Cybermon Collection — Digital Companions | Trading Tazos Game", description: "160 Cybermon tazos with complex evolution trees. Highest precision stats, cap format, Magic Box 2000." },
+  description: "Browse the Cybermon tazo collection — digital companions from the Neon Grid with complex evolution trees. 48 tazos with high precision combat stats.",
+  openGraph: { title: "Cybermon Collection — Digital Companions | Trading Tazos Game", description: "48 Cybermon tazos from the Neon Grid. Living code, emotional links, and shifting forms." },
 }
 
 const cybermon = FRANCHISE_BY_SLUG.cybermon
@@ -49,7 +49,25 @@ export default function CybermonCollectionPage() {
         <div className="flex flex-wrap items-center gap-3 mb-8">
           <span className="text-5xl font-black text-[#1a1a1a]">{cybermon.count}</span>
           <span className="text-lg font-bold text-[#1a1a1a]/40">of {cybermon.total} tazos</span>
-          <span className="text-xs font-bold bg-[#FFCC00] px-2 py-1 border-2 border-[#1a1a1a]">Magic Box 2000</span>
+          <span className="text-xs font-bold bg-[#FFCC00] px-2 py-1 border-2 border-[#1a1a1a]">TazoForge 2026</span>
+        </div>
+
+        {/* ── Franchise Banner ── */}
+        <div className="border-3 border-[#1a1a1a] bg-gradient-to-br from-cyan-100 to-blue-200 p-6 mb-8 shadow-[6px_6px_0px_#1a1a1a] overflow-hidden relative">
+          <div className="flex items-center gap-6">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 border-3 border-[#1a1a1a] bg-white rounded-full shadow-[4px_4px_0px_#1a1a1a] flex items-center justify-center shrink-0 overflow-hidden">
+              <img src="/tazos-artgen/backs/cybermon-back.png" alt="Cybermon Logo" className="w-full h-full object-contain" />
+            </div>
+            <div>
+              <h2 className="text-lg sm:text-xl font-black uppercase text-[#1a1a1a] tracking-wider">Cybermon Insignia</h2>
+              <p className="text-xs font-bold text-[#1a1a1a]/50 mt-1">Official protocol seal from the Neon Grid series</p>
+              <div className="flex gap-2 mt-3">
+                {["#00A1E9","#00B4D8","#7B2D8E","#E3350D","#00FF88"].map(c => (
+                  <div key={c} className="w-5 h-5 border-2 border-[#1a1a1a] rounded-full" style={{backgroundColor:c}} />
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* ── Featured Tazos ── */}
@@ -158,7 +176,7 @@ export default function CybermonCollectionPage() {
             href="/tazos?collection=cybermon"
             className="mag-btn inline-block bg-[#E3350D] text-white border-2 border-[#1a1a1a] px-8 py-4 text-sm font-black uppercase tracking-wider shadow-[6px_6px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_#1a1a1a] transition-all"
           >
-            Browse All 11 Cybermon Tazos
+            Browse All {cybermon.count} Cybermon Tazos
           </Link>
         </div>
 

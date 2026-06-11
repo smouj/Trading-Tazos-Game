@@ -771,16 +771,16 @@ function SeriesPreviewHome({ onNavigate }: { onNavigate: (page: PageId) => void 
   }, [])
 
   const series = [
-    { name: "Minimon", slug: "minimon", count: stats?.byFranchise?.Minimon ?? 10, planned: FRANCHISE_BY_SLUG.minimon.total, year: 2000, color: "#FFCC00", desc: "Creature companions with balanced combat stats — the original collection." },
-    { name: "Dracobell", slug: "dracobell", count: stats?.byFranchise?.Dracobell ?? 10, planned: FRANCHISE_BY_SLUG.dracobell.total, year: 1995, color: "#FF6B00", desc: "Martial arts warriors across 6 categories. Home to the rarest variants." },
-    { name: "Cybermon", slug: "cybermon", count: stats?.byFranchise?.Cybermon ?? 10, planned: FRANCHISE_BY_SLUG.cybermon.total, year: 2000, color: "#00B4D8", desc: "Digital companions in cap format. Highest precision stats." },
+    { name: "Minimon", slug: "minimon", count: stats?.byFranchise?.Minimon ?? 10, planned: FRANCHISE_BY_SLUG.minimon.total, year: 2026, color: "#FFCC00", desc: "Creature companions from Luminara with balanced combat stats — the original collection." },
+    { name: "Dracobell", slug: "dracobell", count: stats?.byFranchise?.Dracobell ?? 10, planned: FRANCHISE_BY_SLUG.dracobell.total, year: 2026, color: "#FF6B00", desc: "Martial arts warriors from Bellora across 6 categories. Home to the rarest variants." },
+    { name: "Cybermon", slug: "cybermon", count: stats?.byFranchise?.Cybermon ?? 10, planned: FRANCHISE_BY_SLUG.cybermon.total, year: 2026, color: "#00B4D8", desc: "Living digital companions from the Neon Grid. Highest precision stats." },
   ]
 
   return (
     <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 pt-2 pb-10">
       <div className="text-center mb-5">
         <h2 className="text-lg sm:text-xl font-black text-[#1a1a1a] uppercase tracking-[0.06em]">3 Series · {stats?.totalTazos ?? 30} Tazos Published</h2>
-        <p className="text-[10px] font-bold text-[#1a1a1a]/30 uppercase tracking-wider">Classic snack toy collections</p>
+        <p className="text-[10px] font-bold text-[#1a1a1a]/30 uppercase tracking-wider">Classic collectible tazo series</p>
       </div>
       <div className="grid sm:grid-cols-3 gap-3 sm:gap-4">
         {series.map(s => {
@@ -913,22 +913,22 @@ const { minimon: fMinimon, dracobell: fDracobell, cybermon: fCybermon } = FRANCH
 
 const COLLECTION_DATA = [
   {
-    name: "Minimon", slug: "minimon", count: fMinimon.count, total: fMinimon.total, year: 2000, origin: "Matutano", color: "#FFCC00",
+    name: "Minimon", slug: "minimon", count: fMinimon.count, total: fMinimon.total, year: 2026, origin: "TazoForge", color: "#FFCC00",
     categories: ["Tazos"],
-    desc: "The original collection that started it all. Creature companions with balanced combat stats — perfect for learning the battle system.",
-    highlights: ["Balanced stat distribution", "Classic creature designs", `${fMinimon.count} of ${fMinimon.total} tazos available`, "Original 2000 Spanish series"]
+    desc: "Creature companions from the luminous world of Luminara. Balanced combat stats — perfect for learning the battle system.",
+    highlights: ["Balanced stat distribution", "Classic creature designs", `${fMinimon.count} of ${fMinimon.total} tazos available`, "From the world of Luminara"]
   },
   {
-    name: "Dracobell", slug: "dracobell", count: fDracobell.count, total: fDracobell.total, year: 1995, origin: "Matutano", color: "#FF6B00",
+    name: "Dracobell", slug: "dracobell", count: fDracobell.count, total: fDracobell.total, year: 2026, origin: "TazoForge", color: "#FF6B00",
     categories: ["Tazos", "Megatazos", "Supertazos Octogonales", "Supertazos Voladores", "Mastertazos", "Holo 3D"],
-    desc: "The most diverse collection with martial arts warriors across 6 categories. Home to the rarest Holo 3D and Mastertazo variants.",
+    desc: "Martial arts warriors from Bellora across 6 categories. Clans, tournaments, and dragon energy — home to the rarest variants.",
     highlights: ["6 unique categories", "Highest average attack stats", `${fDracobell.count} of ${fDracobell.total} tazos available`, "Rare Holo 3D variants"]
   },
   {
-    name: "Cybermon", slug: "cybermon", count: fCybermon.count, total: fCybermon.total, year: 2000, origin: "Magic Box", color: "#00B4D8",
+    name: "Cybermon", slug: "cybermon", count: fCybermon.count, total: fCybermon.total, year: 2026, origin: "TazoForge", color: "#00B4D8",
     categories: ["Caps"],
-    desc: "Digital companions in cap format. High precision stats and extensive evolution trees.",
-    highlights: ["Complex evolution trees", "Highest precision stats", `${fCybermon.count} of ${fCybermon.total} tazos available`, "Original Magic Box 2000 series"]
+    desc: "Living digital companions from the Neon Grid. High precision stats, complex evolution trees, and soul protocols.",
+    highlights: ["Complex evolution trees", "Highest precision stats", `${fCybermon.count} of ${fCybermon.total} tazos available`, "From the Neon Grid"]
   },
 ]
 
@@ -1778,7 +1778,7 @@ const COLLECTION_DETAILS: Record<string, {
   features: string[]; motto: string; cta: string
 }> = {
   minimon: {
-    name: "Minimon", count: FRANCHISE_BY_SLUG.minimon.count, total: FRANCHISE_BY_SLUG.minimon.total, year: 2000, origin: "Matutano", color: "#FFCC00",
+    name: "Minimon", count: FRANCHISE_BY_SLUG.minimon.count, total: FRANCHISE_BY_SLUG.minimon.total, year: 2026, origin: "TazoForge", color: "#FFCC00",
     world: "Luminara",
     worldDesc: "A luminous land of colorful regions, winding paths, small villages, and places where elemental energy takes shape. Centuries ago, Luminara was filled with Life Spark — an invisible energy that flowed through trees, rivers, caves, clouds, and mountains. When Life Spark accumulated in one place long enough, a Minimon was born.",
     sections: [
@@ -1798,12 +1798,12 @@ const COLLECTION_DETAILS: Record<string, {
         { name: "Mythic Bloom", detail: "Legendary, rare, nearly one-of-a-kind" },
       ]},
     ],
-    features: ["Balanced stat distribution", "Classic creature designs", "Original Matutano 2000 series", "Versatile battle strategies"],
+    features: ["Balanced stat distribution", "Classic creature designs", "From the world of Luminara", "Versatile battle strategies"],
     motto: "Find them. Bond with them. Watch them bloom.",
-    cta: "Browse All 10 Minimon Tazos",
+    cta: `Browse All ${FRANCHISE_BY_SLUG.minimon.count} Minimon Tazos`,
   },
   dracobell: {
-    name: "Dracobell", count: FRANCHISE_BY_SLUG.dracobell.count, total: FRANCHISE_BY_SLUG.dracobell.total, year: 1995, origin: "Matutano", color: "#FF6B00",
+    name: "Dracobell", count: FRANCHISE_BY_SLUG.dracobell.count, total: FRANCHISE_BY_SLUG.dracobell.total, year: 2026, origin: "TazoForge", color: "#FF6B00",
     world: "Bellora",
     worldDesc: "A world of combat regions governed by clans. Each clan protects a technique, a philosophy, and a fragment of an ancient sonic relic — the Dracobell. Forged from meteorite metal and dragon scales, the bell was shattered during a war between clans, and its Bell Shards are now scattered across Bellora.",
     sections: [
@@ -1826,10 +1826,10 @@ const COLLECTION_DETAILS: Record<string, {
     ],
     features: ["6 unique categories", "Highest average attack stats", "Rare Holo 3D variants", "Most diverse category system"],
     motto: "Train hard. Ring loud. Rise beyond.",
-    cta: "Browse All 11 Dracobell Tazos",
+    cta: `Browse All ${FRANCHISE_BY_SLUG.dracobell.count} Dracobell Tazos`,
   },
   cybermon: {
-    name: "Cybermon", count: FRANCHISE_BY_SLUG.cybermon.count, total: FRANCHISE_BY_SLUG.cybermon.total, year: 2000, origin: "Magic Box", color: "#00B4D8",
+    name: "Cybermon", count: FRANCHISE_BY_SLUG.cybermon.count, total: FRANCHISE_BY_SLUG.cybermon.total, year: 2026, origin: "TazoForge", color: "#00B4D8",
     world: "The Neon Grid",
     worldDesc: "A hidden digital dimension behind all networks — not simply the internet, but a living dimension formed by forgotten data, lost signals, ancient code, and protocols that developed consciousness. During The Awakening Upload, data fragments mixed with human emotions and produced something unexpected: code with instinct.",
     sections: [
@@ -1850,9 +1850,9 @@ const COLLECTION_DETAILS: Record<string, {
         { name: "Corrupt", detail: "Damaged by dark code — Omega Patch restores it" },
       ]},
     ],
-    features: ["Largest collection — 160 tazos", "Complex evolution trees", "Highest precision stats", "Original Magic Box 2000 series"],
+    features: ["Complex evolution trees", "Highest precision stats", "Soul Protocol transformations", "From the Neon Grid"],
     motto: "Log in. Link up. Break the Null.",
-    cta: "Browse All 11 Cybermon Tazos",
+    cta: `Browse All ${FRANCHISE_BY_SLUG.cybermon.count} Cybermon Tazos`,
   },
 }
 

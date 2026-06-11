@@ -6,8 +6,8 @@ import { TazoCollectionShowcase } from "../_tazo-showcase"
 
 export const metadata: Metadata = {
   title: "Dracobell Collection",
-  description: "Discover the Dracobell tazo collection — 128 martial arts warriors across 6 unique categories from Matutano 1995. Home to rare Holo 3D and Mastertazo variants.",
-  openGraph: { title: "Dracobell Collection — Legendary Warriors | Trading Tazos Game", description: "128 Dracobell tazos across 6 categories. Rare Holo 3D variants, highest attack stats, Matutano 1995." },
+  description: "Discover the Dracobell tazo collection — martial arts warriors from the world of Bellora across 6 unique categories. 50 tazos with rare Holo 3D variants.",
+  openGraph: { title: "Dracobell Collection — Legendary Warriors | Trading Tazos Game", description: "50 Dracobell tazos across 6 categories. Clans, tournaments, dragon energy, and legendary Bell Shards." },
 }
 
 const dracobell = FRANCHISE_BY_SLUG.dracobell
@@ -77,7 +77,25 @@ export default function DracobellCollectionPage() {
         <div className="flex flex-wrap items-center gap-3 mb-8">
           <span className="text-5xl font-black text-[#1a1a1a]">{dracobell.count}</span>
           <span className="text-lg font-bold text-[#1a1a1a]/40">of {dracobell.total} tazos</span>
-          <span className="text-xs font-bold bg-[#FFCC00] px-2 py-1 border-2 border-[#1a1a1a]">Matutano 1995</span>
+          <span className="text-xs font-bold bg-[#FFCC00] px-2 py-1 border-2 border-[#1a1a1a]">TazoForge 2026</span>
+        </div>
+
+        {/* ── Franchise Banner ── */}
+        <div className="border-3 border-[#1a1a1a] bg-gradient-to-br from-orange-100 to-red-100 p-6 mb-8 shadow-[6px_6px_0px_#1a1a1a] overflow-hidden relative">
+          <div className="flex items-center gap-6">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 border-3 border-[#1a1a1a] bg-white rounded-full shadow-[4px_4px_0px_#1a1a1a] flex items-center justify-center shrink-0 overflow-hidden">
+              <img src="/tazos-artgen/backs/dracobell-back.png" alt="Dracobell Logo" className="w-full h-full object-contain" />
+            </div>
+            <div>
+              <h2 className="text-lg sm:text-xl font-black uppercase text-[#1a1a1a] tracking-wider">Dracobell Insignia</h2>
+              <p className="text-xs font-bold text-[#1a1a1a]/50 mt-1">Official clan crest from the Bellora series</p>
+              <div className="flex gap-2 mt-3">
+                {["#FF6B00","#E3350D","#FFCC00","#1a1a1a","#7B2D8E"].map(c => (
+                  <div key={c} className="w-5 h-5 border-2 border-[#1a1a1a] rounded-full" style={{backgroundColor:c}} />
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* ── Featured Tazos ── */}

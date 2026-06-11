@@ -6,8 +6,8 @@ import { TazoCollectionShowcase } from "../_tazo-showcase"
 
 export const metadata: Metadata = {
   title: "Minimon Collection",
-  description: "Explore the original Minimon tazo collection — 61 classic creature companions from Matutano 2000. Balanced stats, nostalgic designs, and the foundation of Trading Tazos Game.",
-  openGraph: { title: "Minimon Collection — The Original Tazos | Trading Tazos Game", description: "61 classic Minimon tazos from Matutano 2000. The collection that started it all." },
+  description: "Explore the Minimon tazo collection — creature companions from Luminara, a world of elemental energy and natural evolution. 50 tazos with balanced combat stats.",
+  openGraph: { title: "Minimon Collection — Creature Companions | Trading Tazos Game", description: "50 Minimon tazos from the world of Luminara. Classic creature designs with balanced combat stats." },
 }
 
 const minimon = FRANCHISE_BY_SLUG.minimon
@@ -47,7 +47,25 @@ export default function MinimonCollectionPage() {
         <div className="flex flex-wrap items-center gap-3 mb-8">
           <span className="text-5xl font-black text-[#1a1a1a]">{minimon.count}</span>
           <span className="text-lg font-bold text-[#1a1a1a]/40">of {minimon.total} tazos</span>
-          <span className="text-xs font-bold bg-[#FFCC00] px-2 py-1 border-2 border-[#1a1a1a]">Matutano 2000</span>
+          <span className="text-xs font-bold bg-[#FFCC00] px-2 py-1 border-2 border-[#1a1a1a]">TazoForge 2026</span>
+        </div>
+
+        {/* ── Franchise Banner ── */}
+        <div className="border-3 border-[#1a1a1a] bg-gradient-to-br from-yellow-50 to-amber-100 p-6 mb-8 shadow-[6px_6px_0px_#1a1a1a] overflow-hidden relative">
+          <div className="flex items-center gap-6">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 border-3 border-[#1a1a1a] bg-white rounded-full shadow-[4px_4px_0px_#1a1a1a] flex items-center justify-center shrink-0 overflow-hidden">
+              <img src="/tazos-artgen/backs/minimon-back.png" alt="Minimon Logo" className="w-full h-full object-contain" />
+            </div>
+            <div>
+              <h2 className="text-lg sm:text-xl font-black uppercase text-[#1a1a1a] tracking-wider">Minimon Logo</h2>
+              <p className="text-xs font-bold text-[#1a1a1a]/50 mt-1">Official franchise insignia from the Luminara series</p>
+              <div className="flex gap-2 mt-3">
+                {["#FFCC00","#FF6B00","#00A1E9","#E3350D","#4CAF50"].map(c => (
+                  <div key={c} className="w-5 h-5 border-2 border-[#1a1a1a] rounded-full" style={{backgroundColor:c}} />
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* ── Featured Tazos ── */}
@@ -144,7 +162,7 @@ export default function MinimonCollectionPage() {
             href="/tazos?collection=minimon"
             className="mag-btn inline-block bg-[#E3350D] text-white border-2 border-[#1a1a1a] px-8 py-4 text-sm font-black uppercase tracking-wider shadow-[6px_6px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_#1a1a1a] transition-all"
           >
-            Browse All 10 Minimon Tazos
+            Browse All {minimon.count} Minimon Tazos
           </Link>
         </div>
 

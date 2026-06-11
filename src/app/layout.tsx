@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     "minimon tazos", "dracobell tazos", "cybermon tazos",
     "collectible game", "physics battle", "digital album", "battle",
     "multiplayer battle", "pvp tazos", "3d battle arena",
-    "90s collectibles", "nostalgia game",
+    "digital collectibles", "skill game",
   ],
   authors: [{ name: "Trading Tazos Game", url: SITE_URL }],
   creator: "Trading Tazos Game",

@@ -231,7 +231,7 @@ export default function AdminPage() {
                 </Link>
 
                 <Link
-                  href="/tazos"
+                  href="/?page=tazos"
                   className="mag-card p-5 border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] group hover:shadow-[2px_2px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all"
                   style={{ background: 'linear-gradient(135deg, #3B4CCA10, #FFCC0010)' }}
                 >

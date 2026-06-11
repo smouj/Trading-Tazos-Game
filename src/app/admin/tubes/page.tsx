@@ -97,9 +97,13 @@ export default function AdminTubesPage() {
 
   if (!isAdmin) {
     return (
-      <div className="py-20 text-center space-y-4">
-        <Shield className="w-16 h-16 text-[#E3350D]/30 mx-auto" />
-        <p className="text-lg font-black text-[#1a1a1a]/40 uppercase tracking-wider">Access Denied</p>
+      <div className="min-h-screen flex items-center justify-center mag-bg">
+        <div className="mag-card p-8 text-center max-w-md mx-4 space-y-4">
+          <Shield className="w-16 h-16 mx-auto text-[#E3350D]" />
+          <h1 className="text-xl font-black uppercase text-[#1a1a1a]">Access Denied</h1>
+          <p className="text-sm font-bold text-[#1a1a1a]/50">This panel is restricted to the developer account.</p>
+          <Link href="/" className="mag-btn inline-block bg-[#E3350D] text-white px-6 py-3 text-xs font-black uppercase tracking-wider border-2 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a]">Back to Home</Link>
+        </div>
       </div>
     )
   }
@@ -112,7 +116,8 @@ export default function AdminTubesPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 py-4 sm:py-6 space-y-6">
+    <div className="min-h-screen mag-bg">
+      <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 py-4 sm:py-6 space-y-6">
       {/* Back + title */}
       <div className="flex items-center gap-3">
         <Link href="/admin" className="mag-btn px-3 py-1.5 text-[10px] font-black uppercase bg-white text-[#1a1a1a] border-2 border-[#1a1a1a]">
@@ -204,6 +209,7 @@ export default function AdminTubesPage() {
           <p className="text-sm font-black text-[#1a1a1a]/20 uppercase">No textures uploaded yet</p>
         </div>
       )}
+      </div>
     </div>
   )
 }

@@ -78,6 +78,22 @@ fi
 # Copy image assets
 cp -r public/tazos-base/* .next/standalone/public/tazos-base/   2>/dev/null || true
 cp -r public/tazos-generated/* .next/standalone/public/tazos-generated/ 2>/dev/null || true
+# Ensure all composites are RGBA (not palette mode)
+python3 -c "
+from PIL import Image
+import os
+B='.next/standalone/public/tazos-generated'
+for d in ['minimon','dracobell','cybermon']:
+    pd=os.path.join(B,d)
+    if not os.path.isdir(pd): continue
+    for f in os.listdir(pd):
+        if not f.endswith('.png') or 'back' in f.lower(): continue
+        fp=os.path.join(pd,f)
+        img=Image.open(fp)
+        if img.mode!='RGBA':
+            img.convert('RGBA').save(fp,'PNG')
+        img.close()
+" 2>/dev/null || echo "  ⚠️ RGBA conversion failed (Pillow missing?)"
 cp -r public/tazos-backs/* .next/standalone/public/tazos-backs/  2>/dev/null || true
 cp -r public/tazos-artgen/* .next/standalone/public/tazos-artgen/  2>/dev/null || true
 

@@ -1,11 +1,12 @@
-import type { Metadata } from 'next'
-import { pageMetadata } from '@/lib/metadata'
+import type { Metadata } from "next"
+import { pageMetadata } from "@/lib/metadata"
 
 export const metadata: Metadata = {
   ...pageMetadata({
-    title: 'Verify Email — Confirm Your Account',
-    description: 'Verify your email address for Trading Tazos Game to secure your account and unlock all features.',
-    path: '/verify-email',
+    title: "Verify Email — Trading Tazos Game",
+    description:
+      "Verify your email address to confirm your Trading Tazos Game account. Email verification unlocks all features including trading and ranked battles.",
+    path: "/verify-email",
   }),
 }
 

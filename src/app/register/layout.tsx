@@ -1,11 +1,14 @@
 import type { Metadata } from "next"
 import { pageMetadata } from "@/lib/metadata"
+import { PAGE_META } from "@/lib/site-config"
+
+const meta = PAGE_META["register"]
 
 export const metadata: Metadata = {
   ...pageMetadata({
-    title: "Create Account — Start Your Collection Free | Trading Tazos Game",
-    description: "Create your free Trading Tazos Game account — get 10 free tazo bags, build collections, enter the 3D battle arena, and rise through the leaderboard.",
-    path: "/register",
+    title: meta.title,
+    description: meta.description,
+    path: meta.canonicalPath || "/register",
   }),
 }
 

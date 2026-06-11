@@ -163,6 +163,12 @@ export const PAGE_META: Record<string, PageMeta> = {
       "Sign in to your Trading Tazos Game account to access your collection, battle arena, shop, and leaderboard rankings.",
     canonicalPath: "/login",
   },
+  register: {
+    title: "Create Account — Start Your Collection Free | Trading Tazos Game",
+    description:
+      "Create your free Trading Tazos Game account — get 30 welcome tazo bags, build collections, enter the 3D battle arena, and rise through the leaderboard.",
+    canonicalPath: "/register",
+  },
   "game/practice": {
     title: "Practice Battle — Trading Tazos Game",
     description:

@@ -6,14 +6,17 @@
 // ============================================================
 
 import { NextRequest, NextResponse } from "next/server"
-import { getAuthUser, generateToken } from "@/lib/auth"
+import { getAuthUser, generateToken, getAvailableOAuthProviders } from "@/lib/auth"
 import { db } from "@/lib/db"
 
 export async function GET(request: NextRequest) {
   try {
     const user = await getAuthUser(request)
     if (!user) {
-      return NextResponse.json({ authed: false })
+      return NextResponse.json({
+        authed: false,
+        oauthProviders: getAvailableOAuthProviders(),
+      })
     }
 
     const fullUser = await db.user.findUnique({

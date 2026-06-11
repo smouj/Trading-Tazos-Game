@@ -20,9 +20,9 @@ import TazoDiscImage from "@/components/game/tazo-disc-image";
 
 // ── Constants ──
 const FRANCHISES = [
-  { slug: "minimon", name: "Minimon", color: "#FFCB05", desc: "Cute collectible creatures" },
-  { slug: "cybermon", name: "Cybermon", color: "#00A1E9", desc: "Digital monster companions" },
-  { slug: "dracobell", name: "Dracobell", color: "#FF6B00", desc: "Anime martial arts warriors" },
+  { slug: "minimon", name: "Minimon", color: "#FFCB05", desc: "Creature companions from the world of Luminara" },
+  { slug: "cybermon", name: "Cybermon", color: "#00A1E9", desc: "Living digital code from the Neon Grid" },
+  { slug: "dracobell", name: "Dracobell", color: "#FF6B00", desc: "Warriors of the Bellora clans" },
 ];
 
 const RARITIES = [

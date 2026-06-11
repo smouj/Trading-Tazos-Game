@@ -1,6 +1,7 @@
 import { db } from '@/lib/db'
 import { NextResponse } from 'next/server'
 import crypto from 'crypto'
+import { buildPasswordResetUrl, isTransactionalEmailConfigured, sendTransactionalEmail } from '@/lib/email'
 
 export async function POST(request: Request) {
   try {
@@ -31,17 +32,25 @@ export async function POST(request: Request) {
       data: { resetToken, resetTokenExpires },
     })
 
-    // In production, send email here. For now, return token when no email service is configured.
-    const hasEmailService = !!process.env.RESEND_API_KEY
+    const resetUrl = buildPasswordResetUrl(resetToken)
+    const hasEmailService = isTransactionalEmailConfigured()
 
     if (hasEmailService) {
-      // TODO: Send reset email via Resend/SendGrid/etc.
+      await sendTransactionalEmail({
+        template: 'passwordReset',
+        to: user.email,
+        variables: {
+          name: user.displayName || user.name,
+          resetUrl,
+          expiresIn: '1 hour',
+        },
+      })
     }
 
     return NextResponse.json({
       success: true,
       message: 'If an account with that email exists, a reset link has been sent.',
-      ...(hasEmailService ? {} : { resetToken }),
+      ...(process.env.NODE_ENV !== 'production' && !hasEmailService ? { resetToken, resetUrl } : {}),
     })
   } catch (error) {
     console.error('Forgot password error:', error)

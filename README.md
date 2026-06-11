@@ -124,7 +124,7 @@ It's a game of **physical tazo throwing** — aim, power, physics, chain rebound
 |---------|--------|
 | Web | Full Next.js 16 app at [tradingtazosgame.com](https://tradingtazosgame.com) |
 | PWA | Installable on mobile and desktop with manifest.json |
-| Desktop | Electron app — [v0.3.1](https://github.com/smouj/Trading-Tazos-Game/releases/tag/v0.3.1) installers for Windows (.exe), macOS (.dmg), and Linux (.AppImage, .deb) |
+| Desktop | Electron app — [latest installers](https://github.com/smouj/Trading-Tazos-Game/releases/tag/v0.6.1) for Windows (.exe), macOS (.dmg), and Linux (.AppImage, .deb) |
 | i18n | 10 languages: EN, ES, PT, DE, FR, IT, JA, KO, ZH, RU |
 | SEO | JSON-LD VideoGame schema, sitemap.xml, robots.txt, hreflang alternates |
 | Security | CSP + HSTS + X-Frame-Options + dual cookie auth |
@@ -349,13 +349,13 @@ The game uses a **90s Nintendo Power / Pokémon Magazine** aesthetic specified i
 
 ## Desktop App
 
-Desktop installers for all platforms are available on the [Releases page](https://github.com/smouj/Trading-Tazos-Game/releases/latest).
+Desktop installers for all platforms are available on the [v0.6.1 Releases page](https://github.com/smouj/Trading-Tazos-Game/releases/tag/v0.6.1).
 
 | Platform | Format | Version |
 |----------|--------|---------|
-| Linux | AppImage, .deb | v0.3.1 |
-| Windows | .exe (NSIS) | v0.3.1 |
-| macOS | .dmg, .zip | v0.3.1 |
+| Linux | AppImage, .deb | desktop v0.4.0 |
+| Windows | .exe (NSIS) | desktop v0.4.0 |
+| macOS | .dmg, .zip | desktop v0.4.0 |
 
 ---
 
@@ -372,7 +372,15 @@ tazos top --stat attack  # Leaderboard by any stat
 tazos battle --seed 42   # Simulate a physics battle
 ```
 
-[![npm](https://img.shields.io/npm/v/@trading-tazos-game/cli)](https://www.npmjs.com/package/@trading-tazos-game/cli) **v1.0.2** — [github.com/smouj/trading-tazos-game-cli](https://github.com/smouj/trading-tazos-game-cli)
+[![npm](https://img.shields.io/npm/v/@trading-tazos-game/cli)](https://www.npmjs.com/package/@trading-tazos-game/cli) **v1.0.3** — [github.com/smouj/trading-tazos-game-cli](https://github.com/smouj/trading-tazos-game-cli)
+
+---
+
+## Email
+
+Official support email: **support@tradingtazosgame.com**.
+
+Transactional email is configured through the Hostinger/API bridge documented in [`docs/email-hostinger.md`](./docs/email-hostinger.md). The app maps the official support signature and four master templates: welcome, trade confirmation, password reset, and support auto-reply. Production must keep API tokens only in the VPS `.env`.
 
 ---
 

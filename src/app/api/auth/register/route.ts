@@ -3,6 +3,7 @@ import { hashPassword, generateToken } from "@/lib/auth"
 import { db } from "@/lib/db"
 import crypto from "crypto"
 import { checkRateLimit } from "@/lib/rate-limit"
+import { buildEmailVerificationUrl, sendTransactionalEmailSoon } from "@/lib/email"
 
 export async function POST(request: NextRequest) {
   // Rate limit: 5 auth attempts per minute
@@ -58,6 +59,15 @@ export async function POST(request: NextRequest) {
 
     // Seed welcome pack (fire-and-forget — non-blocking)
     seedWelcomePack(user.id)
+
+    sendTransactionalEmailSoon({
+      template: "welcome",
+      to: user.email,
+      variables: {
+        name: user.displayName || user.name,
+        emailVerificationUrl: buildEmailVerificationUrl(emailVerifyToken),
+      },
+    })
 
     const token = generateToken({
       id: user.id,

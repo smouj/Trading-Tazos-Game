@@ -198,8 +198,8 @@ const zh: Dictionary = {
   download_also_web: "用浏览器玩",
   download_requirements: "系统要求",
   download_requirements_list: "64位操作系统, 4 GB 内存, 200 MB 磁盘空间",
-  download_source: "源代码",
-  download_source_desc: "自行编译。MIT 许可证。",
+  download_source: "发布说明",
+  download_source_desc: "查看官方安装包和发布详情。",
 
   common_cancel: "取消",
   common_confirm_delete: "确定要删除吗？",

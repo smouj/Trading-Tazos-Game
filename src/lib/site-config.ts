@@ -124,7 +124,7 @@ export const PAGE_META: Record<string, PageMeta> = {
   download: {
     title: "Download — Trading Tazos Game Apps",
     description:
-      "Play Trading Tazos Game on your browser, mobile, or desktop. PWA support for offline play. Android and iOS coming soon.",
+      "Download Trading Tazos Game for Windows, macOS, and Linux, or play instantly in your browser with PWA support.",
     canonicalPath: "/?page=download",
   },
   faq: {

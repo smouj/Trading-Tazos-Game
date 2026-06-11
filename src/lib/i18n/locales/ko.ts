@@ -198,8 +198,8 @@ const ko: Dictionary = {
   download_also_web: "브라우저로 플레이",
   download_requirements: "시스템 요구사항",
   download_requirements_list: "64-bit OS, 4 GB RAM, 200 MB 디스크",
-  download_source: "소스 코드",
-  download_source_desc: "직접 빌드하세요. MIT 라이선스.",
+  download_source: "릴리스 노트",
+  download_source_desc: "공식 설치 파일과 릴리스 정보를 확인하세요.",
 
   common_cancel: "취소",
   common_confirm_delete: "정말 삭제하시겠습니까?",

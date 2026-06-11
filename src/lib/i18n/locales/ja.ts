@@ -198,8 +198,8 @@ const ja: Dictionary = {
   download_also_web: "ブラウザでプレイする",
   download_requirements: "動作環境",
   download_requirements_list: "64-bit OS、4 GB RAM、200 MB ディスク",
-  download_source: "ソースコード",
-  download_source_desc: "自分でビルドできます。MITライセンス。",
+  download_source: "リリースノート",
+  download_source_desc: "公式インストーラーとリリース詳細を確認。",
 
   common_cancel: "キャンセル",
   common_confirm_delete: "本当に削除しますか？",

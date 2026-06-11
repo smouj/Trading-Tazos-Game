@@ -187,7 +187,7 @@ const en: Dictionary = {
 
   download_title: "Download",
   download_subtitle: "Desktop App",
-  download_intro: "Play Trading Tazos Game in your browser or download the Linux desktop app. Windows and macOS builds are planned.",
+  download_intro: "Play Trading Tazos Game in your browser or download the desktop app for Windows, macOS, and Linux.",
   download_windows: "Windows",
   download_mac: "macOS",
   download_linux: "Linux",
@@ -198,8 +198,8 @@ const en: Dictionary = {
   download_also_web: "Prefer the browser? Play instantly at",
   download_requirements: "Requirements",
   download_requirements_list: "64-bit OS, 4 GB RAM, 200 MB disk space",
-  download_source: "Source Code",
-  download_source_desc: "Build it yourself from source. MIT licensed.",
+  download_source: "Release Notes",
+  download_source_desc: "View official installers and release details.",
 
   common_cancel: "Cancel",
   common_confirm_delete: "Are you sure you want to delete this?",

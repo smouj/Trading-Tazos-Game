@@ -25,9 +25,9 @@ function ResetPasswordForm() {
           return
         }
 
-        if (password.length < 6) {
+        if (password.length < 10) {
           if (msg) {
-            msg.textContent = 'Password must be at least 6 characters'
+            msg.textContent = 'Password must be at least 10 characters'
             msg.className = 'text-sm text-red-500 text-center mt-3'
           }
           return
@@ -74,7 +74,7 @@ function ResetPasswordForm() {
           id="password"
           name="password"
           required
-          minLength={6}
+          minLength={10}
           autoComplete="new-password"
           placeholder="••••••••"
           className="w-full px-4 py-3 border-2 border-zinc-300 rounded-xl text-sm font-medium
@@ -92,7 +92,7 @@ function ResetPasswordForm() {
           id="confirm"
           name="confirm"
           required
-          minLength={6}
+          minLength={10}
           autoComplete="new-password"
           placeholder="••••••••"
           className="w-full px-4 py-3 border-2 border-zinc-300 rounded-xl text-sm font-medium

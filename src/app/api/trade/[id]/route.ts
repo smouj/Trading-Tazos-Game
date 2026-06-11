@@ -2,6 +2,7 @@
 import { db } from '@/lib/db'
 import { getAuthUser } from '@/lib/auth'
 import { NextRequest, NextResponse } from 'next/server'
+import { sendTransactionalEmailSoon } from '@/lib/email'
 
 // POST /api/trade/[id] — buy
 export async function POST(
@@ -27,8 +28,12 @@ export async function POST(
     }
 
     // Load the listed UserTazo to get the tazoId
-    const ut = await db.userTazo.findUnique({ where: { id: listing.userTazoId } })
+    const ut = await db.userTazo.findUnique({
+      where: { id: listing.userTazoId },
+      include: { tazo: true },
+    })
     if (!ut) return NextResponse.json({ error: 'Listed tazo no longer exists' }, { status: 410 })
+    const seller = await db.user.findUnique({ where: { id: listing.sellerId } })
 
     // Transfer credits
     await db.user.update({ where: { id: authUser.id }, data: { credits: { decrement: listing.price } } })
@@ -54,6 +59,30 @@ export async function POST(
     // Transaction logs
     await db.creditTransaction.create({ data: { userId: authUser.id, amount: -listing.price, source: 'marketplace_buy', reference: id } })
     await db.creditTransaction.create({ data: { userId: listing.sellerId, amount: listing.price, source: 'marketplace_sell', reference: id } })
+
+    const tazoName = ut.tazo.displayName || ut.tazo.name || ut.tazo.slug
+    sendTransactionalEmailSoon({
+      template: 'tradeConfirmation',
+      to: buyer.email,
+      variables: {
+        name: buyer.displayName || buyer.name,
+        tradeType: 'Marketplace purchase',
+        tazoName,
+        credits: listing.price,
+      },
+    })
+    if (seller) {
+      sendTransactionalEmailSoon({
+        template: 'tradeConfirmation',
+        to: seller.email,
+        variables: {
+          name: seller.displayName || seller.name,
+          tradeType: 'Marketplace sale',
+          tazoName,
+          credits: listing.price,
+        },
+      })
+    }
 
     return NextResponse.json({ message: 'Purchase successful!', listingId: id })
   } catch (error) {

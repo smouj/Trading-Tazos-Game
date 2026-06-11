@@ -198,8 +198,8 @@ const pt: Dictionary = {
   download_also_web: "Prefere o navegador? Jogue instantaneamente em",
   download_requirements: "Requisitos",
   download_requirements_list: "SO 64-bit, 4 GB RAM, 200 MB de disco",
-  download_source: "Codigo Fonte",
-  download_source_desc: "Compile voce mesmo. Licenca MIT.",
+  download_source: "Notas da Versao",
+  download_source_desc: "Veja instaladores oficiais e detalhes da versao.",
 
   common_cancel: "Cancelar",
   common_confirm_delete: "Tem certeza que quer excluir isso?",

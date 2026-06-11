@@ -28,6 +28,7 @@ import TazoDetailModal from '@/components/game/tazo-detail-modal'
 import { FRANCHISES, FRANCHISE_BY_SLUG, TOTAL_PLANNED } from "@/lib/franchise-config"
 import { SITE_CONFIG } from "@/lib/site-config"
 import { PRIVACY_SECTIONS, TERMS_SECTIONS, COOKIE_SECTIONS } from "@/lib/legal-content"
+import { DOWNLOAD_PLATFORMS, DOWNLOAD_RELEASE } from "@/lib/downloads"
 
 // ── Types ──
 
@@ -1453,11 +1454,11 @@ function LeaderboardContent() {
 
 // ── Download ──
 
-const DESKTOP_PLATFORMS = [
-  { id: "windows", icon: Monitor, color: "#00A4EF", label: "Windows", hint: "Installer for Windows 10/11" },
-  { id: "mac", icon: Apple, color: "#1a1a1a", label: "macOS", hint: "DMG for Apple Silicon & Intel" },
-  { id: "linux", icon: Terminal, color: "#FCC624", label: "Linux", hint: "AppImage for any distro" },
-]
+const DESKTOP_PLATFORM_ICONS = {
+  windows: { icon: Monitor, color: "#00A4EF" },
+  macos: { icon: Apple, color: "#1a1a1a" },
+  linux: { icon: Terminal, color: "#FCC624" },
+}
 
 function DownloadContent() {
   return (
@@ -1560,26 +1561,56 @@ function DownloadContent() {
         <div className="flex items-center gap-3 mb-4">
           <Monitor className="w-5 h-5 text-[#1a1a1a]" />
           <h3 className="text-sm font-black text-[#1a1a1a] uppercase tracking-wider">Desktop Apps</h3>
-          <span className="text-[8px] font-black text-white bg-[#F59E0B] px-1.5 py-0.5 uppercase">Coming Soon</span>
+          <span className="text-[8px] font-black text-white bg-[#22C55E] px-1.5 py-0.5 uppercase">Available</span>
         </div>
         <div className="grid sm:grid-cols-3 gap-4">
-          {DESKTOP_PLATFORMS.map(d => {
-            const Icon = d.icon
+          {DOWNLOAD_PLATFORMS.map(d => {
+            const { icon: Icon, color } = DESKTOP_PLATFORM_ICONS[d.id]
             return (
-              <div key={d.id} className="border-2 border-dashed border-[#1a1a1a]/20 bg-white p-5 opacity-75">
+              <div key={d.id} className="border-2 border-[#1a1a1a] bg-white p-5"
+                style={{ boxShadow: "4px 4px 0 #1a1a1a" }}>
                 <div className="flex items-center gap-3 mb-3">
-                  <Icon className="w-8 h-8 flex-shrink-0" style={{ color: d.color }} />
+                  <Icon className="w-8 h-8 flex-shrink-0" style={{ color }} />
                   <div>
                     <h4 className="text-sm font-black text-[#1a1a1a] uppercase leading-tight">{d.label}</h4>
-                    <p className="text-[9px] font-bold text-[#1a1a1a]/30">{d.hint}</p>
+                    <p className="text-[9px] font-bold text-[#1a1a1a]/40">{d.hint}</p>
                   </div>
                 </div>
-                <p className="text-[10px] font-bold text-[#1a1a1a]/25 uppercase text-center">
-                  Play in browser for now
-                </p>
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <span className="text-[9px] font-black text-[#1a1a1a]/45 uppercase tracking-wider">
+                    Desktop v{d.version}
+                  </span>
+                  <span className="text-[9px] font-black text-[#22C55E] uppercase tracking-wider">
+                    {d.primary.size}
+                  </span>
+                </div>
+                <a href={d.primary.url}
+                  className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 text-[10px] font-black text-white bg-[#E3350D] uppercase border-2 border-[#1a1a1a] hover:bg-[#FF6B00] transition-colors"
+                  style={{ boxShadow: "2px 2px 0 #1a1a1a" }}>
+                  <Download className="w-3.5 h-3.5" /> {d.primary.label}
+                </a>
+                {d.secondary && (
+                  <div className="mt-2 grid gap-1.5">
+                    {d.secondary.map(link => (
+                      <a key={link.url} href={link.url}
+                        className="inline-flex items-center justify-center gap-1 px-2 py-1.5 text-[9px] font-black text-[#1a1a1a] bg-[#FFF9E6] uppercase border border-[#1a1a1a]/25 hover:border-[#1a1a1a] transition-colors">
+                        {link.label} · {link.size}
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
             )
           })}
+        </div>
+        <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-2 border-[#1a1a1a]/15 bg-white/70 px-4 py-3">
+          <span className="text-[10px] font-bold text-[#1a1a1a]/55 uppercase tracking-wider">
+            Installers are hosted on the official {DOWNLOAD_RELEASE.tag} release. Web game version: v{SITE_CONFIG.version}.
+          </span>
+          <a href={DOWNLOAD_RELEASE.releaseUrl}
+            className="inline-flex items-center gap-1 text-[10px] font-black text-[#3B4CCA] uppercase hover:text-[#E3350D] transition-colors">
+            Release notes <ExternalLink className="w-3 h-3" />
+          </a>
         </div>
       </div>
 

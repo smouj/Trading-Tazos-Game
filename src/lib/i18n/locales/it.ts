@@ -198,8 +198,8 @@ const it: Dictionary = {
   download_also_web: "Preferisci il browser? Gioca subito su",
   download_requirements: "Requisiti",
   download_requirements_list: "SO 64-bit, 4 GB RAM, 200 MB di spazio",
-  download_source: "Codice Sorgente",
-  download_source_desc: "Compilalo tu stesso. Licenza MIT.",
+  download_source: "Note di Versione",
+  download_source_desc: "Vedi installer ufficiali e dettagli della release.",
 
   common_cancel: "Annulla",
   common_confirm_delete: "Sei sicuro di voler eliminare questo?",

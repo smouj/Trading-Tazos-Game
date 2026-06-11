@@ -187,7 +187,7 @@ const es: Dictionary = {
 
   download_title: "Descargar",
   download_subtitle: "App de Escritorio",
-  download_intro: "Juega Trading Tazos Game en el navegador o descarga la app de Linux. Windows y macOS estan planificados.",
+  download_intro: "Juega Trading Tazos Game en el navegador o descarga la app para Windows, macOS y Linux.",
   download_windows: "Windows",
   download_mac: "macOS",
   download_linux: "Linux",
@@ -198,8 +198,8 @@ const es: Dictionary = {
   download_also_web: "Prefieres el navegador? Juega al instante en",
   download_requirements: "Requisitos",
   download_requirements_list: "SO 64-bit, 4 GB RAM, 200 MB espacio",
-  download_source: "Codigo Fuente",
-  download_source_desc: "Compilalo tu mismo desde el codigo. Licencia MIT.",
+  download_source: "Notas de Version",
+  download_source_desc: "Consulta instaladores oficiales y detalles de la version.",
 
   common_cancel: "Cancelar",
   common_confirm_delete: "Seguro que quieres eliminar esto?",

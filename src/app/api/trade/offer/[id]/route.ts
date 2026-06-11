@@ -2,6 +2,7 @@
 import { db } from '@/lib/db'
 import { getAuthUser } from '@/lib/auth'
 import { NextRequest, NextResponse } from 'next/server'
+import { sendTransactionalEmailSoon } from '@/lib/email'
 
 // POST /api/trade/offer/[id] — accept with a counter-tazo
 export async function POST(
@@ -18,6 +19,11 @@ export async function POST(
     if (!offer) return NextResponse.json({ error: 'Offer not found' }, { status: 404 })
     if (offer.status !== 'pending') return NextResponse.json({ error: 'Offer is no longer available' }, { status: 400 })
     if (offer.offererId === authUser.id) return NextResponse.json({ error: 'Cannot accept your own offer' }, { status: 400 })
+    const [offerer, offeredUserTazo, requestedTazo] = await Promise.all([
+      db.user.findUnique({ where: { id: offer.offererId } }),
+      db.userTazo.findUnique({ where: { id: offer.offeredUserTazoId }, include: { tazo: true } }),
+      db.tazo.findUnique({ where: { id: offer.requestedTazoId } }),
+    ])
 
     // Verify acceptor has the requested tazo
     const requestedId = offer.requestedTazoId
@@ -50,6 +56,29 @@ export async function POST(
         resolvedAt: new Date(),
       },
     })
+
+    const offeredName = offeredUserTazo?.tazo.displayName || offeredUserTazo?.tazo.name || offeredUserTazo?.tazo.slug || 'Offered tazo'
+    const requestedName = requestedTazo?.displayName || requestedTazo?.name || requestedTazo?.slug || 'Requested tazo'
+    sendTransactionalEmailSoon({
+      template: 'tradeConfirmation',
+      to: authUser.email,
+      variables: {
+        name: authUser.displayName || authUser.name,
+        tradeType: 'Direct trade accepted',
+        tazoName: `${requestedName} for ${offeredName}`,
+      },
+    })
+    if (offerer) {
+      sendTransactionalEmailSoon({
+        template: 'tradeConfirmation',
+        to: offerer.email,
+        variables: {
+          name: offerer.displayName || offerer.name,
+          tradeType: 'Direct trade accepted',
+          tazoName: `${offeredName} for ${requestedName}`,
+        },
+      })
+    }
 
     return NextResponse.json({ success: true, message: 'Trade accepted!' })
   } catch (error) {

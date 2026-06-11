@@ -5,7 +5,7 @@
 # ============================================================
 appId: com.tradingtazosgame.app
 productName: "Trading Tazos Game"
-copyright: "Copyright © 2026 MedaClaw Arena"
+copyright: "Copyright © 2026 Trading Tazos Game"
 electronVersion: "42.3.2"
 
 directories:

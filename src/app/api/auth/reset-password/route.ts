@@ -1,6 +1,6 @@
 import { db } from '@/lib/db'
 import { NextResponse } from 'next/server'
-import bcrypt from 'bcryptjs'
+import { hashPassword } from '@/lib/auth'
 
 export async function POST(request: Request) {
   try {
@@ -10,8 +10,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Token and new password are required' }, { status: 400 })
     }
 
-    if (typeof password !== 'string' || password.length < 6) {
-      return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 })
+    if (typeof password !== 'string' || password.length < 10) {
+      return NextResponse.json({ error: 'Password must be at least 10 characters' }, { status: 400 })
     }
 
     // Find user with valid, non-expired reset token
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     }
 
     // Update password and clear reset token
-    const passwordHash = await bcrypt.hash(password, 10)
+    const passwordHash = hashPassword(password)
 
     await db.user.update({
       where: { id: user.id },

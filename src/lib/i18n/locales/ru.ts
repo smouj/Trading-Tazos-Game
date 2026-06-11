@@ -198,8 +198,8 @@ const ru: Dictionary = {
   download_also_web: "Предпочитаете браузер? Играйте на",
   download_requirements: "Требования",
   download_requirements_list: "64-битная ОС, 4 ГБ ОЗУ, 200 МБ на диске",
-  download_source: "Исходный код",
-  download_source_desc: "Соберите сами. Лицензия MIT.",
+  download_source: "Заметки о релизе",
+  download_source_desc: "Официальные установщики и детали релиза.",
 
   common_cancel: "Отмена",
   common_confirm_delete: "Вы уверены, что хотите удалить это?",

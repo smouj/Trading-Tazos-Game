@@ -7,11 +7,11 @@ TTG Batch Creature Generator — OpenRouter (Gemini 2.5 Flash Image)
 - Auto-stops when OpenRouter balance is low
 """
 
-import json, os, base64, time, urllib.request, urllib.error, re
+import argparse, json, os, base64, time, urllib.request, urllib.error, re
 
 PROJECT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUTPUT_DIR = os.path.join(PROJECT, "output")
-CREATURES_PATH = os.path.join(PROJECT, "creatures.json")
+DEFAULT_CREATURES_PATH = os.path.join(PROJECT, "creatures.json")
 
 API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
@@ -30,8 +30,8 @@ TRANSPARENCY_GUARD = """CRITICAL INSTRUCTIONS:
 def safe_dirname(name):
     return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
 
-def get_creatures():
-    with open(CREATURES_PATH) as f:
+def get_creatures(path):
+    with open(path) as f:
         return json.load(f)["creatures"]
 
 def already_generated(c):
@@ -106,11 +106,16 @@ def generate_image(creature):
         return None, 0
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--creatures", default=DEFAULT_CREATURES_PATH)
+    parser.add_argument("--limit", type=int, default=0, help="Generate at most this many pending images")
+    args = parser.parse_args()
+
     if not API_KEY:
         print("❌ OPENROUTER_API_KEY not set!")
         return
 
-    creatures = get_creatures()
+    creatures = get_creatures(args.creatures)
 
     # Sort by rarity: legendary first
     RARITY_ORDER = ["legendary", "ultra-rare", "rare", "uncommon", "common"]
@@ -141,6 +146,9 @@ def main():
     for i, c in enumerate(creatures):
         if already_generated(c):
             continue
+        if args.limit and generated >= args.limit:
+            print(f"\n⏸️  Limit reached ({args.limit})")
+            break
 
         name = c["name"]
         cid = c["id"]

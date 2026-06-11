@@ -1,7 +1,7 @@
 // ============================================================
 // TTG Multiplayer WebSocket Server (Node.js)
 // Matchmaking + room-based PvP relay.
-// Zero external deps except ws@7 (no transitive deps).
+// Zero external deps except ws.
 // JWT verified with native crypto — no jsonwebtoken needed.
 // ============================================================
 /* eslint-disable @typescript-eslint/no-require-imports */

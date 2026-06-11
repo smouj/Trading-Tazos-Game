@@ -28,7 +28,7 @@ export async function GET() {
 
     return NextResponse.json({
       status: "ok",
-      version: "0.5.0",
+      version: "0.6.0",
       uptime: process.uptime(),
       db: { connected: dbConnected, latencyMs: dbLatency },
       counts: { tazos: tazoCount, users: userCount, decks: deckCount, quests: questCount },

@@ -537,7 +537,7 @@ async function main() {
   console.log(`   Dracobell Mastertazos:          8 (verified)`  )
   console.log(`   Cybermon Magic Box:      150 (verified)`   )
   console.log(`                          ———`)
-  console.log(`   TOTAL:                  349 tazos`)
+  console.log(`   TOTAL:                  150 tazos (Season 1)`)
 }
 
 main()

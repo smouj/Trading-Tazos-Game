@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Master Tazo Definitions — 349 Tazos (Single Source of Truth)
+ * Master Tazo Definitions — 150 Tazos Season 1 (Single Source of Truth)
  * 
  * Usage:
  *   node scripts/tazo-definitions.mjs --register    Register all in DB

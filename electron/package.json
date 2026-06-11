@@ -1,8 +1,8 @@
 {
   "name": "trading-tazos-game",
-  "version": "0.4.0",
-  "description": "Trading Tazos Game — Collect, Trade & Battle with 349 classic tazos",
-  "author": "MedaClaw Arena <support@tradingtazosgame.com>",
+  "version": "0.6.0",
+  "description": "Trading Tazos Game — Collect, Trade & Battle with 150 tazos across 3 franchises",
+  "author": "Trading Tazos Game <support@tradingtazosgame.com>",
   "license": "MIT",
   "main": "main.js"
 }

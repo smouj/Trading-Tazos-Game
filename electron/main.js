@@ -10,7 +10,7 @@ const fs = require("fs")
 const IS_DEV = process.env.NODE_ENV === "development"
 const PROD_URL = "https://tradingtazosgame.com"
 const DEV_URL = "http://localhost:3000"
-const VERSION = "0.3.0"
+const VERSION = "0.6.0"
 
 let mainWindow = null
 let splashWindow = null
@@ -74,7 +74,7 @@ body{background:#1a1a1a;display:flex;align-items:center;justify-content:center;f
 <body>
 <div class="logo"><span>TTG</span></div>
 <div class="title">Trading Tazos Game</div>
-<div class="subtitle">MedaClaw Arena</div>
+<div class="subtitle">Official Desktop App</div>
 <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
 <span class="version">v${VERSION}</span>
 </body>

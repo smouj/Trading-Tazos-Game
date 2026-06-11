@@ -173,7 +173,7 @@ export function getTazoBackgroundClasses(config: TazoBackgroundConfig): string {
 
 // --------------- Franchise Max Counts ---------------
 export const FRANCHISE_MAX: Record<string, number> = {
-  minimon: 51,
-  cybermon: 150,
-  dracobell: 118,
+  minimon: 50,
+  cybermon: 50,
+  dracobell: 50,
 }

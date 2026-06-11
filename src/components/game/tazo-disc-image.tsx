@@ -124,7 +124,7 @@ export default function TazoDiscImage({
       aria-label={onClick || onFlip ? alt : undefined}
     >
       {/* Inner circle — clips the image */}
-      <div className="tazo-disc-image-inner absolute inset-0 rounded-full overflow-hidden">
+      <div className="tazo-disc-image-inner ttg-bg-disc-inner absolute inset-0 rounded-full overflow-hidden">
         {renderImage ? (
           <img
             src={displaySrc}

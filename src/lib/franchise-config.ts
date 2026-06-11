@@ -1,17 +1,17 @@
 // ============================================================
 // Trading Tazos Game — Franchise Config (Single Source of Truth)
 //
-// All franchise metadata lives here. When new tazos are published,
-// update `count` here and it propagates everywhere automatically.
-// `total` and `planned` are aspirational target numbers.
+// All franchise metadata lives here.
+// `count` and `total` represent the canonical Season 1 collection size.
+// Runtime published counts come from `/api/stats`.
 // ============================================================
 
 export interface FranchiseConfig {
   slug: string
   name: string
-  /** Currently published tazos */
+  /** Canonical Season 1 tazos */
   count: number
-  /** Planned total tazos (aspirational) */
+  /** Canonical Season 1 total */
   total: number
   year: number
   origin: string
@@ -43,8 +43,8 @@ export const FRANCHISES: FranchiseConfig[] = [
   {
     slug: "cybermon",
     name: "Cybermon",
-    count: 48,
-    total: 48,
+    count: 50,
+    total: 50,
     year: 2026,
     origin: "TazoForge Studios",
     color: "#00B4D8",
@@ -57,8 +57,8 @@ export const FRANCHISE_BY_SLUG: Record<string, FranchiseConfig> = Object.fromEnt
   FRANCHISES.map((f) => [f.slug, f])
 )
 
-/** Total planned tazos across all franchises */
+/** Total canonical Season 1 tazos across all franchises */
 export const TOTAL_PLANNED = FRANCHISES.reduce((sum, f) => sum + f.total, 0)
 
-/** Total published tazos across all franchises */
+/** Total canonical Season 1 tazos across all franchises */
 export const TOTAL_PUBLISHED = FRANCHISES.reduce((sum, f) => sum + f.count, 0)

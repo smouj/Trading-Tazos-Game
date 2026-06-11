@@ -133,6 +133,17 @@ def composite_front(tazo: dict, creature_path: Path) -> Image.Image:
         raise FileNotFoundError(bg_path)
     bg = Image.open(bg_path).convert("RGBA")
     creature = Image.open(creature_path).convert("RGBA")
+    # Crop to content (remove transparent padding so creature fills disc)
+    bbox = creature.getbbox()
+    if bbox:
+        margin = 4  # small breathing room
+        bbox = (
+            max(0, bbox[0] - margin),
+            max(0, bbox[1] - margin),
+            min(creature.width, bbox[2] + margin),
+            min(creature.height, bbox[3] + margin),
+        )
+        creature = creature.crop(bbox)
     creature.thumbnail((CHARACTER_SIZE, CHARACTER_SIZE), Image.LANCZOS)
 
     layer = Image.new("RGBA", (CANVAS, CANVAS), (0, 0, 0, 0))

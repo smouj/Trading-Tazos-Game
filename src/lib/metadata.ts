@@ -1,7 +1,5 @@
 import type { Metadata } from "next"
-
-export const SITE_URL = "https://tradingtazosgame.com"
-export const SITE_NAME = "Trading Tazos Game"
+import { SITE_CONFIG } from "@/lib/site-config"
 
 /**
  * Build page metadata with proper canonical URL.
@@ -21,8 +19,8 @@ export function pageMetadata({
   ogImage?: string
   noIndex?: boolean
 }): Metadata {
-  const url = path ? `${SITE_URL}${path}` : SITE_URL
-  const defaultOgImage = `${SITE_URL}/logo/social-preview.webp`
+  const url = path ? `${SITE_CONFIG.canonicalUrl}${path}` : SITE_CONFIG.canonicalUrl
+  const defaultOgImage = `${SITE_CONFIG.canonicalUrl}/logo/social-preview.webp`
   return {
     title,
     description,

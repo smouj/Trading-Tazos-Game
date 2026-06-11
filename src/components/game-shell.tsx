@@ -8,6 +8,7 @@
 
 import { useRouter } from "next/navigation"
 import { ArrowLeft, Disc3 } from "lucide-react"
+import { SITE_CONFIG } from "@/lib/site-config"
 
 interface GameShellProps {
   children: React.ReactNode
@@ -44,7 +45,7 @@ export default function GameShell({
           </span>
         )}
         <span className="ml-auto text-[8px] font-bold text-white/20 uppercase tracking-[0.15em]">
-          v0.6.0
+          v{SITE_CONFIG.version}
         </span>
       </div>
 

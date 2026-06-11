@@ -6,6 +6,7 @@ import I18nClientWrapper from "@/components/i18n-client-wrapper";
 import AuthProviderComponent from "@/components/auth-provider";
 import CookieConsentBanner from "@/components/ui/cookie-consent-banner";
 import ScrollReveal from "@/components/scroll-reveal";
+import { SITE_CONFIG } from "@/lib/site-config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,10 +18,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const SITE_URL = "https://tradingtazosgame.com";
-const SITE_NAME = "Trading Tazos Game";
+const { canonicalUrl: SITE_URL, name: SITE_NAME, version: VERSION } = SITE_CONFIG;
 const SITE_DESC =
-  "Collect, trade and battle with 148 tazos from Minimon, Dracobell and Cybermon. Build a 2D album, open tazo bags, and compete in a skill-based 3D battle arena.";
+  `Collect, trade and battle with ${SITE_CONFIG.totalTazos} tazos from Minimon, Dracobell and Cybermon. Build a 2D album, open tazo bags, and compete in a skill-based 3D battle arena.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
       url: `${SITE_URL}/logo/social-preview.webp`,
       width: 1200,
       height: 630,
-      alt: "Trading Tazos Game — 148 tazos from Minimon, Dracobell & Cybermon",
+      alt: `Trading Tazos Game — ${SITE_CONFIG.totalTazos} tazos from Minimon, Dracobell & Cybermon`,
     }],
   },
   twitter: {
@@ -73,7 +73,7 @@ export const metadata: Metadata = {
     site: "@tazosgame",
     creator: "@tazosgame",
     title: `${SITE_NAME} — Collect, Trade & Battle Your Tazos`,
-    description: "148 tazos, 3 collections, 9 combat stats, 2D collection views, and a skill-based 3D battle arena.",
+    description: `${SITE_CONFIG.totalTazos} tazos, 3 collections, ${SITE_CONFIG.statsCount} combat stats, 2D collection views, and a skill-based 3D battle arena.`,
     images: [`${SITE_URL}/logo/social-preview.webp`],
   },
   alternates: {
@@ -102,7 +102,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "VideoGame",
-              "name": "Trading Tazos Game",
+              "name": SITE_NAME,
               "description": SITE_DESC,
               "url": SITE_URL,
               "image": `${SITE_URL}/logo/social-preview.webp`,
@@ -110,15 +110,10 @@ export default function RootLayout({
               "applicationCategory": "Game",
               "author": {
                 "@type": "Organization",
-                "name": "Trading Tazos Game",
+                "name": SITE_NAME,
                 "url": SITE_URL,
-                "email": "support@tradingtazosgame.com",
-                "sameAs": [
-                  "https://x.com/tazosgame",
-                  "https://www.reddit.com/r/tradingtazosgame/",
-                  "https://t.me/tradingtazosgame",
-                  "https://github.com/smouj/Trading-Tazos-Game"
-                ]
+                "email": SITE_CONFIG.supportEmail,
+                "sameAs": Object.values(SITE_CONFIG.social)
               },
               "genre": ["Collectible", "Battle", "Physics", "Multiplayer", "Nostalgia"],
               "numberOfPlayers": { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 2 },
@@ -160,14 +155,14 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              "name": "Trading Tazos Game",
+              "name": SITE_NAME,
               "url": SITE_URL,
-              "description": "Independent fictional digital tazo game — collect, trade, and battle with 148 tazos across 3 franchises.",
-              "email": "support@tradingtazosgame.com",
+              "description": `${SITE_CONFIG.disclaimer} — collect, trade, and battle with ${SITE_CONFIG.totalTazos} tazos across ${SITE_CONFIG.totalSeries} franchises.`,
+              "email": SITE_CONFIG.supportEmail,
               "logo": `${SITE_URL}/icon-512x512.png`,
               "sameAs": [
-                "https://x.com/tazosgame",
-                "https://github.com/smouj/Trading-Tazos-Game"
+                SITE_CONFIG.social.x,
+                SITE_CONFIG.social.github
               ]
             }),
           }}
@@ -185,7 +180,7 @@ export default function RootLayout({
                   "name": "What is Trading Tazos Game?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "A free browser-based skill game where you collect and battle with digital tazos. Open bags to discover 148 unique tazos across 3 original fictional franchises. Build decks of 5, then enter the 3D arena to slam your tazos and flip opponent discs."
+                    "text": `A free browser-based skill game where you collect and battle with digital tazos. Open bags to discover ${SITE_CONFIG.totalTazos} unique tazos across ${SITE_CONFIG.totalSeries} original fictional franchises (Minimon, Dracobell, Cybermon). Build decks of 5, then enter the 3D arena to slam your tazos and flip opponent discs.`
                   }
                 },
                 {

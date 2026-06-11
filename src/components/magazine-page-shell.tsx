@@ -14,6 +14,7 @@ import { useI18n } from "@/lib/i18n"
 import { sfxEnsureUnlocked } from "@/lib/audio/sfx-engine"
 import LanguageSwitcher from "@/components/ui/language-switcher"
 import { TOTAL_PLANNED } from "@/lib/franchise-config"
+import { SITE_CONFIG, FOOTER_LINKS } from "@/lib/site-config"
 import {
   BookOpen, Swords, BarChart3, ShoppingBag, Disc3,
   Target, Layers, LogOut, Settings, Shield, Coins,
@@ -46,20 +47,12 @@ function GameHUD({ credits, tazoCount }: { credits?: number; tazoCount?: number 
         </div>
         <div className="flex items-center gap-3 sm:gap-4">
           <span className="text-[#1a1a1a]/40">{tazoCount != null ? `${tazoCount}/${TOTAL_PLANNED}` : ""} TAZOS</span>
-          <span className="text-[#1a1a1a]/25 text-[7px] sm:text-[8px] tracking-[0.15em]">v0.6.0</span>
+          <span className="text-[#1a1a1a]/25 text-[7px] sm:text-[8px] tracking-[0.15em]">v{SITE_CONFIG.version}</span>
         </div>
       </div>
     </div>
   )
 }
-
-const SOCIAL_LINKS = [
-  { label: "X / Twitter", href: "https://x.com/tazosgame", hoverColor: "hover:text-[#FFCC00] hover:border-[#FFCC00]/50" },
-  { label: "Reddit", href: "https://www.reddit.com/r/tradingtazosgame/", hoverColor: "hover:text-[#FF4500] hover:border-[#FF4500]/50" },
-  { label: "Telegram", href: "https://t.me/tradingtazosgame", hoverColor: "hover:text-[#FFCC00] hover:border-[#FFCC00]/50" },
-  { label: "Instagram", href: "https://www.instagram.com/tradingtazosgame/", hoverColor: "hover:text-[#E4405F] hover:border-[#E4405F]/50" },
-  { label: "Discord", href: "https://discord.gg/4mUhnc2REb", hoverColor: "hover:text-[#5865F2] hover:border-[#5865F2]/50" },
-]
 
 export default function MagazinePageShell({
   children,
@@ -187,22 +180,22 @@ export default function MagazinePageShell({
           {/* Links + social */}
           <div className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-3 gap-3">
             <div className="flex items-center gap-3 sm:gap-4">
-              <Link href="/tazos" className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Tazos</Link>
-              <Link href="/?page=how-to-play" className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Battle</Link>
-              <Link href="/?page=faq" className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">FAQ</Link>
-              <Link href="/?page=privacy" className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Privacy</Link>
-              <Link href="/?page=terms" className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Terms</Link>
-              <Link href="/?page=contact" className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Contact</Link>
+              {FOOTER_LINKS.info.slice(0, 3).map(({ label, href }) => (
+                <Link key={label} href={href} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">{label}</Link>
+              ))}
+              {FOOTER_LINKS.legal.map(({ label, href }) => (
+                <Link key={label} href={href} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">{label}</Link>
+              ))}
               <span className="text-white/10">|</span>
-              {SOCIAL_LINKS.map(s => (
+              {FOOTER_LINKS.social.map(s => (
                 <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label}
-                  className={`flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-white/20 text-zinc-400 ${s.hoverColor} transition-all`}>
+                  className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-white/20 text-zinc-400 hover:text-[#FFCC00] hover:border-[#FFCC00]/50 transition-all">
                   <DiscIcon label={s.label} />
                 </a>
               ))}
             </div>
             <span className="text-[8px] font-black text-white/15 uppercase tracking-[0.3em] whitespace-nowrap">
-              &copy; 2026 Trading Tazos Game &middot; v0.6.0
+              &copy; 2026 {SITE_CONFIG.name} &middot; v{SITE_CONFIG.version}
             </span>
           </div>
         </footer>

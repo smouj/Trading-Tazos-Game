@@ -1,10 +1,11 @@
 import type { Metadata } from "next"
 import { pageMetadata } from "@/lib/metadata"
+import { SITE_CONFIG } from "@/lib/site-config"
 
 export const metadata: Metadata = {
   ...pageMetadata({
-    title: "Tazo Catalog — Browse All 148 Tazos | Trading Tazos Game",
-    description: "Browse all 148 Trading Tazos — filter by franchise, rarity, finish, and combat type. Minimon, Dracobell, and Cybermon collections from TazoForge Studios 2026.",
+    title: `Tazo Catalog — Browse All ${SITE_CONFIG.totalTazos} Tazos | Trading Tazos Game`,
+    description: `Browse all ${SITE_CONFIG.totalTazos} Trading Tazos planned across ${SITE_CONFIG.totalSeries} franchises (${SITE_CONFIG.series.map(s => s.name).join(", ")}). Filter by franchise, rarity, finish, and combat type.`,
     path: "/tazos",
   }),
 }

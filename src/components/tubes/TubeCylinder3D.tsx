@@ -24,10 +24,15 @@ interface TubeCylinderProps {
 
 function TubeModel({ textureUrl, color, rotationSpeed = 0.15, showTazos = false, tazoImageUrls = [] }: TubeCylinderProps) {
   const groupRef = useRef<THREE.Group>(null!)
-  const texture = useLoader(THREE.TextureLoader, textureUrl)
-  texture.colorSpace = THREE.SRGBColorSpace
-  texture.wrapS = THREE.RepeatWrapping
-  texture.wrapT = THREE.ClampToEdgeWrapping
+  const loadedTexture = useLoader(THREE.TextureLoader, textureUrl)
+  const texture = useMemo(() => {
+    const clonedTexture = loadedTexture.clone()
+    clonedTexture.colorSpace = THREE.SRGBColorSpace
+    clonedTexture.wrapS = THREE.RepeatWrapping
+    clonedTexture.wrapT = THREE.ClampToEdgeWrapping
+    clonedTexture.needsUpdate = true
+    return clonedTexture
+  }, [loadedTexture])
 
   useFrame((_, delta) => {
     if (groupRef.current) groupRef.current.rotation.y += rotationSpeed * delta
@@ -74,8 +79,13 @@ function TubeModel({ textureUrl, color, rotationSpeed = 0.15, showTazos = false,
 
 // ── Tazo disc lying flat inside the tube (horizontal stack) ──
 function TazoDiscInTube({ url, index }: { url: string; index: number }) {
-  const texture = useLoader(THREE.TextureLoader, url)
-  texture.colorSpace = THREE.SRGBColorSpace
+  const loadedTexture = useLoader(THREE.TextureLoader, url)
+  const texture = useMemo(() => {
+    const clonedTexture = loadedTexture.clone()
+    clonedTexture.colorSpace = THREE.SRGBColorSpace
+    clonedTexture.needsUpdate = true
+    return clonedTexture
+  }, [loadedTexture])
 
   const yOffset = -0.28 + index * 0.11
 

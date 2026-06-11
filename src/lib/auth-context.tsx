@@ -37,24 +37,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // Load token from localStorage on mount.
-  // Always also try cookie-based auth via /api/auth/ping (browser sends auth_token cookie).
-  useEffect(() => {
-    const init = async () => {
-      const saved = localStorage.getItem(TOKEN_KEY)
-      if (saved) {
-        setToken(saved)
-        await fetchMe(saved)
-      }
-      // Always attempt cookie-based auth as safety net
-      await checkCookieAuth()
-      setLoading(false)
-    }
-    init()
-  }, [])
-
   /** Lightweight cookie-based session check */
-  const checkCookieAuth = async () => {
+  const checkCookieAuth = useCallback(async () => {
     try {
       const res = await fetch("/api/auth/ping", { credentials: "include" })
       if (!res.ok) return
@@ -69,9 +53,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       // network error — ignore
     }
-  }
+  }, [])
 
-  const fetchMe = async (t: string | null) => {
+  const fetchMe = useCallback(async (t: string | null) => {
     try {
       const headers: Record<string, string> = {}
       if (t) headers["Authorization"] = `Bearer ${t}`
@@ -94,7 +78,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  // Load token from localStorage on mount.
+  // Always also try cookie-based auth via /api/auth/ping (browser sends auth_token cookie).
+  useEffect(() => {
+    const init = async () => {
+      const saved = localStorage.getItem(TOKEN_KEY)
+      if (saved) {
+        setToken(saved)
+        await fetchMe(saved)
+      }
+      // Always attempt cookie-based auth as safety net
+      await checkCookieAuth()
+      setLoading(false)
+    }
+    init()
+  }, [checkCookieAuth, fetchMe])
 
   const login = useCallback(async (email: string, password: string) => {
     const res = await fetch("/api/auth/login", {

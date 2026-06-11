@@ -73,7 +73,7 @@ export default function QuestsPage() {
     setLoading(false)
   }, [])
 
-  useEffect(() => { loadQuests() }, [loadQuests]) // eslint-disable-line react-hooks/set-state-in-effect
+  useEffect(() => { loadQuests() }, [loadQuests])
   useEffect(() => {
     if (!token) return
     fetch("/api/credits", { headers: { Authorization: `Bearer ${token}` } })

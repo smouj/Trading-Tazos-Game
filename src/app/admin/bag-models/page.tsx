@@ -7,7 +7,7 @@
 // ============================================================
 import { useState, useEffect, Suspense } from "react"
 import { useAuth } from "@/lib/auth-context"
-import { ShoppingBag, Plus, Trash2, Edit3, Check, X, ChevronLeft, Shield, Loader2, Save, Image, Eye } from "lucide-react"
+import { ShoppingBag, Plus, Trash2, Edit3, Check, X, ChevronLeft, Shield, Loader2, Save, Image as ImageIcon, Eye } from "lucide-react"
 import Link from "next/link"
 import dynamic from "next/dynamic"
 
@@ -218,11 +218,11 @@ export default function AdminBagModelsPage() {
                     <div className="flex gap-1 flex-shrink-0">
                       <div className="w-14 h-20 rounded overflow-hidden border-2 border-[#1a1a1a] bg-[#1a1a1a]/5 flex items-center justify-center">
                         <img src={m.frontUrl} alt={`${m.name} front`} className="w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />
-                        {!m.frontUrl && <Image className="w-5 h-5 text-[#1a1a1a]/20" />}
+                        {!m.frontUrl && <ImageIcon aria-hidden="true" className="w-5 h-5 text-[#1a1a1a]/20" />}
                       </div>
                       <div className="w-14 h-20 rounded overflow-hidden border-2 border-dashed border-[#1a1a1a]/20 bg-[#1a1a1a]/5 flex items-center justify-center">
                         <img src={m.backUrl} alt={`${m.name} back`} className="w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />
-                        {!m.backUrl && <Image className="w-5 h-5 text-[#1a1a1a]/20" />}
+                        {!m.backUrl && <ImageIcon aria-hidden="true" className="w-5 h-5 text-[#1a1a1a]/20" />}
                       </div>
                     </div>
 

@@ -113,9 +113,9 @@ function getFlavorQuote(franchise: string, tazoName: string): string {
 }
 
 export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned, onPrev, onNext, hasPrev, hasNext }: TazoDetailModalProps) {
-  if (!tazo) return null
-
   const [viewMode, setViewMode] = useState<'front' | 'back' | '3d'>('front')
+
+  if (!tazo) return null
 
   const franchiseSlug = tazo.franchise || tazo.franchiseSlug || 'minimon'
   const bgConfig = getTazoBackgroundConfig(tazo, FRANCHISE_MAX[franchiseSlug] || 150)

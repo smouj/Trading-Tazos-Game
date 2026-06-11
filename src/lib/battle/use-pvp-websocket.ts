@@ -176,7 +176,7 @@ export function usePvPWebSocket(token: string | null): PvPWebSocket {
         setState(s => ({ ...s, status: "disconnected" }))
         // Auto-reconnect after 3s if not finished
         if (stateRef.current.status !== "finished") {
-          reconnectTimer.current = setTimeout(connect, 3000)
+          reconnectTimer.current = setTimeout(() => connect(), 3000)
         }
       }
     } catch {

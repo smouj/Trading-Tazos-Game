@@ -6,7 +6,7 @@
 // ============================================================
 import { useState, useEffect } from "react"
 import { useAuth } from "@/lib/auth-context"
-import { ShoppingBag, Upload, Trash2, Image, ChevronLeft, Plus, Shield, Loader2 } from "lucide-react"
+import { ShoppingBag, Upload, Trash2, Image as ImageIcon, ChevronLeft, Plus, Shield, Loader2 } from "lucide-react"
 import Link from "next/link"
 
 interface TextureEntry {
@@ -169,7 +169,7 @@ export default function AdminBagsPage() {
       {Object.entries(grouped).map(([franchiseKey, items]) => (
         <div key={franchiseKey} className="border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] bg-white">
           <div className="px-5 py-3 border-b-2 border-[#1a1a1a] bg-[#1a1a1a]/[0.02] flex items-center gap-2">
-            <Image className="w-4 h-4 text-[#F97316]" />
+            <ImageIcon aria-hidden="true" className="w-4 h-4 text-[#F97316]" />
             <h2 className="text-xs font-black uppercase text-[#1a1a1a] tracking-wider">{franchiseKey}</h2>
             <span className="text-[9px] font-bold text-[#1a1a1a]/25 ml-auto">{items.length} textures</span>
           </div>
@@ -203,7 +203,7 @@ export default function AdminBagsPage() {
 
       {textures.length === 0 && (
         <div className="text-center py-12 space-y-3">
-          <Image className="w-12 h-12 text-[#1a1a1a]/10 mx-auto" />
+          <ImageIcon aria-hidden="true" className="w-12 h-12 text-[#1a1a1a]/10 mx-auto" />
           <p className="text-sm font-black text-[#1a1a1a]/20 uppercase">No bag textures uploaded yet</p>
         </div>
       )}

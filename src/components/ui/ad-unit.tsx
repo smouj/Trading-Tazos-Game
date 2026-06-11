@@ -22,10 +22,9 @@ export default function AdUnit({
   const initialized = useRef(false)
   const enabled = process.env.NEXT_PUBLIC_ADSENSE_ENABLED === "true"
 
-  // Don't render anything if AdSense is disabled
-  if (!enabled) return null
-
   useEffect(() => {
+    if (!enabled) return
+
     // Load AdSense script only once (not globally in layout)
     if (!document.querySelector('script[src*="pagead2.googlesyndication.com"]')) {
       const script = document.createElement('script')
@@ -47,7 +46,10 @@ export default function AdUnit({
     } catch {
       // AdSense blocked by ad blocker — gracefully do nothing
     }
-  }, [])
+  }, [enabled])
+
+  // Don't render anything if AdSense is disabled
+  if (!enabled) return null
 
   const formatStyles: Record<string, { minHeight: string }> = {
     horizontal: { minHeight: "90px" },

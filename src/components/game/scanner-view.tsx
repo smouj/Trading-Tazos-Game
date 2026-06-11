@@ -415,6 +415,18 @@ export function ScannerView() {
     [uploadedImageUrl]
   )
 
+  // Reset scanner
+  const handleReset = useCallback(() => {
+    setStep('upload')
+    setUploadedImageUrl(null)
+    setImageDimensions(null)
+    setRegions([])
+    setExtractedTazos([])
+    setIsScanning(false)
+    setScanLineY(0)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }, [])
+
   // Save all tazos
   const handleSaveAll = useCallback(async () => {
     setIsSavingAll(true)
@@ -449,19 +461,7 @@ export function ScannerView() {
     } finally {
       setIsSavingAll(false)
     }
-  }, [extractedTazos, uploadedImageUrl])
-
-  // Reset scanner
-  const handleReset = useCallback(() => {
-    setStep('upload')
-    setUploadedImageUrl(null)
-    setImageDimensions(null)
-    setRegions([])
-    setExtractedTazos([])
-    setIsScanning(false)
-    setScanLineY(0)
-    if (fileInputRef.current) fileInputRef.current.value = ''
-  }, [])
+  }, [extractedTazos, uploadedImageUrl, handleReset])
 
   const stepIndex = ['upload', 'detect', 'extract'].indexOf(step)
 

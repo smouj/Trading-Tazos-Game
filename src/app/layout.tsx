@@ -160,7 +160,7 @@ export default function RootLayout({
               "url": SITE_URL,
               "description": `${SITE_CONFIG.disclaimer} — collect, trade, and battle with ${SITE_CONFIG.totalTazos} tazos across ${SITE_CONFIG.totalSeries} franchises.`,
               "email": SITE_CONFIG.supportEmail,
-              "logo": `${SITE_URL}/icon-512x512.png`,
+              "logo": `${SITE_URL}/pwa-512.png`,
               "sameAs": [
                 SITE_CONFIG.social.x,
                 SITE_CONFIG.social.github

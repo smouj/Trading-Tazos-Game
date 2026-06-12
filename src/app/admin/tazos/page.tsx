@@ -8,11 +8,11 @@ import { useState, useEffect, useCallback, useMemo } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { useVisibilityRefresh } from "@/lib/use-visibility-refresh"
 import {
-  Shield, Loader2, Search, X, Edit3, Save, RotateCcw,
+  Loader2, Search, X, Edit3, Save, RotateCcw,
   ChevronLeft, ChevronRight, Image as ImageIcon, Star, Check,
-  AlertTriangle, Trash2, Square, CheckSquare, ArrowUpDown,
+  AlertTriangle, Trash2, Square, CheckSquare, ArrowUpDown, Grid3X3,
 } from "lucide-react"
-import Link from "next/link"
+import AdminShell from "@/components/admin/admin-shell"
 import TazoDiscImage from "@/components/game/tazo-disc-image"
 
 // ── Types ──
@@ -296,42 +296,17 @@ export default function AdminTazoManagerPage() {
     if (updated > 0) fetchTazos()
   }
 
-  // ── Loading / Access check ──
-  if (authLoading) return <div className="flex items-center justify-center min-h-screen"><Loader2 className="w-8 h-8 animate-spin text-[#FFCC00]" /></div>
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center mag-bg">
-        <div className="mag-card p-8 text-center max-w-md mx-4 space-y-4">
-          <Shield className="w-16 h-16 mx-auto text-[#E3350D]" />
-          <h1 className="text-xl font-black uppercase text-[#1a1a1a]">Access Denied</h1>
-          <p className="text-sm font-bold text-[#1a1a1a]/50">This panel is restricted to the developer account.</p>
-          <Link href="/" className="mag-btn inline-block bg-[#E3350D] text-white px-6 py-3 text-xs font-black uppercase tracking-wider border-2 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a]">Back to Home</Link>
-        </div>
-      </div>
-    )
-  }
-
+  // ── Render ──
   return (
-    <div className="min-h-screen mag-bg">
-      {/* ── Header ── */}
-      <header className="bg-[#1a1a1a] border-b-4 border-[#E3350D] sticky top-0 z-40">
-        <div className="max-w-[1600px] mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Shield className="w-6 h-6 text-[#E3350D]" />
-            <Link href="/admin" className="text-sm font-black text-zinc-400 hover:text-white uppercase tracking-wider">Admin</Link>
-            <span className="text-zinc-600">/</span>
-            <h1 className="text-lg font-black text-white uppercase tracking-wider">Tazo Manager</h1>
-            <span className="text-[10px] font-bold text-zinc-500 ml-2">({total} tazos)</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-[10px] font-bold text-zinc-400">{user?.email}</span>
-            <Link href="/app/collection" className="text-[10px] font-black text-[#FFCC00] hover:text-white uppercase tracking-wider">Dashboard →</Link>
-          </div>
+    <AdminShell accentColor="#F59E0B">
+      <div className="max-w-[1600px] mx-auto px-4 py-4">
+        <div className="flex items-center gap-3 mb-4">
+          <Grid3X3 className="w-5 h-5 text-[#F59E0B]" />
+          <h1 className="text-lg font-black uppercase text-[#1a1a1a] tracking-wider">Tazo Manager</h1>
+          <span className="text-sm font-black text-[#1a1a1a]/25">({total} tazos)</span>
         </div>
-      </header>
 
       {/* ── Filter Bar ── */}
-      <div className="max-w-[1600px] mx-auto px-4 py-4">
         <div className="flex flex-wrap items-center gap-3 bg-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] rounded-2xl p-3">
           <div className="flex items-center gap-2 flex-1 min-w-[200px]">
             <Search className="w-4 h-4 text-zinc-400" />
@@ -830,6 +805,6 @@ export default function AdminTazoManagerPage() {
           </>
         )}
       </div>
-    </div>
+    </AdminShell>
   )
 }

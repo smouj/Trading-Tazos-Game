@@ -1,13 +1,14 @@
 "use client"
 
 // ============================================================
-// Trading Tazos Game — Admin Panel
+// Trading Tazos Game — Admin Panel Dashboard
 // Only accessible by the developer email.
 // ============================================================
 import { useState, useEffect } from "react"
 import { useAuth } from "@/lib/auth-context"
-import { Shield, Users, Package, Database, Server, Activity, Loader2, Check, Wand2, Image as ImageIcon, Grid3X3, LayoutGrid, ShoppingBag } from "lucide-react"
+import { Users, Package, Database, Server, Activity, Loader2, Check, Wand2, Image as ImageIcon, Grid3X3, LayoutGrid, ShoppingBag } from "lucide-react"
 import Link from "next/link"
+import AdminShell from "@/components/admin/admin-shell"
 
 interface OverviewData {
   users: number; tazos: number; tazosWithArt: number; franchises: number
@@ -42,38 +43,10 @@ export default function AdminPage() {
     })
   }, [isAdmin])
 
-  if (authLoading) return <div className="flex items-center justify-center min-h-screen"><Loader2 className="w-8 h-8 animate-spin text-[#FFCC00]" /></div>
-
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center mag-bg">
-        <div className="mag-card p-8 text-center max-w-md mx-4 space-y-4">
-          <Shield className="w-16 h-16 mx-auto text-[#E3350D]" />
-          <h1 className="text-xl font-black uppercase text-[#1a1a1a]">Access Denied</h1>
-          <p className="text-sm font-bold text-[#1a1a1a]/50">This panel is restricted to the developer account.</p>
-          <Link href="/" className="mag-btn inline-block bg-[#E3350D] text-white px-6 py-3 text-xs font-black uppercase tracking-wider border-2 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a]">Back to Home</Link>
-        </div>
-      </div>
-    )
-  }
 
   return (
-    <div className="min-h-screen mag-bg">
-      {/* Header */}
-      <header className="bg-[#1a1a1a] border-b-4 border-[#E3350D] sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Shield className="w-6 h-6 text-[#E3350D]" />
-            <h1 className="text-lg font-black text-white uppercase tracking-wider">Admin Panel</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-[10px] font-bold text-zinc-400">{user?.email}</span>
-            <Link href="/app/collection" className="text-[10px] font-black text-[#FFCC00] hover:text-white uppercase tracking-wider">Dashboard →</Link>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+    <AdminShell accentColor="#E3350D">
+      <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
         {effectiveLoading ? (
           <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-[#FFCC00]" /></div>
         ) : (
@@ -282,7 +255,7 @@ export default function AdminPage() {
             )}
           </>
         )}
-      </main>
-    </div>
+      </div>
+    </AdminShell>
   )
 }

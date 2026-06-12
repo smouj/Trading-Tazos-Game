@@ -7,8 +7,8 @@
 // ============================================================
 import { useState, useEffect, Suspense } from "react"
 import { useAuth } from "@/lib/auth-context"
-import { ShoppingBag, Plus, Trash2, Edit3, Check, X, ChevronLeft, Shield, Loader2, Save, Image as ImageIcon, Eye } from "lucide-react"
-import Link from "next/link"
+import { ShoppingBag, Plus, Trash2, Edit3, Check, X, Loader2, Save, Image as ImageIcon, Eye } from "lucide-react"
+import AdminShell from "@/components/admin/admin-shell"
 import dynamic from "next/dynamic"
 
 const AdminBagPreview = dynamic(() => import("@/components/admin/admin-bag-preview"), { ssr: false, loading: () => <div className="flex items-center justify-center h-full"><Loader2 className="w-6 h-6 animate-spin text-[#F97316]" /></div> })
@@ -79,18 +79,7 @@ export default function AdminBagModelsPage() {
     else if (!authLoading) setLoading(false)
   }, [isAdmin, authLoading])
 
-  if (authLoading) return <div className="flex items-center justify-center min-h-screen"><Loader2 className="w-8 h-8 animate-spin text-[#FFCC00]" /></div>
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center mag-bg">
-        <div className="mag-card p-8 text-center max-w-md mx-4 space-y-4">
-          <Shield className="w-16 h-16 mx-auto text-[#E3350D]" />
-          <h1 className="text-xl font-black uppercase">Access Denied</h1>
-          <Link href="/" className="mag-btn inline-block bg-[#E3350D] text-white px-6 py-3 text-xs font-black uppercase border-2 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a]">Back to Home</Link>
-        </div>
-      </div>
-    )
-  }
+
 
   const handleCreate = async () => {
     if (!newName || !newFrontUrl || !newBackUrl) return
@@ -156,21 +145,12 @@ export default function AdminBagModelsPage() {
   }
 
   return (
-    <div className="min-h-screen mag-bg">
-      <header className="bg-[#1a1a1a] border-b-4 border-[#F97316] sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/admin" className="text-zinc-400 hover:text-white"><ChevronLeft className="w-5 h-5" /></Link>
-            <ShoppingBag className="w-5 h-5 text-[#F97316]" />
-            <h1 className="text-lg font-black text-white uppercase tracking-wider">Bag Models</h1>
-          </div>
-          <button onClick={() => setShowAdd(!showAdd)} className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F97316] text-white text-[10px] font-black uppercase border-2 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a] hover:shadow-[1px_1px_0px]">
-            <Plus className="w-3.5 h-3.5" /> New Bag
-          </button>
-        </div>
-      </header>
-
-      <main className="max-w-6xl mx-auto px-4 py-6 space-y-4">
+    <AdminShell accentColor="#F97316" actions={
+      <button onClick={() => setShowAdd(!showAdd)} className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F97316] text-white text-[10px] font-black uppercase border-2 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a] hover:shadow-[1px_1px_0px]">
+        <Plus className="w-3.5 h-3.5" /> New Bag
+      </button>
+    }>
+      <div className="max-w-6xl mx-auto px-4 py-6 space-y-4">
         {message && (
           <div className="p-3 border-3 border-[#22C55E] bg-[#22C55E]/10 text-center text-[11px] font-black text-[#22C55E] uppercase">{message}</div>
         )}
@@ -345,7 +325,7 @@ export default function AdminBagModelsPage() {
             })}
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </AdminShell>
   )
 }

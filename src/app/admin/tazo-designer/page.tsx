@@ -10,10 +10,9 @@ const IMG_CACHE_BUSTER = "v3";
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/lib/auth-context";
 import {
-  Shield, Wand2, Loader2, LayoutGrid,
-  ArrowLeft, Save, Zap, FlipHorizontal, FlipVertical,
+  Loader2, LayoutGrid, Save, Zap, FlipHorizontal, FlipVertical,
 } from "lucide-react";
-import Link from "next/link";
+import AdminShell from "@/components/admin/admin-shell";
 import TazoVisualEditor from "@/components/admin/tazo-visual-editor";
 import type { LayoutConfig } from "@/components/admin/tazo-visual-editor";
 import { DEFAULT_LAYOUT } from "@/components/admin/tazo-visual-editor";
@@ -40,7 +39,7 @@ export default function AdminTazoDesignerPage() {
   // Fetch all published tazos
   useEffect(() => {
     if (!isAdmin) return;
-    fetch("/api/tazos?publishStatus=published&limit=100", { credentials: "include" })
+    fetch("/api/tazos?publishStatus=published&limit=200", { credentials: "include" })
       .then((r) => r.json())
       .then((data) => {
         const tazos = (data.tazos || []).map((t: any) => ({
@@ -164,34 +163,13 @@ export default function AdminTazoDesignerPage() {
     }
   }, [activeFranchise, backLayout]);
 
-  if (authLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen mag-bg">
-        <Loader2 className="w-8 h-8 animate-spin text-[#FFCC00]" />
-      </div>
-    );
-  }
-
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center mag-bg">
-        <div className="mag-card p-8 text-center max-w-md mx-4 space-y-4">
-          <Shield className="w-16 h-16 mx-auto text-[#E3350D]" />
-          <h1 className="text-xl font-black uppercase text-[#1a1a1a]">Access Denied</h1>
-          <p className="text-sm font-bold text-[#1a1a1a]/50">Developer only.</p>
-          <Link href="/" className="mag-btn inline-block bg-[#E3350D] text-white px-6 py-3 text-xs font-black uppercase border-2 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a]">
-            Back
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen mag-bg">
-        <Loader2 className="w-8 h-8 animate-spin text-[#FFCC00]" />
-      </div>
+      <AdminShell accentColor="#A855F7">
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-8 h-8 animate-spin text-[#A855F7]" />
+        </div>
+      </AdminShell>
     );
   }
 
@@ -204,82 +182,66 @@ export default function AdminTazoDesignerPage() {
   }
 
   return (
-    <div className="min-h-screen mag-bg">
-      {/* Header */}
-      <header className="bg-[#1a1a1a] border-b-4 border-[#FFCC00] sticky top-0 z-40">
-        <div className="max-w-full mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/admin" className="text-zinc-500 hover:text-white transition-colors">
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <div className="flex items-center gap-3">
-              <Wand2 className="w-6 h-6 text-[#FFCC00]" />
-              <div>
-                <h1 className="text-lg font-black text-white uppercase tracking-wider">Tazo Designer</h1>
-                <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">
-                  Visual editor · Drag & drop elements
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* Tazo navigator */}
-            {selectedTazo && (
-              <div className="flex items-center gap-2 bg-zinc-800 rounded-lg px-3 py-1.5">
-                <button
-                  onClick={() => {
-                    const idx = publishedTazos.findIndex((t) => t.slug === selectedTazo.slug);
-                    if (idx > 0) setSelectedTazo(publishedTazos[idx - 1]);
-                  }}
-                  className="text-zinc-500 hover:text-white"
-                >
-                  ◀
-                </button>
-                <span className="text-[10px] font-black text-white uppercase whitespace-nowrap">
-                  {selectedTazo.displayName || selectedTazo.name}
-                </span>
-                <span className="text-[8px] font-bold text-zinc-600">
-                  {publishedTazos.findIndex((t) => t.slug === selectedTazo.slug) + 1}/{publishedTazos.length}
-                </span>
-                <button
-                  onClick={() => {
-                    const idx = publishedTazos.findIndex((t) => t.slug === selectedTazo.slug);
-                    if (idx < publishedTazos.length - 1) setSelectedTazo(publishedTazos[idx + 1]);
-                  }}
-                  className="text-zinc-500 hover:text-white"
-                >
-                  ▶
-                </button>
-              </div>
-            )}
-
-            {/* View mode */}
-            <div className="flex bg-zinc-800 rounded-lg p-0.5">
+    <AdminShell accentColor="#A855F7">
+      <div className="max-w-full mx-auto px-4 py-4">
+        <div className="flex items-center gap-3 mb-4">
+          <LayoutGrid className="w-5 h-5 text-[#A855F7]" />
+          <h1 className="text-lg font-black uppercase text-[#1a1a1a] tracking-wider">Tazo Designer</h1>
+          <span className="text-[10px] font-bold text-[#1a1a1a]/30 uppercase">Drag & drop visual editor</span>
+        </div>
+        
+        {/* Page-level actions bar */}
+        <div className="flex items-center gap-3 mb-4">
+          {/* Tazo navigator */}
+          {selectedTazo && (
+            <div className="flex items-center gap-2 bg-white border-2 border-[#1a1a1a] rounded-lg px-3 py-1.5 shadow-[2px_2px_0px_#1a1a1a]">
               <button
-                onClick={() => setViewMode("editor")}
-                className={`px-3 py-1 text-[9px] font-black uppercase tracking-wider rounded transition-all ${
-                  viewMode === "editor" ? "bg-[#FFCC00] text-[#1a1a1a]" : "text-zinc-500 hover:text-white"
-                }`}
+                onClick={() => {
+                  const idx = publishedTazos.findIndex((t) => t.slug === selectedTazo.slug);
+                  if (idx > 0) setSelectedTazo(publishedTazos[idx - 1]);
+                }}
+                className="text-[#1a1a1a]/40 hover:text-[#1a1a1a]"
               >
-                Editor
+                ◀
               </button>
+              <span className="text-[10px] font-black text-[#1a1a1a] uppercase whitespace-nowrap">
+                {selectedTazo.displayName || selectedTazo.name}
+              </span>
+              <span className="text-[8px] font-bold text-[#1a1a1a]/40">
+                {publishedTazos.findIndex((t) => t.slug === selectedTazo.slug) + 1}/{publishedTazos.length}
+              </span>
               <button
-                onClick={() => setViewMode("grid")}
-                className={`px-3 py-1 text-[9px] font-black uppercase tracking-wider rounded transition-all ${
-                  viewMode === "grid" ? "bg-[#FFCC00] text-[#1a1a1a]" : "text-zinc-500 hover:text-white"
-                }`}
+                onClick={() => {
+                  const idx = publishedTazos.findIndex((t) => t.slug === selectedTazo.slug);
+                  if (idx < publishedTazos.length - 1) setSelectedTazo(publishedTazos[idx + 1]);
+                }}
+                className="text-[#1a1a1a]/40 hover:text-[#1a1a1a]"
               >
-                <LayoutGrid className="w-3 h-3 inline mr-1" /> Grid
+                ▶
               </button>
             </div>
+          )}
 
-            <span className="text-[10px] font-bold text-zinc-400">{user?.email}</span>
+          {/* View mode */}
+          <div className="flex bg-white border-2 border-[#1a1a1a] rounded-lg p-0.5 shadow-[2px_2px_0px_#1a1a1a]">
+            <button
+              onClick={() => setViewMode("editor")}
+              className={`px-3 py-1 text-[9px] font-black uppercase tracking-wider rounded transition-all ${
+                viewMode === "editor" ? "bg-[#A855F7] text-white" : "text-[#1a1a1a]/40 hover:text-[#1a1a1a]"
+              }`}
+            >
+              Editor
+            </button>
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`px-3 py-1 text-[9px] font-black uppercase tracking-wider rounded transition-all ${
+                viewMode === "grid" ? "bg-[#A855F7] text-white" : "text-[#1a1a1a]/40 hover:text-[#1a1a1a]"
+              }`}
+            >
+              <LayoutGrid className="w-3 h-3 inline mr-1" /> Grid
+            </button>
           </div>
         </div>
-      </header>
-
-      <main className="max-w-full mx-auto px-4 py-4">
         {viewMode === "editor" && selectedTazo && (
           <>
             {/* Side toggle tabs */}
@@ -435,7 +397,7 @@ export default function AdminTazoDesignerPage() {
           <span className="text-[9px] font-mono font-bold text-[#1a1a1a]/30">+/- → scale element</span>
           <span className="text-[9px] font-mono font-bold text-[#1a1a1a]/30">Ctrl+←/→ → prev/next tazo</span>
         </div>
-      </main>
-    </div>
+      </div>
+    </AdminShell>
   );
 }

@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
 
   // Force-include packages that static analysis misses
   outputFileTracingIncludes: {
-    "/**/*": ["nodemailer", "stripe"],
+    "/**/*": ["nodemailer", "stripe", "bcryptjs"],
   },
 
   // ── Security Headers ──

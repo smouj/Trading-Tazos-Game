@@ -6,8 +6,8 @@
 // ============================================================
 import { useState, useEffect } from "react"
 import { useAuth } from "@/lib/auth-context"
-import { Package, Upload, Trash2, Image as ImageIcon, Check, ChevronLeft, Plus, Shield, Loader2 } from "lucide-react"
-import Link from "next/link"
+import { Package, Upload, Trash2, Image as ImageIcon, Plus } from "lucide-react"
+import AdminShell from "@/components/admin/admin-shell"
 
 interface TextureEntry {
   name: string
@@ -87,24 +87,13 @@ export default function AdminTubesPage() {
     }
   }
 
-  if (authLoading || loading) {
+  if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="mag-spinner w-10 h-10 rounded-full border-4 border-[#FFCC00] border-t-[#E3350D]" />
-      </div>
-    )
-  }
-
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center mag-bg">
-        <div className="mag-card p-8 text-center max-w-md mx-4 space-y-4">
-          <Shield className="w-16 h-16 mx-auto text-[#E3350D]" />
-          <h1 className="text-xl font-black uppercase text-[#1a1a1a]">Access Denied</h1>
-          <p className="text-sm font-bold text-[#1a1a1a]/50">This panel is restricted to the developer account.</p>
-          <Link href="/" className="mag-btn inline-block bg-[#E3350D] text-white px-6 py-3 text-xs font-black uppercase tracking-wider border-2 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a]">Back to Home</Link>
+      <AdminShell accentColor="#FF6B00">
+        <div className="flex items-center justify-center py-20">
+          <div className="mag-spinner w-10 h-10 rounded-full border-4 border-[#FFCC00] border-t-[#E3350D]" />
         </div>
-      </div>
+      </AdminShell>
     )
   }
 
@@ -116,14 +105,11 @@ export default function AdminTubesPage() {
   }
 
   return (
-    <div className="min-h-screen mag-bg">
+    <AdminShell accentColor="#FF6B00">
       <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 py-4 sm:py-6 space-y-6">
-      {/* Back + title */}
+      {/* Title */}
       <div className="flex items-center gap-3">
-        <Link href="/admin" className="mag-btn px-3 py-1.5 text-[10px] font-black uppercase bg-white text-[#1a1a1a] border-2 border-[#1a1a1a]">
-          <ChevronLeft className="w-3.5 h-3.5 inline mr-1" /> Admin
-        </Link>
-        <Package className="w-6 h-6 text-[#FFCC00]" />
+        <Package className="w-6 h-6 text-[#FF6B00]" />
         <h1 className="text-lg sm:text-xl font-black uppercase text-[#1a1a1a] tracking-wide">
           Tube Textures
         </h1>
@@ -210,6 +196,6 @@ export default function AdminTubesPage() {
         </div>
       )}
       </div>
-    </div>
+    </AdminShell>
   )
 }

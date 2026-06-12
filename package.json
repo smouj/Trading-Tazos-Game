@@ -78,6 +78,7 @@
     "next-themes": "^0.4.6",
     "nodemailer": "^8.0.11",
     "openai": "^6.42.0",
+    "postcss": "8.5.15",
     "prisma": "^6.19.3",
     "react": "^19.0.0",
     "react-day-picker": "^9.8.0",
@@ -120,7 +121,5 @@
   "author": "Trading Tazos Game <support@tradingtazosgame.com>",
   "repository": "https://github.com/smouj/Trading-Tazos-Game",
   "homepage": "https://tradingtazosgame.com",
-  "overrides": {
-    "postcss": "8.5.15"
-  }
+  "overrides": {}
 }

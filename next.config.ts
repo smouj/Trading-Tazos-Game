@@ -32,7 +32,6 @@ const nextConfig: NextConfig = {
       // Legacy SEO routes
       { source: "/privacy-policy", destination: "/privacy", permanent: true },
       { source: "/terms-of-service", destination: "/terms", permanent: true },
-      { source: "/refund-policy", destination: "/terms", permanent: true },
       { source: "/signup", destination: "/register", permanent: true },
 
       // Battle

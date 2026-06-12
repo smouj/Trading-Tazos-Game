@@ -29,6 +29,8 @@ import { FRANCHISES, FRANCHISE_BY_SLUG, TOTAL_PLANNED } from "@/lib/franchise-co
 import { SITE_CONFIG } from "@/lib/site-config"
 import { PRIVACY_SECTIONS, TERMS_SECTIONS, COOKIE_SECTIONS } from "@/lib/legal-content"
 import { DOWNLOAD_PLATFORMS, DOWNLOAD_RELEASE } from "@/lib/downloads"
+import { CreditShop } from "@/components/shop/credit-shop"
+import { RewardedAdButton } from "@/components/shop/rewarded-ad"
 
 // ── Types ──
 
@@ -1367,6 +1369,14 @@ function ShopContent() {
         })}
       </section>
 
+      {/* ── Monetization ── */}
+      <section className="space-y-6">
+        <h3 className="text-lg sm:text-xl font-black text-[#1a1a1a] uppercase tracking-tight text-center">💎 Earn & Buy Credits</h3>
+        <p className="text-xs text-[#1a1a1a]/40 font-bold text-center max-w-md mx-auto -mt-4">Credits unlock bags. Earn them free by watching ads or buy packs to accelerate your collection.</p>
+        <RewardedAdWidget />
+        <CreditShopWidget />
+      </section>
+
       {/* CTA */}
       <section className="mag-card border-3 border-[#1a1a1a] bg-white p-6 sm:p-8 text-center space-y-4 relative overflow-hidden" style={{ boxShadow: "6px 6px 0px #FFCC0040" }}>
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: "repeating-linear-gradient(45deg, #1a1a1a 0px, #1a1a1a 2px, transparent 2px, transparent 12px)" }} />
@@ -1384,6 +1394,36 @@ function ShopContent() {
         </div>
       </section>
     </div>
+  )
+}
+
+// ── Monetization Widgets ──
+
+function RewardedAdWidget() {
+  const { user, loading } = useAuth()
+  const isAuth = !loading && !!user
+  const userCredits = user?.credits ?? 0
+
+  return (
+    <div className="flex justify-center">
+      <RewardedAdButton
+        isAuthenticated={isAuth}
+        onRewardClaimed={() => {}}
+      />
+    </div>
+  )
+}
+
+function CreditShopWidget() {
+  const { user, loading } = useAuth()
+  const isAuth = !loading && !!user
+  const userCredits = user?.credits ?? 0
+
+  return (
+    <CreditShop
+      userCredits={userCredits}
+      isAuthenticated={isAuth}
+    />
   )
 }
 

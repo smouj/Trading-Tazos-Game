@@ -15,8 +15,9 @@ export const PRIVACY_SECTIONS: LegalSection[] = [
   { title: "6. Children's Privacy", body: <>TTG is not directed at children under 13. We do not knowingly collect data from children under 13. If you believe a child has provided us with personal data, contact us immediately.</> },
   { title: "7. Cookies & Analytics", body: <>We use essential cookies for authentication (session tokens) and security. We also use Plausible Analytics (self-hosted, privacy-friendly, no personal data) to understand site usage. See our <a href="/cookies" className="text-[#E3350D] underline font-black">Cookie Policy</a>.</> },
   { title: "8. Advertising", body: <>TTG may display non-personalized advertisements through Google AdSense. AdSense may set cookies for frequency capping and aggregated reporting. No personalized ads are served without your explicit consent. See our <a href="/cookies" className="text-[#E3350D] underline font-black">Cookie Policy</a> for details.</> },
-  { title: "9. Changes", body: <>We may update this policy. Significant changes will be communicated via email or site notice. Continued use after changes constitutes acceptance. Last updated: June 10, 2026.</> },
-  { title: "10. Contact", body: <>Data controller: <a href="mailto:support@tradingtazosgame.com" className="text-[#E3350D] underline font-black">support@tradingtazosgame.com</a></> },
+  { title: "9. Payment Data", body: <>When you purchase Credits, payment processing is handled by <strong>Stripe</strong>. We do not store your full payment card details. Stripe collects and processes payment information in accordance with their privacy policy. We store only purchase records (amount, date, Credits granted) for account management and legal compliance.</> },
+  { title: "10. Changes", body: <>We may update this policy. Significant changes will be communicated via email or site notice. Continued use after changes constitutes acceptance. Last updated: June 12, 2026.</> },
+  { title: "11. Contact", body: <>Data controller: <a href="mailto:support@tradingtazosgame.com" className="text-[#E3350D] underline font-black">support@tradingtazosgame.com</a></> },
 ]
 
 // ── TERMS OF SERVICE ──
@@ -32,6 +33,18 @@ export const TERMS_SECTIONS: LegalSection[] = [
   { title: "9. Termination", body: <>We may terminate or suspend your account at any time for violation of these terms. You may delete your account at any time by contacting support. Upon termination, your right to use the service ceases immediately.</> },
   { title: "10. Governing Law", body: <>These terms are governed by Spanish law. Any disputes shall be resolved in the courts of Spain.</> },
   { title: "11. Contact", body: <>For questions about these Terms: <a href="mailto:support@tradingtazosgame.com" className="text-[#E3350D] underline font-black">support@tradingtazosgame.com</a></> },
+  { title: "12. Purchases & Virtual Currency", body: <>
+    <p className="mb-3">TTG may offer virtual currency ("Credits") for purchase through the Shop. By purchasing Credits, you agree to the following:</p>
+    <ul className="list-disc pl-5 space-y-2 text-[#1a1a1a]/70 text-sm">
+      <li>Credits are a limited, non-exclusive, non-transferable license to access virtual content within TTG.</li>
+      <li>Credits have no monetary value outside the game and cannot be exchanged for real currency.</li>
+      <li>All prices include applicable VAT. Prices are displayed in EUR (€).</li>
+      <li>One-time purchase — no subscriptions or recurring charges.</li>
+      <li>Payment processing is handled by Stripe. We do not store your full payment card details.</li>
+      <li>See our <a href="/refund-policy" className="text-[#E3350D] underline font-black">Refund Policy</a> for information about refunds and cancellations.</li>
+      <li>We reserve the right to modify Credit pricing at any time.</li>
+    </ul>
+  </> },
 ]
 
 // ── COOKIE POLICY ──
@@ -43,4 +56,17 @@ export const COOKIE_SECTIONS: LegalSection[] = [
   { title: "5. Managing Cookies", body: <>Most browsers allow you to block or delete cookies via settings. However, blocking essential cookies will prevent you from logging in or using authenticated features of TTG.</> },
   { title: "6. Local Storage", body: <>We may use browser localStorage for non-personal preferences (e.g., language selection, UI state). This data stays on your device and is never sent to our servers.</> },
   { title: "7. Contact", body: <>Questions about cookies: <a href="mailto:support@tradingtazosgame.com" className="text-[#E3350D] underline font-black">support@tradingtazosgame.com</a></> },
+]
+
+// ── REFUND POLICY ──
+export const REFUND_SECTIONS: LegalSection[] = [
+  { title: "1. Overview", body: <>This Refund Policy applies to purchases of virtual currency ("Credits") made through Trading Tazos Game (tradingtazosgame.com). By making a purchase, you agree to this policy.</> },
+  { title: "2. Digital Products", body: <>Credits are <strong>digital virtual currency</strong> for use within Trading Tazos Game. They have no cash value outside the game and cannot be exchanged for real money. Credits are not a financial instrument, cryptocurrency, or investment.</> },
+  { title: "3. EU Right of Withdrawal", body: <>Under EU consumer law (Directive 2011/83/EU), you have a <strong>14-day right of withdrawal</strong> for digital purchases. However, this right expires once the digital content is fully delivered. Since Credits are delivered instantly upon purchase, <strong>by completing a purchase you consent to immediate delivery and acknowledge that your right of withdrawal expires upon delivery</strong>.</> },
+  { title: "4. Refund Eligibility", body: <>Refunds may be granted in the following circumstances: (a) <strong>Unauthorized transaction</strong>: If your account was used without your permission. (b) <strong>Technical error</strong>: If you were charged but did not receive your Credits. (c) <strong>Duplicate charge</strong>: If you were charged multiple times for the same purchase. Refund requests must be submitted within 14 days of the transaction.</> },
+  { title: "5. Non-Refundable Situations", body: <>Credits are generally non-refundable in these situations: (a) You changed your mind after receiving the Credits. (b) You already spent the Credits in-game. (c) You were banned or suspended for violating our Terms of Service. (d) The purchase was made more than 14 days ago.</> },
+  { title: "6. How to Request a Refund", body: <>Contact us at <a href="mailto:support@tradingtazosgame.com" className="text-[#E3350D] underline font-black">support@tradingtazosgame.com</a> with: your account email, the purchase date, the amount, and the reason for your request. We will review and respond within 5 business days.</> },
+  { title: "7. Chargebacks", body: <>Initiating a chargeback with your bank or payment provider without first contacting us may result in account suspension. We encourage you to reach out to us first so we can resolve any issues directly.</> },
+  { title: "8. Price Changes", body: <>Prices for Credit packages may change at any time. Purchases made before a price change are not eligible for partial refunds or credits for the difference.</> },
+  { title: "9. Contact", body: <>Refund inquiries: <a href="mailto:support@tradingtazosgame.com" className="text-[#E3350D] underline font-black">support@tradingtazosgame.com</a></> },
 ]

@@ -41,6 +41,7 @@ export async function GET(request: NextRequest) {
         name: fullUser.name,
         displayName: fullUser.displayName,
         avatarUrl: fullUser.avatarUrl,
+        credits: fullUser.credits,
         tazoCount: fullUser._count.userTazos,
         deckCount: fullUser._count.decks,
         createdAt: fullUser.createdAt,

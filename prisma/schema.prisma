@@ -388,3 +388,40 @@ model BagModel {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+// ─── Monetization ───
+
+model CreditPackage {
+  id          String   @id @default(cuid())
+  name        String              // "Starter Pack", "Mega Pack"
+  credits     Int                 // How many credits
+  priceCents  Int                 // Price in USD cents (e.g. 499 = $4.99)
+  bonusPct    Int      @default(0) // Bonus percentage label (e.g. 20 = "+20%")
+  stripePriceId String?           // Stripe Price ID (live mode)
+  stripePriceIdTest String?       // Stripe Price ID (test mode)
+  isActive    Boolean  @default(true)
+  isPopular   Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  purchases   Purchase[]
+}
+
+model Purchase {
+  id              String   @id @default(cuid())
+  userId          String
+  packageId       String
+  creditPackage   CreditPackage @relation(fields: [packageId], references: [id])
+  amount          Int                // Credits purchased
+  priceCents      Int                // Price paid
+  currency        String   @default("EUR")
+  stripeSessionId String?            // Stripe Checkout Session ID
+  stripePaymentId String?            // Stripe Payment Intent ID
+  status          String   @default("pending") // pending, completed, refunded, failed
+  refundedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@index([stripeSessionId])
+}

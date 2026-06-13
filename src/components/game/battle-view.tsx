@@ -95,6 +95,57 @@ function BettingReveal({ playerTazo, opponentTazo }: { playerTazo: TazoCard; opp
   )
 }
 
+// ── CoinFlip: Animated coin flip overlay ──
+function CoinFlipOverlay({ show, winner }: { show: boolean; winner: "player" | "opponent" }) {
+  const [animPhase, setAnimPhase] = useState<"flipping" | "reveal">("flipping")
+
+  useEffect(() => {
+    if (show) {
+      setAnimPhase("flipping")
+      const t = setTimeout(() => setAnimPhase("reveal"), 1200)
+      return () => clearTimeout(t)
+    }
+  }, [show])
+
+  if (!show) return null
+
+  const isPlayerFirst = winner === "player"
+
+  return (
+    <div className="absolute inset-0 z-30 pointer-events-none flex items-center justify-center">
+      <div className="bg-black/70 backdrop-blur-lg rounded-3xl border border-white/10 px-8 py-6 shadow-[0_0_60px_rgba(255,204,0,0.15)] flex flex-col items-center gap-4">
+        {/* Coin */}
+        <div className={`w-16 h-16 rounded-full flex items-center justify-center border-4 ${animPhase === "flipping" ? "animate-[spin_0.4s_linear_infinite]" : ""}`}
+          style={{
+            background: animPhase === "reveal"
+              ? isPlayerFirst ? "linear-gradient(135deg, #29ADFF, #0066CC)" : "linear-gradient(135deg, #FF004D, #CC0000)"
+              : "linear-gradient(135deg, #FFD700, #DAA520)",
+            borderColor: animPhase === "reveal"
+              ? isPlayerFirst ? "#29ADFF" : "#FF004D"
+              : "#FFCC00",
+            boxShadow: `0 0 30px ${animPhase === "reveal" ? (isPlayerFirst ? "#29ADFF" : "#FF004D") : "#FFCC00"}66`,
+          }}
+        >
+          {animPhase === "flipping" ? (
+            <span className="text-2xl">🪙</span>
+          ) : isPlayerFirst ? (
+            <span className="text-xl font-black text-white">YOU</span>
+          ) : (
+            <span className="text-xl font-black text-white">AI</span>
+          )}
+        </div>
+
+        {/* Result text */}
+        <div className={`text-center transition-all duration-300 ${animPhase === "reveal" ? "scale-100 opacity-100" : "scale-50 opacity-0"}`}>
+          <div className="text-[12px] font-black text-[#FFCC00] tracking-widest">
+            {animPhase === "flipping" ? "FLIPPING..." : `${isPlayerFirst ? "⭐ YOU" : "⚔️ AI"} SLAMS FIRST!`}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const DEMO_TAZOS: TazoCard[] = [
   { id: "d1", name: "Aquafin", slug: "aquafin", franchise: "minimon", imageUrl: "/tazos-generated/minimon/aquafin.png", finish: "holo", creatureVariant: "standard", attack: 65, defense: 55, resistance: 60, weight: 45, stability: 50, spin: 55, control: 60, bounce: 40, precision: 55 },
   { id: "d2", name: "Aurorix", slug: "aurorix", franchise: "minimon", imageUrl: "/tazos-generated/minimon/aurorix.png", finish: "rainbow", creatureVariant: "standard", attack: 58, defense: 62, resistance: 50, weight: 35, stability: 55, spin: 45, control: 50, bounce: 50, precision: 48 },
@@ -172,6 +223,8 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
   const [playerHand, setPlayerHand] = useState<TazoCard[]>([])
   const [opponentHand, setOpponentHand] = useState<TazoCard[]>([])
   const [opponentBetId, setOpponentBetId] = useState<string | null>(null)
+  const [coinFlipShow, setCoinFlipShow] = useState(false)
+  const [coinFlipWinner, setCoinFlipWinner] = useState<"player" | "opponent">("player")
 
   const resultSaved = useRef(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -356,9 +409,14 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
         
         setTimeout(() => {
           engine.doCoinFlip()
+          const isPlayer = (engine.ctx?.state === "player_aim" || engine.ctx?.state === "player_charge" || engine.ctx?.state === "player_tilt") || Math.random() > 0.5
+          const winner = isPlayer ? "player" : "opponent"
+          setCoinFlipWinner(winner as "player" | "opponent")
+          setCoinFlipShow(true)
           playSfx("countdown_beep", 0.3)
           
           setTimeout(() => {
+            setCoinFlipShow(false)
             // Pick launcher (different tazo from bet, or first remaining)
             const launcher = playerHand.filter(t => t.id !== tazo.id)[0] || playerHand[0]
             const ab = createAirborneTazo(launcher, "player", cfg.arena)
@@ -366,7 +424,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
             setBettingPhase("idle")
             engine.lockAim(0, 0)
             engine.setBusy(false)
-          }, 1500)
+          }, 2000)
         }, 1000)
       }, 1000)
     }, 800)
@@ -933,6 +991,9 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
               opponentTazo={opponentHand.find(t => t.id === opponentBetId)!}
             />
           )}
+
+          {/* Coin flip overlay */}
+          <CoinFlipOverlay show={coinFlipShow} winner={coinFlipWinner} />
         </div>
 
         {/* ── Slam Controls ── */}

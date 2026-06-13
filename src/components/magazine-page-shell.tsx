@@ -128,12 +128,12 @@ export default function MagazinePageShell({
         </div>
 
         {/* Desktop + Mobile nav tabs row */}
-        <nav className="flex items-center justify-center gap-0.5 px-4 pb-2 overflow-x-auto border-t border-white/5">
+        <nav className="flex items-center justify-center gap-1 sm:gap-2 px-4 pb-2 overflow-x-auto border-t border-white/5">
           {NAV_ITEMS.map(({ id, label, icon: Icon, href }) => {
             const isActive = currentTab === id || pathname === href
             return (
               <Link key={id} href={href}
-                className={`flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wider transition-colors whitespace-nowrap rounded ${
+                className={`flex items-center gap-1 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-colors whitespace-nowrap rounded ${
                   isActive ? "text-[#FFCC00] bg-[#FFCC00]/10" : "text-white/40 hover:text-[#FFCC00]/80 hover:bg-white/5"
                 }`}>
                 <Icon className="w-3.5 h-3.5" />
@@ -151,7 +151,7 @@ export default function MagazinePageShell({
       {/* PAGE CONTENT                             */}
       {/* ═══════════════════════════════════════ */}
       {currentTab === "battle" ? (
-        <main className="relative z-10 flex-1 overflow-hidden" id="main-content" role="main" aria-label="Battle arena">
+        <main className="relative z-10 flex-1 overflow-auto" id="main-content" role="main" aria-label="Battle arena">
           {children}
         </main>
       ) : (

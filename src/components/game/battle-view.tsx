@@ -33,7 +33,7 @@ import BattleSideStack from "./battle/battle-side-stack"
 import { Disc3, RotateCcw, Crosshair, ArrowDown, Maximize, Minimize, Lock, Zap, Swords } from "lucide-react"
 
 // ── PhaseBadge: Inline HUD component for phase indication ──
-function PhaseBadge({ phase, bettingPhase, chargePct }: { phase: string; bettingPhase?: string; chargePct?: number }) {
+function PhaseBadge({ phase, bettingPhase, chargePct, tazoName }: { phase: string; bettingPhase?: string; chargePct?: number; tazoName?: string }) {
   const config: Record<string, { icon?: React.ReactNode; text: string; color: string; pulse?: boolean }> = {
     round_start: { text: "Stake a tazo", color: "#FFCC00" },
     player_aim: { icon: <Crosshair className="w-3 h-3 inline" />, text: "AIM", color: "#FFCC00" },
@@ -42,8 +42,8 @@ function PhaseBadge({ phase, bettingPhase, chargePct }: { phase: string; betting
     slamming: { icon: <Zap className="w-3 h-3 inline" />, text: "SLAM!", color: "#FFCC00", pulse: true },
     impact: { text: "IMPACT!", color: "#FFCC00", pulse: true },
     resolve_impact: { text: "Resolving...", color: "#22C55E" },
-    opponent_aim: { text: "AI aims...", color: "#FF004D" },
-    opponent_slam: { text: "AI slams!", color: "#FF004D", pulse: true },
+    opponent_aim: { text: tazoName ? `AI aims ${tazoName}...` : "AI aims...", color: "#FF004D" },
+    opponent_slam: { text: tazoName ? `${tazoName} SLAMS!` : "AI slams!", color: "#FF004D", pulse: true },
     round_end: { text: "Round complete", color: "#888" },
     coin_flip: { text: "🪙 COIN FLIP", color: "#FFCC00", pulse: true },
   }
@@ -529,29 +529,41 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
           return
         }
 
-        // Opponent's turn
+        // Opponent's turn — show AI tazo airborne, aim, then slam
         setTimeout(() => {
-          // Run AI slam via the engine
           const aiTazo = currentCtx.opponentBetTazo
           if (!aiTazo || !cfg) { engine.setBusy(false); return }
 
           const aiSlam = generateAISlam(aiTazo, currentCtx.stakedTazos, cfg.arena, cfg.aiDifficulty)
           const aiAirborne = createAirborneTazo(aiTazo, "opponent", cfg.arena)
           aiAirborne.state = "aiming"
+          aiAirborne.position = [aiSlam.impactX * 0.3, cfg.arena.maxLaunchHeight * 0.4, aiSlam.impactZ * 0.3]
 
-          const fallH = cfg.arena.maxLaunchHeight * (0.2 + aiSlam.verticalForce * 0.8)
-          const aiFallMs = Math.sqrt(2 * fallH / cfg.arena.gravity) * 1000
+          // Show AI tazo in arena
+          setAirborne(aiAirborne)
+          playSfx("aim_tick", 0.2)
 
+          // Phase: opponent aims
+          const aimDuration = 800 + Math.random() * 500
           setTimeout(() => {
-            if (!engine.ctx) { engine.setBusy(false); return }
-            playSfx("slam_impact", 0.6)
+            // Update airborne to charging position
+            setAirborne(prev => prev ? { ...prev, state: "charging", position: [aiSlam.impactX * 0.3, cfg.arena.maxLaunchHeight * 0.7, aiSlam.impactZ * 0.3] } : prev)
+            playSfx("charge_start", 0.2)
 
-            const { staked: newStakedAI, result: aiImpact } = simulateSlam(aiTazo, aiSlam, engine.ctx.stakedTazos, cfg.arena, "opponent")
-            const aiScoring = scoreBettingImpact(aiImpact, "opponent")
+            // Simulate brief charge, then slam down
+            setTimeout(() => {
+              if (!engine.ctx) { engine.setBusy(false); return }
+              playSfx("slam_impact", 0.6)
 
-            engine.resolveImpact(aiImpact, "opponent")
-            engine.setImpactMsg(aiImpact.description)
-            engine.setShowImpact(true)
+              // Animate airborne falling to impact
+              setAirborne(prev => prev ? { ...prev, state: "falling", position: [aiSlam.impactX * 0.3, 0.05, aiSlam.impactZ * 0.3] } : prev)
+
+              const { staked: newStakedAI, result: aiImpact } = simulateSlam(aiTazo, aiSlam, engine.ctx.stakedTazos, cfg.arena, "opponent")
+              const aiScoring = scoreBettingImpact(aiImpact, "opponent")
+
+              engine.resolveImpact(aiImpact, "opponent")
+              engine.setImpactMsg(aiImpact.description)
+              engine.setShowImpact(true)
 
             if (aiScoring.opponentDelta > 0) { spawnPopup(`+${aiScoring.opponentDelta}`, "#FF004D", "right"); playSfx("score_pop", 0.3) }
             if (aiScoring.playerDelta > 0) { spawnPopup(`+${aiScoring.playerDelta}`, "#29ADFF", "left"); playSfx("score_pop", 0.3) }
@@ -566,6 +578,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
 
             setTimeout(() => {
               engine.setShowImpact(false)
+              setAirborne(null) // Clear AI's airborne after impact
               if (aiEnd) {
                 engine.showResult()
               } else {
@@ -591,14 +604,15 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
                       engine.lockAim(0, 0)
                     }, 1500)
                   }, 1000)
-                }, 1000)
+                }, 800)
               }
               engine.setBusy(false)
             }, 1500)
-          }, aiFallMs * 0.75)
-        }, 1500)
+          }, 400)
+        }, aimDuration)
       }, 1500)
-    }, fallTimeMs * 0.75)
+    }, 1500)
+  }, fallTimeMs * 0.75)
   }, [engine, cfg, ctx, deck, airborne])
 
   // ═══════════════════════════════════════════════
@@ -920,7 +934,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
                 {phase !== "intro" && (
                   <>
                     <div className="text-[8px] font-black text-white/15 uppercase tracking-[0.25em] mb-0.5">Round {round}</div>
-                    <PhaseBadge phase={phase} bettingPhase={bettingPhase} chargePct={Math.round(engine.ui.charge * 100)} />
+                    <PhaseBadge phase={phase} bettingPhase={bettingPhase} chargePct={Math.round(engine.ui.charge * 100)} tazoName={airborne?.tazoName} />
                   </>
                 )}
               </div>

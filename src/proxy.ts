@@ -1,6 +1,6 @@
 // ============================================================
 // Trading Tazos Game — Proxy
-// Auth route protection + legacy redirects.
+// Auth route protection + legacy redirects + cache headers.
 // ============================================================
 
 import { NextRequest, NextResponse } from "next/server"

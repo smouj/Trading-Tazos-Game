@@ -81,7 +81,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "#FFF9E6" }}>
+    <div className="min-h-screen flex flex-col relative" style={{ background: "#FFF9E6" }}>
       <div className="mag-halftone absolute inset-0 opacity-40 pointer-events-none" />
 
       <MagazineHeader />

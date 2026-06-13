@@ -90,9 +90,7 @@ export default function MagazinePageShell({
       {/* ═══════════════════════════════════════ */}
       {/* DARK HEADER — matches landing launcher  */}
       {/* ═══════════════════════════════════════ */}
-      <header className="sticky top-0 z-40 border-b-[5px] border-[#1a1a1a] relative" style={{ background: "#1a1a1a" }}>
-        {/* Magazine stripe accent */}
-        <div className="absolute bottom-0 left-0 right-0 h-1.5 mag-stripes opacity-25 pointer-events-none" />
+      <header className="sticky top-0 z-40 border-b-[5px] border-[#1a1a1a]" style={{ background: "#1a1a1a" }}>
         {/* Top row: logo + title + auth */}
         <div className="flex items-center justify-between px-4 sm:px-6 py-2.5">
           <div className="flex items-center gap-2.5">

@@ -155,28 +155,34 @@ export default function SlamControls(props: SlamControlsProps) {
 
     return (
       <>
-        {/* Reticle pad — full-screen transparent */}
+        {/* Reticle pad — magazine-issue frame */}
         <div className="absolute inset-0 z-20 pointer-events-none flex flex-col">
           <div className="flex-1 flex items-center justify-center p-8 pb-32">
-            <div className="relative w-full max-w-[340px] aspect-square bg-black/25 rounded-3xl border border-white/10 backdrop-blur-[2px] overflow-hidden pointer-events-none">
+            <div className="relative w-full max-w-[340px] aspect-square bg-black/40 backdrop-blur-sm rounded-3xl overflow-hidden pointer-events-none"
+              style={{
+                border: "1px solid rgba(255,255,255,0.08)",
+                boxShadow: "inset 0 0 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,204,0,0.04)",
+              }}>
+              {/* Magazine page-edge accent line */}
+              <div className="absolute top-0 left-3 right-3 h-px bg-white/4" />
+              <div className="absolute bottom-0 left-3 right-3 h-px bg-white/4" />
+              
               {/* Concentric reference rings */}
               <div className="absolute inset-4 flex items-center justify-center">
-                <div className="border border-white/8 rounded-full w-full h-full" />
-                <div className="absolute border border-white/5 rounded-full w-[70%] h-[70%]" />
-                <div className="absolute border border-white/4 rounded-full w-[40%] h-[40%]" />
+                <div className="border border-white/6 rounded-full w-full h-full" />
+                <div className="absolute border border-white/4 rounded-full w-[70%] h-[70%]" />
+                <div className="absolute border border-white/3 rounded-full w-[40%] h-[40%]" />
               </div>
 
               {/* Stake position indicators */}
               <div className="absolute inset-0 flex items-center justify-center">
-                {/* Left stake zone (player's, blue) */}
-                <div className="absolute top-1/2 -translate-y-1/2 left-[22%] w-8 h-8 rounded-full border-2 border-[#29ADFF]/30 bg-[#29ADFF]/5"
+                <div className="absolute top-1/2 -translate-y-1/2 left-[22%] w-10 h-10 rounded-full border-2 border-[#29ADFF]/20 bg-[#29ADFF]/5"
                   style={{ transform: "translate(-50%, -50%)" }}>
-                  <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[7px] font-black text-[#29ADFF]/40">MY STAKE</span>
+                  <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[7px] font-black text-[#29ADFF]/30 tracking-[0.2em] uppercase">Stake</span>
                 </div>
-                {/* Right stake zone (AI's, red) */}
-                <div className="absolute top-1/2 -translate-y-1/2 right-[22%] w-8 h-8 rounded-full border-2 border-[#FF004D]/30 bg-[#FF004D]/5"
+                <div className="absolute top-1/2 -translate-y-1/2 right-[22%] w-10 h-10 rounded-full border-2 border-[#FF004D]/20 bg-[#FF004D]/5"
                   style={{ transform: "translate(50%, -50%)" }}>
-                  <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[7px] font-black text-[#FF004D]/40">RIVAL</span>
+                  <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[7px] font-black text-[#FF004D]/30 tracking-[0.2em] uppercase">Stake</span>
                 </div>
               </div>
 
@@ -211,47 +217,39 @@ export default function SlamControls(props: SlamControlsProps) {
           </div>
         </div>
 
-        {/* Bottom bar — name + stats + LOCK button */}
+        {/* Bottom bar — editorial control strip */}
         <div className="absolute bottom-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-3 pointer-events-none">
           <button onClick={onBack}
-            className="px-3 py-1.5 text-[10px] font-black text-white/30 hover:text-white/60 bg-black/30 hover:bg-black/50 rounded-full border border-white/10 uppercase tracking-wider pointer-events-auto transition-colors">
+            className="px-4 py-1.5 text-[9px] font-black text-white/25 hover:text-white/50 bg-black/40 hover:bg-black/60 backdrop-blur-sm rounded-full border border-white/5 uppercase tracking-wider pointer-events-auto transition-all">
             ← Back
           </button>
 
-          <div className="flex items-center gap-3">
-            {/* Tazo name + stats mini-display */}
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-2">
-                <span className="text-[10px] font-black text-white/60">{tazoName}</span>
-                <span className="text-[7px] font-black px-1.5 py-0.5 rounded-full border" style={{ color: ctrlColor, borderColor: ctrlColor + "40" }}>
-                  {ctrlLabel}
-                </span>
-                <span className="text-[7px] font-black px-1.5 py-0.5 rounded-full border" style={{ color: precColor, borderColor: precColor + "40" }}>
-                  {precLabel}
-                </span>
-              </div>
-              <span className="text-[7px] font-black text-[#FFCC00]/50">
-                {aimLocked ? "AIM LOCKED — release when ready" : "watching reticle sweep… click to LOCK"}
+          <div className="flex flex-col items-center gap-0.5">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-black text-white/50 tracking-wider">{tazoName}</span>
+              <span className="text-[7px] font-black px-2 py-0.5 rounded-full border" style={{ color: ctrlColor, borderColor: ctrlColor + "40", background: ctrlColor + "08" }}>
+                {ctrlLabel}
+              </span>
+              <span className="text-[7px] font-black px-2 py-0.5 rounded-full border" style={{ color: precColor, borderColor: precColor + "40", background: precColor + "08" }}>
+                {precLabel}
               </span>
             </div>
+            <span className="text-[6px] font-black text-[#FFCC00]/25 tracking-[0.2em] uppercase">
+              {aimLocked ? "AIM LOCKED — release when ready" : "Watching reticle… click to LOCK"}
+            </span>
           </div>
 
           <button
             onClick={() => {
-              if (aimLocked) {
-                // Already locked, proceed to charge
-                playSfx("aim_lock", 0.4)
-                onRelease()
-              } else {
-                playSfx("aim_lock", 0.4)
-                setAimLocked(true)
-              }
+              playSfx("aim_lock", 0.4)
+              if (aimLocked) onRelease()
+              else setAimLocked(true)
             }}
-            className={`px-6 py-2.5 font-black text-xs uppercase rounded-full tracking-wider pointer-events-auto transition-all ${
+            className={`px-5 py-2 font-black text-[10px] uppercase rounded-full tracking-wider pointer-events-auto transition-all active:scale-95 ${
               aimLocked
-                ? "bg-[#22C55E] hover:bg-[#22C55E]/90 text-[#1a1a1a] shadow-[0_0_20px_rgba(34,197,94,0.6)]"
-                : "bg-[#FFCC00] hover:bg-[#FFD633] text-[#1a1a1a] shadow-[0_0_20px_rgba(255,204,0,0.4)] hover:shadow-[0_0_30px_rgba(255,204,0,0.6)]"
-            } active:scale-95`}>
+                ? "bg-[#22C55E] hover:bg-[#22C55E]/90 text-[#0a0a0a] shadow-[0_0_24px_rgba(34,197,94,0.5)]"
+                : "bg-[#FFCC00] hover:bg-[#FFD633] text-[#0a0a0a] shadow-[0_0_20px_rgba(255,204,0,0.3)] hover:shadow-[0_0_32px_rgba(255,204,0,0.5)]"
+            }`}>
             {aimLocked ? <><Lock className="w-3 h-3 inline mr-1" />CHARGE</> : <><Crosshair className="w-3 h-3 inline mr-1" />LOCK AIM</>}
           </button>
         </div>
@@ -265,24 +263,32 @@ export default function SlamControls(props: SlamControlsProps) {
   if (phase === "charge") return (
     <div className="absolute bottom-0 left-0 right-0 z-20 p-4 pointer-events-none">
       <div className="max-w-md mx-auto space-y-3">
+        {/* Editorial header */}
         <div className="flex items-center justify-between px-1">
-          <span className="text-[9px] font-black text-white/30 uppercase tracking-widest">Force</span>
-          <span className="text-[11px] font-black" style={{ color: barColor }}>
-            {isPerfect ? <span className="inline-flex items-center gap-1"><Zap className="w-3 h-3" />PERFECT</span> : Math.round(charge * 100) + "%"}
+          <span className="text-[8px] font-black text-white/15 uppercase tracking-[0.3em]">Force</span>
+          <span className="text-[13px] font-black tracking-wider" style={{ color: barColor, textShadow: `0 0 16px ${barColor}40` }}>
+            {isPerfect ? <span className="inline-flex items-center gap-1.5"><Zap className="w-3.5 h-3.5" />PERFECT</span> : Math.round(charge * 100) + "%"}
           </span>
         </div>
-        <div className="relative w-full h-8 bg-black/40 rounded-full overflow-hidden border border-white/10 backdrop-blur-sm">
+        {/* Magazine-rule progress bar */}
+        <div className="relative w-full h-9 rounded-full overflow-hidden"
+          style={{
+            background: "linear-gradient(180deg, rgba(0,0,0,0.5), rgba(0,0,0,0.3))",
+            border: "1px solid rgba(255,255,255,0.06)",
+            boxShadow: "inset 0 2px 8px rgba(0,0,0,0.4)",
+          }}>
           <div className="h-full transition-all duration-75 rounded-full" style={{
             width: `${charge * 100}%`,
-            background: `linear-gradient(90deg, ${barColor}33, ${barColor})`,
-            boxShadow: isPerfect || isOver ? `0 0 16px ${barColor}55` : undefined,
+            background: `linear-gradient(90deg, ${barColor}22, ${barColor})`,
+            boxShadow: isPerfect || isOver ? `0 0 20px ${barColor}40, inset 0 -1px 0 ${barColor}20` : "inset 0 -1px 0 rgba(0,0,0,0.3)",
           }} />
-          <div className="absolute top-0 left-[60%] w-[22%] h-full bg-[#22C55E]/10 border-l border-r border-[#22C55E]/25" />
+          {/* Perfect zone marker */}
+          <div className="absolute top-0 left-[60%] w-[22%] h-full bg-[#22C55E]/8 border-l border-r border-[#22C55E]/15" />
         </div>
-        <div className="flex items-center gap-2">
-          <span className="flex-1 text-center text-[8px] font-black text-white/20">auto-charging…</span>
+        <div className="flex items-center gap-3">
+          <span className="flex-1 text-center text-[7px] font-black text-white/12 tracking-[0.15em] uppercase">Auto-charging…</span>
           <button onClick={() => { stopSfx(chargeHumRef.current); chargeHumRef.current = null; playSfx("slam_launch", 0.4); onRelease() }}
-            className="px-5 py-2 bg-[#FFCC00]/80 hover:bg-[#FFCC00] text-[#1a1a1a] font-black text-xs uppercase rounded-full tracking-wider active:scale-95 pointer-events-auto transition-all">
+            className="px-5 py-2 bg-[#FFCC00] hover:bg-[#FFD633] text-[#0a0a0a] font-black text-[10px] uppercase rounded-full tracking-wider shadow-[0_0_16px_rgba(255,204,0,0.3)] active:scale-95 pointer-events-auto transition-all">
             RELEASE
           </button>
         </div>
@@ -295,34 +301,50 @@ export default function SlamControls(props: SlamControlsProps) {
   // ═════════════════════════════════════
   return (
     <div className="absolute bottom-0 left-0 right-0 z-20 p-3 pointer-events-none">
-      <div className="max-w-md mx-auto flex items-end gap-3">
-        <div className="flex-1 space-y-1">
-          <span className="text-[7px] font-black text-white/20 uppercase tracking-widest">Tilt</span>
+      <div className="max-w-md mx-auto flex items-end gap-4">
+        {/* Tilt pad — magazine editorial widget */}
+        <div className="flex-1 space-y-1.5">
+          <span className="block text-center text-[7px] font-black text-white/10 uppercase tracking-[0.3em]">Tilt</span>
           <div
-            className="relative w-full aspect-square max-w-[120px] mx-auto bg-black/35 rounded-2xl border border-white/10 backdrop-blur-sm cursor-grab active:cursor-grabbing pointer-events-auto"
+            className="relative w-full aspect-square max-w-[120px] mx-auto rounded-2xl cursor-grab active:cursor-grabbing pointer-events-auto"
+            style={{
+              background: "radial-gradient(circle at center, rgba(255,204,0,0.04), transparent)",
+              border: "1px solid rgba(255,255,255,0.06)",
+              boxShadow: "inset 0 0 40px rgba(0,0,0,0.3)",
+            }}
             onMouseMove={(e) => tiltDrag(e.clientX, e.clientY, e.currentTarget.getBoundingClientRect())}
             onTouchMove={(e) => { e.preventDefault(); tiltDrag(e.touches[0].clientX, e.touches[0].clientY, e.currentTarget.getBoundingClientRect()) }}
           >
-            <Zap className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 text-white/8" strokeWidth={1.5} />
-            <div className="absolute top-1/2 left-1/2 w-1.5 h-8 -mt-4 bg-[#FFCC00] rounded-full origin-bottom shadow-[0_0_10px_rgba(255,204,0,0.5)]"
-              style={{ transform: `translateX(-50%) rotate(${tiltDeg}deg)` }} />
+            <Zap className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-white/4" strokeWidth={1} />
+            {/* Crosshair guides */}
+            <div className="absolute inset-4 border border-white/3 rounded-full" />
+            <div className="absolute top-1/2 left-2 right-2 h-px bg-white/3" />
+            <div className="absolute top-2 bottom-2 left-1/2 w-px bg-white/3" />
+            {/* Tilt indicator needle */}
+            <div className="absolute top-1/2 left-1/2 w-1.5 h-8 -mt-4 rounded-full origin-bottom shadow-[0_0_12px_rgba(255,204,0,0.4)]"
+              style={{ background: "linear-gradient(to top, #FFCC00, #FFE066)", transform: `translateX(-50%) rotate(${tiltDeg}deg)` }} />
           </div>
         </div>
+        
+        {/* Spin + SLAM column */}
         <div className="flex-1 space-y-3">
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-[7px] font-black text-white/20 uppercase tracking-widest">Spin</span>
-              <span className="text-[9px] font-black text-[#FFCC00]">{Math.round(spinIntensity * 100)}%</span>
+              <span className="text-[7px] font-black text-white/10 uppercase tracking-[0.3em]">Spin</span>
+              <span className="text-[10px] font-black text-[#FFCC00] tracking-wider">{Math.round(spinIntensity * 100)}%</span>
             </div>
             <input type="range" min="0" max="100" value={spinIntensity * 100}
               onChange={(e) => onSpin(Number(e.target.value) / 100)}
-              className="w-full h-2 bg-white/10 rounded-full appearance-none cursor-pointer accent-[#FFCC00] pointer-events-auto
-                [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full
-                [&::-webkit-slider-thumb]:bg-[#FFCC00] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#1a1a1a]" />
+              className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-[#FFCC00] pointer-events-auto
+                [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full
+                [&::-webkit-slider-thumb]:bg-[#FFCC00] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#0a0a0a]
+                [&::-webkit-slider-thumb]:shadow-[0_0_12px_rgba(255,204,0,0.5)]"
+              style={{ background: "rgba(255,255,255,0.06)" }} />
           </div>
           <button onClick={() => { playSfx("slam_launch", 0.4); onRelease() }}
-            className="w-full py-3 bg-gradient-to-r from-[#FFCC00] to-[#FFD633] hover:from-[#FFD633] hover:to-[#FFE066] text-[#1a1a1a] font-black text-sm uppercase rounded-xl tracking-wider shadow-[0_0_20px_rgba(255,204,0,0.5)] active:scale-95 pointer-events-auto transition-all">
-            <Zap className="w-4 h-4 inline mr-1" /> SLAM!
+            className="w-full py-3 font-black text-sm uppercase rounded-xl tracking-wider shadow-[0_0_24px_rgba(255,204,0,0.4)] active:scale-95 pointer-events-auto transition-all"
+            style={{ background: "linear-gradient(135deg, #FFCC00, #FFD633)", color: "#0a0a0a" }}>
+            <Zap className="w-4 h-4 inline mr-1.5" /> SLAM!
           </button>
         </div>
       </div>

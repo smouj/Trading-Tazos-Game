@@ -639,6 +639,16 @@ export default function BattleArena3D({
 }: Props) {
   return (
     <div className="w-full h-full relative" style={{ background: "radial-gradient(ellipse at center, #2a2a2a 0%, #1a1a1a 55%, #0a0a0a 100%)" }}>
+      {/* Magazine-style decorative frame overlay */}
+      <div className="absolute inset-0 pointer-events-none z-10" style={{
+        border: "1px solid rgba(255,255,255,0.04)",
+        boxShadow: "inset 0 0 120px rgba(0,0,0,0.5), inset 0 0 30px rgba(0,0,0,0.3)",
+      }} />
+      {/* Corner page-curl accents */}
+      <div className="absolute top-0 left-0 w-12 h-12 pointer-events-none z-10 opacity-20"
+        style={{ background: "linear-gradient(135deg, rgba(255,204,0,0.3) 0%, transparent 70%)" }} />
+      <div className="absolute bottom-0 right-0 w-12 h-12 pointer-events-none z-10 opacity-20"
+        style={{ background: "linear-gradient(315deg, rgba(255,204,0,0.3) 0%, transparent 70%)" }} />
       <Canvas
         camera={{ position: [0, 9, 7], fov: 40, near: 0.5, far: 80 }}
         gl={{ antialias: true, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1 }}

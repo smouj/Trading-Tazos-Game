@@ -34,47 +34,44 @@ import BattleTutorial, { isTutorialDone } from "./battle/battle-tutorial"
 import BattleSideStack from "./battle/battle-side-stack"
 import { Disc3, RotateCcw, Crosshair, ArrowDown, Maximize, Minimize, Lock, Zap, Swords } from "lucide-react"
 
-// ── PhaseBadge: Inline HUD component for phase indication ──
+// ── PhaseBadge: Magazine editorial phase indicator ──
 function PhaseBadge({ phase, bettingPhase, chargePct, tazoName }: { phase: string; bettingPhase?: string; chargePct?: number; tazoName?: string }) {
   const config: Record<string, { icon?: React.ReactNode; text: string; color: string; pulse?: boolean }> = {
-    round_start: { text: "Stake a tazo", color: "#FFCC00" },
-    player_aim: { icon: <Crosshair className="w-3 h-3 inline" />, text: "AIM", color: "#FFCC00" },
-    player_charge: { icon: <Zap className="w-3 h-3 inline" />, text: chargePct != null ? `CHARGE ${chargePct}%` : "CHARGE", color: "#FF8800", pulse: true },
-    player_tilt: { text: "TILT & RELEASE", color: "#FF004D" },
-    slamming: { icon: <Zap className="w-3 h-3 inline" />, text: "SLAM!", color: "#FFCC00", pulse: true },
-    impact: { text: "IMPACT!", color: "#FFCC00", pulse: true },
-    resolve_impact: { text: "Resolving...", color: "#22C55E" },
-    opponent_aim: { text: tazoName ? `AI aims ${tazoName}...` : "AI aims...", color: "#FF004D" },
-    opponent_slam: { text: tazoName ? `${tazoName} SLAMS!` : "AI slams!", color: "#FF004D", pulse: true },
-    round_end: { text: "Round complete", color: "#888" },
-    coin_flip: { text: "🪙 COIN FLIP", color: "#FFCC00", pulse: true },
+    round_start: { text: "Select a tazo", color: "#FFCC00" },
+    betting: { text: "Betting", color: "#FFD700" },
+    player_aim: { icon: <Crosshair className="w-3 h-3 inline" />, text: "Aim", color: "#29ADFF" },
+    player_charge: { icon: <Zap className="w-3 h-3 inline" />, text: chargePct != null ? `Charge ${chargePct}%` : "Charge", color: "#FF8800", pulse: true },
+    player_tilt: { text: "Tilt & release", color: "#FF004D" },
+    slamming: { icon: <Zap className="w-3 h-3 inline" />, text: "Slam!", color: "#FFCC00", pulse: true },
+    impact: { text: "Impact!", color: "#FFCC00", pulse: true },
+    resolve_impact: { text: "Resolving…", color: "#22C55E" },
+    opponent_aim: { text: tazoName ? `AI aims ${tazoName}…` : "AI aims…", color: "#FF004D" },
+    opponent_slam: { text: tazoName ? `${tazoName} slams!` : "AI slams!", color: "#FF004D", pulse: true },
+    turn_transition: { text: "Next round", color: "#888" },
+    coin_flip: { text: "🪙 Coin Flip", color: "#FFCC00", pulse: true },
   }
 
   const c = config[phase]
   if (!c) {
-    // Show betting phase info when in round_start
     if (bettingPhase === "bet_locked" || bettingPhase === "revealed") {
       const revealed = bettingPhase === "revealed"
       return (
-        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border ${revealed ? "border-[#FFCC00]/50 bg-[#FFCC00]/10" : "border-[#22C55E]/30 bg-[#22C55E]/08"}`}>
-          <span className={`text-[9px] font-black tracking-wider ${revealed ? "text-[#FFCC00]" : "text-[#22C55E]"}`}>
-            {revealed ? "STAKES REVEALED" : "STAKES LOCKED"}
-          </span>
-        </div>
+        <span className={`text-[8px] font-black tracking-[0.2em] uppercase ${
+          revealed ? "text-[#FFCC00]" : "text-[#22C55E]"}`}>
+          {revealed ? "• Stakes revealed" : "• Stakes locked"}
+        </span>
       )
     }
     return null
   }
 
   return (
-    <div
-      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border ${c.pulse ? "animate-pulse" : ""}`}
-      style={{ background: `${c.color}10`, borderColor: `${c.color}40` }}
+    <span
+      className={`text-[9px] font-black uppercase tracking-[0.15em] ${c.pulse ? "animate-pulse" : ""}`}
+      style={{ color: c.color, textShadow: c.pulse ? `0 0 12px ${c.color}50` : "none" }}
     >
-      <span className="text-[9px] sm:text-[10px] font-black tracking-wider" style={{ color: c.color }}>
-        {c.icon}{c.icon ? " " : ""}{c.text}
-      </span>
-    </div>
+      {c.icon}{c.icon ? " " : ""}{c.text}
+    </span>
   )
 }
 
@@ -918,14 +915,17 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
       {/* Tutorial */}
       {showTutorial && <BattleTutorial onClose={() => setShowTutorial(false)} />}
       
-      <div className="absolute top-2 right-2 z-30 flex gap-2">
+      {/* Magazine editorial toolbar */}
+      <div className="absolute top-3 right-3 z-30 flex gap-1.5">
         <button onClick={() => setShowTutorial(true)}
-          className="p-2 bg-black/40 hover:bg-black/60 rounded-full border border-white/10 text-white/40 hover:text-white/70 transition-all"
+          className="p-2 rounded-xl border border-white/5 text-white/25 hover:text-white/60 hover:border-white/10 transition-all"
+          style={{ background: "linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.2))", backdropFilter: "blur(8px)" }}
           title="How to play">
           <Swords className="w-3.5 h-3.5" />
         </button>
         <button onClick={toggleFullscreen}
-          className="p-2 bg-black/40 hover:bg-black/60 rounded-full border border-white/10 text-white/50 hover:text-white/80 transition-all"
+          className="p-2 rounded-xl border border-white/5 text-white/25 hover:text-white/60 hover:border-white/10 transition-all"
+          style={{ background: "linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.2))", backdropFilter: "blur(8px)" }}
           title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}>
           {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
         </button>
@@ -971,30 +971,36 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
           onSelect={handleBet}
         />
 
-        {/* ── HUD overlay ── */}
+        {/* ── HUD overlay — Magazine Editorial Style ── */}
         <div className="absolute top-0 left-0 right-0 z-20 pointer-events-none">
-          {/* Top bar — player scores */}
-          <div className="px-3 sm:px-5 pt-2.5">
-            <div className="flex items-center justify-between gap-3">
-              {/* Player (left) */}
-              <div className="flex items-center gap-2">
-                <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center border-2 relative overflow-hidden transition-transform duration-200 ${scoreFlash === "player" ? "scale-125" : ""}`}
-                  style={{ background: "linear-gradient(135deg, #29ADFF20, #29ADFF08)", borderColor: scoreFlash === "player" ? "#29ADFF" : "#29ADFF40" }}>
-                  <span className="text-base sm:text-lg font-black text-[#29ADFF] tabular-nums" style={{ textShadow: "0 0 12px #29ADFF88" }}>
+          {/* Masthead bar */}
+          <div className="mx-3 sm:mx-4 mt-2 px-4 py-2.5 rounded-2xl"
+            style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.06)" }}>
+            <div className="flex items-center justify-between">
+              {/* Player score — editorial left rail */}
+              <div className="flex items-center gap-3">
+                <div className={`flex flex-col items-end ${scoreFlash === "player" ? "animate-[scorePop_0.4s_ease-out]" : ""}`}
+                  key={`ps-${pScore}`}>
+                  <span className="text-[7px] font-black text-[#29ADFF]/40 uppercase tracking-[0.3em]">Player</span>
+                  <span className="text-2xl sm:text-3xl font-black tabular-nums leading-none"
+                    style={{
+                      color: "#29ADFF",
+                      textShadow: scoreFlash === "player" ? "0 0 24px #29ADFF, 0 0 48px #29ADFF40" : "0 0 8px #29ADFF30",
+                    }}>
                     {pScore}
                   </span>
-                  {phase === "player_aim" && <div className="absolute inset-0 bg-[#29ADFF]/10 animate-pulse" />}
                 </div>
-                <div className="hidden sm:block">
-                  <div className="text-[9px] font-black text-[#29ADFF] uppercase tracking-wider leading-tight">You</div>
-                  <div className="text-[6px] font-black text-[#29ADFF]/40 uppercase tracking-widest">{selectedDeckName || "Player"}</div>
-                </div>
+                {/* Decorative vertical rule */}
+                <div className="w-px h-10" style={{ background: "linear-gradient(to bottom, transparent, #29ADFF20, transparent)" }} />
+                {phase === "player_aim" && (
+                  <span className="text-[8px] font-black text-[#29ADFF]/60 animate-pulse">AIMING</span>
+                )}
               </div>
 
-              {/* Center — phase + round */}
-              <div className="flex flex-col items-center">
-                {phase === "intro" && (
-                  <div className="flex flex-col items-center gap-1">
+              {/* Center — editorial byline */}
+              <div className="flex flex-col items-center gap-0.5">
+                {phase === "intro" ? (
+                  <>
                     {introCountdown !== null ? (
                       <span className="text-5xl sm:text-7xl font-black text-[#FFCC00] animate-[popUp_0.4s_ease-out]"
                         style={{ textShadow: "0 0 40px #FFCC00, 0 0 80px #FFCC0060" }}
@@ -1007,30 +1013,34 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
                         ⚡ FIGHT!
                       </span>
                     )}
-                  </div>
-                )}
-                {phase !== "intro" && (
+                  </>
+                ) : (
                   <>
-                    <div className="text-[8px] font-black text-white/15 uppercase tracking-[0.25em] mb-0.5">Round {round}</div>
+                    <span className="text-[7px] font-black text-white/15 uppercase tracking-[0.3em]">Round {round}</span>
                     <PhaseBadge phase={phase} bettingPhase={bettingPhase} chargePct={Math.round(engine.ui.charge * 100)} tazoName={airborne?.tazoName} />
                   </>
                 )}
               </div>
 
-              {/* Opponent (right) */}
-              <div className="flex items-center gap-2">
-                <div className="hidden sm:block text-right">
-                  <div className="text-[9px] font-black text-[#FF004D] uppercase tracking-wider leading-tight">
-                    {cfg?.mode === "practice" ? `AI ${cfg.aiDifficulty}` : "Opponent"}
-                  </div>
-                  <div className="text-[6px] font-black text-[#FF004D]/40 uppercase tracking-widest">Rival</div>
-                </div>
-                <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center border-2 relative overflow-hidden transition-transform duration-200 ${scoreFlash === "opponent" ? "scale-125" : ""}`}
-                  style={{ background: "linear-gradient(135deg, #FF004D20, #FF004D08)", borderColor: scoreFlash === "opponent" ? "#FF004D" : "#FF004D40" }}>
-                  <span className="text-base sm:text-lg font-black text-[#FF004D] tabular-nums" style={{ textShadow: "0 0 12px #FF004D88" }}>
+              {/* Opponent score — editorial right rail */}
+              <div className="flex items-center gap-3">
+                {(phase === "opponent_aim" || phase === "opponent_slam") && (
+                  <span className="text-[8px] font-black text-[#FF004D]/60 animate-pulse">{phase === "opponent_aim" ? "AIMING" : "SLAMMING"}</span>
+                )}
+                {/* Decorative vertical rule */}
+                <div className="w-px h-10" style={{ background: "linear-gradient(to bottom, transparent, #FF004D20, transparent)" }} />
+                <div className={`flex flex-col items-start ${scoreFlash === "opponent" ? "animate-[scorePop_0.4s_ease-out]" : ""}`}
+                  key={`os-${oScore}`}>
+                  <span className="text-[7px] font-black text-[#FF004D]/40 uppercase tracking-[0.3em]">
+                    {cfg?.mode === "practice" ? `AI ${cfg?.aiDifficulty || ""}` : "Rival"}
+                  </span>
+                  <span className="text-2xl sm:text-3xl font-black tabular-nums leading-none"
+                    style={{
+                      color: "#FF004D",
+                      textShadow: scoreFlash === "opponent" ? "0 0 24px #FF004D, 0 0 48px #FF004D40" : "0 0 8px #FF004D30",
+                    }}>
                     {oScore}
                   </span>
-                  {(phase === "opponent_aim" || phase === "opponent_slam") && <div className="absolute inset-0 bg-[#FF004D]/10 animate-pulse" />}
                 </div>
               </div>
             </div>
@@ -1039,7 +1049,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
           {/* Score popups */}
           {scorePopups.map(p => (
             <div key={p.id}
-              className={`absolute top-14 ${p.side === "left" ? "left-6" : "right-6"} pointer-events-none`}
+              className={`absolute top-16 ${p.side === "left" ? "left-6" : "right-6"} pointer-events-none`}
               style={{
                 color: p.color,
                 fontSize: p.text.length > 2 ? "18px" : "30px",
@@ -1136,9 +1146,14 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
             onBack={back}
           />
         ) : (
-          <div className="absolute bottom-0 left-0 right-0 z-20 flex justify-center p-4">
+          <div className="absolute bottom-0 left-0 right-0 z-20 flex justify-center pb-3">
             <button onClick={back}
-              className="px-5 py-2.5 text-[10px] font-black text-white/40 bg-black/60 hover:bg-black/80 hover:text-white/70 border border-white/15 uppercase tracking-wider transition-colors">
+              className="px-4 py-1.5 text-[8px] font-black text-white/20 hover:text-white/50 uppercase tracking-[0.2em] rounded-full transition-all"
+              style={{
+                background: "linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,0,0,0.2))",
+                border: "1px solid rgba(255,255,255,0.04)",
+                backdropFilter: "blur(8px)",
+              }}>
               Leave Battle
             </button>
           </div>

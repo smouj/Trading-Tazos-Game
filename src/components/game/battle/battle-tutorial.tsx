@@ -115,7 +115,15 @@ export default function BattleTutorial({ onClose }: { onClose: () => void }) {
 
       {/* Card */}
       <div className={`relative z-10 ${posClasses} ${current.position === "center" ? "absolute" : "absolute left-1/2 -translate-x-1/2"}`}>
-        <div className="bg-black/90 border-2 border-[#FFCC00]/30 rounded-2xl p-6 max-w-sm mx-auto backdrop-blur-xl shadow-2xl shadow-[#FFCC00]/10">
+        <div className="rounded-3xl p-6 max-w-sm mx-auto backdrop-blur-2xl relative overflow-hidden"
+          style={{
+            background: "linear-gradient(135deg, rgba(10,10,10,0.95), rgba(20,20,20,0.9))",
+            border: "1px solid rgba(255,204,0,0.12)",
+            boxShadow: "0 32px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,204,0,0.04), 0 0 60px rgba(255,204,0,0.06)",
+          }}>
+          {/* Magazine page-edge accents */}
+          <div className="absolute top-0 left-3 right-3 h-px bg-gradient-to-r from-transparent via-[#FFCC00]/20 to-transparent" />
+          <div className="absolute bottom-0 left-3 right-3 h-px bg-gradient-to-r from-transparent via-[#FFCC00]/20 to-transparent" />
           {/* Step dots */}
           <div className="flex gap-1.5 mb-4 justify-center">
             {STEPS.map((_, i) => (

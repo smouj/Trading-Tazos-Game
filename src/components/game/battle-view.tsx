@@ -944,14 +944,17 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
   // ── Loading ──
   if (loading) return (
     <div className="flex items-center justify-center py-28 px-4 sm:px-6">
-      <Disc3 className="w-12 h-12 animate-spin text-[#FFCC00]" />
+      <div className="flex flex-col items-center gap-3">
+        <Disc3 className="w-12 h-12 animate-spin text-[#FFCC00]" />
+        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Loading Arena</span>
+      </div>
     </div>
   )
 
   // ── Lobby ──
   if (phase === "lobby") return (
-    <div className="h-full flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-2xl">
+    <div className="h-full flex flex-col items-center justify-center px-4 sm:px-6">
+      <div className="w-full max-w-7xl">
         <GameLobby
           playerTazos={tazos}
           playerDecks={allDecks.length > 0 ? allDecks : undefined}
@@ -967,8 +970,8 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
 
   // ── Match End ──
   if (phase === "match_end" && result) return (
-    <div className="h-full flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-sm">
+    <div className="h-full flex flex-col items-center justify-center px-4 sm:px-6">
+      <div className="w-full max-w-lg">
       <BattleResultPanel result={{
         winner: result.winner,
         victoryType: toPanelVictoryType(result.victoryType),
@@ -1006,8 +1009,9 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
       {showTutorial && <BattleTutorial onClose={() => setShowTutorial(false)} />}
       
       {/* Magazine editorial toolbar */}
-      <div className="absolute top-0 right-0 z-30 pointer-events-none">
-        <div className="flex gap-1.5 pr-4 sm:pr-6 pt-2 pointer-events-auto">
+      <div className="absolute top-0 left-0 right-0 z-30 pointer-events-none">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="flex justify-end gap-1.5 pt-2 pointer-events-auto">
         <button onClick={() => setShowTutorial(true)}
           className="p-2 rounded-xl border border-white/5 text-white/25 hover:text-white/60 hover:border-white/10 transition-all"
           style={{ background: "linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.2))", backdropFilter: "blur(8px)" }}
@@ -1020,6 +1024,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
           title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}>
           {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
         </button>
+        </div>
         </div>
       </div>
 
@@ -1066,7 +1071,8 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
         {/* ── HUD overlay — Magazine Editorial Style ── */}
         <div className="absolute top-0 left-0 right-0 z-20 pointer-events-none">
           {/* Masthead bar */}
-          <div className="mx-4 sm:mx-6 mt-2 px-4 py-2.5 rounded-2xl"
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-2">
+          <div className="px-4 py-2.5 rounded-2xl"
             style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.06)" }}>
             <div className="flex items-center justify-between">
               {/* Player score — editorial left rail */}
@@ -1136,6 +1142,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
                 </div>
               </div>
             </div>
+          </div>
           </div>
 
           {/* Score popups */}
@@ -1238,7 +1245,8 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
             onBack={back}
           />
         ) : (
-          <div className="absolute bottom-0 left-0 right-0 z-20 flex justify-center pb-3">
+          <div className="absolute bottom-0 left-0 right-0 z-20 flex justify-center pb-3 pointer-events-none">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full flex justify-center pointer-events-auto">
             <button onClick={back}
               className="px-4 py-1.5 text-[8px] font-black text-white/20 hover:text-white/50 uppercase tracking-[0.2em] rounded-full transition-all"
               style={{
@@ -1248,6 +1256,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
               }}>
               Leave Battle
             </button>
+            </div>
           </div>
         )}
       </BattleArena3D>

@@ -15,7 +15,7 @@ function StatsContent() {
   const refreshKey = Number(searchParams.get("refresh") || 0)
 
   return (
-    <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-4 sm:py-6 space-y-4">
+    <div className="max-w-7xl mx-auto w-full py-4 sm:py-6 space-y-4">
       {/* Magazine Banner Strip */}
       <div
         className="px-4 py-3 flex flex-wrap items-center gap-3 relative overflow-hidden"
@@ -40,7 +40,7 @@ function StatsContent() {
 
 export default function StatsPage() {
   return (
-    <Suspense fallback={<div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-4 sm:py-6 animate-pulse"><div className="h-64 bg-[#fffef0] border-3 border-[#1a1a1a]" /></div>}>
+    <Suspense fallback={<div className="max-w-7xl mx-auto w-full py-4 sm:py-6 animate-pulse"><div className="h-64 bg-[#fffef0] border-3 border-[#1a1a1a]" /></div>}>
       <StatsContent />
     </Suspense>
   )

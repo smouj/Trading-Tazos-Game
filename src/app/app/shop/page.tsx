@@ -369,7 +369,7 @@ export default function BagShopPage() {
   // ── SELECT STAGE ──────────────────────────────────────
   if (stage === "select") {
     return (
-      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-4 sm:py-6 space-y-4">
+      <div className="max-w-7xl mx-auto w-full py-4 sm:py-6 space-y-4">
 
         {/* ── Banner ── */}
         <div

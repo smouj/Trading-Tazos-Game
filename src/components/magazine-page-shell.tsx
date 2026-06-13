@@ -155,7 +155,7 @@ export default function MagazinePageShell({
           {children}
         </main>
       ) : (
-        <main className="relative z-10 flex-1 pb-12" id="main-content" role="main" aria-label="Page content">
+        <main className="relative z-10 flex-1 pb-12 px-4 sm:px-6" id="main-content" role="main" aria-label="Page content">
           <div className="max-w-7xl mx-auto relative">
             {children}
           </div>

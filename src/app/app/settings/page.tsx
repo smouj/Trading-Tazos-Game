@@ -198,7 +198,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-5">
+    <div className="max-w-7xl mx-auto w-full py-4 sm:py-6 space-y-4 sm:space-y-5">
 
       {/* ═══ BANNER ═══ */}
       <div className="px-4 py-3 flex flex-wrap items-center gap-3 relative overflow-hidden"

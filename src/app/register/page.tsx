@@ -352,8 +352,6 @@ export default function RegisterPage() {
         </div>
       </main>
 
-      {/* Decorative stripe above footer */}
-      <div className="relative z-10 h-1.5 mag-stripes opacity-20 pointer-events-none" />
 
       <MagazineFooter />
     </div>

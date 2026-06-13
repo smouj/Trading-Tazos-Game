@@ -2,9 +2,9 @@
 
 // ============================================================
 // Magazine Header — shared across standalone auth/legal pages.
-// Matches the launcher-view masthead: dark #1a1a1a bar with
-// TRADINGTAZOSGAME logo, desktop nav tabs, mobile nav strip,
-// and Sign In / Dashboard button (auth-aware via useAuth).
+// IDENTICAL to the launcher-view masthead: dark #1a1a1a bar with
+// TRADINGTAZOSGAME logo, "Official TTG Beta" subtitle,
+// desktop nav tabs, mobile nav strip, and auth buttons.
 // Nav links go to /?page=xxx since this is used on standalone
 // pages (not inside the launcher SPA).
 // ============================================================
@@ -34,6 +34,7 @@ export default function MagazineHeader() {
       className="sticky top-0 z-40 border-b-[5px] border-[#1a1a1a]"
       style={{ background: "#1a1a1a" }}
     >
+      {/* Top row: logo + brand + nav + auth — identical to launcher */}
       <div className="flex items-center justify-between px-4 sm:px-6 py-2.5">
         {/* Left: Logo + Brand */}
         <Link
@@ -56,7 +57,7 @@ export default function MagazineHeader() {
           </div>
         </Link>
 
-        {/* Desktop nav */}
+        {/* Desktop nav — identical items to launcher */}
         <nav
           className="hidden sm:flex items-center gap-1"
           role="navigation"
@@ -73,16 +74,16 @@ export default function MagazineHeader() {
           ))}
         </nav>
 
-        {/* Right: Auth buttons */}
+        {/* Right: Auth buttons — identical to launcher */}
         <div className="flex items-center gap-2">
           {mounted && user ? (
             <>
-              <Link
+              <a
                 href="/app"
                 className="px-3 py-1 text-[10px] font-black text-[#1a1a1a] bg-[#FFCC00] uppercase tracking-wider border-2 border-white/20 hover:bg-[#FFE566] transition-colors no-underline"
               >
                 Dashboard
-              </Link>
+              </a>
               <button
                 onClick={() => {
                   localStorage.removeItem("ttg-token")
@@ -99,17 +100,17 @@ export default function MagazineHeader() {
               </button>
             </>
           ) : mounted ? (
-            <Link
+            <a
               href="/login"
               className="px-3 py-1 text-[10px] font-black text-white uppercase tracking-wider border-2 border-white/30 hover:border-[#FFCC00] hover:text-[#FFCC00] transition-colors no-underline"
             >
               Sign In
-            </Link>
+            </a>
           ) : null}
         </div>
       </div>
 
-      {/* Mobile nav */}
+      {/* Mobile nav — identical to launcher */}
       <nav className="sm:hidden flex items-center justify-center gap-0 px-2 pb-2 overflow-x-auto">
         {NAV_ITEMS.map(([page, label]) => (
           <a

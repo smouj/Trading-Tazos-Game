@@ -143,7 +143,7 @@ export default function DecksPage() {
   // ── Builder mode ──────────────────────────────────────
   if (showBuilder) {
     return (
-      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-4 sm:py-6 space-y-4">
+      <div className="max-w-7xl mx-auto w-full py-4 sm:py-6 space-y-4">
         <div className="flex items-center gap-2">
           <PackageOpen className="w-5 h-5 text-[#FFCC00]" />
           <h2 className="text-lg font-black uppercase text-[#1a1a1a] tracking-wide">
@@ -170,7 +170,7 @@ export default function DecksPage() {
 
   // ── Main list ─────────────────────────────────────────
   return (
-    <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-4 sm:py-6 space-y-4">
+    <div className="max-w-7xl mx-auto w-full py-4 sm:py-6 space-y-4">
       {/* ═══════════════════════════════════════════ */}
       {/* MAGAZINE BANNER STRIP                      */}
       {/* ═══════════════════════════════════════════ */}

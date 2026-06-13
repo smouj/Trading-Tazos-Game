@@ -8,7 +8,7 @@
 export const SITE_CONFIG = {
   name: "Trading Tazos Game",
   shortName: "TTG",
-  version: "0.6.5",
+  version: "0.7.0",
   canonicalUrl: "https://tradingtazosgame.com",
   totalTazos: 150,
   publishedTazos: 150,

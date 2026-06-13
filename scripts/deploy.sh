@@ -154,6 +154,10 @@ DATABASE_URL="file:/home/smouj/apps/ttg/Trading-Tazos-Game/.next/standalone/pris
 
 echo "  → DB schema pushed OK"
 
+# Clean any stale WAL/SHM files on VPS (prevents Prisma error code 14)
+sqlite3 /home/smouj/apps/ttg/Trading-Tazos-Game/.next/standalone/prisma/dev.db "PRAGMA wal_checkpoint(TRUNCATE);" 2>/dev/null || true
+rm -f /home/smouj/apps/ttg/Trading-Tazos-Game/.next/standalone/prisma/dev.db-wal /home/smouj/apps/ttg/Trading-Tazos-Game/.next/standalone/prisma/dev.db-shm
+
 # Restart PM2
 pm2 restart ttg
 

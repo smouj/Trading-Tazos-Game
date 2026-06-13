@@ -127,16 +127,19 @@ export default function MagazinePageShell({
           </div>
         </div>
 
-        {/* Desktop + Mobile nav tabs row */}
-        <nav className="flex items-center justify-center gap-1 sm:gap-2 px-4 pb-2 overflow-x-auto border-t border-white/5">
+        {/* Desktop + Mobile nav tabs row — magazine-style tab strip */}
+        <nav className="flex items-center gap-0.5 sm:gap-2 px-2 sm:px-4 pb-2 overflow-x-auto border-t border-white/5
+          [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
+          snap-x snap-mandatory scroll-smooth touch-pan-x"
+          role="navigation" aria-label="App navigation">
           {NAV_ITEMS.map(({ id, label, icon: Icon, href }) => {
             const isActive = currentTab === id || pathname === href
             return (
               <Link key={id} href={href}
-                className={`flex items-center gap-1 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-colors whitespace-nowrap rounded ${
-                  isActive ? "text-[#FFCC00] bg-[#FFCC00]/10" : "text-white/40 hover:text-[#FFCC00]/80 hover:bg-white/5"
+                className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 text-[9px] sm:text-[10px] font-black uppercase tracking-wider transition-colors whitespace-nowrap rounded snap-start ${
+                  isActive ? "text-[#FFCC00] bg-[#FFCC00]/10" : "text-white/40 hover:text-[#FFCC00]/70 hover:bg-white/5"
                 }`}>
-                <Icon className="w-3.5 h-3.5" />
+                <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 {label}
               </Link>
             )
@@ -186,19 +189,16 @@ export default function MagazinePageShell({
             </Link>
           </div>
 
-          {/* Links + social */}
-          <div className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-3 gap-3">
-            <div className="flex items-center gap-3 sm:gap-4 flex-wrap justify-center">
-              {FOOTER_LINKS.info.map(({ label, href }) => (
-                <Link key={label} href={href} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">{label}</Link>
-              ))}
-              {FOOTER_LINKS.legal.map(({ label, href }) => (
+          {/* Links + Social — identical to launcher footer */}
+          <div className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-2.5 gap-2.5">
+            <div className="flex items-center gap-2.5 sm:gap-3.5 flex-wrap justify-center">
+              {[...FOOTER_LINKS.info, ...FOOTER_LINKS.legal].map(({ label, href }) => (
                 <Link key={label} href={href} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">{label}</Link>
               ))}
               <span className="text-white/10">|</span>
               {FOOTER_LINKS.social.map(s => (
                 <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label}
-                  className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-white/20 text-zinc-400 hover:text-[#FFCC00] hover:border-[#FFCC00]/50 transition-all">
+                  className="flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 rounded-full border border-white/15 text-zinc-400 hover:text-[#FFCC00] hover:border-[#FFCC00]/50 transition-all">
                   <DiscIcon label={s.label} />
                 </a>
               ))}

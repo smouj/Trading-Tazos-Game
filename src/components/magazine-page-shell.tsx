@@ -146,6 +146,9 @@ export default function MagazinePageShell({
         </nav>
       </header>
 
+      {/* Magazine decorative stripe — header/content separator */}
+      <div className="relative z-10 h-2 mag-stripes opacity-15 pointer-events-none" />
+
       {/* ═══════════════════════════════════════ */}
       {/* PAGE CONTENT                             */}
       {/* ═══════════════════════════════════════ */}
@@ -187,8 +190,8 @@ export default function MagazinePageShell({
 
           {/* Links + social */}
           <div className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-3 gap-3">
-            <div className="flex items-center gap-3 sm:gap-4">
-              {FOOTER_LINKS.info.slice(0, 3).map(({ label, href }) => (
+            <div className="flex items-center gap-3 sm:gap-4 flex-wrap justify-center">
+              {FOOTER_LINKS.info.map(({ label, href }) => (
                 <Link key={label} href={href} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">{label}</Link>
               ))}
               {FOOTER_LINKS.legal.map(({ label, href }) => (
@@ -205,6 +208,13 @@ export default function MagazinePageShell({
             <span className="text-[8px] font-black text-white/15 uppercase tracking-[0.3em] whitespace-nowrap">
               &copy; 2026 {SITE_CONFIG.name} &middot; v{SITE_CONFIG.version}
             </span>
+          </div>
+
+          {/* Disclaimer */}
+          <div className="text-center px-4 pb-2">
+            <p className="text-[7px] font-bold text-white/10 uppercase leading-relaxed">
+              Independent fictional digital tazo game. Not affiliated with any third-party brand.
+            </p>
           </div>
         </footer>
       )}

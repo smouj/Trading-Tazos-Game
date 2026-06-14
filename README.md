@@ -15,7 +15,7 @@
 [![Status](https://img.shields.io/badge/status-Live-brightgreen)](https://tradingtazosgame.com)
 [![PWA](https://img.shields.io/badge/PWA-Ready-5A0FC8?logo=pwa)](https://tradingtazosgame.com/manifest.json)
 [![i18n](https://img.shields.io/badge/i18n-10_languages-8B5CF6)](./src/lib/i18n/locales/)
-[![Version](https://img.shields.io/badge/version-v0.6.0-FFCC00)](#changelog)
+[![Version](https://img.shields.io/badge/version-v0.7.0-FFCC00)](#changelog)
 [![Design](https://img.shields.io/badge/design-Magazine_Game-FFCC00)]()
 
 <br/>
@@ -124,7 +124,7 @@ It's a game of **physical tazo throwing** — aim, power, physics, chain rebound
 |---------|--------|
 | Web | Full Next.js 16 app at [tradingtazosgame.com](https://tradingtazosgame.com) |
 | PWA | Installable on mobile and desktop with manifest.json |
-| Desktop | Electron app — [latest installers](https://github.com/smouj/Trading-Tazos-Game/releases/tag/v0.6.3) for Windows (.exe), macOS (.dmg), and Linux (.AppImage, .deb) |
+| Desktop | Electron app — [latest installers](https://github.com/smouj/Trading-Tazos-Game/releases/latest) for Windows (.exe), macOS (.dmg), and Linux (.AppImage, .deb) |
 | i18n | 10 languages: EN, ES, PT, DE, FR, IT, JA, KO, ZH, RU |
 | SEO | JSON-LD VideoGame schema, sitemap.xml, robots.txt, hreflang alternates |
 | Security | CSP + HSTS + X-Frame-Options + dual cookie auth |
@@ -349,13 +349,13 @@ The game uses a **90s collectible game magazine** aesthetic specified in [`THEME
 
 ## Desktop App
 
-Desktop installers for all platforms are available on the [v0.6.3 Releases page](https://github.com/smouj/Trading-Tazos-Game/releases/tag/v0.6.3).
+Desktop installers for all platforms are available on the [v0.6.3 Releases page](https://github.com/smouj/Trading-Tazos-Game/releases/latest).
 
 | Platform | Format | Version |
 |----------|--------|---------|
-| Linux | AppImage, .deb | desktop v0.6.3 |
-| Windows | .exe (NSIS) | desktop v0.6.3 |
-| macOS | .dmg, .zip | desktop v0.6.3 |
+| Linux | AppImage, .deb | desktop v0.7.0 |
+| Windows | .exe (NSIS) | desktop v0.7.0 |
+| macOS | .dmg, .zip | desktop v0.7.0 |
 
 ---
 

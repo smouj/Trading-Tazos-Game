@@ -1,5 +1,98 @@
 # Changelog
 
+## v0.7.0 — Battle Arena 2.0: AA-Grade Combat (2026-06-14)
+
+### ⚔️ Battle Arena 2.0
+- **PvP WebSocket server** (`ttg-ws`): Real-time player-vs-player battles on port 3001
+- **Ranked matchmaking**: Queue system with MMR-based pairing
+- **Complete FSM battle engine**: 20 states, 25+ transitions (lobby → aim → power → spin → launch → physics → resolve)
+- **AI engine**: 3 difficulty levels (Novice/Skilled/Master) with adaptive tactics
+- **Battle records**: Persistent match history with userId, score, turns tracking
+
+### 🖥️ Desktop Apps (v0.7.0)
+- **Electron app**: Thin wrapper launching tradingtazosgame.com
+- **Multi-platform CI**: GitHub Actions builds Windows (.exe), macOS (.dmg ARM+Intel), Linux (.AppImage+.deb)
+- **Bug fix**: CI migrated from bun→npm for electron-builder compatibility
+
+### 🎴 SPA Architecture
+- **MagazinePageShell**: Unified magazine aesthetic across ALL pages (cream paper, halftone, yellow masthead, HUD bar)
+- **Launcher-compatible header/footer**: Sticky 78px headers, gold footer borders, consistent nav tabs
+- **Magazine-only palette**: #FFCC00 (yellow), #1a1a1a (black), #FFF9E6 (cream), #E3350D (red), #3B4CCA (blue)
+
+### 🔒 Security & Infrastructure
+- **Caddy security headers**: X-Frame-Options DENY, X-Content-Type-Options, Strict-Transport-Security
+- **Admin-only POST /api/tazos**: JWT + admin email authentication required
+- **JWT_SECRET**: Hardcoded fallbacks removed — app fails fast if env var is missing
+- **/admin blocked**: robots.txt + noindex meta tags
+
+### 🔍 SEO & PWA
+- **Sitemap**: 19 URLs with lastmod + changefreq + priority
+- **Clean legal routes**: /privacy, /terms, /cookies, /disclaimer, /refund-policy with standalone SEO
+- **JSON-LD**: WebApplication structured data on homepage
+- **PWA manifest**: `related_applications` pointing to desktop installers
+- **hreflang**: en/es alternates on all pages
+
+### 📦 Marketplace & Economy
+- **Achievements & Quests**: Tracked per user with progress indicators
+- **Marketplace**: Buy, sell, and trade offers between players
+- **XP + Credits**: Tracked per battle and collection milestone
+- **Stripe integration**: Payment processing configured
+
+### 🧰 Developer Experience
+- **CLI v1.0.4**: `@trading-tazos-game/cli` on npm — search, battle, manage collection from terminal
+- **Art Studio v1.0.0**: Visual drag & drop tazo designer
+- **TypeScript strict**: 0 errors required before deploy
+- **PM2 deploy**: Zero-downtime rsync + restart workflow
+
+
+### ⚔️ Battle Arena 2.0
+- **PvP WebSocket server** (`ttg-ws`): Real-time player-vs-player battles on port 3001
+- **Ranked matchmaking**: Queue system with MMR-based pairing
+- **Complete FSM battle engine**: 20 states, 25+ transitions (lobby → aim → power → spin → launch → physics → resolve)
+- **AI engine**: 3 difficulty levels (Novice/Skilled/Master) with adaptive tactics
+- **Battle records**: Persistent match history with userId, score, turns tracking
+
+### 🖥️ Desktop Apps (v0.7.0)
+- **Electron app**: Thin wrapper launching tradingtazosgame.com
+- **Multi-platform CI**: GitHub Actions builds Windows (.exe), macOS (.dmg ARM+Intel), Linux (.AppImage+.deb)
+- **Auto-update**: Electron updater with release feed
+
+### 🎴 SPA Architecture
+- **MagazinePageShell**: Unified magazine aesthetic across ALL pages (cream paper, halftone, yellow masthead, HUD bar)
+- **Launcher-compatible header/footer**: Sticky 78px headers, gold footer borders, consistent nav tabs
+- **Magazine-only palette**: #FFCC00 (yellow), #1a1a1a (black), #FFF9E6 (cream), #E3350D (red), #3B4CCA (blue)
+
+### 🔒 Security & Infrastructure
+- **Caddy security headers**: X-Frame-Options DENY, X-Content-Type-Options, Strict-Transport-Security
+- **Admin-only POST /api/tazos**: JWT + admin email authentication required
+- **JWT_SECRET**: Hardcoded fallbacks removed — app fails fast if env var is missing
+- **/admin blocked**: robots.txt + noindex meta tags
+
+### 🔍 SEO & PWA
+- **Sitemap**: 19 URLs with lastmod + changefreq + priority
+- **Clean legal routes**: /privacy, /terms, /cookies, /disclaimer, /refund-policy with standalone SEO
+- **JSON-LD**: WebApplication structured data on homepage
+- **PWA manifest**: `related_applications` pointing to desktop installers
+- **hreflang**: en/es alternates on all pages
+
+### 🛒 Economy & Progression
+- **Achievements & Quests**: Tracked per user with progress indicators
+- **Marketplace**: Buy, sell, and trade offers between players
+- **XP + Credits**: Tracked per battle and collection milestone
+- **Stripe integration**: Payment processing configured
+
+### 🧰 Developer Experience
+- **CLI v1.0.4**: `@trading-tazos-game/cli` on npm — search, battle, manage collection from terminal
+- **Art Studio v1.0.0**: Visual drag & drop tazo designer
+- **TypeScript strict**: 0 errors required before deploy
+- **PM2 deploy**: Zero-downtime rsync + restart workflow
+
+---
+
+# Changelog
+
+## v0.3.2 — Security + Magazine + Battle Unification (2026-06-05) [Unreleased — deployed, not tagged]
+
 ## v0.3.2 — Security + Magazine + Battle Unification (2026-06-05) [Unreleased — deployed, not tagged]
 
 ### 🔒 Security Hardening

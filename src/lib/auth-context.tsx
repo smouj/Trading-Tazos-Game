@@ -8,6 +8,7 @@ interface User {
   name: string
   displayName?: string | null
   avatarUrl?: string | null
+  bio?: string | null
   credits?: number
   tazoCount?: number
   deckCount?: number

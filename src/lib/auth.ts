@@ -37,6 +37,7 @@ export interface AuthUser {
   name: string
   displayName?: string | null
   avatarUrl?: string | null
+  bio?: string | null
   oauthProvider?: string | null
 }
 
@@ -370,6 +371,7 @@ export async function findOrCreateOAuthUser(profile: OAuthProfile): Promise<Auth
     name: user.name,
     displayName: user.displayName,
     avatarUrl: user.avatarUrl,
+    bio: user.bio,
     oauthProvider: user.oauthProvider,
   }
 }

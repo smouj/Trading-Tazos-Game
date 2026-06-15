@@ -28,6 +28,7 @@ model User {
   name         String
   displayName  String?
   avatarUrl    String?
+  bio          String?
   credits      Int        @default(100)
   oauthProvider   String?   // "github" | "google" | "discord" | null
   oauthProviderId String?   // external provider user id

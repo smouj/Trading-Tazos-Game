@@ -31,6 +31,7 @@ export async function GET(request: NextRequest) {
       name: user.name,
       displayName: user.displayName,
       avatarUrl: user.avatarUrl,
+      bio: user.bio,
     })
 
     const response = NextResponse.json({
@@ -41,6 +42,7 @@ export async function GET(request: NextRequest) {
         name: fullUser.name,
         displayName: fullUser.displayName,
         avatarUrl: fullUser.avatarUrl,
+        bio: fullUser.bio,
         credits: fullUser.credits,
         tazoCount: fullUser._count.userTazos,
         deckCount: fullUser._count.decks,

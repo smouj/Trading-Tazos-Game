@@ -13,7 +13,7 @@ import { type Lang } from "@/lib/i18n/types"
 import { TOTAL_PLANNED } from "@/lib/franchise-config"
 import {
   User, Settings, LogOut, Disc3, Layers, Coins,
-  Mail, Calendar, Shield, Edit3, Check, X,
+  Mail, Calendar, Shield, Edit3, Check, X, Upload, Trash2, Lock, FileJson, AlertCircle,
   Globe, Volume2, VolumeX, Sun, Moon, Monitor,
   Music, Radio, Link as LinkIcon, TicketPercent,
   Loader2,
@@ -102,7 +102,17 @@ export default function SettingsPage() {
   const [displayName, setDisplayName] = useState("")
   const [avatarUrl, setAvatarUrl] = useState("")
   const [editingAvatar, setEditingAvatar] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [bio, setBio] = useState("")
+  const [editingBio, setEditingBio] = useState(false)
   const [saving, setSaving] = useState(false)
+
+  // Password change
+  const [showPasswordChange, setShowPasswordChange] = useState(false)
+  const [currentPassword, setCurrentPassword] = useState("")
+  const [newPassword, setNewPassword] = useState("")
+  const [changingPassword, setChangingPassword] = useState(false)
+  const [passwordMessage, setPasswordMessage] = useState<{type: "success"|"error", text: string} | null>(null)
 
   // Sound settings
   const [soundEnabled, setSoundEnabled] = useState(true)
@@ -159,6 +169,7 @@ export default function SettingsPage() {
     if (user) {
       setDisplayName(user.displayName || user.name || "")
       setAvatarUrl(user.avatarUrl || "")
+      setBio((user as any).bio || "")
     }
   }, [user])
 
@@ -170,15 +181,88 @@ export default function SettingsPage() {
       const res = await fetch("/api/user/settings", {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ displayName: displayName || null, avatarUrl: avatarUrl || null }),
+        body: JSON.stringify({ displayName: displayName || null, avatarUrl: avatarUrl || null, bio: bio || null }),
       })
       if (res.ok) {
         // Update user state via refresh
         if (refresh) refresh()
         setEditingName(false)
         setEditingAvatar(false)
+        setEditingBio(false)
       }
     } catch {} finally { setSaving(false) }
+  }
+
+
+  // ── Upload avatar from computer ──
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !token) return
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('avatar', file)
+      const res = await fetch('/api/user/avatar', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setAvatarUrl(data.avatarUrl)
+        if (refresh) refresh()
+      } else {
+        alert(data.error || 'Upload failed')
+      }
+    } catch {
+      alert('Upload failed. Please try again.')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  // ── Remove avatar ──
+  const handleRemoveAvatar = async () => {
+    if (!token) return
+    try {
+      await fetch('/api/user/avatar', {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      setAvatarUrl('')
+      if (refresh) refresh()
+    } catch {}
+  }
+
+  // ── Change password ──
+  const handlePasswordChange = async () => {
+    if (!token || !currentPassword || !newPassword) return
+    if (newPassword.length < 10) {
+      setPasswordMessage({ type: 'error', text: 'Password must be at least 10 characters' })
+      return
+    }
+    setChangingPassword(true)
+    setPasswordMessage(null)
+    try {
+      const res = await fetch('/api/user/password', {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setPasswordMessage({ type: 'success', text: 'Password changed successfully' })
+        setCurrentPassword('')
+        setNewPassword('')
+        setShowPasswordChange(false)
+      } else {
+        setPasswordMessage({ type: 'error', text: data.error || 'Failed to change password' })
+      }
+    } catch {
+      setPasswordMessage({ type: 'error', text: 'Network error. Please try again.' })
+    } finally {
+      setChangingPassword(false)
+    }
   }
 
   // ── Not logged in ──
@@ -286,18 +370,61 @@ export default function SettingsPage() {
                 <p className="text-[10px] font-black text-[#1a1a1a]/30 uppercase tracking-wider flex items-center gap-1">
                   <Calendar className="w-3 h-3" /> Member since {memberSince}
                 </p>
+                {/* Bio */}
+                {editingBio ? (
+                  <div className="mt-3 flex items-start gap-2">
+                    <textarea value={bio} onChange={e => setBio(e.target.value)}
+                      className="flex-1 px-3 py-2 text-xs font-bold border-2 border-[#1a1a1a] bg-[#FFFEF0] focus:outline-none focus:border-[#FFCC00] resize-none"
+                      placeholder="Tell others about your Tazo collection..." rows={3} maxLength={200} autoFocus />
+                    <div className="flex flex-col gap-1">
+                      <button onClick={() => { saveProfile(); setEditingBio(false) }} className="p-1.5 hover:bg-green-50 rounded"><Check className="w-3.5 h-3.5 text-green-500" /></button>
+                      <button onClick={() => setEditingBio(false)} className="p-1.5 hover:bg-red-50 rounded"><X className="w-3.5 h-3.5 text-red-500" /></button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-2 group/bio">
+                    {bio ? (
+                      <p className="text-[11px] font-bold text-[#1a1a1a]/50 leading-relaxed">{bio}</p>
+                    ) : (
+                      <p className="text-[11px] font-bold text-[#1a1a1a]/15 italic">Add a bio...</p>
+                    )}
+                    <button onClick={() => setEditingBio(true)}
+                      className="mt-1 opacity-0 group-hover/bio:opacity-100 text-[10px] font-black text-[#1a1a1a]/30 uppercase hover:text-[#FFCC00] transition-all">
+                      Edit Bio
+                    </button>
+                  </div>
+                )}
+
               </div>
             </div>
 
-            {/* Avatar URL editor */}
+            {/* Avatar editor — URL OR upload */}
             {editingAvatar && (
-              <div className="flex items-center gap-2 p-3 border-2 border-[#FFCC00] bg-[#FFFEF0]">
-                <LinkIcon className="w-4 h-4 text-[#1a1a1a]/40 flex-shrink-0" />
-                <input value={avatarUrl} onChange={e => setAvatarUrl(e.target.value)}
-                  className="flex-1 px-3 py-1.5 text-xs font-bold border-2 border-[#1a1a1a] bg-white focus:outline-none focus:border-[#FFCC00]"
-                  placeholder="https://example.com/avatar.jpg" />
-                <button onClick={() => setEditingAvatar(false)} className="p-1 hover:bg-red-50 rounded"><X className="w-3 h-3 text-red-500" /></button>
-                <button onClick={() => { saveProfile(); setEditingAvatar(false) }} className="p-1 hover:bg-green-50 rounded"><Check className="w-3 h-3 text-green-500" /></button>
+              <div className="space-y-2 p-3 border-2 border-[#FFCC00] bg-[#FFFEF0]">
+                {/* URL input */}
+                <div className="flex items-center gap-2">
+                  <LinkIcon className="w-4 h-4 text-[#1a1a1a]/40 flex-shrink-0" />
+                  <input value={avatarUrl} onChange={e => setAvatarUrl(e.target.value)}
+                    className="flex-1 px-3 py-1.5 text-xs font-bold border-2 border-[#1a1a1a] bg-white focus:outline-none focus:border-[#FFCC00]"
+                    placeholder="https://example.com/avatar.jpg" />
+                </div>
+                {/* Upload from computer */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <label className="mag-btn bg-[#3B4CCA] text-white px-4 py-2 text-[10px] font-black uppercase tracking-wider border-2 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all cursor-pointer flex items-center gap-1.5">
+                    <Upload className="w-3 h-3" />
+                    {uploading ? 'Uploading...' : 'Upload from Computer'}
+                    <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={handleAvatarUpload} className="hidden" disabled={uploading} />
+                  </label>
+                  {avatarUrl && !avatarUrl.startsWith('http') && (
+                    <button onClick={handleRemoveAvatar}
+                      className="mag-btn bg-[#E3350D] text-white px-3 py-2 text-[10px] font-black uppercase tracking-wider border-2 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all flex items-center gap-1">
+                      <Trash2 className="w-3 h-3" /> Remove
+                    </button>
+                  )}
+                  <button onClick={() => setEditingAvatar(false)} className="p-1 hover:bg-red-50 rounded"><X className="w-3.5 h-3.5 text-red-500" /></button>
+                  <button onClick={() => { saveProfile(); setEditingAvatar(false) }} className="p-1 hover:bg-green-50 rounded"><Check className="w-3.5 h-3.5 text-green-500" /></button>
+                </div>
+                <p className="text-[8px] font-bold text-[#1a1a1a]/30 uppercase">Max 5MB · JPEG, PNG, WebP, GIF · Auto-resized to 256×256</p>
               </div>
             )}
 
@@ -381,6 +508,54 @@ export default function SettingsPage() {
               onChange={persistBool(LS_KEYS.effectsEnabled, setEffectsEnabled)} />
             <ToggleRow icon={Monitor} label="Reduced Motion" description="Minimize animations and transitions" checked={reducedMotion}
               onChange={persistBool(LS_KEYS.reducedMotion, setReducedMotion)} />
+          </div>
+
+
+          {/* ── PASSWORD ── */}
+          <div className="border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] bg-white overflow-hidden">
+            <div className="px-5 sm:px-6 py-3 border-b-3 border-[#1a1a1a] flex items-center gap-2"
+              style={{ background: "repeating-linear-gradient(-45deg, #F59E0B10, #F59E0B10 4px, transparent 4px, transparent 8px)" }}>
+              <Lock className="w-4 h-4 text-[#1a1a1a]" />
+              <h2 className="text-xs font-black text-[#1a1a1a] uppercase tracking-[0.2em]">Password</h2>
+            </div>
+            <div className="p-4 space-y-3">
+              {(user as any).oauthProvider ? (
+                <p className="text-[10px] font-bold text-[#1a1a1a]/30 text-center py-2">
+                  Password management is handled by {(user as any).oauthProvider}
+                </p>
+              ) : !showPasswordChange ? (
+                <button onClick={() => setShowPasswordChange(true)}
+                  className="w-full mag-btn border-2 border-[#1a1a1a] px-4 py-3 text-xs font-black uppercase tracking-wider bg-white text-[#1a1a1a] hover:bg-[#1a1a1a]/05 transition-colors shadow-[2px_2px_0px_#1a1a1a]">
+                  <Lock className="w-3.5 h-3.5 inline mr-2" /> Change Password
+                </button>
+              ) : (
+                <div className="space-y-3">
+                  <input type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)}
+                    className="w-full px-3 py-2.5 text-xs font-bold border-2 border-[#1a1a1a] bg-[#FFFEF0] focus:outline-none focus:border-[#F59E0B] placeholder:text-[#1a1a1a]/20 uppercase tracking-wider"
+                    placeholder="Current Password" />
+                  <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)}
+                    className="w-full px-3 py-2.5 text-xs font-bold border-2 border-[#1a1a1a] bg-[#FFFEF0] focus:outline-none focus:border-[#F59E0B] placeholder:text-[#1a1a1a]/20 uppercase tracking-wider"
+                    placeholder="New Password (min 10 chars)" />
+                  <div className="flex gap-2">
+                    <button onClick={handlePasswordChange} disabled={changingPassword || !currentPassword || !newPassword}
+                      className="flex-1 mag-btn bg-[#F59E0B] text-white px-4 py-2.5 text-xs font-black uppercase tracking-wider border-2 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all disabled:opacity-50 flex items-center justify-center gap-1.5">
+                      {changingPassword ? <Loader2 className="w-3 h-3 animate-spin" /> : <Lock className="w-3 h-3" />}
+                      {changingPassword ? 'Changing...' : 'Update Password'}
+                    </button>
+                    <button onClick={() => { setShowPasswordChange(false); setPasswordMessage(null); setCurrentPassword(''); setNewPassword('') }}
+                      className="mag-btn border-2 border-[#1a1a1a] bg-white px-4 py-2.5 text-xs font-black uppercase tracking-wider shadow-[2px_2px_0px_#1a1a1a] hover:bg-[#1a1a1a]/05 transition-all">
+                      Cancel
+                    </button>
+                  </div>
+                  {passwordMessage && (
+                    <div className={`flex items-center gap-2 p-2.5 border-2 ${passwordMessage.type === 'success' ? 'border-[#22C55E] bg-[#F0FFF4]' : 'border-[#E3350D] bg-[#FFF5F5]'}`}>
+                      {passwordMessage.type === 'success' ? <Check className="w-3.5 h-3.5 text-[#22C55E]" /> : <AlertCircle className="w-3.5 h-3.5 text-[#E3350D]" />}
+                      <p className="text-[10px] font-black uppercase" style={{ color: passwordMessage.type === 'success' ? '#22C55E' : '#E3350D' }}>{passwordMessage.text}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* ── LANGUAGE ── */}

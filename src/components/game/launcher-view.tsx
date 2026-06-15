@@ -2006,7 +2006,7 @@ export default function LauncherView() {
 
           {/* Mobile nav */}
           <nav className="sm:hidden flex items-center justify-center gap-0 px-2 pb-2 overflow-x-auto">
-            {(["home", "how-to-play", "collections", "tazos", "leaderboard", "faq", "shop"] as PageId[]).map(id => (
+            {(["home", "how-to-play", "collections", "tazos", "leaderboard", "download", "faq", "shop"] as PageId[]).map(id => (
               <button key={id} onClick={() => navigate(id)}
                 className={`px-2 py-0.5 text-[9px] font-black uppercase tracking-wider whitespace-nowrap transition-colors ${
                   currentPage === id ? "text-[#FFCC00]" : "text-white/40 hover:text-[#FFCC00]"

@@ -829,7 +829,13 @@ function SeriesPreviewHome({ onNavigate }: { onNavigate: (page: PageId) => void 
             <div className="p-3 sm:p-4">
               {/* Tazo grid */}
               <div className="flex items-center justify-center gap-1.5 mb-3">
-                {tazos.slice(0, 3).map((t, i) => (
+                {/* Series logo */}
+              <div className="flex justify-center mb-2">
+                <img src={`/logo/series-${s.slug}.png`} alt={`${s.name} logo`}
+                  className="h-7 sm:h-8 object-contain opacity-90 group-hover:opacity-100 transition-opacity" />
+              </div>
+              {/* Tazo grid */}
+              {tazos.slice(0, 3).map((t, i) => (
                   <div key={t.id || i} className="w-11 h-11 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-[#1a1a1a]/30 bg-white group-hover:border-[#1a1a1a]/60 transition-colors" style={{ boxShadow: "0 2px 6px rgba(0,0,0,0.12)" }}>
                     {t.imageUrl ? (
                       <TazoDiscImage src={t.imageUrl} alt={t.name || ''} size="100%" borderWidth={0}
@@ -1077,6 +1083,10 @@ function CollectionsContent({ onNavigate }: { onNavigate: (page: PageId) => void
 
             {/* Info section */}
             <div className="p-5">
+              <div className="flex items-center gap-2 mb-1">
+                <img src={`/logo/series-${c.slug}.png`} alt={`${c.name}`}
+                  className="h-5 object-contain" />
+              </div>
               <h3 className="text-lg font-black text-[#1a1a1a] uppercase">{c.name}</h3>
               <p className="text-[10px] font-black text-[#1a1a1a]/50 mt-0.5">{c.count} of {c.total} tazos · {c.year} · {c.origin}</p>
               <p className="text-[11px] font-bold text-[#1a1a1a]/60 mt-2 leading-relaxed">{c.desc}</p>
@@ -1339,15 +1349,15 @@ function ShopContent() {
       {/* Bag cards */}
       <section className="grid md:grid-cols-3 gap-4 sm:gap-6">
         {BAGS.map(bag => {
-          const Icon = bag.icon
           const examples = tazosByF[bag.franchise] || []
           return (
             <div key={bag.type} className="mag-card border-3 border-[#1a1a1a] bg-white overflow-hidden" style={{ boxShadow: `4px 4px 0px ${bag.border}40` }}>
               <div className="px-4 sm:px-5 py-4 border-b-2 border-[#1a1a1a]/10" style={{ backgroundColor: bag.bg }}>
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <div className="w-9 h-9 rounded-full flex items-center justify-center border-2 border-[#1a1a1a] flex-shrink-0" style={{ backgroundColor: bag.color }}>
-                      <Icon className="w-4 h-4 text-white" />
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center border-2 border-[#1a1a1a] flex-shrink-0 bg-white p-1 overflow-hidden" style={{ boxShadow: "2px 2px 0 #1a1a1a" }}>
+                      <img src={`/logo/series-${bag.franchise}.png`} alt={`${bag.franchiseName} logo`}
+                        className="w-full h-full object-contain" />
                     </div>
                     <div>
                       <h3 className="text-sm sm:text-base font-black text-[#1a1a1a] uppercase leading-tight">{bag.name}</h3>

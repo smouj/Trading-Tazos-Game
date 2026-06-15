@@ -23,7 +23,7 @@ fi
 
 # Sync public root files (manifest.json, favicons, PWA assets)
 echo "→ Syncing public root files..."
-rsync -avz public/ "$VPS:$VPS_APP/public/" --include="manifest.json" --include="favicon*" --include="apple*" --include="pwa*" --include="robots.txt" --include="favicon.ico" --include="favicon.png" --include="favicon-192.png" --include="apple-touch-icon.png" --include="logo/***" --exclude="*" 2>/dev/null || true
+rsync -avz public/ "$VPS:$VPS_APP/public/" --include="manifest.json" --include="favicon*" --include="apple*" --include="pwa*" --include="robots.txt" --include="favicon.ico" --include="favicon.png" --include="favicon-192.png" --include="apple-touch-icon.png" --include="series-*.png" --include="logo/***" --exclude="*" 2>/dev/null || true
 
 # 3. Post-deploy steps on VPS
 echo "→ Running post-deploy on VPS..."
@@ -65,6 +65,8 @@ mkdir -p .next/standalone/public/tazos-base
 mkdir -p .next/standalone/public/tazos-generated
 mkdir -p .next/standalone/public/tazos-backs
 mkdir -p .next/standalone/public/tazos-artgen/backs
+mkdir -p .next/standalone/public/logo
+cp -r public/logo/*.png .next/standalone/public/logo/ 2>/dev/null || true
 mkdir -p .next/standalone/public/tazos-tubes
 
 # Fix DATABASE_URL to point to canonical data/dev.db (not standalone copy)

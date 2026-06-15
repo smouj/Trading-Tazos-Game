@@ -56,11 +56,11 @@ export default function CybermonCollectionPage() {
         <div className="border-3 border-[#1a1a1a] bg-gradient-to-br from-cyan-100 to-blue-200 p-6 sm:p-8 mb-8 shadow-[6px_6px_0px_#1a1a1a] overflow-hidden relative">
           {/* Background wallpaper from series back art */}
           <div className="absolute inset-0 opacity-[0.08] pointer-events-none">
-            <img src="/tazos-artgen/backs/cybermon-back.png" alt="" className="w-full h-full object-cover" />
+            <img src="/logo/series-cybermon.png" alt="" className="w-full h-full object-cover" />
           </div>
           <div className="relative z-10 flex items-center gap-6">
             <div className="w-24 h-24 sm:w-32 sm:h-32 border-3 border-[#1a1a1a] bg-white rounded-full shadow-[4px_4px_0px_#1a1a1a] flex items-center justify-center shrink-0 overflow-hidden">
-              <img src="/tazos-artgen/backs/cybermon-back.png" alt="Cybermon Logo" className="w-full h-full object-contain p-2" />
+              <img src="/logo/series-cybermon.png" alt="Cybermon Series Logo" className="w-full h-full object-contain p-2" />
             </div>
             <div>
               <h2 className="text-lg sm:text-xl font-black uppercase text-[#1a1a1a] tracking-wider">Protocol Seal</h2>

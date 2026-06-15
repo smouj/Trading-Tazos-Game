@@ -13,7 +13,7 @@ module.exports = {
         SMTP_PORT: "465",
         SMTP_SECURE: "true",
         SMTP_USER: "support@tradingtazosgame.com",
-        SMTP_PASS: "4x8q;u$3w1D&",
+        SMTP_PASS: "mVS+oR0kSj",
         MAIL_FROM_NAME: "Trading Tazos Game Support",
         MAIL_FROM_EMAIL: "support@tradingtazosgame.com",
       },

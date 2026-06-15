@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version (e.g. 0.6.4)'
+        description: 'Version (e.g. 0.7.2)'
         required: true
-        default: '0.6.4'
+        default: '0.7.2'
 
 permissions:
   contents: write
@@ -26,6 +26,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      - name: Sync version → electron/package.json
+        shell: bash
+        run: |
+          VERSION="${{ github.event_name == 'workflow_dispatch' && inputs.version || github.ref_name }}"
+          VERSION="${VERSION#v}"
+          echo "Setting electron version to: $VERSION"
+          node -e "const p=require('./electron/package.json');p.version='${VERSION}';require('fs').writeFileSync('./electron/package.json',JSON.stringify(p,null,2)+'\n')"
 
       - name: Install dependencies (npm — electron-builder compat)
         run: npm ci
@@ -54,6 +62,14 @@ jobs:
         with:
           node-version: 22
 
+      - name: Sync version → electron/package.json
+        shell: bash
+        run: |
+          VERSION="${{ github.event_name == 'workflow_dispatch' && inputs.version || github.ref_name }}"
+          VERSION="${VERSION#v}"
+          echo "Setting electron version to: $VERSION"
+          node -e "const p=require('./electron/package.json');p.version='${VERSION}';require('fs').writeFileSync('./electron/package.json',JSON.stringify(p,null,2)+'\n')"
+
       - name: Install dependencies (npm — electron-builder compat)
         run: npm ci
 
@@ -79,6 +95,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      - name: Sync version → electron/package.json
+        shell: bash
+        run: |
+          VERSION="${{ github.event_name == 'workflow_dispatch' && inputs.version || github.ref_name }}"
+          VERSION="${VERSION#v}"
+          echo "Setting electron version to: $VERSION"
+          node -e "const p=require('./electron/package.json');p.version='${VERSION}';require('fs').writeFileSync('./electron/package.json',JSON.stringify(p,null,2)+'\n')"
 
       - name: Install dependencies (npm — electron-builder compat)
         run: npm ci

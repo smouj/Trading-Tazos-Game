@@ -60,8 +60,9 @@ mkdir -p .next/standalone/public/tazos-backs
 mkdir -p .next/standalone/public/tazos-artgen/backs
 mkdir -p .next/standalone/public/tazos-tubes
 
-# Fix DATABASE_URL to VPS path (CRITICAL: stale WSL path = production 500)
-TARGET_DB="file:/home/smouj/apps/ttg/Trading-Tazos-Game/.next/standalone/prisma/dev.db"
+# Fix DATABASE_URL to point to canonical data/dev.db (not standalone copy)
+# CRITICAL: symlink prevents 0-byte DB corruption
+TARGET_DB="file:/home/smouj/apps/ttg/Trading-Tazos-Game/data/dev.db"
 sed -i "s|^DATABASE_URL=.*|DATABASE_URL=\"$TARGET_DB\"|" .next/standalone/.env
 
 # VERIFY the DATABASE_URL was actually fixed (abort deploy if not)
@@ -70,7 +71,7 @@ if ! grep -qF "DATABASE_URL=\"$TARGET_DB\"" .next/standalone/.env; then
   grep DATABASE_URL .next/standalone/.env
   exit 1
 fi
-echo "  ✅ DATABASE_URL verified: VPS path"
+echo "  ✅ DATABASE_URL verified: data/dev.db (symlink)"
 
 # Sync Stripe env from ecosystem.config.js (keep standalone .env in sync with PM2 env)
 # All sensitive keys live in ecosystem.config.js — this just mirrors for standalone process
@@ -149,20 +150,32 @@ cp -r public/tazos-artgen/* .next/standalone/public/tazos-artgen/  2>/dev/null |
 # The WSL DB has the canonical data including seeded users.
 # We must copy from the WSL-synced file, not the VPS-local repo copy.
 # The rsync above syncs prisma/dev.db from WSL → VPS repo.
-# Now copy it to standalone:
+#
+# CRITICAL FIX: Use symlink instead of copy to prevent 0-byte DB corruption.
+# The symlink points from standalone/prisma/dev.db → data/dev.db
+# This way Prisma always reads the canonical DB directly.
 
-# Checkpoint WAL to ensure all data is in main DB file before copy
-sqlite3 prisma/dev.db "PRAGMA wal_checkpoint(TRUNCATE);" 2>/dev/null || true
+# Checkpoint WAL to ensure all data is in main DB file
+sqlite3 data/dev.db "PRAGMA wal_checkpoint(TRUNCATE);" 2>/dev/null || true
 
-# Clean standalone WAL/SHM to prevent stale data
+# Clean any stale WAL/SHM files
+rm -f data/dev.db-wal data/dev.db-shm
+
+# Ensure data directory exists with the synced DB
+mkdir -p data
+if [ -f prisma/dev.db ]; then
+  cp prisma/dev.db data/dev.db
+  echo "  → DB synced to data/dev.db"
+fi
+
+# Create or verify symlink (standalone reads data/dev.db directly)
+rm -f .next/standalone/prisma/dev.db
+ln -sf /home/smouj/apps/ttg/Trading-Tazos-Game/data/dev.db .next/standalone/prisma/dev.db
 rm -f .next/standalone/prisma/dev.db-wal .next/standalone/prisma/dev.db-shm
-
-# Copy DB to standalone (the repo copy was just synced from WSL via rsync)
-cp prisma/dev.db .next/standalone/prisma/dev.db
 
 # Push schema changes to ensure DB tables match
 # Must NOT suppress errors — missing tables = production downtime
-DATABASE_URL="file:/home/smouj/apps/ttg/Trading-Tazos-Game/.next/standalone/prisma/dev.db" npx prisma@6.19.3 db push --schema=./prisma/schema.prisma --skip-generate
+DATABASE_URL="file:/home/smouj/apps/ttg/Trading-Tazos-Game/data/dev.db" npx prisma@6.19.3 db push --schema=./prisma/schema.prisma --skip-generate
 
 echo "  → DB schema pushed OK"
 
@@ -171,7 +184,7 @@ echo "  → DB schema pushed OK"
 python3 << "PYREHASH"
 import sqlite3, subprocess, os
 
-DB = "/home/smouj/apps/ttg/Trading-Tazos-Game/.next/standalone/prisma/dev.db"
+DB = "/home/smouj/apps/ttg/Trading-Tazos-Game/data/dev.db"
 
 # Generate hashes on VPS using Node.js (same crypto as the bundled server)
 for email, pw in [("demo@tradingtazosgame.com", "Tt9_4b93e142_XH"), ("dev@tradingtazosgame.com", "Tt9_4b93e142_XH")]:
@@ -192,9 +205,9 @@ process.stdout.write("$scrypt$" + salt.toString("base64url") + "$" + digest.toSt
 print("  → Demo passwords re-seeded OK")
 PYREHASH
 
-# Clean any stale WAL/SHM files on VPS (prevents Prisma error code 14)
-sqlite3 /home/smouj/apps/ttg/Trading-Tazos-Game/.next/standalone/prisma/dev.db "PRAGMA wal_checkpoint(TRUNCATE);" 2>/dev/null || true
-rm -f /home/smouj/apps/ttg/Trading-Tazos-Game/.next/standalone/prisma/dev.db-wal /home/smouj/apps/ttg/Trading-Tazos-Game/.next/standalone/prisma/dev.db-shm
+# Final WAL cleanup on canonical data/dev.db
+sqlite3 /home/smouj/apps/ttg/Trading-Tazos-Game/data/dev.db "PRAGMA wal_checkpoint(TRUNCATE);" 2>/dev/null || true
+rm -f /home/smouj/apps/ttg/Trading-Tazos-Game/data/dev.db-wal /home/smouj/apps/ttg/Trading-Tazos-Game/data/dev.db-shm
 
 # Restart PM2 (both web + WS server)
 pm2 restart ttg

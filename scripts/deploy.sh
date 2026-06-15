@@ -23,7 +23,7 @@ fi
 
 # Sync public root files (manifest.json, favicons, PWA assets)
 echo "→ Syncing public root files..."
-rsync -avz public/ "$VPS:$VPS_APP/public/" --include="manifest.json" --include="favicon*" --include="apple*" --include="pwa*" --include="robots.txt" --include="logo/***" --exclude="*" 2>/dev/null || true
+rsync -avz public/ "$VPS:$VPS_APP/public/" --include="manifest.json" --include="favicon*" --include="apple*" --include="pwa*" --include="robots.txt" --include="favicon.ico" --include="favicon.png" --include="favicon-192.png" --include="apple-touch-icon.png" --include="logo/***" --exclude="*" 2>/dev/null || true
 
 # 3. Post-deploy steps on VPS
 echo "→ Running post-deploy on VPS..."

@@ -68,7 +68,7 @@ mkdir -p .next/standalone/public/tazos-artgen/backs
 mkdir -p .next/standalone/public/textures/bags
 mkdir -p .next/standalone/public/logo
 cp -r public/textures/bags .next/standalone/public/textures/ 2>/dev/null || true
-cp -r public/logo/*.png .next/standalone/public/logo/ 2>/dev/null || true
+cp -r public/logo/logo-tg-yellow.png public/logo/series-*.png public/logo/*.webp .next/standalone/public/logo/ 2>/dev/null || true
 mkdir -p .next/standalone/public/tazos-tubes
 
 # Fix DATABASE_URL to point to canonical data/dev.db (not standalone copy)

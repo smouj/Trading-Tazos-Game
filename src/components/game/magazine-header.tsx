@@ -49,7 +49,7 @@ export default function MagazineHeader({
           className="flex items-center gap-2.5 cursor-pointer no-underline group"
         >
           <img
-            src="/favicon-192.png"
+            src="/logo/logo-tg-yellow.png"
             alt="TTG"
             className="w-7 h-7 sm:w-8 sm:h-8"
           />

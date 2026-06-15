@@ -518,8 +518,8 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
   const totalDesignedLabel = ""
 
   return (
-    <div className="max-w-6xl mx-auto w-full px-4 sm:px-6" style={{ minHeight: "calc(100vh - 76px - 60px)" }}>
-      <div className="flex flex-col justify-center py-8 sm:py-10" style={{ minHeight: "calc(100vh - 76px - 60px)" }}>
+    <div className="max-w-6xl mx-auto w-full px-3 sm:px-6">
+      <div className="flex flex-col justify-center py-6 sm:py-10">
 
       {/* ═══ MAGAZINE COVER SPREAD ═══ */}
       <div className="flex flex-col md:flex-row gap-6 md:gap-10">
@@ -549,56 +549,60 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
               <img src="/logo/logo-icon-black.webp" alt="TTG"
                 className="w-14 h-14 sm:w-18 sm:h-18 md:w-24 md:h-24 lg:w-28 lg:h-28 drop-shadow-[5px_5px_0_rgba(26,26,26,0.25)] shrink-0" />
               <div className="leading-none">
-                <h1 className="text-[1.65rem] sm:text-[2rem] md:text-[2rem] lg:text-[2.5rem] font-black text-[#1a1a1a] uppercase tracking-[-0.02em] leading-[0.85] text-center md:text-left">
-                  <span className="text-[#E3350D]">Trading</span><br />
-                  <span className="text-[#FFCC00]" style={{ textShadow: "3px 3px 0 rgba(26,26,26,0.15)" }}>Tazos</span><br />
-                  <span className="text-[#00A1E9]">Game</span>
+                <h1 className="text-[2rem] sm:text-[2.25rem] md:text-[2.75rem] lg:text-[3.25rem] font-black text-[#1a1a1a] uppercase tracking-[-0.02em] leading-[0.82] text-center md:text-left">
+                  <span className="text-[#E3350D]">TRADING</span><br />
+                  <span className="relative inline-block">
+                    <span className="text-[#FFCC00]" style={{ textShadow: "4px 4px 0 rgba(26,26,26,0.20)" }}>TAZOS</span>
+                    <span className="absolute -bottom-0.5 left-0 right-0 h-[3px] bg-[#FFCC00]/30" />
+                  </span><br />
+                  <span className="text-[#1a1a1a] tracking-[0.04em]">GAME</span>
                 </h1>
               </div>
             </div>
 
             {/* Tagline */}
-            <p className="text-sm sm:text-base md:text-lg font-black text-[#1a1a1a]/50 uppercase tracking-[0.06em] text-center md:text-left mt-1">
+            <p className="text-xs sm:text-sm md:text-base font-black text-[#1a1a1a]/60 uppercase tracking-[0.08em] text-center md:text-left mt-1.5">
               {countLabel}
             </p>
           </div>
 
           {/* Description — magazine deck */}
-          <p className="relative text-xs sm:text-sm font-bold text-[#1a1a1a]/45 leading-relaxed max-w-[280px] text-center md:text-left">
+          <p className="relative text-[11px] sm:text-sm font-bold text-[#1a1a1a]/55 leading-relaxed max-w-[320px] text-center md:text-left">
             Rip open digital bags, discover 3 original series, build your deck of 5, and slam tazos in a physics-driven 3D battle arena.
           </p>
 
           {/* CTA Button */}
-          <div className="relative">
+          <div className="relative mt-1">
             <button onClick={onPlay}
               onMouseEnter={() => setHoverPlay(true)} onMouseLeave={() => { setHoverPlay(false); setPressPlay(false) }}
               onMouseDown={() => setPressPlay(true)} onMouseUp={() => setPressPlay(false)}
-              className="relative select-none"
-              style={{ transform: pressPlay ? "translate(2px,2px)" : hoverPlay ? "translate(-1px,-1px)" : "none", transition: "transform 0.1s" }}>
+              className="relative select-none group/cta"
+              style={{ transform: pressPlay ? "translate(3px,3px)" : hoverPlay ? "translate(-2px,-2px)" : "none", transition: "transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)" }}>
               {/* Shadow brick */}
-              <div className="absolute inset-0 translate-x-1.5 translate-y-1.5 bg-[#1a1a1a]" />
+              <div className="absolute inset-0 translate-x-2 translate-y-2 bg-[#1a1a1a] transition-transform group-hover/cta:translate-x-3 group-hover/cta:translate-y-3" />
               {/* Button face */}
-              <div className="relative px-10 sm:px-14 py-3 sm:py-3.5 border-[3px] border-[#1a1a1a] flex items-center gap-2.5"
-                style={{ background: hoverPlay ? "linear-gradient(180deg, #FFE566 0%, #FFCC00 100%)" : "#FFCC00" }}>
-                <span className="text-base sm:text-lg font-black text-[#1a1a1a] uppercase tracking-[0.1em]">PLAY NOW</span>
-                <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-[#1a1a1a]" />
+              <div className="relative px-12 sm:px-16 py-3.5 sm:py-4 border-[3px] border-[#1a1a1a] flex items-center gap-3"
+                style={{ background: hoverPlay ? "linear-gradient(180deg, #FFE566 0%, #FFD700 50%, #FFCC00 100%)" : "linear-gradient(180deg, #FFCC00 0%, #E6B800 100%)" }}>
+                <span className="text-lg sm:text-xl font-black text-[#1a1a1a] uppercase tracking-[0.12em]">PLAY NOW</span>
+                <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-[#1a1a1a] group-hover/cta:animate-pulse" />
               </div>
             </button>
+            <p className="text-[8px] font-bold text-[#1a1a1a]/20 uppercase tracking-[0.2em] mt-1.5 text-center md:text-left">No download · Free · Instant</p>
           </div>
 
           {/* Stat chips — magazine factoid bar */}
-          <div className="relative flex flex-wrap gap-1.5 justify-center md:justify-start">
+          <div className="relative flex flex-wrap gap-2 justify-center md:justify-start">
             {[
-              { number: `${TOTAL_PLANNED}`, label: "Tazos", color: "#FFCC00", tooltip: realTazoCount ? `${realTazoCount} published tazos` : undefined },
+              { number: `${TOTAL_PLANNED}`, label: "Tazos", color: "#FFCC00", tooltip: realTazoCount ? `${realTazoCount} published` : undefined },
               { number: "3", label: "Series", color: "#E3350D" },
-              { number: String(SITE_CONFIG.statsCount), label: "Stats", color: "#00A1E9" },
+              { number: String(SITE_CONFIG.statsCount), label: "Stats", color: "#FFCC00" },
               { number: "Free", label: "Play", color: "#22C55E" },
             ].map(s => (
               <span key={s.label} title={s.tooltip}
-                className={`inline-flex items-center gap-1 px-2.5 py-1 text-[9px] sm:text-[10px] font-black uppercase border-2 border-[#1a1a1a]/15 bg-white ${s.tooltip ? "cursor-help" : ""}`}
-                style={{ boxShadow: `2px 2px 0 ${s.color}20` }}>
-                <span style={{ color: s.color }} className="text-xs">{s.number}</span>
-                <span className="text-[#1a1a1a]/40">{s.label}</span>
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[9px] sm:text-[10px] font-black uppercase border-[2px] border-[#1a1a1a]/20 bg-white ${s.tooltip ? "cursor-help" : ""} hover:border-[#1a1a1a]/40 transition-colors`}
+                style={{ boxShadow: `3px 3px 0 rgba(26,26,26,0.08)` }}>
+                <span style={{ color: s.color }} className="text-xs sm:text-sm">{s.number}</span>
+                <span className="text-[#1a1a1a]/35">{s.label}</span>
               </span>
             ))}
           </div>
@@ -621,8 +625,8 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
 
             <div className="p-3 sm:p-4 space-y-3">
               <div>
-                <p className="text-[10px] font-black text-[#1a1a1a]/25 uppercase tracking-[0.15em]">{user ? "Ready for battle" : "Practice Arena Ready"}</p>
-                <p className="text-[11px] font-bold text-[#1a1a1a]/40">{user ? "Signed in — progress saved" : "Play as Guest · Sign in to save progress"}</p>
+                <p className="text-[10px] font-black text-[#1a1a1a]/30 uppercase tracking-[0.15em]">{user ? "Ready for battle" : "Practice Arena Ready"}</p>
+                <p className="text-[11px] font-bold text-[#1a1a1a]/45">{user ? "Signed in — progress saved" : "Play as Guest · Sign in to save progress"}</p>
               </div>
 
               {/* Quick Actions — magazine navigation cards */}
@@ -653,7 +657,7 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
                 style={{ background: "repeating-linear-gradient(-45deg, #F59E0B08, #F59E0B08 4px, transparent 4px, transparent 8px)", borderBottom: "3px solid #1a1a1a" }}>
                 <Crown className="w-3.5 h-3.5 text-[#F59E0B]" />
                 <span className="text-[10px] font-black text-[#1a1a1a] uppercase tracking-[0.2em]">Featured Tazos</span>
-                <span className="ml-auto text-[8px] font-black text-[#1a1a1a]/15 uppercase">{displayTazos.length} of {realTazoCount ?? 30}</span>
+                <span className="ml-auto text-[8px] font-black text-[#1a1a1a]/20 uppercase">{realTazoCount ? `${realTazoCount} total` : "Featured"}</span>
               </div>
               <div className="px-3 sm:px-4 py-3 sm:py-3.5">
                 <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5">
@@ -669,11 +673,16 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
       </div>{/* end magazine spread */}
 
       {/* ═══ BOTTOM TEASER STRIP ═══ */}
-      <div className="mt-6 sm:mt-8 flex items-center justify-center gap-4 sm:gap-6 text-[9px] sm:text-[10px] font-black text-[#1a1a1a]/20 uppercase tracking-[0.25em]">
-        <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-[#FFCC00]" /> Minimon</span>
-        <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-[#00B4D8]" /> Cybermon</span>
-        <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-[#FF6B00]" /> Dracobell</span>
-        <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-[#1a1a1a]/25" /> Cross-Platform</span>
+      <div className="mt-8 sm:mt-10 pt-8 border-t-2 border-[#1a1a1a]/5">
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-[9px] sm:text-[10px] font-black text-[#1a1a1a]/25 uppercase tracking-[0.25em]">
+          <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#FFCC00] shadow-[0_0_6px_rgba(255,204,0,0.4)]" /> Minimon</span>
+          <span className="text-[#1a1a1a]/10">·</span>
+          <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#00B4D8] shadow-[0_0_6px_rgba(0,180,216,0.4)]" /> Cybermon</span>
+          <span className="text-[#1a1a1a]/10">·</span>
+          <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#FF6B00] shadow-[0_0_6px_rgba(255,107,0,0.4)]" /> Dracobell</span>
+          <span className="text-[#1a1a1a]/10">·</span>
+          <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#1a1a1a]/25" /> Cross-Platform</span>
+        </div>
       </div>
 
       </div>
@@ -685,8 +694,14 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
 
 function HowItWorksHome() {
   return (
-    <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 pt-4 pb-8">
-      <div className="text-center mb-5">
+    <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 py-12 sm:py-16">
+      {/* Section divider */}
+      <div className="flex items-center gap-3 mb-8">
+        <div className="flex-1 h-0.5 bg-[#1a1a1a]/8" />
+        <span className="text-[7px] font-black text-[#1a1a1a]/15 uppercase tracking-[0.3em]">How to Start</span>
+        <div className="flex-1 h-0.5 bg-[#1a1a1a]/8" />
+      </div>
+      <div className="text-center mb-6">
         <h2 className="text-lg sm:text-xl font-black text-[#1a1a1a] uppercase tracking-[0.06em]">How It Works</h2>
         <p className="text-[10px] font-bold text-[#1a1a1a]/30 uppercase tracking-wider">Three steps to become a collector</p>
       </div>
@@ -716,7 +731,13 @@ function HowItWorksHome() {
 
 function BattlePreviewHome() {
   return (
-    <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 pt-2 pb-10">
+    <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 pb-12 sm:pb-16">
+      {/* Section divider */}
+      <div className="flex items-center gap-3 mb-8">
+        <div className="flex-1 h-0.5 bg-[#1a1a1a]/8" />
+        <span className="text-[7px] font-black text-[#E3350D]/40 uppercase tracking-[0.3em]">Battle System</span>
+        <div className="flex-1 h-0.5 bg-[#1a1a1a]/8" />
+      </div>
       <div className="border-3 border-[#1a1a1a] bg-white overflow-hidden" style={{ boxShadow: "5px 5px 0 #1a1a1a" }}>
         <div className="px-5 py-3 border-b-3 border-[#1a1a1a] flex items-center gap-2"
           style={{ background: "repeating-linear-gradient(-45deg, #E3350D10, #E3350D10 4px, transparent 4px, transparent 8px)" }}>
@@ -782,8 +803,14 @@ function SeriesPreviewHome({ onNavigate }: { onNavigate: (page: PageId) => void 
   ]
 
   return (
-    <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 pt-2 pb-10">
-      <div className="text-center mb-5">
+    <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 pb-12 sm:pb-16">
+      {/* Section divider */}
+      <div className="flex items-center gap-3 mb-8">
+        <div className="flex-1 h-0.5 bg-[#1a1a1a]/8" />
+        <span className="text-[7px] font-black text-[#FFCC00]/50 uppercase tracking-[0.3em]">Series</span>
+        <div className="flex-1 h-0.5 bg-[#1a1a1a]/8" />
+      </div>
+      <div className="text-center mb-6">
         <h2 className="text-lg sm:text-xl font-black text-[#1a1a1a] uppercase tracking-[0.06em]">3 Series · {stats?.totalTazos ?? 150} Tazos Published</h2>
         <p className="text-[10px] font-bold text-[#1a1a1a]/30 uppercase tracking-wider">Original TTG lore series</p>
       </div>
@@ -823,18 +850,35 @@ function SeriesPreviewHome({ onNavigate }: { onNavigate: (page: PageId) => void 
 
 function DownloadStripHome({ onNavigate }: { onNavigate: (page: PageId) => void }) {
   return (
-    <div className="border-t-[5px] border-[#1a1a1a] bg-[#1a1a1a]">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3">
-        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-          <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.15em]">Available on:</span>
-          <PlatformBadge icon={Globe} label="Browser" />
-          <PlatformBadge icon={Monitor} label="Windows" />
-          <PlatformBadge icon={Apple} label="macOS" />
-          <PlatformBadge icon={Terminal} label="Linux" />
-          <button onClick={() => onNavigate("download")}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black text-[#1a1a1a] bg-[#FFCC00] uppercase tracking-wider border-2 border-white/20 hover:bg-[#FFE566] transition-colors">
-            <Download className="w-3 h-3" /> Download Launcher
-          </button>
+    <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 pb-12 sm:pb-16">
+      {/* Section divider */}
+      <div className="flex items-center gap-3 mb-8">
+        <div className="flex-1 h-0.5 bg-[#1a1a1a]/8" />
+        <span className="text-[7px] font-black text-[#1a1a1a]/15 uppercase tracking-[0.3em]">Platforms</span>
+        <div className="flex-1 h-0.5 bg-[#1a1a1a]/8" />
+      </div>
+
+      <div className="border-[3px] border-[#1a1a1a] bg-white" style={{ boxShadow: "5px 5px 0 #1a1a1a" }}>
+        <div className="px-5 py-3 border-b-[3px] border-[#1a1a1a] flex items-center gap-2"
+          style={{ background: "repeating-linear-gradient(-45deg, #1a1a1a08, #1a1a1a08 4px, transparent 4px, transparent 8px)" }}>
+          <Monitor className="w-4 h-4 text-[#1a1a1a]" />
+          <h2 className="text-sm font-black text-[#1a1a1a] uppercase tracking-[0.06em]">Play Anywhere</h2>
+        </div>
+        <div className="p-5 sm:p-6">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mb-4">
+            <PlatformBadge icon={Globe} label="Browser" />
+            <PlatformBadge icon={Monitor} label="Windows" />
+            <PlatformBadge icon={Apple} label="macOS" />
+            <PlatformBadge icon={Terminal} label="Linux" />
+          </div>
+          <div className="text-center">
+            <button onClick={() => onNavigate("download")}
+              className="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-black text-[#1a1a1a] bg-[#FFCC00] uppercase tracking-[0.1em] border-[3px] border-[#1a1a1a] hover:bg-[#FFE566] transition-colors"
+              style={{ boxShadow: "3px 3px 0 #1a1a1a" }}>
+              <Download className="w-4 h-4" /> Download for Desktop
+            </button>
+            <p className="text-[9px] font-bold text-[#1a1a1a]/25 uppercase mt-2">Free · No account needed</p>
+          </div>
         </div>
       </div>
     </div>
@@ -2005,11 +2049,11 @@ export default function LauncherView() {
           </div>
 
           {/* Mobile nav */}
-          <nav className="sm:hidden flex items-center justify-center gap-0 px-2 pb-2 overflow-x-auto">
+          <nav className="sm:hidden flex items-center justify-start gap-0 px-1.5 pb-1.5 overflow-x-auto scrollbar-none" aria-label="Mobile navigation">
             {(["home", "how-to-play", "collections", "tazos", "leaderboard", "download", "faq", "shop"] as PageId[]).map(id => (
               <button key={id} onClick={() => navigate(id)}
-                className={`px-2 py-0.5 text-[9px] font-black uppercase tracking-wider whitespace-nowrap transition-colors ${
-                  currentPage === id ? "text-[#FFCC00]" : "text-white/40 hover:text-[#FFCC00]"
+                className={`px-2.5 py-1.5 text-[9px] font-black uppercase tracking-wider whitespace-nowrap transition-colors ${
+                  currentPage === id ? "text-[#FFCC00] border-b-2 border-[#FFCC00]" : "text-white/40 hover:text-white/70"
                 }`}>{PAGE_LABELS[id]}</button>
             ))}
           </nav>
@@ -2032,6 +2076,7 @@ export default function LauncherView() {
                 <HowItWorksHome />
                 <BattlePreviewHome />
                 <SeriesPreviewHome onNavigate={navigate} />
+                <DownloadStripHome onNavigate={navigate} />
               </>
             )}
             
@@ -2137,7 +2182,7 @@ export default function LauncherView() {
           </div>
         </footer>
 
-        <div className="absolute bottom-0 left-0 right-0 h-1.5 mag-stripes opacity-20 pointer-events-none" />
+
       </div>
     </>
   )

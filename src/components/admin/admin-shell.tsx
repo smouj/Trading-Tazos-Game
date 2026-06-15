@@ -196,7 +196,7 @@ export default function AdminShell({
       <footer className="border-t-2 border-[#1a1a1a]/10 bg-[#1a1a1a]/[0.02] py-3">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <p className="text-[9px] font-bold text-[#1a1a1a]/25 uppercase tracking-wider">
-            Admin Panel · Trading Tazos Game v0.7.0 · {user?.email}
+            {`Admin Panel · Trading Tazos Game v${SITE_CONFIG.version} · ${user?.email}`}
           </p>
         </div>
       </footer>

@@ -11,6 +11,8 @@ import { FRANCHISES } from "@/lib/franchise-config"
 import { Swords, ShoppingBag, Album, Blocks, BarChart3, Settings, Sparkles } from "lucide-react"
 import Link from "next/link"
 
+export const dynamic = "force-dynamic"
+
 export const metadata = {
   title: `Dashboard | ${SITE_CONFIG.name}`,
   description: "Your Trading Tazos dashboard — collection, battle, shop, and stats.",

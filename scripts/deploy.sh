@@ -51,6 +51,15 @@ cd /home/smouj/apps/ttg/Trading-Tazos-Game
 # Ensure directories exist (MUST be first — cp/mkdir order matters with set -e)
 mkdir -p .next/standalone/.next/static
 mkdir -p .next/standalone/prisma
+
+# Sync public root files (manifest.json, favicons, PWA assets)
+rsync -avz public/ "$VPS:$VPS_APP/public/" \
+  --include="manifest.json" \
+  --include="favicon*" --include="apple*" \
+  --include="pwa*" --include="sw.*" \
+  --include="logo/***" --include="robots.txt" \
+  --exclude="*" 2>/dev/null || true
+
 mkdir -p .next/standalone/public/tazos-base
 mkdir -p .next/standalone/public/tazos-generated
 mkdir -p .next/standalone/public/tazos-backs

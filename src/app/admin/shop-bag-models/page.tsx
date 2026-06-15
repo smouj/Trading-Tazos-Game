@@ -1,8 +1,8 @@
 "use client"
 
 // ============================================================
-// Trading Tazos Game — Admin Bag Model Manager
-// Create, edit, delete potato chip bag designs for the shop.
+// Trading Tazos Game — Admin Shop Bag Manager
+// Create, edit, delete bag designs for the shop.
 // Includes 3D preview with Three.js.
 // ============================================================
 import { useState, useEffect, Suspense } from "react"

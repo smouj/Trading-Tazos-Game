@@ -1,8 +1,8 @@
 "use client"
 
 // ============================================================
-// Trading Tazos Game — Admin Tube Model Manager
-// Create, edit, delete battle tube models with 3D preview.
+// Trading Tazos Game — Admin Deck Model Manager
+// Create, edit, delete battle deck models with 3D preview.
 // ============================================================
 import { useState, useEffect, Suspense } from "react"
 import { useAuth } from "@/lib/auth-context"
@@ -136,7 +136,7 @@ export default function AdminTubeModelsPage() {
         {/* Add form */}
         {showAdd && (
           <div className="mag-card p-4 border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] bg-white">
-            <h3 className="text-xs font-black uppercase tracking-wider text-[#1a1a1a]/50 mb-3">New Tube Model</h3>
+            <h3 className="text-xs font-black uppercase tracking-wider text-[#1a1a1a]/50 mb-3">New Deck Model</h3>
             <div className="grid sm:grid-cols-2 gap-3 mb-3">
               <div><label className="text-[9px] font-black uppercase text-[#1a1a1a]/40">Name</label><input value={newName} onChange={e => setNewName(e.target.value)} placeholder="Classic Tube" className="w-full p-2 border-2 border-[#1a1a1a] text-xs font-bold" /></div>
               <div><label className="text-[9px] font-black uppercase text-[#1a1a1a]/40">Texture URL</label><input value={newTextureUrl} onChange={e => setNewTextureUrl(e.target.value)} placeholder="/tazos-tubes/tube-minimon.png" className="w-full p-2 border-2 border-[#1a1a1a] text-xs font-bold" /></div>
@@ -155,7 +155,7 @@ export default function AdminTubeModelsPage() {
         ) : models.length === 0 ? (
           <div className="text-center py-16 border-3 border-[#1a1a1a] bg-white shadow-[3px_3px_0px]">
             <Package className="w-10 h-10 text-[#1a1a1a]/15 mx-auto mb-3" />
-            <p className="font-black text-sm text-[#1a1a1a]/30 uppercase">No tube models yet</p>
+            <p className="font-black text-sm text-[#1a1a1a]/30 uppercase">No deck models yet</p>
             <p className="text-[10px] font-bold text-[#1a1a1a]/20 mt-1">Click &quot;New Tube&quot; to create one</p>
           </div>
         ) : (

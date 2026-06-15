@@ -68,7 +68,7 @@ export default function DracobellCollectionPage() {
       <div className="max-w-4xl mx-auto px-4 py-12 sm:py-16">
         <div className="flex items-center gap-3 mb-2">
           <div className="w-6 h-6 border-3 border-[#1a1a1a]" style={{ backgroundColor: FRANCHISE_COLOR }} />
-          <span className="text-sm font-black uppercase text-[#1a1a1a]/50">Franchise</span>
+          <span className="text-sm font-black uppercase text-[#1a1a1a]/50">Series</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-black uppercase text-[#1a1a1a] mb-1">Dracobell</h1>
         <p className="text-lg font-bold text-[#1a1a1a]/40 mb-6">
@@ -80,9 +80,9 @@ export default function DracobellCollectionPage() {
           <span className="text-xs font-bold bg-[#FFCC00] px-2 py-1 border-2 border-[#1a1a1a]">TazoForge 2026</span>
         </div>
 
-        {/* ── Franchise Banner ── */}
+        {/* ── Series Banner ── */}
         <div className="border-3 border-[#1a1a1a] bg-gradient-to-br from-orange-100 to-red-100 p-6 sm:p-8 mb-8 shadow-[6px_6px_0px_#1a1a1a] overflow-hidden relative">
-          {/* Background wallpaper from franchise back art */}
+          {/* Background wallpaper from series back art */}
           <div className="absolute inset-0 opacity-[0.08] pointer-events-none">
             <img src="/tazos-artgen/backs/dracobell-back.png" alt="" className="w-full h-full object-cover" />
           </div>

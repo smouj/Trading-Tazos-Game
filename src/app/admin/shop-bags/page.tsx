@@ -1,7 +1,7 @@
 "use client"
 
 // ============================================================
-// Trading Tazos Game — Admin Bag Texture Manager
+// Trading Tazos Game — Admin Shop Bag Texture Manager
 // Upload, browse, and manage bag textures (materials/designs).
 // ============================================================
 import { useState, useEffect } from "react"

@@ -8,6 +8,11 @@ VPS_APP="/home/smouj/apps/ttg/Trading-Tazos-Game"
 STANDALONE=".next/standalone"
 
 echo "📦 Deploying TTG to VPS..."
+# 1b. Push git to remote and sync VPS repo
+echo "→ Syncing git with VPS..."
+git push origin main 2>/dev/null || true
+ssh "$VPS" "cd $VPS_APP && git fetch origin && git reset --hard origin/main" 2>&1 || true
+
 
 # 1. Build (must already be done)
 if [ ! -d ".next" ]; then

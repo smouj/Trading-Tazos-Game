@@ -778,7 +778,7 @@ function SeriesPreviewHome({ onNavigate }: { onNavigate: (page: PageId) => void 
       .then(r => r.json())
       .then(d => setStats(d))
       .catch(() => {})
-    // Fetch 4 tazos per franchise for preview
+    // Fetch 4 tazos per series for preview
     const franchises = ["minimon", "dracobell", "cybermon"]
     Promise.all(
       franchises.map(f =>
@@ -985,7 +985,7 @@ function CollectionsContent({ onNavigate }: { onNavigate: (page: PageId) => void
   const [showcaseTazos, setShowcaseTazos] = useState<Record<string, any[]>>({})
 
   useEffect(() => {
-    // Fetch tazos for all 3 franchises to populate panels
+    // Fetch tazos for all 3 series to populate panels
     Promise.all([
       fetch("/api/tazos?franchise=cybermon&publishStatus=published&limit=4").then(r => r.json()),
       fetch("/api/tazos?franchise=dracobell&publishStatus=published&limit=4").then(r => r.json()),
@@ -1018,7 +1018,7 @@ function CollectionsContent({ onNavigate }: { onNavigate: (page: PageId) => void
           <button key={c.slug} onClick={() => onNavigate(`collections-${c.slug}` as PageId)}
             className="text-left border-2 border-[#1a1a1a] bg-white overflow-hidden hover:bg-[#FFF9E6] transition-colors group"
             style={{ boxShadow: "4px 4px 0 #1a1a1a" }}>
-            {/* Franchise color strip */}
+            {/* Series color strip */}
             <div className="h-2" style={{ background: c.color }} />
             
             {/* Tazo + Back art showcase */}
@@ -2145,7 +2145,7 @@ export default function LauncherView() {
             <div className="flex items-center gap-3 sm:gap-4">
               <button onClick={() => navigate("tazos")} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Tazos</button>
               <button onClick={() => navigate("shop")} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Shop</button>
-              <button onClick={() => navigate("how-to-play")} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Battle</button>
+              <button onClick={() => navigate("how-to-play")} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">How to Play</button>
               <button onClick={() => navigate("faq")} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">FAQ</button>
               <button onClick={() => navigate("privacy")} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Privacy</button>
               <button onClick={() => navigate("terms")} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Terms</button>

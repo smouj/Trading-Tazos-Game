@@ -1,8 +1,8 @@
 "use client"
 
 // ============================================================
-// Trading Tazos Game — Admin Tube & Texture Manager
-// Upload, browse, and manage tube textures.
+// Trading Tazos Game — Admin Deck & Texture Manager
+// Upload, browse, and manage deck textures.
 // ============================================================
 import { useState, useEffect } from "react"
 import { useAuth } from "@/lib/auth-context"

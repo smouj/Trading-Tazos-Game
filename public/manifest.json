@@ -8,7 +8,11 @@
   "orientation": "any",
   "background_color": "#fffbe6",
   "theme_color": "#FFCC00",
-  "categories": ["games", "entertainment", "collectibles"],
+  "categories": [
+    "games",
+    "entertainment",
+    "collectibles"
+  ],
   "lang": "en",
   "dir": "ltr",
   "id": "com.tradingtazosgame.ttg",
@@ -51,7 +55,7 @@
     {
       "name": "Play",
       "short_name": "Play",
-      "url": "/app"
+      "url": "/game"
     },
     {
       "name": "Battle",
@@ -61,7 +65,7 @@
     {
       "name": "Album",
       "short_name": "Album",
-      "url": "/app/album"
+      "url": "/app/collection"
     },
     {
       "name": "Shop",
@@ -72,7 +76,7 @@
   "related_applications": [
     {
       "platform": "linux",
-      "url": "https://github.com/smouj/Trading-Tazos-Game/releases/download/v0.7.0/trading-tazos-game-0.7.0-linux-x86_64.AppImage",
+      "url": "https://github.com/smouj/Trading-Tazos-Game/releases/download/v0.7.2/trading-tazos-game-0.7.0-linux-x86_64.AppImage",
       "id": "com.tradingtazosgame.ttg.linux"
     }
   ]

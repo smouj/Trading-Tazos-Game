@@ -95,12 +95,14 @@ export default function MagazineHeader({
                   <Shield className="w-3 h-3" /> Admin
                 </a>
               )}
-              <a
-                href="/app"
-                className="px-3 py-1 text-[10px] font-black text-[#1a1a1a] bg-[#FFCC00] uppercase tracking-wider border-2 border-white/20 hover:bg-[#FFE566] transition-colors no-underline"
-              >
-                Dashboard
-              </a>
+              {!isApp && (
+                <a
+                  href="/app"
+                  className="px-3 py-1 text-[10px] font-black text-[#1a1a1a] bg-[#FFCC00] uppercase tracking-wider border-2 border-white/20 hover:bg-[#FFE566] transition-colors no-underline"
+                >
+                  Dashboard
+                </a>
+              )}
               <button
                 onClick={() => {
                   localStorage.removeItem("ttg-token")

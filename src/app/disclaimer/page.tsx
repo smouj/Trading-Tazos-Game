@@ -32,8 +32,8 @@ export default function DisclaimerPage() {
           <h2 className="text-lg font-black uppercase text-[#1a1a1a] mt-6">1. Fan-Made Experience</h2>
           <p>
             Trading Tazos Game is a fan-made digital collectible experience. It is not affiliated with, endorsed by,
-            or connected to any tazo manufacturer, snack brand, or original franchise. Minimon, Dracobell, and Cybermon
-            are completely original fictional IPs created for this game. Any resemblance to existing franchises is coincidental.
+            or connected to any tazo manufacturer, snack brand, or original series. Minimon, Dracobell, and Cybermon
+            are completely original fictional IPs created for this game. Any resemblance to existing series is coincidental.
           </p>
 
           <h2 className="text-lg font-black uppercase text-[#1a1a1a] mt-6">2. No Warranty</h2>

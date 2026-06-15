@@ -295,7 +295,7 @@ export default function CollectionPage() {
         </h2>
         <p className="text-sm font-bold text-[#1a1a1a]/50 max-w-md mx-auto">
           Open bags to discover new tazos and start building your collection.
-          Each bag contains random tazos from different franchises!
+          Each bag contains random tazos from different series!
         </p>
         <Link
           href="/app/shop"

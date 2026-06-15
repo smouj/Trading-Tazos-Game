@@ -1,10 +1,9 @@
-import { checkRateLimit } from "@/lib/rate-limit"
-import { generateTGAGrade } from "@/lib/grading/tga"
-
 // POST /api/bags/open — Open a purchased bag and reveal the tazo
 import { NextRequest, NextResponse } from "next/server"
 import { getAuthUser } from "@/lib/auth"
 import { db } from "@/lib/db"
+import { checkRateLimit } from "@/lib/rate-limit"
+import { generateTGAGrade } from "@/lib/grading/tga"
 import { refreshUserProgress } from "@/lib/progression"
 
 // Randomize stats within ±20% of base values
@@ -32,6 +31,14 @@ function randomFinish(rarity: string): string {
   return pool[Math.floor(Math.random() * pool.length)]
 }
 
+/** Validate and clean a single bag ID */
+function cleanId(raw: unknown): string | null {
+  if (typeof raw !== "string") return null
+  const trimmed = raw.trim()
+  if (trimmed.length === 0 || trimmed === "undefined" || trimmed === "null") return null
+  return trimmed
+}
+
 export async function POST(request: NextRequest) {
   const rl = checkRateLimit(request.headers, "write")
   if (!rl.allowed) return NextResponse.json({ error: "Rate limited" }, { status: 429, headers: { "Retry-After": String(Math.ceil((rl.resetAt - Date.now()) / 1000)) } })
@@ -39,11 +46,14 @@ export async function POST(request: NextRequest) {
     const user = await getAuthUser(request)
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-    const { bagId, bagIds } = await request.json()
+    const { bagId, bagIds } = await request.json().catch(() => ({}))
 
-    const ids: string[] = bagIds && Array.isArray(bagIds) && bagIds.length > 0
+    // Build clean ID list
+    const rawIds: unknown[] = bagIds && Array.isArray(bagIds) && bagIds.length > 0
       ? bagIds
-      : bagId ? [bagId] : []
+      : bagId !== undefined && bagId !== null ? [bagId] : []
+
+    const ids = rawIds.map(cleanId).filter((id): id is string => id !== null)
 
     if (ids.length === 0) {
       return NextResponse.json({ error: "bagId or bagIds required" }, { status: 400 })
@@ -105,7 +115,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, results, totalOpened: results.length })
     }
 
-    const singleId = ids[0]  // bagId when passed directly, or ids[0] from array
+    const singleId = ids[0]
+
     const purchase = await db.bagPurchase.findUnique({
       where: { id: singleId },
     })

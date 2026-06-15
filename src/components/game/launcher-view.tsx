@@ -565,7 +565,7 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
 
           {/* Description — magazine deck */}
           <p className="relative text-xs sm:text-sm font-bold text-[#1a1a1a]/45 leading-relaxed max-w-[280px] text-center md:text-left">
-            Rip open digital bags, discover 3 unique franchises, build your deck of 5, and slam tazos in a physics-driven 3D battle arena.
+            Rip open digital bags, discover 3 original series, build your deck of 5, and slam tazos in a physics-driven 3D battle arena.
           </p>
 
           {/* CTA Button */}
@@ -591,7 +591,7 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
             {[
               { number: `${TOTAL_PLANNED}`, label: "Tazos", color: "#FFCC00", tooltip: realTazoCount ? `${realTazoCount} published tazos` : undefined },
               { number: "3", label: "Series", color: "#E3350D" },
-              { number: "8", label: "Stats", color: "#00A1E9" },
+              { number: String(SITE_CONFIG.statsCount), label: "Stats", color: "#00A1E9" },
               { number: "Free", label: "Play", color: "#22C55E" },
             ].map(s => (
               <span key={s.label} title={s.tooltip}
@@ -621,8 +621,8 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
 
             <div className="p-3 sm:p-4 space-y-3">
               <div>
-                <p className="text-[10px] font-black text-[#1a1a1a]/25 uppercase tracking-[0.15em]">{user ? "Ready for battle" : "Guest — sign in to save"}</p>
-                <p className="text-[11px] font-bold text-[#1a1a1a]/40">Active mode: <span className="text-[#E3350D]">Practice Arena</span></p>
+                <p className="text-[10px] font-black text-[#1a1a1a]/25 uppercase tracking-[0.15em]">{user ? "Ready for battle" : "Practice Arena Ready"}</p>
+                <p className="text-[11px] font-bold text-[#1a1a1a]/40">{user ? "Signed in — progress saved" : "Play as Guest · Sign in to save progress"}</p>
               </div>
 
               {/* Quick Actions — magazine navigation cards */}
@@ -692,7 +692,7 @@ function HowItWorksHome() {
       </div>
       <div className="grid sm:grid-cols-3 gap-3 sm:gap-4">
         {[
-          { step: "1", icon: PackageOpen, title: "Open Bags", desc: "Get random tazos from 3 different franchises. Start with 30 welcome bags + 100 credits (1 free bag!) and earn more by winning battles.", color: "#FF6B00" },
+          { step: "1", icon: PackageOpen, title: "Open Bags", desc: "Get random tazos from 3 different series. Start with 30 welcome bags + 100 credits (1 free bag!) and earn more by winning battles.", color: "#FF6B00" },
           { step: "2", icon: Layers, title: "Build Your Deck", desc: "Choose 5 tazos with 9 combat stats each. Balance attack, defense, and speed for the best results.", color: "#3B4CCA" },
           { step: "3", icon: Swords, title: "Enter the Arena", desc: "Bet one tazo at center, then slam from above. Flip opponent discs to capture them — eliminate their entire deck to win!", color: "#E3350D" },
         ].map(({ step, icon: Icon, title, desc, color }) => (
@@ -964,7 +964,7 @@ function CollectionsContent({ onNavigate }: { onNavigate: (page: PageId) => void
   return (
     <div className="w-full max-w-4xl mx-auto space-y-5">
       <p className="text-xs font-bold text-[#1a1a1a]/50 uppercase tracking-wider">
-        3 original franchises · 150 Season 1 tazos · lore-safe TTG canon
+        3 original series · 150 Season 1 tazos · lore-safe TTG canon
       </p>
       <div className="grid md:grid-cols-3 gap-4">
         {COLLECTION_DATA.map(c => {
@@ -1276,7 +1276,7 @@ function ShopContent() {
       {/* Hero */}
       <section className="text-center space-y-2">
         <p className="text-sm sm:text-base text-[#1a1a1a]/50 font-bold max-w-lg mx-auto">
-          Open bags to discover and collect tazos across 3 franchises.{" "}
+          Open bags to discover and collect tazos across 3 series.{" "}
           <span className="text-[#1a1a1a]/30">Bags 100cr each — earn credits by playing or buy packs.</span>
         </p>
         <div className="flex items-center justify-center gap-2 pt-1">
@@ -1383,7 +1383,7 @@ function ShopContent() {
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: "repeating-linear-gradient(45deg, #1a1a1a 0px, #1a1a1a 2px, transparent 2px, transparent 12px)" }} />
         <div className="relative z-10 space-y-3">
           <h3 className="text-lg sm:text-2xl font-black text-[#1a1a1a] uppercase tracking-tight">Ready to Start Collecting?</h3>
-          <p className="text-sm text-[#1a1a1a]/50 font-bold max-w-md mx-auto">Sign up free and get starter credits + 30 welcome bags to open. Collect, trade, and battle with 150 tazos across 3 franchises.</p>
+          <p className="text-sm text-[#1a1a1a]/50 font-bold max-w-md mx-auto">Sign up free and get starter credits + 30 welcome bags to open. Collect, trade, and battle with 150 tazos across 3 series.</p>
           <div className="flex items-center justify-center gap-3 pt-2">
             <a href="/register" className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 text-xs sm:text-sm font-black uppercase tracking-wider bg-[#E3350D] text-white border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] hover:shadow-[2px_2px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all">
               Sign Up Free <ArrowRight className="w-4 h-4" />

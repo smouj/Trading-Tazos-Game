@@ -124,7 +124,7 @@ export const PAGE_META: Record<string, PageMeta> = {
   tazos: {
     title: "Tazo Catalog — Browse All Published Tazos | Trading Tazos Game",
     description:
-      "Browse the full catalog of published tazos. Filter by franchise, rarity, condition, and element. Each tazo has 9 combat stats, a finish type, and unique art.",
+      "Browse the full catalog of published tazos. Filter by series, rarity, condition, and element. Each tazo has 9 combat stats, a finish type, and unique art.",
     canonicalPath: "/?page=tazos",
   },
   leaderboard: {

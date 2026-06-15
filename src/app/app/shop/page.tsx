@@ -252,6 +252,8 @@ export default function BagShopPage() {
 
   const bagIdRef = useRef<string | null>(null)
   useEffect(() => { bagIdRef.current = bagId }, [bagId])
+  const bulkIndexRef = useRef(0)
+  useEffect(() => { bulkIndexRef.current = bulkIndex }, [bulkIndex])
 
   // Poll bags + credits
   useEffect(() => {
@@ -346,7 +348,7 @@ export default function BagShopPage() {
 
   const openBag = useCallback(async () => {
     const currentBagId = bagIdRef.current
-    if (!token || !currentBagId) {
+    if (!token || !currentBagId || typeof currentBagId !== "string" || !currentBagId.trim()) {
       setStage("select")
       setError("Something went wrong — try again")
       return
@@ -355,7 +357,7 @@ export default function BagShopPage() {
       const res = await fetch("/api/bags/open", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ bagId: currentBagId }),
+        body: JSON.stringify({ bagId: currentBagId.trim() }),
       })
       const data = await res.json()
       if (res.ok) {
@@ -385,32 +387,46 @@ export default function BagShopPage() {
   const openNextBulkBag = useCallback(async () => {
     const raw = sessionStorage.getItem("bulk_bag_ids")
     if (!raw) { handleReset(); return }
-    const ids: string[] = JSON.parse(raw)
-    setBulkIndex(prev => {
-      if (prev >= ids.length) { handleReset(); return prev }
-      const currentId = ids[prev]
-      fetch("/api/bags/open", {
+    let ids: string[] = []
+    try {
+      ids = JSON.parse(raw)
+      if (!Array.isArray(ids) || ids.length === 0) { handleReset(); return }
+    } catch {
+      sessionStorage.removeItem("bulk_bag_ids")
+      handleReset()
+      return
+    }
+    const currentIndex = bulkIndexRef.current
+    if (currentIndex >= ids.length) { handleReset(); return }
+    const currentId = ids[currentIndex]
+    if (!currentId || typeof currentId !== "string" || !currentId.trim()) {
+      setBulkIndex(p => p + 1) // skip invalid entry
+      return
+    }
+    try {
+      const res = await fetch("/api/bags/open", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ bagId: currentId }),
-      }).then(r => r.json()).then(data => {
-        if (data?.tazo) {
-          playSFX('reveal', { volume: 0.4 })
-          const t = data.tazo
-          setRevealedTazos(p => [...p, {
-            name: t.displayName || t.name, rarity: t.rarity, imageUrl: t.imageUrl,
-            franchise: t.franchiseName, attack: t.attack, defense: t.defense,
-            resistance: t.resistance, weight: t.weight, spin: t.spin,
-            control: t.control, bounce: t.bounce, precision: t.precision,
-            finish: t.finish, creatureVariant: t.creatureVariant,
-            shinyImageUrl: t.shinyImageUrl, number: t.number,
-            franchiseSlug: t.franchiseSlug, id: t.id
-          }])
-          setBulkIndex(p => p + 1)
-        }
-      }).catch(() => { /* skip */ })
-      return prev
-    })
+        body: JSON.stringify({ bagId: currentId.trim() }),
+      })
+      const data = await res.json()
+      if (data?.tazo) {
+        playSFX('reveal', { volume: 0.4 })
+        const t = data.tazo
+        setRevealedTazos(p => [...p, {
+          name: t.displayName || t.name, rarity: t.rarity, imageUrl: t.imageUrl,
+          franchise: t.franchiseName, attack: t.attack, defense: t.defense,
+          resistance: t.resistance, weight: t.weight, spin: t.spin,
+          control: t.control, bounce: t.bounce, precision: t.precision,
+          finish: t.finish, creatureVariant: t.creatureVariant,
+          shinyImageUrl: t.shinyImageUrl, number: t.number,
+          franchiseSlug: t.franchiseSlug, id: t.id
+        }])
+      }
+      setBulkIndex(p => p + 1)
+    } catch {
+      setBulkIndex(p => p + 1) // skip errored bag
+    }
   }, [token, handleReset])
 
   // Bulk open effect

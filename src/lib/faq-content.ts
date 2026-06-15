@@ -15,7 +15,7 @@ export interface FaqEntry {
 export const FAQ_ENTRIES: FaqEntry[] = [
   {
     q: "What is Trading Tazos Game?",
-    a: `A browser-based skill game where you collect and battle with digital tazos. Open bags to discover ${SITE_CONFIG.totalTazos} unique tazos across 3 franchises (Minimon, Dracobell, Cybermon). Build decks of 5, then enter the 3D arena where you aim, charge, and slam your tazos to flip opponent discs and capture them for points.`,
+    a: `A browser-based skill game where you collect and battle with digital tazos. Open bags to discover ${SITE_CONFIG.totalTazos} unique tazos across 3 series (Minimon, Dracobell, Cybermon). Build decks of 5, then enter the 3D arena where you aim, charge, and slam your tazos to flip opponent discs and capture them for points.`,
   },
   {
     q: "Is it free to play?",

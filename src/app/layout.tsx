@@ -158,7 +158,7 @@ export default function RootLayout({
               "@type": "Organization",
               "name": SITE_NAME,
               "url": SITE_URL,
-              "description": `${SITE_CONFIG.disclaimer} — collect, trade, and battle with ${SITE_CONFIG.totalTazos} tazos across ${SITE_CONFIG.totalSeries} franchises.`,
+              "description": `${SITE_CONFIG.disclaimer} — collect, trade, and battle with ${SITE_CONFIG.totalTazos} tazos across ${SITE_CONFIG.totalSeries} series.`,
               "email": SITE_CONFIG.supportEmail,
               "logo": `${SITE_URL}/pwa-512.webp`,
               "sameAs": [

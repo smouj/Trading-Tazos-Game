@@ -163,6 +163,18 @@ export const PAGE_META: Record<string, PageMeta> = {
       "Terms and conditions for using Trading Tazos Game. Rules of conduct, account responsibilities, intellectual property, and disclaimers.",
     canonicalPath: "/?page=terms",
   },
+  "refund-policy": {
+    title: "Refund Policy — Trading Tazos Game",
+    description:
+      "Refund policy for Trading Tazos Game. Our game is free-to-play with no purchases. Credits cannot be purchased with real money. Contact support for any concerns.",
+    canonicalPath: "/?page=refund-policy",
+  },
+  disclaimer: {
+    title: "Disclaimer — Trading Tazos Game",
+    description:
+      "Trading Tazos Game is an independent fictional digital tazo game. Not affiliated with any third-party brand, franchise, or licensed intellectual property.",
+    canonicalPath: "/?page=disclaimer",
+  },
   contact: {
     title: "Contact — Trading Tazos Game",
     description:

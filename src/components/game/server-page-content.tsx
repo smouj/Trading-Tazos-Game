@@ -33,6 +33,12 @@ export default function ServerPageContent({ page }: Props) {
   if (page === "shop") {
     return <ServerShop />
   }
+  if (page === "refund-policy") {
+    return <ServerRefundPolicy />
+  }
+  if (page === "disclaimer") {
+    return <ServerDisclaimer />
+  }
   if (page === "contact") {
     return <ServerContact />
   }
@@ -216,6 +222,32 @@ function ServerCookies() {
     <section className="sr-only">
       <h1>Cookie Policy — Trading Tazos Game</h1>
       <p>We use essential cookies for authentication and session management. Anonymous analytics via Plausible. No third-party tracking cookies. You can disable cookies in your browser, but login functionality requires them.</p>
+    </section>
+  )
+}
+
+// ── Refund Policy ──
+function ServerRefundPolicy() {
+  return (
+    <section className="sr-only">
+      <h1>Refund Policy — Trading Tazos Game</h1>
+      <p>Trading Tazos Game is a free-to-play browser game. No purchases are required to access all game features.</p>
+      <p>Credits are earned through gameplay, daily rewards, and events. They cannot be purchased with real money.</p>
+      <p>As a free-to-play game, there are no refundable purchases. If you experience any issues, contact support@tradingtazosgame.com.</p>
+      <p>For any billing inquiries related to donations or third-party ads, please contact us directly.</p>
+    </section>
+  )
+}
+
+// ── Disclaimer ──
+function ServerDisclaimer() {
+  return (
+    <section className="sr-only">
+      <h1>Disclaimer — Trading Tazos Game</h1>
+      <p>Trading Tazos Game is an independent, fictional digital tazo game created and operated by independent developers.</p>
+      <p>This game is not affiliated with, endorsed by, or associated with any third-party brand, trademark, or licensed intellectual property.</p>
+      <p>All series, characters, lore, designs, names, and game mechanics are original fictional works. Any resemblance to existing IP is coincidental.</p>
+      <p>The game is free-to-play. Credits cannot be purchased with real currency. All game features are accessible through gameplay alone.</p>
     </section>
   )
 }

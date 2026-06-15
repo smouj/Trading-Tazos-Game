@@ -38,6 +38,7 @@ import { RewardedAdButton } from "@/components/shop/rewarded-ad"
 type PageId = "home" | "how-to-play" | "collections" | "collections-minimon"
   | "collections-cybermon" | "collections-dracobell" | "tazos" | "leaderboard"
   | "download" | "faq" | "shop" | "privacy" | "terms" | "cookies" | "contact"
+  | "refund-policy" | "disclaimer"
 
 const PAGE_LABELS: Record<PageId, string> = {
   home: "Home",
@@ -54,6 +55,8 @@ const PAGE_LABELS: Record<PageId, string> = {
   terms: "Terms",
   cookies: "Cookies",
   contact: "Contact",
+  "refund-policy": "Refund Policy",
+  disclaimer: "Disclaimer",
   shop: "Shop",
 }
 
@@ -1811,6 +1814,57 @@ function ContactContent() {
   )
 }
 
+// ── REFUND POLICY ──
+function RefundPolicyContent() {
+  const sections = [
+    { title: "Free-to-Play Game", body: "Trading Tazos Game is a free-to-play browser game. No purchases are required to access all game features, battle modes, and collection mechanics." },
+    { title: "In-Game Credits", body: "Credits are earned through gameplay, daily rewards, and special events. They cannot be purchased with real money. There are no microtransactions or in-game purchases." },
+    { title: "Third-Party Advertising", body: "The game displays advertising to support server costs. Ad interactions are governed by the respective ad platform's terms. TTG is not responsible for third-party ad content." },
+    { title: "Refunds", body: "As a free-to-play game without purchasable items, there are no refundable transactions. If you donated or contributed funds, please contact support@tradingtazosgame.com." },
+    { title: "Policy Updates", body: "This refund policy may be updated. Major changes will be communicated via the website. Last updated: June 2026." },
+  ]
+  return (
+    <div className="max-w-3xl mx-auto py-6 px-4">
+      <h2 className="text-2xl font-black uppercase text-[#1a1a1a] mb-2">Refund Policy</h2>
+      <p className="text-[10px] font-bold text-[#1a1a1a]/30 uppercase tracking-wider mb-5">Last updated: June 10, 2026</p>
+      <div className="space-y-3">
+        {sections.map((s, i) => (
+          <div key={i} className="border-3 border-[#1a1a1a] bg-white p-4" style={{ boxShadow: "3px 3px 0 #1a1a1a" }}>
+            <h3 className="text-sm font-black uppercase text-[#1a1a1a] mb-1.5">{s.title}</h3>
+            <p className="text-xs font-bold text-[#1a1a1a]/60 leading-relaxed">{s.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ── DISCLAIMER ──
+function DisclaimerContent() {
+  const sections = [
+    { title: "Independent Project", body: "Trading Tazos Game is an independent, fictional digital tazo game created and operated by independent developers. It is a passion project built for the community." },
+    { title: "No Affiliation", body: "This game is not affiliated with, endorsed by, approved by, or associated with any third-party brand, trademark, company, franchise, or licensed intellectual property." },
+    { title: "Original Content", body: "All series (Minimon, Dracobell, Cybermon), characters, creature designs, lore, world-building, names, logos, and game mechanics are original fictional works created for this project." },
+    { title: "Coincidental Resemblance", body: "Any resemblance to existing intellectual property, real or fictional, living or dead, is purely coincidental and unintentional." },
+    { title: "Free Access", body: "The game is and will remain free-to-play. Credits cannot be purchased with real currency. All game features are accessible through gameplay alone." },
+    { title: "Fan-Made", body: "Trading Tazos Game is a fan-made collector experience inspired by the culture of collecting, trading, and battling with physical discs. It is a tribute, not a reproduction." },
+  ]
+  return (
+    <div className="max-w-3xl mx-auto py-6 px-4">
+      <h2 className="text-2xl font-black uppercase text-[#1a1a1a] mb-2">Disclaimer</h2>
+      <p className="text-[10px] font-bold text-[#1a1a1a]/30 uppercase tracking-wider mb-5">Last updated: June 10, 2026</p>
+      <div className="space-y-3">
+        {sections.map((s, i) => (
+          <div key={i} className="border-3 border-[#1a1a1a] bg-white p-4" style={{ boxShadow: "3px 3px 0 #1a1a1a" }}>
+            <h3 className="text-sm font-black uppercase text-[#1a1a1a] mb-1.5">{s.title}</h3>
+            <p className="text-xs font-bold text-[#1a1a1a]/60 leading-relaxed">{s.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // ══════════════════════════════════════════════════════════
 // MAIN LAUNCHER COMPONENT
 // ══════════════════════════════════════════════════════════
@@ -2053,7 +2107,7 @@ export default function LauncherView() {
 
           {/* Mobile nav */}
           <nav className="sm:hidden flex items-center justify-start gap-0 px-1.5 pb-1.5 overflow-x-auto scrollbar-none" aria-label="Mobile navigation">
-            {(["home", "how-to-play", "collections", "tazos", "leaderboard", "download", "faq", "shop"] as PageId[]).map(id => (
+            {(["home", "how-to-play", "collections", "tazos", "leaderboard", "download", "faq", "shop", "contact"] as PageId[]).map(id => (
               <button key={id} onClick={() => navigate(id)}
                 className={`px-2.5 py-1.5 text-[9px] font-black uppercase tracking-wider whitespace-nowrap transition-colors ${
                   currentPage === id ? "text-[#FFCC00] border-b-2 border-[#FFCC00]" : "text-white/40 hover:text-white/70"
@@ -2118,6 +2172,12 @@ export default function LauncherView() {
             )}
             {currentPage === "cookies" && (
               <div className="w-full max-w-5xl mx-auto"><CookiesContent /></div>
+            )}
+            {currentPage === "refund-policy" && (
+              <div className="w-full max-w-5xl mx-auto"><RefundPolicyContent /></div>
+            )}
+            {currentPage === "disclaimer" && (
+              <div className="w-full max-w-5xl mx-auto"><DisclaimerContent /></div>
             )}
             {currentPage === "contact" && (
               <div className="w-full max-w-5xl mx-auto"><ContactContent /></div>

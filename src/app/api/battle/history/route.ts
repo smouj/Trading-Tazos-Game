@@ -67,6 +67,7 @@ export async function GET(request: NextRequest) {
       rounds: r.rounds,
       playerTazos: safeParse(r.playerTazos),
       opponentTazos: safeParse(r.opponentTazos),
+      opponentName: r.opponentName,
       battleLog: safeParse(r.battleLog),
       createdAt: r.createdAt,
     }))

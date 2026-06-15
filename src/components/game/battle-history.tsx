@@ -12,6 +12,7 @@ interface BattleRecord {
   rounds: number
   playerTazos: string[] | null
   opponentTazos: string[] | null
+  opponentName: string | null
   createdAt: string
 }
 
@@ -188,11 +189,18 @@ export default function BattleHistory() {
                     </span>
                   )}
                 </div>
-                {battle.score && (
-                  <p className="text-xs font-black text-[#1a1a1a]/50">
-                    Score: {battle.score} · {battle.turns} turns
-                  </p>
-                )}
+                <div className="flex items-center gap-2 flex-wrap">
+                  {battle.opponentName && (
+                    <span className="text-xs font-black text-[#1a1a1a]/40 uppercase tracking-wide">
+                      vs {battle.opponentName}
+                    </span>
+                  )}
+                  {battle.score && (
+                    <span className="text-xs font-black text-[#1a1a1a]/50">
+                      Score: {battle.score} · {battle.turns} turns
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Tazo count */}

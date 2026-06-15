@@ -18,16 +18,10 @@ interface StatsPanelProps {
   refreshKey?: number
 }
 
-const FRANCHISE_COLORS: Record<string, string> = {
+const SERIES_COLORS: Record<string, string> = {
   Minimon: '#FFCB05',
   Cybermon: '#00A1E9',
-  'Dracobell': '#FF6B00',
-}
-
-const FRANCHISE_DOT_COLORS: Record<string, string> = {
-  Minimon: '#FFCB05',
-  Cybermon: '#00A1E9',
-  'Dracobell': '#FF6B00',
+  Dracobell: '#FF6B00',
 }
 
 const RARITY_COLORS: Record<string, string> = {
@@ -61,33 +55,22 @@ const STAT_ICONS = [
 
 export default function StatsPanel({ refreshKey }: StatsPanelProps) {
   const [stats, setStats] = useState<StatsData | null>(null)
-  const [topTazos, setTopTazos] = useState<Record<string, Tazo>>({})
+  const [topTazos, setTopTazos] = useState<Record<string, { id: string; name: string; slug: string; franchiseColor: string | null; franchiseName: string | null; value: number }>>({})
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function fetchData() {
       setLoading(true)
       try {
-        const [statsRes, tazosRes] = await Promise.all([
+        const [statsRes, topsRes] = await Promise.all([
           fetch('/api/stats'),
-          fetch('/api/tazos?sortBy=attack&sortOrder=desc'),
+          fetch('/api/stats/tops'),
         ])
         const statsData = await statsRes.json()
-        const tazosData = await tazosRes.json()
+        const topsData = await topsRes.json()
 
         setStats(statsData)
-
-        // Find top tazos for each stat
-        const allTazos: Tazo[] = tazosData.tazos || []
-        const tops: Record<string, Tazo> = {}
-        for (const statConfig of STAT_ICONS) {
-          const key = statConfig.key as keyof Pick<Tazo, 'attack' | 'defense' | 'resistance' | 'weight' | 'stability' | 'spin' | 'control' | 'bounce' | 'precision'>
-          const sorted = [...allTazos].sort((a, b) => b[key] - a[key])
-          if (sorted.length > 0) {
-            tops[key] = sorted[0]
-          }
-        }
-        setTopTazos(tops)
+        setTopTazos(topsData.tops || {})
       } catch (err) {
         console.error('Failed to fetch stats:', err)
       } finally {
@@ -224,7 +207,7 @@ export default function StatsPanel({ refreshKey }: StatsPanelProps) {
           </div>
           <div className="p-4 space-y-3 mag-dots">
             {Object.entries(stats.bySeries).map(([name, count]) => {
-              const color = FRANCHISE_COLORS[name] || '#9CA3AF'
+              const color = SERIES_COLORS[name] || '#9CA3AF'
               const pct = stats.totalTazos > 0 ? Math.round((count / stats.totalTazos) * 100) : 0
               const barWidth = maxSeries > 0 ? Math.round((count / maxSeries) * 100) : 0
               return (
@@ -233,7 +216,7 @@ export default function StatsPanel({ refreshKey }: StatsPanelProps) {
                     <div className="flex items-center gap-1.5">
                       <span
                         className="w-3 h-3 rounded-full border-2 border-[#1a1a1a] shrink-0"
-                        style={{ backgroundColor: FRANCHISE_DOT_COLORS[name] || '#9CA3AF' }}
+                        style={{ backgroundColor: SERIES_COLORS[name] || '#9CA3AF' }}
                       />
                       <span className="text-xs font-black uppercase tracking-wide text-[#1a1a1a]">{name}</span>
                     </div>
@@ -358,9 +341,9 @@ export default function StatsPanel({ refreshKey }: StatsPanelProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {STAT_ICONS.map(({ key, label, icon: Icon, color }, index) => {
               const topTazo = topTazos[key]
-              const statValue = topTazo ? topTazo[key as keyof Tazo] : 0
+              const statValue = topTazo ? (topTazo as { value: number }).value : 0
               const rank = index + 1
-              const franchiseColor = topTazo?.franchiseColor || '#9CA3AF'
+              const franchiseColor = (topTazo as { franchiseColor: string | null })?.franchiseColor || '#9CA3AF'
               return (
                 <div
                   key={key}

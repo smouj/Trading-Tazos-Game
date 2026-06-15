@@ -4,6 +4,7 @@
 // Trading Tazos Game — Admin Shell
 // Shared navigation header + auth guard for all admin pages.
 // ============================================================
+import { SITE_CONFIG } from '@/lib/site-config'
 import { useAuth } from "@/lib/auth-context";
 import {
   Shield, Users, Package, Database, Server, Activity,

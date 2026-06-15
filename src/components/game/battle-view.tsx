@@ -565,7 +565,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
               setAirborne(ab)
               
               // AI aim, then charge, then slam (mirrors opponent turn code)
-              const aiSlam = generateAISlam(aiTazo, ctx.stakedTazos, cfg.arena, cfg.aiDifficulty)
+              const aiSlam = generateAISlam(aiTazo, ctx.stakedTazos, cfg.arena, cfg.aiDifficulty, ctx.opponent.score - ctx.player.score)
               
               setTimeout(() => {
                 if (!engine.ctx || !cfg) return
@@ -733,7 +733,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
             const aiTazo = currentCtx.opponentBetTazo
             if (!aiTazo || !cfg) { engine.setBusy(false); return }
 
-            const aiSlam = generateAISlam(aiTazo, currentCtx.stakedTazos, cfg.arena, cfg.aiDifficulty)
+            const aiSlam = generateAISlam(aiTazo, currentCtx.stakedTazos, cfg.arena, cfg.aiDifficulty, currentCtx.opponent.score - currentCtx.player.score)
             const aiAirborne = createAirborneTazo(aiTazo, "opponent", cfg.arena)
             aiAirborne.state = "aiming"
             aiAirborne.position = [aiSlam.impactX * 0.3, cfg.arena.maxLaunchHeight * 0.4, aiSlam.impactZ * 0.3]

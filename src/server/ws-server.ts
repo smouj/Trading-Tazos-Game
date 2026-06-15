@@ -115,6 +115,53 @@ function verifyToken(token: string): { userId: string; name: string } | null {
   }
 }
 
+
+// ---- Turn Validation ----
+
+interface SlamPayload {
+  tazoId?: string
+  verticalForce?: number
+  timingAccuracy?: number
+  tiltIntensity?: number
+  spinIntensity?: number
+  aimPrecision?: number
+  impactX?: number
+  impactZ?: number
+  tilt?: string
+}
+
+interface ValidatedSlam {
+  valid: boolean
+  warnings: string[]
+}
+
+function validateSlam(payload: SlamPayload): ValidatedSlam {
+  const warnings: string[] = []
+
+  const clamp = (v: number | undefined, min: number, max: number, name: string, def: number): number => {
+    if (typeof v !== "number" || isNaN(v) || !isFinite(v)) return def
+    if (v < min || v > max) {
+      warnings.push(`${name}: ${v.toFixed(2)} clamped to [${min}, ${max}]`)
+      return Math.max(min, Math.min(max, v))
+    }
+    return v
+  }
+
+  clamp(payload.verticalForce ?? 0.5, 0, 1, "verticalForce", 0.5)
+  clamp(payload.timingAccuracy ?? 0.5, 0, 1, "timingAccuracy", 0.5)
+  clamp(payload.tiltIntensity ?? 0, 0, 1, "tiltIntensity", 0)
+  clamp(payload.spinIntensity ?? 0, 0, 1, "spinIntensity", 0)
+  clamp(payload.aimPrecision ?? 0.5, 0, 1, "aimPrecision", 0.5)
+  clamp(payload.impactX ?? 0, -2, 2, "impactX", 0)
+  clamp(payload.impactZ ?? 0, -2, 2, "impactZ", 0)
+
+  if (payload.tilt && !["flat", "forward", "backward"].includes(payload.tilt)) {
+    warnings.push(`tilt: "${payload.tilt}" invalid (expected flat/forward/backward)`)
+  }
+
+  return { valid: warnings.length === 0, warnings }
+}
+
 function log(msg: string) {
   console.log(`[WS] ${new Date().toISOString().slice(11, 19)} ${msg}`)
 }
@@ -207,6 +254,11 @@ wss.on("connection", (ws, req) => {
       }
 
       case "turn_action": {
+        // Validate slam parameters before relay
+        const validation = validateSlam(msg.payload || {})
+        if (validation.warnings.length > 0) {
+          log(`⚠️ Suspicious slam from ${player.name}: ${validation.warnings.join(", ")}`)
+        }
         // Find player's room and relay to opponent
         for (const [id, room] of rooms) {
           const idx = room.players.indexOf(player)

@@ -41,14 +41,15 @@ const LOW_SLAM: SlamParams = {
 
 const ARENA: Arena3DConfig = {
   radius: 1.5, maxLaunchHeight: 3, gravity: 9.8,
-  ringOutThreshold: 1.2,
+  ringOutThreshold: 1.2, impactDamping: 0.95, minFlipForce: 30, tableFriction: 0.98,
 }
 
 function makeContext(): BattleContext {
   const pd = Array.from({ length: 20 }, () => makeTazo())
   const od = Array.from({ length: 20 }, () => makeTazo())
   return {
-    state: 'betting',
+    state: 'betting' as any, prevState: null, airborneTazo: null,
+    coinWinner: null, lastImpact: null,
     config: { playerDeck: pd, opponentDeck: od, aiDifficulty: 'skilled',
       arena: ARENA, scoreToWin: 5 } as any,
     player: { score: 0, tazosRemaining: 20, maxScore: 5 } as any,
@@ -125,8 +126,8 @@ describe('Fix 2: Tazo precision affects AI aim', () => {
 
     let ha = 0, la = 0
     for (let i = 0; i < 50; i++) {
-      ha += generateAISlam(hiPrec, staked, ARENA, 'skilled').aimPrecision
-      la += generateAISlam(loPrec, staked, ARENA, 'skilled').aimPrecision
+      ha += generateAISlam(hiPrec, staked, ARENA as any, 'skilled').aimPrecision
+      la += generateAISlam(loPrec, staked, ARENA as any, 'skilled').aimPrecision
     }
     expect(ha / 50).toBeGreaterThan(la / 50)
   })
@@ -136,7 +137,7 @@ describe('Fix 2: Tazo precision affects AI aim', () => {
     const staked: StakedTazo[] = [makeStakedTazo()]
     for (const diff of ['novice', 'skilled', 'master'] as const) {
       for (let i = 0; i < 20; i++) {
-        const s = generateAISlam(t, staked, ARENA, diff)
+        const s = generateAISlam(t, staked, ARENA as any, diff)
         expect(s.aimPrecision).toBeGreaterThanOrEqual(0)
         expect(s.aimPrecision).toBeLessThanOrEqual(1)
         expect(s.verticalForce).toBeGreaterThanOrEqual(0)

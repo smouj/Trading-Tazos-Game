@@ -588,7 +588,8 @@ export function generateAISlam(
   aiTazo: TazoCard,
   staked: StakedTazo[],
   arena: Arena3DConfig,
-  difficulty: AIDifficulty
+  difficulty: AIDifficulty,
+  scoreGap?: number  // Positive = AI ahead, negative = AI behind
 ): SlamParams {
   // Find rival's staked tazos (not flipped yet)
   const targets = staked.filter(
@@ -609,32 +610,64 @@ export function generateAISlam(
   // Base precision from tazo stat (0.2-1.0), scaled by difficulty
   const tazoBasePrecision = Math.max(0.2, (aiTazo.precision || 50) / 100)
 
-  if (targets.length === 0) {
+  // Adaptive aggression: more aggressive when behind, conservative when ahead
+  const gap = scoreGap ?? 0
+  const aggressionFactor = gap < -2 ? 1.2 : gap > 2 ? 0.8 : 1.0
+
+  // ── Target selection (master/skilled pick best target) ──
+  let selectedTarget: StakedTazo | undefined
+  if (targets.length > 0) {
+    if (difficulty === "master") {
+      // Pick tazo nearest to edge (easiest to ring out or flip)
+      selectedTarget = targets.reduce((best, t) => {
+        const dist = Math.sqrt(t.position[0] ** 2 + t.position[2] ** 2)
+        const prevDist = Math.sqrt(best.position[0] ** 2 + best.position[2] ** 2)
+        return dist > prevDist ? t : best
+      })
+    } else if (difficulty === "skilled") {
+      // Pick first valid target (improved: closest to center = harder for AI to aim at edge)
+      selectedTarget = targets.reduce((best, t) => {
+        const dist = Math.sqrt(t.position[0] ** 2 + t.position[2] ** 2)
+        const prevDist = Math.sqrt(best.position[0] ** 2 + best.position[2] ** 2)
+        return dist < prevDist ? t : best
+      })
+    } else {
+      // Novice: random target from pool
+      selectedTarget = targets[Math.floor(rng() * targets.length)]
+    }
+  }
+
+  if (!selectedTarget) {
     // No targets — aim for center, still uses tazo precision
     impactX = (rng() - 0.5) * 0.4
     impactZ = (rng() - 0.5) * 0.4
     verticalForce = 0.35 + rng() * 0.35
-    // Apply precision even without targets
     if (difficulty === "master") aimPrecision = Math.min(1.0, tazoBasePrecision * 0.55 + 0.35 + rng() * 0.10)
     else if (difficulty === "skilled") aimPrecision = Math.min(1.0, tazoBasePrecision * 0.50 + 0.20 + rng() * 0.15)
     else aimPrecision = Math.min(1.0, tazoBasePrecision * 0.35 + 0.05 + rng() * 0.15)
   } else {
-    const target = targets[0]
-    impactX = target.position[0] + (rng() - 0.5) * 0.2
-    impactZ = target.position[2] + (rng() - 0.5) * 0.2
+    // Precision targeting — closer to actual position for higher difficulty
+    const accuracySpread = difficulty === "master" ? 0.08 : difficulty === "skilled" ? 0.15 : 0.25
+    impactX = selectedTarget.position[0] + (rng() - 0.5) * accuracySpread * 2
+    impactZ = selectedTarget.position[2] + (rng() - 0.5) * accuracySpread * 2
 
     if (difficulty === "master") {
       aimPrecision = Math.min(1.0, tazoBasePrecision * 0.55 + 0.35 + rng() * 0.10)
       timingAccuracy = 0.8 + rng() * 0.2
-      verticalForce = 0.55 + rng() * 0.35
-      // Smart tilt: edge attack mostly
-      tilt = rng() > 0.3 ? "forward" : "flat"
+      // Adaptive force: harder hits when behind, softer when ahead
+      const baseForce = 0.55 * aggressionFactor
+      verticalForce = Math.max(0.3, Math.min(0.95, baseForce + rng() * 0.35))
+      // Smart tactics: edge attack on tazos near arena boundary
+      const targetDist = Math.sqrt(selectedTarget.position[0] ** 2 + selectedTarget.position[2] ** 2)
+      const nearEdge = targetDist > arena.radius * 0.6
+      tilt = nearEdge && rng() > 0.2 ? "forward" : (rng() > 0.4 ? "forward" : "flat")
       tiltIntensity = 0.4 + rng() * 0.4
       spinIntensity = 0.2 + rng() * 0.3
     } else if (difficulty === "skilled") {
       aimPrecision = Math.min(1.0, tazoBasePrecision * 0.50 + 0.20 + rng() * 0.15)
       timingAccuracy = 0.55 + rng() * 0.3
-      verticalForce = 0.45 + rng() * 0.35
+      const baseForce = 0.45 * aggressionFactor
+      verticalForce = Math.max(0.25, Math.min(0.9, baseForce + rng() * 0.35))
       tilt = rng() > 0.5 ? "forward" : "flat"
       tiltIntensity = 0.25 + rng() * 0.3
       spinIntensity = rng() * 0.25

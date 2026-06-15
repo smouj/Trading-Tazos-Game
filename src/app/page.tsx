@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Suspense } from "react"
 import LauncherView from "@/components/game/launcher-view"
 import { SITE_CONFIG, PAGE_META, getLanguageAlternates } from "@/lib/site-config"
+import { ServerPageContent } from "@/components/game/server-page-content"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0

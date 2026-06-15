@@ -219,7 +219,7 @@ export default function StatsPanel({ refreshKey }: StatsPanelProps) {
           <div className="mag-card-yellow px-4 py-2 flex items-center gap-2 border-b-3 border-[#1a1a1a]">
             <Zap className="w-4 h-4 text-[#1a1a1a]" />
             <h3 className="text-sm font-black uppercase tracking-wider text-[#1a1a1a] mag-stroke-sm">
-              By Franchise
+              By Series
             </h3>
           </div>
           <div className="p-4 space-y-3 mag-dots">

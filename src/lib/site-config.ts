@@ -181,19 +181,6 @@ export const PAGE_META: Record<string, PageMeta> = {
       "Create your free Trading Tazos Game account — get 30 welcome tazo bags, build collections, enter the 3D battle arena, and rise through the leaderboard.",
     canonicalPath: "/register",
   },
-  "game/practice": {
-    title: "Practice Battle — Trading Tazos Game",
-    description:
-      "Practice your tazo slamming skills against the AI. No stakes, no pressure — master the physics-based 3D battle arena.",
-    canonicalPath: "/game/practice",
-    noIndex: true,
-  },
-  "game/ranked": {
-    title: "Ranked Battle — Trading Tazos Game",
-    description:
-      "Compete in ranked matches to climb the leaderboard. Win battles, earn credits, and prove your tazo training mastery.",
-    canonicalPath: "/game/ranked",
-  },
   "app/collection": {
     title: "My Collection — Trading Tazos Game",
     description:
@@ -229,7 +216,7 @@ export const FOOTER_LINKS = {
   info: [
     { label: "Tazos", href: "/?page=tazos" },
     { label: "Shop", href: "/?page=shop" },
-    { label: "Battle", href: "/?page=how-to-play" },
+    { label: "How to Play", href: "/?page=how-to-play" },
     { label: "FAQ", href: "/?page=faq" },
     { label: "Privacy", href: "/?page=privacy" },
     { label: "Terms", href: "/?page=terms" },

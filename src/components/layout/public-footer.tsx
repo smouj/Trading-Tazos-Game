@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { SITE_CONFIG } from "@/lib/site-config"
 
 const SOCIAL_LINKS = [
   {
@@ -124,7 +125,7 @@ export default function PublicFooter() {
         </div>
         <div className="mt-6 pt-5 border-t border-white/15 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
           <p className="text-xs font-bold text-zinc-400">
-            Copyright {new Date().getFullYear()} Trading Tazos Game. Version 0.6.0.
+            Copyright {new Date().getFullYear()} Trading Tazos Game. v{SITE_CONFIG.version}.
           </p>
           <p className="text-xs font-bold text-zinc-500">
             Fan-made collector experience. Minimon, Dracobell, and Cybermon are fictional IPs.

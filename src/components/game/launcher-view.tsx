@@ -28,6 +28,7 @@ import TazoDetailModal from '@/components/game/tazo-detail-modal'
 import { FRANCHISES, FRANCHISE_BY_SLUG, TOTAL_PLANNED } from "@/lib/franchise-config"
 import { SITE_CONFIG } from "@/lib/site-config"
 import { PRIVACY_SECTIONS, TERMS_SECTIONS, COOKIE_SECTIONS } from "@/lib/legal-content"
+import BagCardMini3D from "@/components/game/3d/bag-card-mini-3d"
 import { FAQ_ENTRIES } from "@/lib/faq-content"
 import { DOWNLOAD_PLATFORMS, DOWNLOAD_RELEASE } from "@/lib/downloads"
 import { CreditShop } from "@/components/shop/credit-shop"
@@ -1353,12 +1354,22 @@ function ShopContent() {
           return (
             <div key={bag.type} className="mag-card border-3 border-[#1a1a1a] bg-white overflow-hidden" style={{ boxShadow: `4px 4px 0px ${bag.border}40` }}>
               <div className="px-4 sm:px-5 py-4 border-b-2 border-[#1a1a1a]/10" style={{ backgroundColor: bag.bg }}>
-                <div className="flex items-start justify-between mb-2">
+                {/* 3D Bag Preview */}
+                <div className="-mx-4 sm:-mx-5 -mt-4 mb-0 rounded-t overflow-hidden" style={{ background: "linear-gradient(135deg, #2a2520 0%, #1a1815 50%, #0f0d0a 100%)" }}>
+                  <BagCardMini3D
+                    frontUrl={`/textures/bags/${bag.franchise}/bag-${bag.franchise}-front-01.png`}
+                    backUrl={`/textures/bags/${bag.franchise}/bag-${bag.franchise}-back-01.png`}
+                  />
+                </div>
+                <div className="flex items-start justify-between mb-2 mt-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center border-2 border-[#1a1a1a] flex-shrink-0 bg-white p-1 overflow-hidden" style={{ boxShadow: "2px 2px 0 #1a1a1a" }}>
-                      <img src={`/logo/series-${bag.franchise}.png`} alt={`${bag.franchiseName} logo`}
-                        className="w-full h-full object-contain" />
-                    </div>
+                    {/* Example tazo from this series */}
+                    {examples.length > 0 && (
+                      <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#1a1a1a]/30 flex-shrink-0 bg-white" style={{ boxShadow: "2px 2px 0 #1a1a1a" }}>
+                        <img src={examples[0].imageUrl || "/tazos-artgen/backs/minimon-back.png"} alt={examples[0].displayName || examples[0].name}
+                          className="w-full h-full object-cover" />
+                      </div>
+                    )}
                     <div>
                       <h3 className="text-sm sm:text-base font-black text-[#1a1a1a] uppercase leading-tight">{bag.name}</h3>
                       <p className="text-[9px] sm:text-[10px] font-bold text-[#1a1a1a]/50">{bag.tagline}</p>
@@ -1402,12 +1413,13 @@ function ShopContent() {
                   <span className="text-[8px] font-black text-[#1a1a1a]/30 uppercase tracking-wider">Series</span>
                   <span className="text-[10px] font-black uppercase px-2 py-0.5 border border-[#1a1a1a]/20" style={{ backgroundColor: bag.bg, color: bag.border }}>{bag.franchiseName}</span>
                 </div>
+                {/* Example tazo discs */}
                 {examples.length > 0 && (
-                  <div>
-                    <span className="text-[8px] font-black text-[#1a1a1a]/25 uppercase tracking-wider">Example tazos</span>
-                    <div className="flex gap-1.5 mt-1">
-                      {examples.map((t: any) => (
-                        <div key={t.id} className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-[#1a1a1a]/15 overflow-hidden flex-shrink-0 hover:border-[#FFCC00] hover:scale-110 transition-all" title={t.displayName || t.name}>
+                  <div className="flex items-center gap-2 mt-2 pt-2 border-t border-[#1a1a1a]/8">
+                    <span className="text-[8px] font-black text-[#1a1a1a]/25 uppercase tracking-wider shrink-0">Tazos:</span>
+                    <div className="flex gap-1.5">
+                      {examples.slice(0, 4).map((t: any, idx: number) => (
+                        <div key={t.id || idx} className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-[#1a1a1a]/15 overflow-hidden flex-shrink-0 hover:border-[#FFCC00] hover:scale-110 transition-all bg-white" title={t.displayName || t.name}>
                           <div className="w-full h-full rounded-full overflow-hidden relative">
                             <TazoDiscImage src={t.imageUrl} alt={t.displayName || t.name} size="100%" borderWidth={0}
                               franchiseSlug={t.franchiseSlug || t.franchise?.slug}

@@ -65,7 +65,9 @@ mkdir -p .next/standalone/public/tazos-base
 mkdir -p .next/standalone/public/tazos-generated
 mkdir -p .next/standalone/public/tazos-backs
 mkdir -p .next/standalone/public/tazos-artgen/backs
+mkdir -p .next/standalone/public/textures/bags
 mkdir -p .next/standalone/public/logo
+cp -r public/textures/bags .next/standalone/public/textures/ 2>/dev/null || true
 cp -r public/logo/*.png .next/standalone/public/logo/ 2>/dev/null || true
 mkdir -p .next/standalone/public/tazos-tubes
 

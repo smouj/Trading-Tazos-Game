@@ -634,7 +634,7 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
                 {[
                   { icon: PackageOpen, label: "Bags", color: "#FF6B00", href: "/app/shop" },
                   { icon: Swords, label: "Battle", color: "#E3350D", href: "/app/battle" },
-                  { icon: Disc3, label: "Album", color: "#00A1E9", href: "/app/collection" },
+                  { icon: Disc3, label: "Collection", color: "#00A1E9", href: "/app/collection" },
                   { icon: Medal, label: "Rankings", color: "#22C55E", href: "/?page=leaderboard" },
                 ].map(({ icon: Icon, label, color, href }) => (
                   <Link key={label} href={href}

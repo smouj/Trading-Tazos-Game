@@ -29,9 +29,9 @@ interface HubMode {
 }
 const MODES: HubMode[] = [
   {
-    id: "practice", icon: Bot, title: "Practice", guestOk: true,
+    id: "practice", icon: Bot, title: "Practice", guestOk: false,
     desc: "Train against AI — no stakes, no pressure. Adjustable difficulty.",
-    color: "#22C55E", badge: "FREE PLAY", href: "/app/battle/play",
+    color: "#22C55E", badge: "SIGN IN", href: "/app/battle/play",
   },
   {
     id: "ranked", icon: Trophy, title: "Ranked", guestOk: false,
@@ -46,8 +46,8 @@ const MODES: HubMode[] = [
 ]
 
 const QUICK_ACTIONS = [
-  { icon: PackageOpen, label: "Open Bags", href: "/app/shop", color: "#FF6B00", guest: true },
-  { icon: Disc3, label: "Collection", href: "/app/collection", color: "#00A1E9", guest: true },
+  { icon: PackageOpen, label: "Open Bags", href: "/app/shop", color: "#FF6B00", guest: false },
+  { icon: Disc3, label: "Collection", href: "/app/collection", color: "#00A1E9", guest: false },
   { icon: Layers, label: "Deck Builder", href: "/app/decks", color: "#A855F7", guest: false },
   { icon: Medal, label: "Rankings", href: "/?page=leaderboard", color: "#F59E0B", guest: true },
 ]
@@ -138,7 +138,7 @@ export default function GameHubPage() {
             <div className="border-2 border-[#FFCC00]/30 bg-[#FFCC00]/5 px-4 py-3 flex items-center gap-3 flex-wrap">
               <Gamepad2 className="w-4 h-4 text-[#FFCC00] shrink-0" />
               <p className="text-[11px] sm:text-xs font-bold text-[#1a1a1a]/60 flex-1">
-                Playing as guest — Practice mode is fully available. Sign in to save progress, play Ranked, and build your collection.
+                Playing as guest — Sign in to access all game modes, save progress, play Ranked, and build your collection.
               </p>
               <Link href="/login" className="text-[10px] font-black text-[#1a1a1a] bg-[#FFCC00] px-3 py-1.5 border border-[#1a1a1a]/20 hover:bg-[#FFE566] transition-colors uppercase tracking-wider whitespace-nowrap">
                 Sign In Free

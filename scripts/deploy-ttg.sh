@@ -50,11 +50,12 @@ mkdir -p "$STANDALONE_DIR/prisma"
 cp "$LIVE_DB" "$STANDALONE_DIR/prisma/dev.db"
 echo "  Live DB synced to standalone"
 
-# 6. Sync static assets
+# 6. Sync static assets (symlink — Next.js standalone resolves .next relative to server.js)
 echo "▶ Syncing static assets…"
-cp -r "$APP_DIR/.next/static" "$STANDALONE_DIR/.next/static"
+rm -rf "$STANDALONE_DIR/.next/static" 2>/dev/null || true
+ln -sf "$APP_DIR/.next/static" "$STANDALONE_DIR/.next/static"
 cp -r "$APP_DIR/public" "$STANDALONE_DIR/public" 2>/dev/null || true
-echo "  Assets synced."
+echo "  Static symlinked, public copied."
 
 # 7. Keep only last 20 backups
 cd "$BACKUP_DIR" && ls -t ttg-*.db 2>/dev/null | tail -n +21 | xargs rm -f 2>/dev/null || true

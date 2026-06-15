@@ -39,22 +39,22 @@ interface BagConfig {
 
 const DEFAULT_BAGS: BagConfig[] = [
   {
-    type: "standard", name: "Classic Bag", cost: 100,
-    bonusChance: 15, rareBoost: 2, color: "#FFCC00", bgColor: "#FFF8E7",
+    type: "standard", name: "Classic Bag", cost: 50,
+    bonusChance: 12, rareBoost: 2, color: "#FFCC00", bgColor: "#FFF8E7",
     franchise: "minimon", icon: <ShoppingBag className="w-4 h-4" />,
     tagline: "Original collection tazos",
   },
   {
     type: "premium", name: "Premium Bag", cost: 100,
-    bonusChance: 15, rareBoost: 2, color: "#3B82F6", bgColor: "#EFF6FF",
+    bonusChance: 20, rareBoost: 3, color: "#3B82F6", bgColor: "#EFF6FF",
     franchise: "cybermon", icon: <Star className="w-4 h-4" />,
-    tagline: "Digital monsters and tech",
+    tagline: "Higher rare chance + bonus",
   },
   {
-    type: "mega", name: "Mega Bag", cost: 100,
-    bonusChance: 15, rareBoost: 2, color: "#F97316", bgColor: "#FFF7ED",
+    type: "mega", name: "Mega Bag", cost: 200,
+    bonusChance: 30, rareBoost: 5, color: "#F97316", bgColor: "#FFF7ED",
     franchise: "dracobell", icon: <Zap className="w-4 h-4" />,
-    tagline: "Legendary auras, top rarity",
+    tagline: "Guaranteed rare or better",
   },
 ]
 

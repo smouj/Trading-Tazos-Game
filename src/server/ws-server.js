@@ -38,11 +38,18 @@ loadEnv()
 
 const JWT_SECRET = process.env.JWT_SECRET
 if (!JWT_SECRET) {
-  console.error("FATAL: JWT_SECRET environment variable is required")
+  console.error("[WS] FATAL: JWT_SECRET environment variable is required")
   process.exit(1)
 }
 const PORT = parseInt(process.env.WS_PORT || "3001")
 const HEARTBEAT_MS = 15000
+const START_TIME = Date.now()
+
+// ─── Timestamped logger ────────────────────────────────────
+function log(msg) {
+  const ts = new Date().toISOString().replace("T", " ").slice(0, 19)
+  console.log(`[${ts}] ${msg}`)
+}
 
 // ─── Native JWT verify (HS256 only) ─────────────────────────
 function base64UrlDecode(str) {
@@ -99,7 +106,7 @@ function makeRoom(p1, p2, roomId) {
     const yourSide = p === p1 ? "player" : "opponent"
     send(p.ws, { type: "match_found", payload: { roomId: id, opponent: { userId: opp.userId, name: opp.name }, yourSide } })
   }
-  console.log(`[WS] Match: ${p1.name} vs ${p2.name} [${id}]`)
+  log(`[WS] Match: ${p1.name} vs ${p2.name} [${id}]`)
   return room
 }
 
@@ -132,7 +139,7 @@ function tryMatch() {
 let wss
 try {
   wss = new WebSocketServer({ port: PORT })
-  console.log(`[WS] Multiplayer server on port ${PORT}`)
+  log(`[WS] Multiplayer server on port ${PORT}`)
 } catch (err) {
   if (err.code === 'EADDRINUSE') {
     console.error(`[WS] FATAL: Port ${PORT} already in use. Exiting so PM2 can retry.`)
@@ -149,7 +156,7 @@ wss.on("connection", (ws, req) => {
 
   const player = { ws, userId: user.userId, name: user.name, joinedAt: Date.now(), alive: true }
   connections.set(ws, player)
-  console.log(`[WS] ${player.name} connected (${connections.size} online)`)
+  log(`[WS] ${player.name} connected (${connections.size} online)`)
 
   let alive = true
   const pingTimer = setInterval(() => {
@@ -267,7 +274,7 @@ wss.on("connection", (ws, req) => {
   ws.on("close", () => {
     clearInterval(pingTimer)
     cleanupPlayer(player)
-    console.log(`[WS] ${player.name} disconnected`)
+    log(`[WS] ${player.name} disconnected`)
   })
 
   send(ws, { type: "connected", payload: { userId: player.userId, name: player.name } })
@@ -283,11 +290,13 @@ try {
       activeRooms: rooms.size,
       queueLength: queue.length,
       connectedClients: connections.size,
-      uptime: process.uptime(),
+      uptime: Math.round(process.uptime()),
+      memoryMB: Math.round(process.memoryUsage().rss / 1024 / 1024),
+      status: "healthy",
     }))
   })
   statusServer.listen(PORT + 1)
-  console.log(`[WS] Status HTTP on port ${PORT + 1}`)
+  log(`[WS] Status HTTP on port ${PORT + 1}`)
 } catch (err) {
   if (err.code === 'EADDRINUSE') {
     console.error(`[WS] FATAL: Status port ${PORT + 1} already in use.`)
@@ -295,20 +304,36 @@ try {
   throw err
 }
 
-function shutdown() {
-  console.log('[WS] Shutting down gracefully...')
-  try { wss && wss.close() } catch (_) {}
-  try { statusServer && statusServer.close() } catch (_) {}
-  process.exit(0)
+// ─── Signal PM2 we're ready (wait_ready support) ───────────
+if (typeof process.send === 'function') {
+  process.send('ready')
 }
 
-process.on("SIGTERM", shutdown)
-process.on("SIGINT", shutdown)
+// Periodic health log (every 30 min)
+setInterval(() => {
+  const mem = process.memoryUsage()
+  log(`[WS] Health — uptime ${Math.round(process.uptime()/60)}m, heap ${Math.round(mem.heapUsed/1024/1024)}MB/${Math.round(mem.heapTotal/1024/1024)}MB, rss ${Math.round(mem.rss/1024/1024)}MB, rooms ${rooms.size}, queue ${queue.length}, clients ${connections.size}`)
+}, 1800000)
+
+function shutdown(signal) {
+  log(`[WS] Shutting down gracefully... (signal: ${signal || 'unknown'})`)
+  // 5-second hard timeout — force exit if graceful shutdown hangs
+  const forceExit = setTimeout(() => {
+    log('[WS] Graceful shutdown timed out — forcing exit')
+    process.exit(1)
+  }, 5000)
+  forceExit.unref()
+  try { wss && wss.close(() => { clearTimeout(forceExit); process.exit(0) }) } catch (_) { clearTimeout(forceExit); process.exit(0) }
+  try { statusServer && statusServer.close() } catch (_) {}
+}
+
+process.on("SIGTERM", () => shutdown("SIGTERM"))
+process.on("SIGINT", () => shutdown("SIGINT"))
 process.on("uncaughtException", (err) => {
   if (err.code === 'EADDRINUSE') {
-    console.error(`[WS] Port conflict, exiting for PM2 restart.`)
+    console.error(`[WS] Port conflict: ${err.message}`)
     process.exit(1)
   }
-  console.error('[WS] Uncaught:', err.message)
-  shutdown()
+  console.error(`[WS] Uncaught: ${err.message}`)
+  shutdown('uncaughtException')
 })

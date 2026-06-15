@@ -471,15 +471,15 @@ export function simulateSlam(
       const defStability = (defender.stability || 50) * (1 - defenderWear.stability)
       const defWeight = (defender.weight || 50) / 100
 
-      defenseFactor = ownTazo ? 0.65 : (1 - defDefense / 100)
-      resistFactor = 1 - defResist / 100
-      stabilityFactor = 1 - defStability / 100
-      weightPenaltyFactor = defWeight * 0.05  // Heavier = harder to flip (0-0.05)
+      defenseFactor = ownTazo ? 0.35 : (defDefense / 100)
+      resistFactor = defResist / 100
+      stabilityFactor = defStability / 100
+      weightPenaltyFactor = defWeight * 0.08  // Heavier = harder to flip (0-0.08)
     } else {
       // Fallback: balanced defaults when defender stats unavailable
-      defenseFactor = ownTazo ? 0.65 : 0.80
-      resistFactor = 0.85
-      stabilityFactor = 0.40
+      defenseFactor = ownTazo ? 0.35 : 0.50
+      resistFactor = 0.50
+      stabilityFactor = 0.50
       weightPenaltyFactor = 0
     }
 
@@ -606,18 +606,22 @@ export function generateAISlam(
   let tiltIntensity = 0
   let spinIntensity = 0
 
+  // Base precision from tazo stat (0.2-1.0), scaled by difficulty
+  const tazoBasePrecision = Math.max(0.2, (aiTazo.precision || 50) / 100)
+
   if (targets.length === 0) {
-    // No targets — aim for center
+    // No targets — aim for center, still uses tazo precision
     impactX = (rng() - 0.5) * 0.4
     impactZ = (rng() - 0.5) * 0.4
     verticalForce = 0.35 + rng() * 0.35
+    // Apply precision even without targets
+    if (difficulty === "master") aimPrecision = Math.min(1.0, tazoBasePrecision * 0.55 + 0.35 + rng() * 0.10)
+    else if (difficulty === "skilled") aimPrecision = Math.min(1.0, tazoBasePrecision * 0.50 + 0.20 + rng() * 0.15)
+    else aimPrecision = Math.min(1.0, tazoBasePrecision * 0.35 + 0.05 + rng() * 0.15)
   } else {
     const target = targets[0]
     impactX = target.position[0] + (rng() - 0.5) * 0.2
     impactZ = target.position[2] + (rng() - 0.5) * 0.2
-
-    // Base precision from tazo stat (0.2-1.0), scaled by difficulty
-    const tazoBasePrecision = Math.max(0.2, (aiTazo.precision || 50) / 100)
 
     if (difficulty === "master") {
       aimPrecision = Math.min(1.0, tazoBasePrecision * 0.55 + 0.35 + rng() * 0.10)

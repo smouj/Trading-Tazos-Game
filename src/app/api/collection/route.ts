@@ -315,6 +315,7 @@ export async function GET(request: NextRequest) {
       total: viewInstances
         ? summaryItems.reduce((sum, ut) => sum + Math.max(ut.quantity, 1), 0)
         : total,
+      totalOwned: userTazos.length,
       totalUnique: uniqueCount,
       page,
       limit,

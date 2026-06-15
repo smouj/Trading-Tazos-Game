@@ -28,9 +28,11 @@ export async function POST(request: NextRequest) {
     const user = await getAuthUser(request)
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-    const { bagType = "standard" } = await request.json().catch(() => ({}))
+    const { bagType = "standard", quantity = 1 } = await request.json().catch(() => ({}))
 
-    const activeModels = await db.bagModel.findMany({
+    const qty = Math.max(1, Math.min(20, Math.floor(Number(quantity) || 1)))
+
+  const activeModels = await db.bagModel.findMany({
       where: { isActive: true },
     })
     const activeModel = activeModels.find((model) => modelType(model.name) === bagType)
@@ -49,10 +51,11 @@ export async function POST(request: NextRequest) {
 
     // Check credits
     const currentUser = await db.user.findUnique({ where: { id: user.id } })
-    if (!currentUser || currentUser.credits < bagConfig.cost) {
+    const totalCost = bagConfig.cost * qty
+    if (!currentUser || currentUser.credits < totalCost) {
       return NextResponse.json({
         error: "Not enough credits",
-        required: bagConfig.cost,
+        required: totalCost,
         available: currentUser?.credits ?? 0,
       }, { status: 402 })
     }
@@ -103,51 +106,50 @@ export async function POST(request: NextRequest) {
     }
 
     const totalWeight = pool.reduce((sum, t) => sum + t.weight, 0)
-    let roll = Math.random() * totalWeight
-    let selectedId = pool[0].id
-    for (const t of pool) {
-      roll -= t.weight
-      if (roll <= 0) { selectedId = t.id; break }
+
+    // ── Pick a random tazo from the weighted pool ──
+    function pickTazo(p: { id: string; weight: number }[], tw: number): string {
+      let r = Math.random() * tw
+      for (const t of p) { r -= t.weight; if (r <= 0) return t.id }
+      return p[0].id
     }
 
-    // Check bonus tazo
-    let bonusTazoId: string | null = null
-    if (Math.random() < normalizeBonusChance(bagConfig.bonusChance)) {
-      const bonusRoll = Math.random() * totalWeight
-      let bRoll = bonusRoll
-      for (const t of pool) {
-        bRoll -= t.weight
-        if (bRoll <= 0) { bonusTazoId = t.id; break }
-      }
-    }
-
-    // Deduct credits
+    // Deduct credits (bulk)
     await db.user.update({
       where: { id: user.id },
-      data: { credits: { decrement: bagConfig.cost } },
+      data: { credits: { decrement: totalCost } },
     })
 
     // Create credit transaction
     await db.creditTransaction.create({
       data: {
         userId: user.id,
-        amount: -bagConfig.cost,
+        amount: -totalCost,
         source: "bag_purchase",
-        reference: bagType,
+        reference: `${bagType}${qty > 1 ? ` x${qty}` : ""}`,
       },
     })
 
-    // Create bag purchase
-    const purchase = await db.bagPurchase.create({
-      data: {
-        userId: user.id,
-        bagType,
-        cost: bagConfig.cost,
-        tazoId: selectedId,
-        bonusTazo: bonusTazoId,
-        opened: false,
-      },
-    })
+    // Create bag purchases (bulk)
+    const purchaseIds: string[] = []
+    for (let i = 0; i < qty; i++) {
+      const selectedId = pickTazo(pool, totalWeight)
+      let bonusTazoId: string | null = null
+      if (Math.random() < normalizeBonusChance(bagConfig.bonusChance)) {
+        bonusTazoId = pickTazo(pool, totalWeight)
+      }
+      const purchase = await db.bagPurchase.create({
+        data: {
+          userId: user.id,
+          bagType,
+          cost: bagConfig.cost,
+          tazoId: selectedId,
+          bonusTazo: bonusTazoId,
+          opened: false,
+        },
+      })
+      purchaseIds.push(purchase.id)
+    }
 
     // Get updated credits
     const updated = await db.user.findUnique({
@@ -156,9 +158,12 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({
-      bagId: purchase.id,
+      bagIds: purchaseIds,
+      bagId: purchaseIds[0], // backward compat
       bagType,
+      quantity: qty,
       cost: bagConfig.cost,
+      totalCost,
       creditsRemaining: updated?.credits ?? 0,
     })
   } catch (error) {

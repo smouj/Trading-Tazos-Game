@@ -64,6 +64,9 @@ export async function POST(req: NextRequest) {
         prisma.promoRedemption.create({
           data: { userId: user.id, promoCodeId: promo.id, rewardType: promo.type, rewardValue: promo.value },
         }),
+        prisma.creditTransaction.create({
+          data: { userId: user.id, amount: promo.value, source: "promo_code", reference: rawCode },
+        }),
       ])
       return NextResponse.json({
         success: true,
@@ -80,7 +83,9 @@ export async function POST(req: NextRequest) {
         prisma.promoRedemption.create({
           data: { userId: user.id, promoCodeId: promo.id, rewardType: promo.type, rewardValue: promo.value },
         }),
-      ])
+        prisma.creditTransaction.create({
+          data: { userId: user.id, amount: promo.value, source: "promo_code", reference: rawCode },
+        }),      ])
       return NextResponse.json({
         success: true,
         message: `Success! Code redeemed — ${promo.value} credits added to your account.`,
@@ -94,6 +99,9 @@ export async function POST(req: NextRequest) {
         prisma.promotionCode.update({ where: { id: promo.id }, data: { usedCount: { increment: 1 } } }),
         prisma.promoRedemption.create({
           data: { userId: user.id, promoCodeId: promo.id, rewardType: promo.type, rewardValue: promo.value },
+        }),
+        prisma.creditTransaction.create({
+          data: { userId: user.id, amount: promo.value, source: "promo_code", reference: rawCode },
         }),
       ])
       return NextResponse.json({

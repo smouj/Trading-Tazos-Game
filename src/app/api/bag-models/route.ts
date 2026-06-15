@@ -6,17 +6,17 @@ import { db } from "@/lib/db"
 
 const DEFAULT_BAGS = [
   {
-    type: "standard", name: "Classic Bag", cost: 10,
+    type: "standard", name: "Classic Bag", cost: 100,
     bonusChance: 15, rareBoost: 2, color: "#FFCC00", bgColor: "#FFF8E7",
     franchise: "minimon", tagline: "Original collection tazos",
   },
   {
-    type: "premium", name: "Premium Bag", cost: 10,
+    type: "premium", name: "Premium Bag", cost: 100,
     bonusChance: 15, rareBoost: 2, color: "#3B82F6", bgColor: "#EFF6FF",
     franchise: "cybermon", tagline: "Digital monsters and tech",
   },
   {
-    type: "mega", name: "Mega Bag", cost: 10,
+    type: "mega", name: "Mega Bag", cost: 100,
     bonusChance: 15, rareBoost: 2, color: "#F97316", bgColor: "#FFF7ED",
     franchise: "dracobell", tagline: "Legendary auras, top rarity",
   },

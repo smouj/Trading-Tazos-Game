@@ -39,19 +39,19 @@ interface BagConfig {
 
 const DEFAULT_BAGS: BagConfig[] = [
   {
-    type: "standard", name: "Classic Bag", cost: 10,
+    type: "standard", name: "Classic Bag", cost: 100,
     bonusChance: 15, rareBoost: 2, color: "#FFCC00", bgColor: "#FFF8E7",
     franchise: "minimon", icon: <ShoppingBag className="w-4 h-4" />,
     tagline: "Original collection tazos",
   },
   {
-    type: "premium", name: "Premium Bag", cost: 10,
+    type: "premium", name: "Premium Bag", cost: 100,
     bonusChance: 15, rareBoost: 2, color: "#3B82F6", bgColor: "#EFF6FF",
     franchise: "cybermon", icon: <Star className="w-4 h-4" />,
     tagline: "Digital monsters and tech",
   },
   {
-    type: "mega", name: "Mega Bag", cost: 10,
+    type: "mega", name: "Mega Bag", cost: 100,
     bonusChance: 15, rareBoost: 2, color: "#F97316", bgColor: "#FFF7ED",
     franchise: "dracobell", icon: <Zap className="w-4 h-4" />,
     tagline: "Legendary auras, top rarity",
@@ -73,11 +73,14 @@ const RARITY_LABELS: Record<string, string> = {
 const RARITY_STARS: Record<string, number> = {
   common: 1, uncommon: 2, rare: 3, "ultra-rare": 4, legendary: 5,
 }
+const RARITY_ORDER: Record<string, number> = {
+  common: 0, uncommon: 1, rare: 2, "ultra-rare": 3, legendary: 4,
+}
 
 // ── BagCard (select view) ──────────────────────────────
 function BagCard({ bag, selected, onSelect, onBuy, buying, credits }: {
   bag: BagConfig; selected: boolean; onSelect: () => void;
-  onBuy: () => void; buying: boolean; credits: number;
+  onBuy: (qty: number) => void; buying: boolean; credits: number;
 }) {
   const canAfford = credits >= bag.cost
   const variant = useMemo(() => pickBagVariant(bag.franchise), [bag.franchise])
@@ -144,26 +147,43 @@ function BagCard({ bag, selected, onSelect, onBuy, buying, credits }: {
 
         {/* Buy action */}
         <div className="pt-1.5">
-          <div
-            role="button"
-            onClick={(e) => { e.stopPropagation(); if (canAfford) onBuy() }}
-            className={`w-full py-2 text-center text-[10px] font-black uppercase tracking-wider border-2 border-[#1a1a1a] transition-all ${
-              selected && canAfford
-                ? "bg-[#22C55E] text-white shadow-[3px_3px_0px_#1a1a1a] hover:shadow-[2px_2px_0px_#1a1a1a] hover:translate-x-[1px] hover:translate-y-[1px]"
-                : selected && !canAfford
-                ? "bg-zinc-300 text-zinc-500 cursor-not-allowed"
-                : "bg-[#1a1a1a]/5 text-[#1a1a1a]/30 group-hover:text-[#1a1a1a]/50"
-            }`}
-          >
-            {buying && selected ? (
-              <span className="flex items-center justify-center gap-1"><Loader2 className="w-3 h-3 animate-spin" /> Opening...</span>
-            ) : selected ? (
-              canAfford ? <span><Scissors className="w-3 h-3 inline mr-1" />BUY · {bag.cost} CR</span>
-                        : <span><Coins className="w-3 h-3 inline mr-1" />Need {bag.cost - credits} more</span>
-            ) : (
-              <span>SELECT</span>
-            )}
-          </div>
+          {selected && canAfford ? (
+            <div className="pt-1.5 space-y-1.5">
+              <div className="grid grid-cols-3 gap-1">
+                <div role="button" onClick={(e) => { e.stopPropagation(); onBuy(1) }}
+                  className="py-2 text-center text-[10px] font-black uppercase tracking-wider border-2 border-[#1a1a1a] bg-[#22C55E] text-white shadow-[3px_3px_0px_#1a1a1a] hover:shadow-[2px_2px_0px_#1a1a1a] hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
+                  {buying ? <Loader2 className="w-3 h-3 animate-spin mx-auto" /> : <><Scissors className="w-3 h-3 inline mr-0.5" />x1</>}
+                </div>
+                <div role="button" onClick={(e) => { e.stopPropagation(); onBuy(5) }}
+                  className="py-2 text-center text-[10px] font-black uppercase tracking-wider border-2 border-[#1a1a1a] bg-[#3B82F6] text-white shadow-[3px_3px_0px_#1a1a1a] hover:shadow-[2px_2px_0px_#1a1a1a] hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
+                  {buying ? <Loader2 className="w-3 h-3 animate-spin mx-auto" /> : <><Zap className="w-3 h-3 inline mr-0.5" />x5</>}
+                </div>
+                <div role="button" onClick={(e) => { e.stopPropagation(); onBuy(20) }}
+                  className="py-2 text-center text-[10px] font-black uppercase tracking-wider border-2 border-[#1a1a1a] bg-[#A855F7] text-white shadow-[3px_3px_0px_#1a1a1a] hover:shadow-[2px_2px_0px_#1a1a1a] hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
+                  {buying ? <Loader2 className="w-3 h-3 animate-spin mx-auto" /> : <><Flame className="w-3 h-3 inline mr-0.5" />x20</>}
+                </div>
+              </div>
+              <div className="text-center text-[8px] font-bold text-[#1a1a1a]/25">
+                {bag.cost}x1 · {bag.cost * 5}x5 · {bag.cost * 20}x20 cr
+              </div>
+            </div>
+          ) : (
+            <div className="pt-1.5">
+              <div role="button"
+                className={`w-full py-2 text-center text-[10px] font-black uppercase tracking-wider border-2 border-[#1a1a1a] transition-all ${
+                  selected && !canAfford
+                    ? "bg-zinc-300 text-zinc-500 cursor-not-allowed"
+                    : "bg-[#1a1a1a]/5 text-[#1a1a1a]/30 group-hover:text-[#1a1a1a]/50"
+                }`}
+              >
+                {selected && !canAfford ? (
+                  <span><Coins className="w-3 h-3 inline mr-1" />Need {bag.cost - credits} more</span>
+                ) : (
+                  <span>SELECT</span>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -217,10 +237,13 @@ export default function BagShopPage() {
   const [bagId, setBagId] = useState<string | null>(null)
 
   // Opening states
-  const [stage, setStage] = useState<"select" | "opening" | "reveal">("select")
+  const [stage, setStage] = useState<"select" | "opening" | "opening-bulk" | "reveal" | "reveal-bulk">("select")
   const [revealedTazo, setRevealedTazo] = useState<any>(null)
+  const [revealedTazos, setRevealedTazos] = useState<any[]>([])
   const [bonusTazo, setBonusTazo] = useState<any>(null)
   const [pendingBags, setPendingBags] = useState<number>(0)
+  const [bulkIndex, setBulkIndex] = useState(0)
+  const [bulkTotal, setBulkTotal] = useState(0)
   const [dailyClaimable, setDailyClaimable] = useState(false)
   const [claimingDaily, setClaimingDaily] = useState(false)
 
@@ -274,7 +297,7 @@ export default function BagShopPage() {
       .catch(() => {})
   }, [])
 
-  const handleBuy = useCallback(async (bag: BagConfig) => {
+  const handleBuy = useCallback(async (bag: BagConfig, qty: number = 1) => {
     if (!token) return
     setSelectedBag(bag)
     setBuying(true)
@@ -283,16 +306,24 @@ export default function BagShopPage() {
       const res = await fetch("/api/bags/buy", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ bagType: bag.type }),
+        body: JSON.stringify({ bagType: bag.type, quantity: qty }),
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error || "Purchase failed"); setBuying(false); return }
       setCredits(data.creditsRemaining)
-      setBagId(data.bagId)
-      setBuying(false)
-      setStage("opening")
-      
-      
+      const ids = data.bagIds || [data.bagId]
+      if (ids.length > 1) {
+        setBagId(ids[0])
+        sessionStorage.setItem("bulk_bag_ids", JSON.stringify(ids))
+        setBulkTotal(ids.length)
+        setBulkIndex(0)
+        setBuying(false)
+        setStage("opening-bulk")
+      } else {
+        setBagId(ids[0])
+        setBuying(false)
+        setStage("opening")
+      }
       sfxEnsureUnlocked()
       playSFX('coin', { volume: 0.35 })
     } catch {
@@ -345,9 +376,58 @@ export default function BagShopPage() {
 
   const handleReset = useCallback(() => {
     setStage("select"); setBagId(null); bagIdRef.current = null
-    setRevealedTazo(null); setBonusTazo(null)
+    setRevealedTazo(null); setRevealedTazos([]); setBonusTazo(null)
+    setBulkIndex(0); setBulkTotal(0)
     setError(null)
   }, [])
+
+  // ── Bulk open sequencer (top-level hook, guarded internally) ──
+  const openNextBulkBag = useCallback(async () => {
+    const raw = sessionStorage.getItem("bulk_bag_ids")
+    if (!raw) { handleReset(); return }
+    const ids: string[] = JSON.parse(raw)
+    setBulkIndex(prev => {
+      if (prev >= ids.length) { handleReset(); return prev }
+      const currentId = ids[prev]
+      fetch("/api/bags/open", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ bagId: currentId }),
+      }).then(r => r.json()).then(data => {
+        if (data?.tazo) {
+          playSFX('reveal', { volume: 0.4 })
+          const t = data.tazo
+          setRevealedTazos(p => [...p, {
+            name: t.displayName || t.name, rarity: t.rarity, imageUrl: t.imageUrl,
+            franchise: t.franchiseName, attack: t.attack, defense: t.defense,
+            resistance: t.resistance, weight: t.weight, spin: t.spin,
+            control: t.control, bounce: t.bounce, precision: t.precision,
+            finish: t.finish, creatureVariant: t.creatureVariant,
+            shinyImageUrl: t.shinyImageUrl, number: t.number,
+            franchiseSlug: t.franchiseSlug, id: t.id
+          }])
+          setBulkIndex(p => p + 1)
+        }
+      }).catch(() => { /* skip */ })
+      return prev
+    })
+  }, [token, handleReset])
+
+  // Bulk open effect
+  useEffect(() => {
+    if (stage !== "opening-bulk") return
+    if (bulkIndex >= bulkTotal && bulkTotal > 0) {
+      const timer = setTimeout(() => {
+        sessionStorage.removeItem("bulk_bag_ids")
+        setStage("reveal-bulk")
+      }, 800)
+      return () => clearTimeout(timer)
+    }
+    if (bulkIndex < bulkTotal) {
+      const timer = setTimeout(openNextBulkBag, bulkIndex === 0 ? 200 : 1200)
+      return () => clearTimeout(timer)
+    }
+  }, [stage, bulkIndex, bulkTotal, openNextBulkBag])
 
   // ── Guest ──
   if (!user) {
@@ -458,7 +538,7 @@ export default function BagShopPage() {
               bag={bag}
               selected={selectedBag.type === bag.type}
               onSelect={() => setSelectedBag(bag)}
-              onBuy={() => handleBuy(bag)}
+              onBuy={(qty) => handleBuy(bag, qty)}
               buying={buying}
               credits={credits}
             />
@@ -496,7 +576,7 @@ export default function BagShopPage() {
   // ── OPENING STAGE ──────────────────────────────────────
   if (stage === "opening") {
     return (
-      <div className="max-w-2xl mx-auto py-4 sm:py-6 px-3 sm:px-4 text-center space-y-3">
+      <div className="max-w-2xl mx-auto py-4 sm:py-6 px-3 sm:px-4 text-center space-y-3 animate-fadeIn">
         <div className="space-y-1">
           <h2 className="text-lg font-black uppercase tracking-wider text-[#1a1a1a] flex items-center justify-center gap-2">
             <Scissors className="w-5 h-5 text-[#E3350D]" />
@@ -506,7 +586,6 @@ export default function BagShopPage() {
             Drag across the bag to tear it open
           </p>
         </div>
-
         <div className="border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] overflow-hidden">
           <BagOpener3D
             bag={{ id: bagId || "", bagType: selectedBag.type, preview: { franchise: { slug: selectedBag.franchise || "minimon" } } }}
@@ -516,6 +595,60 @@ export default function BagShopPage() {
             onSkip={() => openBag()}
           />
         </div>
+      </div>
+    )
+  }
+
+  // ── BULK OPENING STAGE ──────────────────────────────────
+  if (stage === "opening-bulk") {
+    return (
+      <div className="max-w-lg mx-auto py-8 sm:py-12 px-4 text-center space-y-6 animate-fadeIn">
+        <ConfettiBurst active />
+        <div className="space-y-2">
+          <h2 className="text-xl font-black uppercase tracking-wider text-[#1a1a1a] flex items-center justify-center gap-2">
+            <Scissors className="w-6 h-6 text-[#E3350D]" />
+            Opening {bulkTotal} {selectedBag.name}s!
+          </h2>
+          <p className="text-xs font-bold text-[#1a1a1a]/30">
+            {bulkIndex}/{bulkTotal} opened
+          </p>
+        </div>
+
+        {/* Progress bar */}
+        <div className="w-full h-3 bg-[#1a1a1a]/5 border-2 border-[#1a1a1a] overflow-hidden">
+          <div className="h-full bg-[#FFCC00] transition-all duration-500 ease-out"
+            style={{ width: `${Math.round((bulkIndex / Math.max(1, bulkTotal)) * 100)}%` }} />
+        </div>
+
+        {/* Reveal carousel */}
+        <div className="flex flex-wrap justify-center gap-3 min-h-[120px] items-start content-start">
+          {revealedTazos.map((t, i) => (
+            <div key={i}
+              className="w-20 h-20 rounded-full border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] flex items-center justify-center overflow-hidden bg-[#1a1a1a] animate-bounce-in"
+              style={{ animationDelay: `${i * 80}ms` }}>
+              {t.imageUrl ? (
+                <TazoDiscImage src={t.imageUrl} alt={t.name} size="100%" borderWidth={0}
+                  franchiseSlug={t.franchiseSlug} finish={t.finish} creatureVariant={t.creatureVariant}
+                  shinyImageUrl={t.shinyImageUrl} className="w-full h-full" />
+              ) : (
+                <span className="text-[#FFCC00] text-xs font-black">?</span>
+              )}
+            </div>
+          ))}
+          {Array.from({ length: Math.max(0, bulkTotal - revealedTazos.length) }).map((_, i) => (
+            <div key={`pending-${i}`}
+              className="w-20 h-20 rounded-full border-3 border-dashed border-[#1a1a1a]/20 flex items-center justify-center animate-pulse">
+              <Loader2 className="w-5 h-5 animate-spin text-[#1a1a1a]/20" />
+            </div>
+          ))}
+        </div>
+
+        {bulkIndex >= bulkTotal && (
+          <button onClick={() => setStage("reveal-bulk")}
+            className="mag-btn px-8 py-3 font-black text-sm uppercase bg-[#FFCC00] text-[#1a1a1a] border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all animate-bounce-in">
+            <ChevronRight className="w-4 h-4 inline mr-1" />View All {bulkTotal} Tazos
+          </button>
+        )}
       </div>
     )
   }
@@ -605,6 +738,88 @@ export default function BagShopPage() {
           <button onClick={handleReset}
             className="mag-btn px-6 py-3 font-black text-xs uppercase bg-[#FFCC00] text-[#1a1a1a] border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
             <ShoppingBag className="w-4 h-4 inline mr-1" />Open Another
+          </button>
+          <Link href="/app/collection"
+            className="mag-btn px-6 py-3 font-black text-xs uppercase bg-[#1a1a1a] text-[#FFCC00] border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
+            <ChevronRight className="w-4 h-4 inline mr-1" />Collection
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  // ── BULK REVEAL STAGE ────────────────────────────────────
+  if (stage === "reveal-bulk" && revealedTazos.length > 0) {
+    const rarityCounts: Record<string, number> = {}
+    let maxRarity = "common"
+    for (const t of revealedTazos) {
+      rarityCounts[t.rarity] = (rarityCounts[t.rarity] || 0) + 1
+      if (RARITY_ORDER[t.rarity] > (RARITY_ORDER[maxRarity] || 0)) maxRarity = t.rarity
+    }
+    const hasLegendary = maxRarity === "legendary"
+    const hasUltra = maxRarity === "ultra-rare"
+
+    return (
+      <div className="max-w-3xl mx-auto py-6 sm:py-8 px-4 space-y-6 text-center animate-fadeIn">
+        <ConfettiBurst active={hasLegendary || hasUltra} />
+
+        {/* Header */}
+        <div className="space-y-1">
+          <div className={`inline-block px-4 py-1.5 border-3 text-sm font-black uppercase tracking-wider ${hasLegendary ? "animate-pulse" : ""}`}
+            style={{
+              borderColor: "#1a1a1a",
+              background: RARITY_GRADIENT[maxRarity] || "#9CA3AF",
+              color: "#fff",
+              boxShadow: "3px 3px 0px #1a1a1a",
+            }}>
+            <Gift className="w-4 h-4 inline mr-1" />
+            {revealedTazos.length} Tazos Opened!
+          </div>
+          <p className="text-[10px] font-bold text-[#1a1a1a]/30">
+            From {bulkTotal} {selectedBag.name}{bulkTotal > 1 ? "s" : ""}
+          </p>
+        </div>
+
+        {/* Rarity summary */}
+        <div className="flex flex-wrap justify-center gap-1.5">
+          {Object.entries(rarityCounts).sort((a, b) => (RARITY_ORDER[b[0]] || 0) - (RARITY_ORDER[a[0]] || 0)).map(([r, c]) => (
+            <span key={r} className="px-2 py-0.5 border-2 text-[8px] font-black uppercase"
+              style={{ borderColor: RARITY_GRADIENT[r] || "#9CA3AF", color: RARITY_GRADIENT[r] || "#9CA3AF", backgroundColor: `${RARITY_GRADIENT[r]}10` }}>
+              {RARITY_LABELS[r] || r}: {c}
+            </span>
+          ))}
+        </div>
+
+        {/* Tazo grid */}
+        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2">
+          {revealedTazos.map((t, i) => (
+            <div key={i}
+              className="flex flex-col items-center gap-1 p-2 bg-white border-2 border-[#1a1a1a]/10 shadow-[2px_2px_0px_#1a1a1a08] hover:border-[#1a1a1a]/30 hover:shadow-[2px_2px_0px_#1a1a1a15] transition-all animate-bounce-in"
+              style={{ animationDelay: `${i * 60}ms` }}>
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-[#1a1a1a]/20 flex items-center justify-center overflow-hidden"
+                style={{ background: `radial-gradient(circle at 30% 30%, ${RARITY_GRADIENT[t.rarity] || "#9CA3AF"}20, #1a1a1a)` }}>
+                {t.imageUrl ? (
+                  <TazoDiscImage src={t.imageUrl} alt={t.name} size="100%" borderWidth={0}
+                    franchiseSlug={t.franchiseSlug} finish={t.finish} creatureVariant={t.creatureVariant}
+                    shinyImageUrl={t.shinyImageUrl} className="w-full h-full" />
+                ) : (
+                  <span className="text-[#FFCC00]/40 text-lg font-black">?</span>
+                )}
+              </div>
+              <span className="text-[8px] font-black text-[#1a1a1a] text-center leading-tight line-clamp-2">{t.name}</span>
+              <span className="text-[7px] font-bold uppercase px-1 py-0.5 rounded"
+                style={{ backgroundColor: `${RARITY_GRADIENT[t.rarity] || "#9CA3AF"}15`, color: RARITY_GRADIENT[t.rarity] || "#9CA3AF" }}>
+                {RARITY_LABELS[t.rarity] || t.rarity}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Actions */}
+        <div className="flex flex-wrap gap-3 justify-center">
+          <button onClick={handleReset}
+            className="mag-btn px-6 py-3 font-black text-xs uppercase bg-[#FFCC00] text-[#1a1a1a] border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
+            <ShoppingBag className="w-4 h-4 inline mr-1" />Buy More
           </button>
           <Link href="/app/collection"
             className="mag-btn px-6 py-3 font-black text-xs uppercase bg-[#1a1a1a] text-[#FFCC00] border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">

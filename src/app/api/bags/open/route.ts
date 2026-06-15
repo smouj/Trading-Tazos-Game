@@ -39,14 +39,75 @@ export async function POST(request: NextRequest) {
     const user = await getAuthUser(request)
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-    const { bagId } = await request.json()
+    const { bagId, bagIds } = await request.json()
 
-    if (!bagId) {
-      return NextResponse.json({ error: "bagId required" }, { status: 400 })
+    const ids: string[] = bagIds && Array.isArray(bagIds) && bagIds.length > 0
+      ? bagIds
+      : bagId ? [bagId] : []
+
+    if (ids.length === 0) {
+      return NextResponse.json({ error: "bagId or bagIds required" }, { status: 400 })
+    }
+    const isBulk = ids.length > 1
+
+    if (isBulk) {
+      // ── BULK OPEN ────────────────────────
+      const results: any[] = []
+      for (const id of ids) {
+        try {
+          const purchase = await db.bagPurchase.findUnique({ where: { id } })
+          if (!purchase || purchase.userId !== user.id) continue
+          if (purchase.opened) continue
+          if (!purchase.tazoId) continue
+
+          const tazo = await db.tazo.findUnique({
+            where: { id: purchase.tazoId },
+            include: { franchise: { select: { name: true, slug: true, color: true } } },
+          })
+          if (!tazo) continue
+
+          const obtainedFrom = purchase.bagType === "welcome" ? "starter" : "bag"
+          const userTazo = await db.userTazo.upsert({
+            where: { userId_tazoId: { userId: user.id, tazoId: tazo.id } },
+            create: { userId: user.id, tazoId: tazo.id, quantity: 1, obtainedFrom },
+            update: { quantity: { increment: 1 } },
+          })
+
+          const finish = randomFinish(tazo.rarity || "common")
+          const tgaGrade = generateTGAGrade(tazo.rarity || "common", finish)
+          const instance = await db.tazoInstance.create({
+            data: {
+              userTazoId: userTazo.id, userId: user.id, tazoId: tazo.id,
+              attack: randomizeStat(tazo.attack), defense: randomizeStat(tazo.defense),
+              resistance: randomizeStat(tazo.resistance), weight: randomizeStat(tazo.weight),
+              stability: randomizeStat(tazo.stability), spin: randomizeStat(tazo.spin),
+              control: randomizeStat(tazo.control), bounce: randomizeStat(tazo.bounce),
+              precision: randomizeStat(tazo.precision),
+              finish, creatureVariant: tazo.creatureVariant || "standard", isNew: true,
+              tgaTier: tgaGrade.tier, tgaGrade: tgaGrade.grade,
+              tgaSurface: tgaGrade.surface, tgaBorders: tgaGrade.borders,
+              tgaCertNumber: tgaGrade.certNumber,
+            },
+          })
+
+          await db.tazo.update({ where: { id: tazo.id }, data: { isOwned: true } })
+          await db.bagPurchase.update({ where: { id }, data: { opened: true } })
+
+          results.push({
+            tazo: { ...tazo, instanceId: instance.id, finish: instance.finish, creatureVariant: instance.creatureVariant,
+              attack: instance.attack, defense: instance.defense, resistance: instance.resistance,
+              weight: instance.weight, stability: instance.stability, spin: instance.spin,
+              control: instance.control, bounce: instance.bounce, precision: instance.precision },
+            ownedBefore: false,
+          })
+        } catch (_) { /* skip individual errors */ }
+      }
+      return NextResponse.json({ success: true, results, totalOpened: results.length })
     }
 
+    const singleId = ids[0]  // bagId when passed directly, or ids[0] from array
     const purchase = await db.bagPurchase.findUnique({
-      where: { id: bagId },
+      where: { id: singleId },
     })
 
     if (!purchase || purchase.userId !== user.id) {
@@ -115,7 +176,7 @@ export async function POST(request: NextRequest) {
 
     // Mark bag as opened
     await db.bagPurchase.update({
-      where: { id: bagId },
+      where: { id: singleId },
       data: { opened: true },
     })
 

@@ -462,6 +462,35 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
     }, 3500)
   }, [engine])
 
+  // ── Auto-start from sessionStorage (set by /app/battle lobby) ──
+  useEffect(() => {
+    const battleMode = sessionStorage.getItem("battle_mode")
+    const battleDeckId = sessionStorage.getItem("battle_deckId")
+    if (!battleMode || !battleDeckId || loading || allDecks.length === 0) return
+
+    const battleDifficulty = sessionStorage.getItem("battle_difficulty") || "skilled"
+    sessionStorage.removeItem("battle_mode")
+    sessionStorage.removeItem("battle_difficulty")
+    sessionStorage.removeItem("battle_deckId")
+
+    const autoDeck = allDecks.find((d: any) => d.id === battleDeckId)
+    if (!autoDeck?.tazos || autoDeck.tazos.length < 1) return
+
+    const dt: any[] = autoDeck.tazos
+    const deckTazos = dt.map((t: any) => ({
+      id: t.id, name: t.name || "?", slug: t.slug || (t.name || "?").toLowerCase().replace(/\s/g, "-"),
+      franchise: (t.franchiseSlug || "minimon") as any,
+      imageUrl: t.imageUrl || null, shinyImageUrl: t.shinyImageUrl || null,
+      rarity: t.rarity || "common", finish: t.finish || "normal", creatureVariant: t.creatureVariant || "standard",
+      attack: t.attack || 50, defense: t.defense || 50, resistance: t.resistance || 50,
+      weight: t.weight || 50, stability: t.stability || 50, spin: t.spin || 50,
+      control: t.control || 50, bounce: t.bounce || 50, precision: t.precision || 50,
+    }))
+
+    const timer = setTimeout(() => start("practice", battleDifficulty, deckTazos), 500)
+    return () => clearTimeout(timer)
+  }, [loading, allDecks, start])
+
   // ═══════════════════════════════════════════════
   //  PLAYER BET — interactive tazo selection
   // ═══════════════════════════════════════════════

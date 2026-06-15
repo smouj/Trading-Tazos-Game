@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     const model = await db.bagModel.create({
       data: {
         name, frontUrl, backUrl, franchise,
-        cost: cost ?? 10,
+        cost: cost ?? 100,
         bonusChance: bonusChance ?? 15,
         rareBoost: rareBoost ?? 2,
         color: color ?? "#FFCC00",

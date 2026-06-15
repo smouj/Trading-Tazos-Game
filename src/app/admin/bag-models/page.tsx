@@ -52,7 +52,7 @@ export default function AdminBagModelsPage() {
   const [newFrontUrl, setNewFrontUrl] = useState("")
   const [newBackUrl, setNewBackUrl] = useState("")
   const [newFranchise, setNewFranchise] = useState("minimon")
-  const [newCost, setNewCost] = useState(10)
+  const [newCost, setNewCost] = useState(100)
   const [newBonusChance, setNewBonusChance] = useState(15)
   const [newRareBoost, setNewRareBoost] = useState(2)
   const [newColor, setNewColor] = useState("#FFCC00")

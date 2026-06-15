@@ -1,17 +1,18 @@
 "use client"
 
 // ============================================================
-// Magazine Header — shared across standalone auth/legal pages.
-// IDENTICAL to the launcher-view masthead: dark #1a1a1a bar with
-// TRADINGTAZOSGAME logo, "Official TTG Beta" subtitle,
-// desktop nav tabs, mobile nav strip, and auth buttons.
-// Nav links go to /?page=xxx since this is used on standalone
-// pages (not inside the launcher SPA).
+// Magazine Header — shared across all pages.
+// Dark #1a1a1a bar with TRADINGTAZOSGAME logo, "Official TTG
+// Beta" subtitle, desktop nav tabs, mobile nav strip, and auth.
+//
+// variant="landing" (default) → full landing nav tabs
+// variant="app" → logo + identity only (app has its own tab strip)
 // ============================================================
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
+import { Shield } from "lucide-react"
 
 const NAV_ITEMS: [string, string][] = [
   ["home", "Home"],
@@ -24,17 +25,23 @@ const NAV_ITEMS: [string, string][] = [
   ["shop", "Shop"],
 ]
 
-export default function MagazineHeader() {
+export default function MagazineHeader({
+  variant = "landing",
+}: {
+  variant?: "landing" | "app"
+}) {
   const { user, logout } = useAuth()
   const [mounted, setMounted] = useState(false)
   useEffect(() => { setMounted(true) }, [])
+
+  const isApp = variant === "app"
 
   return (
     <header
       className="sticky top-0 z-40 border-b-[5px] border-[#1a1a1a]"
       style={{ background: "#1a1a1a" }}
     >
-      {/* Top row: logo + brand + nav + auth — identical to launcher */}
+      {/* Top row: logo + brand + nav + auth */}
       <div className="flex items-center justify-between px-4 sm:px-6 py-2.5">
         {/* Left: Logo + Brand */}
         <Link
@@ -52,32 +59,42 @@ export default function MagazineHeader() {
               <span className="text-white/80">GAME</span>
             </h2>
             <p className="text-[8px] font-bold text-[#FFCC00]/70 uppercase tracking-[0.3em] leading-none mt-0.5">
-              Official TTG Beta
+              Collect · Trade · Battle
             </p>
           </div>
         </Link>
 
-        {/* Desktop nav — identical items to launcher */}
-        <nav
-          className="hidden sm:flex items-center gap-1"
-          role="navigation"
-          aria-label="Main navigation"
-        >
-          {NAV_ITEMS.map(([page, label]) => (
-            <a
-              key={page}
-              href={page === "home" ? "/" : `/?page=${page}`}
-              className="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider transition-colors no-underline text-white/50 hover:text-[#FFCC00]"
-            >
-              {label}
-            </a>
-          ))}
-        </nav>
+        {/* Desktop nav — only on landing variant */}
+        {!isApp && (
+          <nav
+            className="hidden sm:flex items-center gap-1"
+            role="navigation"
+            aria-label="Main navigation"
+          >
+            {NAV_ITEMS.map(([page, label]) => (
+              <a
+                key={page}
+                href={page === "home" ? "/" : `/?page=${page}`}
+                className="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider transition-colors no-underline text-white/50 hover:text-[#FFCC00]"
+              >
+                {label}
+              </a>
+            ))}
+          </nav>
+        )}
 
-        {/* Right: Auth buttons — identical to launcher */}
+        {/* Right: Auth buttons */}
         <div className="flex items-center gap-2">
           {mounted && user ? (
             <>
+              {user.email === "dev@tradingtazosgame.com" && (
+                <a
+                  href="/admin"
+                  className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-black text-[#E3350D]/80 hover:text-[#E3350D] uppercase tracking-wider transition-colors border-2 border-[#E3350D]/20 hover:border-[#E3350D]/50 no-underline"
+                >
+                  <Shield className="w-3 h-3" /> Admin
+                </a>
+              )}
               <a
                 href="/app"
                 className="px-3 py-1 text-[10px] font-black text-[#1a1a1a] bg-[#FFCC00] uppercase tracking-wider border-2 border-white/20 hover:bg-[#FFE566] transition-colors no-underline"
@@ -110,18 +127,20 @@ export default function MagazineHeader() {
         </div>
       </div>
 
-      {/* Mobile nav — identical to launcher */}
-      <nav className="sm:hidden flex items-center justify-center gap-0 px-2 pb-2 overflow-x-auto">
-        {NAV_ITEMS.map(([page, label]) => (
-          <a
-            key={page}
-            href={page === "home" ? "/" : `/?page=${page}`}
-            className="px-2 py-0.5 text-[9px] font-black uppercase tracking-wider whitespace-nowrap transition-colors no-underline text-white/40 hover:text-[#FFCC00]"
-          >
-            {label}
-          </a>
-        ))}
-      </nav>
+      {/* Mobile nav — only on landing variant */}
+      {!isApp && (
+        <nav className="sm:hidden flex items-center justify-center gap-0 px-2 pb-2 overflow-x-auto">
+          {NAV_ITEMS.map(([page, label]) => (
+            <a
+              key={page}
+              href={page === "home" ? "/" : `/?page=${page}`}
+              className="px-2 py-0.5 text-[9px] font-black uppercase tracking-wider whitespace-nowrap transition-colors no-underline text-white/40 hover:text-[#FFCC00]"
+            >
+              {label}
+            </a>
+          ))}
+        </nav>
+      )}
     </header>
   )
 }

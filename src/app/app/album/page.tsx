@@ -14,7 +14,7 @@ export default function AlbumPage() {
   }, [])
 
   return (
-    <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-4 sm:py-6">
+    <div className="max-w-7xl mx-auto w-full py-4 sm:py-6">
       <AlbumView onStatsUpdate={handleStatsUpdate} />
       {/* Hidden StatsPanel key trigger — stats page reads this via URL */}
       {statsRefreshKey > 0 && <span data-stats-key={statsRefreshKey} hidden />}

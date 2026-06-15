@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react"
+"use client"
 // ============================================================
 // Trading Tazos Game — Battle View v4 (FSM-powered)
 //
@@ -7,7 +7,8 @@ import React, { useState, useCallback, useMemo } from "react"
 // dispatch through applyTransition(). Persistence auto-saves
 // on match_end via battle-integration.ts.
 // ============================================================
-"use client"
+
+import React, { useState, useCallback, useMemo } from "react"
 
 import { useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"

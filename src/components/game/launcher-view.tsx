@@ -39,10 +39,16 @@ import { Skeleton } from "@/components/ui/loading-skeletons"
 
 // ── Types ──
 
-type PageId = "home" | "how-to-play" | "collections" | "collections-minimon" | "wiki"
-  | "collections-cybermon" | "collections-dracobell" | "tazos" | "leaderboard"
-  | "download" | "faq" | "shop" | "privacy" | "terms" | "cookies" | "contact"
-  | "refund-policy" | "disclaimer"
+type PageId = "home"
+  | "how-to-play"
+  | "collections" | "collections-minimon" | "collections-cybermon" | "collections-dracobell"
+  | "tazos"
+  | "leaderboard"
+  | "download"
+  | "faq"
+  | "shop"
+  | "wiki"
+  | "privacy" | "terms" | "cookies" | "contact" | "refund-policy" | "disclaimer"
 
 const PAGE_LABELS: Record<PageId, string> = {
   home: "Home",
@@ -459,7 +465,7 @@ function QuestsPreview() {
       {/* Reward */}
       <div className="flex flex-col items-center gap-1 px-3 py-2 border-2 border-[#22C55E]/30 bg-[#22C55E]/05">
         <Coins className="w-5 h-5 text-[#22C55E]" />
-        <span className="text-[7px] font-black text-[#22C55E] uppercase">+Credits</span>
+        <span className="text-[7px] font-black text-[#22C55E] uppercase">+CREDITS</span>
       </div>
       {/* Quest counter */}
       <div className="flex flex-col items-center gap-1">
@@ -1476,8 +1482,8 @@ function ShopContent() {
 
       {/* ── Monetization ── */}
       <section className="space-y-6">
-        <h3 className="text-lg sm:text-xl font-black text-[#1a1a1a] uppercase tracking-tight text-center">💎 Earn & Buy Credits</h3>
-        <p className="text-xs text-[#1a1a1a]/40 font-bold text-center max-w-md mx-auto -mt-4">Credits unlock bags. Earn them free by watching ads or buy packs to accelerate your collection.</p>
+        <h3 className="text-lg sm:text-xl font-black text-[#1a1a1a] uppercase tracking-tight text-center">💎 Earn & Buy CREDITS</h3>
+        <p className="text-xs text-[#1a1a1a]/40 font-bold text-center max-w-md mx-auto -mt-4">CREDITS unlock bags. Earn them free by watching ads or buy packs to accelerate your collection.</p>
         <RewardedAdWidget />
         <CreditShopWidget />
       </section>
@@ -1875,7 +1881,7 @@ function ContactContent() {
 function RefundPolicyContent() {
   const sections = [
     { title: "Free-to-Play Game", body: "Trading Tazos Game is a free-to-play browser game. No purchases are required to access all game features, battle modes, and collection mechanics." },
-    { title: "In-Game Credits", body: "Credits are earned through gameplay, daily rewards, and special events. They cannot be purchased with real money. There are no microtransactions or in-game purchases." },
+    { title: "In-Game CREDITS", body: "CREDITS are earned through gameplay, daily rewards, and special events. They cannot be purchased with real money. There are no microtransactions or in-game purchases." },
     { title: "Third-Party Advertising", body: "The game displays advertising to support server costs. Ad interactions are governed by the respective ad platform's terms. TTG is not responsible for third-party ad content." },
     { title: "Refunds", body: "As a free-to-play game without purchasable items, there are no refundable transactions. If you donated or contributed funds, please contact support@tradingtazosgame.com." },
     { title: "Policy Updates", body: "This refund policy may be updated. Major changes will be communicated via the website. Last updated: June 2026." },
@@ -1903,7 +1909,7 @@ function DisclaimerContent() {
     { title: "No Affiliation", body: "This game is not affiliated with, endorsed by, approved by, or associated with any third-party brand, trademark, company, franchise, or licensed intellectual property." },
     { title: "Original Content", body: "All series (Minimon, Dracobell, Cybermon), characters, creature designs, lore, world-building, names, logos, and game mechanics are original fictional works created for this project." },
     { title: "Coincidental Resemblance", body: "Any resemblance to existing intellectual property, real or fictional, living or dead, is purely coincidental and unintentional." },
-    { title: "Free Access", body: "The game is and will remain free-to-play. Credits cannot be purchased with real currency. All game features are accessible through gameplay alone." },
+    { title: "Free Access", body: "The game is and will remain free-to-play. CREDITS cannot be purchased with real currency. All game features are accessible through gameplay alone." },
     { title: "Fan-Made", body: "Trading Tazos Game is a fan-made collector experience inspired by the culture of collecting, trading, and battling with physical discs. It is a tribute, not a reproduction." },
   ]
   return (

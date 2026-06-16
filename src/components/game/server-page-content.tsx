@@ -173,7 +173,7 @@ function ServerFAQ() {
       <h2>What is a deck?</h2>
       <p>A battle deck consists of 5 tazos selected from your collection. You can build multiple decks with different strategies.</p>
       <h2>Are there microtransactions?</h2>
-      <p>No. The game is supported by ads. Credits are earned through gameplay and daily rewards — they cannot be purchased.</p>
+      <p>No. The game is supported by ads. CREDITS are earned through gameplay and daily rewards — they cannot be purchased.</p>
       <h2>Is this related to any real franchise?</h2>
       <p>No. All series, creatures, and lore are original fictional works created for Trading Tazos Game.</p>
     </section>
@@ -244,7 +244,7 @@ function ServerRefundPolicy() {
     <section className="sr-only">
       <h1>Refund Policy — Trading Tazos Game</h1>
       <p>Trading Tazos Game is a free-to-play browser game. No purchases are required to access all game features.</p>
-      <p>Credits are earned through gameplay, daily rewards, and events. They cannot be purchased with real money.</p>
+      <p>CREDITS are earned through gameplay, daily rewards, and events. They cannot be purchased with real money.</p>
       <p>As a free-to-play game, there are no refundable purchases. If you experience any issues, contact support@tradingtazosgame.com.</p>
       <p>For any billing inquiries related to donations or third-party ads, please contact us directly.</p>
     </section>
@@ -259,7 +259,7 @@ function ServerDisclaimer() {
       <p>Trading Tazos Game is an independent, fictional digital tazo game created and operated by independent developers.</p>
       <p>This game is not affiliated with, endorsed by, or associated with any third-party brand, trademark, or licensed intellectual property.</p>
       <p>All series, characters, lore, designs, names, and game mechanics are original fictional works. Any resemblance to existing IP is coincidental.</p>
-      <p>The game is free-to-play. Credits cannot be purchased with real currency. All game features are accessible through gameplay alone.</p>
+      <p>The game is free-to-play. CREDITS cannot be purchased with real currency. All game features are accessible through gameplay alone.</p>
     </section>
   )
 }

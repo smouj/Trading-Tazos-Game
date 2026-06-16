@@ -8,7 +8,6 @@
 // ============================================================
 
 import { useState, useEffect, useMemo, useCallback } from "react"
-import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 import { playSFX, sfxEnsureUnlocked } from "@/lib/audio/sfx-engine"
 import BattleTubePreview from "@/components/tubes/BattleTubePreview"
@@ -111,7 +110,6 @@ function CreateQuickDeckButton({ onCreated }: { onCreated: (deckId: string) => v
 
 export default function BattlePage() {
   const { user } = useAuth()
-  const router = useRouter()
 
   const [mode, setMode] = useState<string>("practice")
   const [difficulty, setDifficulty] = useState<string>("skilled")
@@ -165,8 +163,9 @@ export default function BattlePage() {
     sessionStorage.setItem("battle_difficulty", difficulty)
     sessionStorage.setItem("battle_deckId", selectedDeckId)
 
-    // Instant navigation — loading handled by /play page
-    router.push("/app/battle/play")
+    // Full page navigation — avoids magazine shell duplication during
+    // client-side layout transition (MagazinePageShell → GameFullscreenShell)
+    window.location.href = "/app/battle/play"
   }
 
   const canStart = selectedDeckId && deckStats.count >= 1 && mode === "practice"

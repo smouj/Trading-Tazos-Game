@@ -488,7 +488,11 @@ export default function BagShopPage() {
           <div className="w-px h-5 bg-white/15" />
           <div className="flex items-center gap-1.5">
             <Coins className="w-4 h-4 text-[#FFCC00]" />
-            <span className="font-black text-sm text-white">{credits}</span>
+            {initialLoading ? (
+              <Skeleton className="h-4 w-12 rounded" />
+            ) : (
+              <span className="font-black text-sm text-white">{credits}</span>
+            )}
             <span className="text-[9px] font-bold text-white/40 uppercase">cr</span>
           </div>
           {pendingBags > 0 && (

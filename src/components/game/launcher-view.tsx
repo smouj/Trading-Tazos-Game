@@ -82,9 +82,20 @@ function MagazineSplash({ onFinish }: { onFinish: () => void }) {
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
   }, [onFinish])
 
+  const [showSkip, setShowSkip] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setShowSkip(true), 2000)
+    return () => clearTimeout(t)
+  }, [])
+
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center"
-      style={{ background: "#FFF9E6" }}>
+    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center cursor-pointer"
+      style={{ background: "#FFF9E6" }}
+      onClick={() => onFinish()}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onFinish() }}
+      aria-label="Skip splash screen">
       <div className="mag-dots absolute inset-0 opacity-30" />
       <div className={`relative transition-all duration-600 ${
         phase === "cover" ? "scale-100 opacity-100" : "scale-90 opacity-70"
@@ -130,6 +141,11 @@ function MagazineSplash({ onFinish }: { onFinish: () => void }) {
           Loading magazine #{phase === "cover" ? "001" : Math.floor(progress / 10) + 1}...
         </p>
       </div>
+      {showSkip && (
+        <p className="absolute bottom-8 text-[10px] font-black text-[#1a1a1a]/20 uppercase tracking-[0.3em] animate-pulse select-none">
+          Click to skip
+        </p>
+      )}
     </div>
   )
 }

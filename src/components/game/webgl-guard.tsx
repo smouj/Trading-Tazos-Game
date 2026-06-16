@@ -13,9 +13,11 @@ interface WebGLGuardProps {
   children: React.ReactNode
   /** If true, renders fallback as full-page takeover */
   fullPage?: boolean
+  /** Custom fallback when WebGL is not available (replaces default WebGLFallback) */
+  fallback?: React.ReactNode
 }
 
-export default function WebGLGuard({ children, fullPage = false }: WebGLGuardProps) {
+export default function WebGLGuard({ children, fullPage = false, fallback }: WebGLGuardProps) {
   const [hasWebGL, setHasWebGL] = useState<boolean | null>(null)
 
   useEffect(() => {
@@ -28,6 +30,9 @@ export default function WebGLGuard({ children, fullPage = false }: WebGLGuardPro
   }
 
   if (!hasWebGL) {
+    if (fallback) {
+      return <>{fallback}</>
+    }
     return <WebGLFallback fullPage={fullPage} onRetry={() => setHasWebGL(canUseWebGL())} />
   }
 

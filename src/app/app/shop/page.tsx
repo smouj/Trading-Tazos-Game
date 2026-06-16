@@ -12,7 +12,7 @@ import Link from "next/link"
 import {
   ShoppingBag, Coins, Zap, Star, Gift, Loader2, X,
   Crosshair, Trophy, Calendar, ShoppingCart, Scissors, ChevronRight,
-  Flame, Swords, Store,
+  Flame, Swords, Store, PackageOpen,
 } from "lucide-react"
 import ConfettiBurst from "@/components/game/confetti-burst"
 import { Skeleton, ShopBagSkeleton } from "@/components/ui/loading-skeletons"
@@ -21,6 +21,8 @@ import { playSFX, sfxEnsureUnlocked } from "@/lib/audio/sfx-engine"
 import TazoDiscImage from "@/components/game/tazo-disc-image"
 
 const BagOpener3D = dynamic(() => import("@/components/game/bag-opener-3d"), { ssr: false })
+const WebGLGuard = dynamic(() => import("@/components/game/webgl-guard"), { ssr: false })
+import BagOpener2D from "@/components/game/bag-opener-2d"
 
 import MarketplaceSection from "@/components/game/marketplace-section"
 interface BagConfig {
@@ -486,17 +488,23 @@ export default function BagShopPage() {
             </h1>
           </div>
           <div className="w-px h-5 bg-white/15" />
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5" title="Your credits to buy bags">
             <Coins className="w-4 h-4 text-[#FFCC00]" />
             {initialLoading ? (
               <Skeleton className="h-4 w-12" />
             ) : (
               <span className="font-black text-sm text-white">{credits}</span>
             )}
-            <span className="text-[9px] font-bold text-white/40 uppercase">cr</span>
+            <span className="text-[9px] font-bold text-white/40 uppercase tracking-wider">CREDITS</span>
           </div>
           {pendingBags > 0 && (
-            <button
+            <>
+              <div className="flex items-center gap-1.5" title="You have bags ready to open">
+                <PackageOpen className="w-3.5 h-3.5 text-[#22C55E]" />
+                <span className="font-black text-xs text-[#22C55E]">{pendingBags}</span>
+                <span className="text-[9px] font-bold text-[#22C55E]/60 uppercase tracking-wider">TO OPEN</span>
+              </div>
+              <button
               onClick={async () => {
                 if (!token) return; setError(null); setBuying(true)
                 try {
@@ -516,6 +524,7 @@ export default function BagShopPage() {
               <Gift className="w-3.5 h-3.5" />
               {pendingBags} free bag{pendingBags > 1 ? "s" : ""}
             </button>
+          </>
           )}
         </div>
 
@@ -613,17 +622,27 @@ export default function BagShopPage() {
             Open your bag!
           </h2>
           <p className="text-xs font-bold text-[#1a1a1a]/30">
-            Drag across the bag to tear it open
+            Tear the bag open or use the instant-open button
           </p>
         </div>
         <div className="border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] overflow-hidden">
-          <BagOpener3D
-            bag={{ id: bagId || "", bagType: selectedBag.type, preview: { franchise: { slug: selectedBag.franchise || "minimon" } } }}
-            frontUrl={selectedBag.frontUrl}
-            backUrl={selectedBag.backUrl}
-            onOpen={openBag}
-            onSkip={() => openBag()}
-          />
+          <WebGLGuard
+            fallback={
+              <BagOpener2D
+                bagName={selectedBag.name}
+                franchise={selectedBag.franchise || "minimon"}
+                onOpen={openBag}
+              />
+            }
+          >
+            <BagOpener3D
+              bag={{ id: bagId || "", bagType: selectedBag.type, preview: { franchise: { slug: selectedBag.franchise || "minimon" } } }}
+              frontUrl={selectedBag.frontUrl}
+              backUrl={selectedBag.backUrl}
+              onOpen={openBag}
+              onSkip={() => openBag()}
+            />
+          </WebGLGuard>
         </div>
       </div>
     )

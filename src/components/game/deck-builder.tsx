@@ -185,16 +185,16 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
               <div>
                 <h3 className="text-lg font-black uppercase text-[#1a1a1a] tracking-wide flex items-center gap-2">
                   <PackageOpen className="w-5 h-5 text-[#FFCC00]" />
-                  Step 1: Name Your Battle Tube
+                  Step 1: Name Your Deck
                 </h3>
                 <p className="text-[10px] font-bold text-[#1a1a1a]/35 mt-0.5">
-                  Give your tube a name and pick a cap color
+                  Give your deck a name and pick a cap color
                 </p>
               </div>
 
               <div>
                 <label className="block text-[10px] font-black uppercase text-[#1a1a1a]/50 mb-1 tracking-wider">
-                  Tube Name
+                  Deck Name
                 </label>
                 <input
                   type="text" value={name}
@@ -209,7 +209,7 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
               <div>
                 <label className="block text-[10px] font-black uppercase text-[#1a1a1a]/50 mb-2 tracking-wider">
                   <Palette className="w-3 h-3 inline mr-1" />
-                  Tube Texture
+                  Deck Texture
                 </label>
                 <div className="grid grid-cols-3 gap-3">
                   {TUBE_TEXTURE_OPTIONS.map(opt => (
@@ -243,7 +243,7 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
                   onClick={() => name.trim() && setStep(2)}
                   disabled={!name.trim()}
                   className="mag-btn px-5 py-2 text-[10px] font-black uppercase bg-[#3B4CCA] text-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] disabled:opacity-30 disabled:cursor-not-allowed">
-                  Next: Fill Tube <ChevronRight className="w-3.5 h-3.5 inline ml-1" />
+                  Next: Fill Deck <ChevronRight className="w-3.5 h-3.5 inline ml-1" />
                 </button>
               </div>
             </div>
@@ -251,7 +251,7 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
             {/* Right: Tube Preview */}
             <div className="flex-shrink-0 flex items-center justify-center lg:w-40">
               <BattleTubePreview
-                name={name || "New Tube"}
+                name={name || "New Deck"}
                 color={color}
                 textureUrl={tubeTexture}
                 count={0}
@@ -286,10 +286,10 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
                 <div>
                   <h3 className="text-lg font-black uppercase text-[#1a1a1a] tracking-wide flex items-center gap-2">
                     <PackageOpen className="w-5 h-5 text-[#FFCC00]" />
-                    Step 2: Fill Your Tube
+                    Step 2: Fill Your Deck
                   </h3>
                   <p className="text-[10px] font-bold text-[#1a1a1a]/35 mt-0.5">
-                    Select up to 20 tazos to fill your battle tube
+                    Select up to 20 tazos to fill your battle deck
                   </p>
                 </div>
                 <span className={`text-sm font-black uppercase ${selectedIds.size >= 20 ? "text-[#22C55E]" : "text-[#E3350D]"}`}>
@@ -373,7 +373,7 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
               {selectedTazos.length > 0 && (
                 <div className="border-t-2 border-[#1a1a1a]/10 pt-3">
                   <p className="text-[9px] font-black uppercase text-[#1a1a1a]/40 mb-2 tracking-wider">
-                    In Tube ({selectedTazos.length}):
+                    In Deck ({selectedTazos.length}):
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {selectedTazos.map(t => (
@@ -403,9 +403,9 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
             {/* Right: Battle Tube Panel (sticky) */}
             <div className="lg:w-44 flex-shrink-0">
               <div className="lg:sticky lg:top-4 border-2 border-[#1a1a1a] bg-[#fffef0] p-3 flex flex-col items-center gap-2">
-                <p className="text-[9px] font-black uppercase text-[#1a1a1a]/30 tracking-wider">Battle Tube</p>
+                <p className="text-[9px] font-black uppercase text-[#1a1a1a]/30 tracking-wider">Battle Deck</p>
                 <BattleTubePreview
-                  name={name || "Tube"}
+                  name={name || "Deck"}
                   color={color}
                   textureUrl={tubeTexture}
                   count={selectedIds.size}
@@ -418,7 +418,7 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
                 {selectedIds.size >= 20 && (
                   <div className="flex items-center gap-1 px-2 py-0.5 bg-[#22C55E] border border-[#16A34A] text-white">
                     <CheckCircle className="w-3 h-3" />
-                    <span className="text-[8px] font-black uppercase">Tube Full</span>
+                    <span className="text-[8px] font-black uppercase">Deck Full</span>
                   </div>
                 )}
                 <div className="text-[8px] font-bold text-[#1a1a1a]/30 text-center space-y-0.5 w-full">
@@ -472,7 +472,7 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
 
             {/* Right: Stats summary */}
             <div className="flex-1 space-y-4">
-              <p className="text-[10px] font-bold text-[#1a1a1a]/35">Your battle tube is ready to be sealed</p>
+              <p className="text-[10px] font-bold text-[#1a1a1a]/35">Your battle deck is ready to be sealed</p>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <div className="p-3 border-2 border-[#1a1a1a] bg-[#fffef0] text-center">
@@ -549,7 +549,7 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
                     {saving ? (
                       <><Loader2 className="w-4 h-4 inline mr-1.5 animate-spin" />Sealing...</>
                     ) : (
-                      <><PackageOpen className="w-4 h-4 inline mr-1.5" />Seal Battle Tube</>
+                      <><PackageOpen className="w-4 h-4 inline mr-1.5" />Seal Battle Deck</>
                     )}
                   </button>
                 </div>

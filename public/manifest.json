@@ -53,24 +53,19 @@
   ],
   "shortcuts": [
     {
-      "name": "Battle",
-      "short_name": "Battle",
-      "url": "/app/battle"
+      "name": "Practice Arena",
+      "url": "/battle/practice",
+      "description": "Try the battle arena for free"
     },
     {
-      "name": "Collection",
-      "short_name": "Collection",
-      "url": "/app/collection"
+      "name": "Collections",
+      "url": "/?page=collections",
+      "description": "Browse all 150 tazos"
     },
     {
-      "name": "Shop",
-      "short_name": "Shop",
-      "url": "/app/shop"
-    },
-    {
-      "name": "Decks",
-      "short_name": "Decks",
-      "url": "/app/decks"
+      "name": "How to Play",
+      "url": "/?page=how-to-play",
+      "description": "Learn the slam mechanics"
     }
   ],
   "related_applications": [

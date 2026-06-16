@@ -319,7 +319,7 @@ export function CreditShop({ userCredits, isAuthenticated, onPurchase }: CreditS
             Prices include VAT. One-time purchase, no subscription.
           </p>
           <a
-            href="/refund-policy"
+            href="/?page=refund-policy"
             style={{
               fontSize: "0.7rem",
               fontWeight: 700,

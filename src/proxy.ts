@@ -7,6 +7,17 @@ import { NextRequest, NextResponse } from "next/server"
 
 const ROOT_REDIRECTS: Record<string, string> = {
   // /app now renders the Dashboard page — no redirect
+  "/privacy": "/?page=privacy",
+  "/terms": "/?page=terms",
+  "/cookies": "/?page=cookies",
+  "/contact": "/?page=contact",
+  "/refund-policy": "/?page=refund-policy",
+  "/disclaimer": "/?page=disclaimer",
+  "/tazos": "/?page=tazos",
+  "/faq": "/?page=faq",
+  "/how-to-play": "/?page=how-to-play",
+  "/download": "/?page=download",
+  "/leaderboard": "/?page=leaderboard",
 }
 
 const LEGACY_PAGES: Record<string, string> = {
@@ -78,6 +89,9 @@ export const config = {
     "/stats", "/stats/:path*",
     "/profile",
     "/settings", "/settings/:path*",
+    "/privacy", "/terms", "/cookies", "/contact",
+    "/refund-policy", "/disclaimer",
+    "/faq", "/how-to-play", "/download", "/leaderboard",
     "/inventory",
     "/login", "/register",
   ],

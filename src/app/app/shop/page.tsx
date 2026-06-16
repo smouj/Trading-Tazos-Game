@@ -626,23 +626,11 @@ export default function BagShopPage() {
           </p>
         </div>
         <div className="border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] overflow-hidden">
-          <WebGLGuard
-            fallback={
-              <BagOpener2D
-                bagName={selectedBag.name}
-                franchise={selectedBag.franchise || "minimon"}
-                onOpen={openBag}
-              />
-            }
-          >
-            <BagOpener3D
-              bag={{ id: bagId || "", bagType: selectedBag.type, preview: { franchise: { slug: selectedBag.franchise || "minimon" } } }}
-              frontUrl={selectedBag.frontUrl}
-              backUrl={selectedBag.backUrl}
-              onOpen={openBag}
-              onSkip={() => openBag()}
-            />
-          </WebGLGuard>
+          <BagOpener2D
+            bagName={selectedBag.name}
+            franchise={selectedBag.franchise || "minimon"}
+            onOpen={openBag}
+          />
         </div>
       </div>
     )
@@ -796,7 +784,10 @@ export default function BagShopPage() {
               finish={revealedTazo.finish} creatureVariant={revealedTazo.creatureVariant} shinyImageUrl={revealedTazo.shinyImageUrl}
               className="w-full h-full" />
           ) : (
-            <div className="text-[#1a1a1a]/20 text-7xl">?</div>
+            <div className="w-full h-full flex flex-col items-center justify-center" style={{ background: rarityColor || "#9CA3AF" }}>
+              <span className="text-6xl font-black text-white/80">{(revealedTazo.name || "?")[0]}</span>
+              <span className="text-[8px] font-black text-white/40 mt-1 uppercase tracking-wider">{revealedTazo.name || "Unknown Tazo"}</span>
+            </div>
           )}
         </div>
 
@@ -873,6 +864,10 @@ export default function BagShopPage() {
             className="mag-btn px-6 py-3 font-black text-xs uppercase bg-[#1a1a1a] text-[#FFCC00] border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
             <ChevronRight className="w-4 h-4 inline mr-1" />Collection
           </Link>
+          <button onClick={() => { handleReset(); window.location.href = "/app/shop"; }}
+            className="mag-btn px-6 py-3 font-black text-xs uppercase bg-white text-[#1a1a1a]/40 border-2 border-[#1a1a1a]/10 active:translate-x-0.5 active:translate-y-0.5 transition-all">
+            Close
+          </button>
         </div>
       </div>
     )

@@ -101,7 +101,7 @@ function CreateQuickDeckButton({ onCreated }: { onCreated: (deckId: string) => v
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ name: "Battle Deck", isActive: true }),
+        body: JSON.stringify({ name: "Battle Deck", isActive: true, starterIds: [] }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || "Failed to create deck")

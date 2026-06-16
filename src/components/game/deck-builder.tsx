@@ -10,7 +10,7 @@ import { useAuth } from "@/lib/auth-context"
 import {
   Search, X, ChevronLeft, ChevronRight,
   Star, Sword, Shield, Zap, Save, Palette, Filter, CheckCircle, PackageOpen, Loader2,
-} from "lucide-react"
+Swords } from "lucide-react"
 import TazoDiscImage from "@/components/game/tazo-disc-image"
 import BattleTubePreview, { TUBE_TEXTURE_OPTIONS } from "@/components/tubes/BattleTubePreview"
 
@@ -49,11 +49,19 @@ const RARITY_COLOR: Record<string, string> = {
 }
 
 interface DeckBuilderProps {
-  initialDeck?: { id: string; name: string; color?: string; textureUrl?: string; tubeSlug?: string; tazos: TazoOption[] } | null
-  onSave: (data: { name: string; color: string; tazoIds: string[]; textureUrl?: string; tubeSlug?: string }) => void
+  initialDeck?: {
+    id: string
+    name: string
+    color?: string
+    textureUrl?: string
+    tubeSlug?: string
+    tazos: TazoOption[]
+    starters?: string[]
+  }
+  onSave: (data: { name: string; color: string; tazoIds: string[]; starters?: string[]; textureUrl?: string; tubeSlug?: string }) => void
   onCancel: () => void
-  saving?: boolean
-  saveError?: string
+  saving: boolean
+  saveError: string
 }
 
 const STEP_LABELS = ["Name", "Tazos", "Seal"]
@@ -102,6 +110,7 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set(initialDeck?.tazos.map(t => t.id) || []))
   const [search, setSearch] = useState("")
   const [franchiseFilter, setFranchiseFilter] = useState<string>("all")
+  const [starters, setStarters] = useState<Set<string>>(new Set(initialDeck?.starters || []))
   const [rarityFilter, setRarityFilter] = useState<string>("all")
 
   useEffect(() => {
@@ -121,7 +130,7 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
             weight: t.weight || 50, stability: t.stability || 50, spin: t.spin || 50,
             control: t.control || 50, bounce: t.bounce || 50, precision: t.precision || 50,
             role: t.role || null,
-            finish: t.finish || null, creatureVariant: t.creatureVariant || null, shinyImageUrl: t.shinyImageUrl || null,
+            finish: t.finish || undefined, creatureVariant: (t.creatureVariant || undefined) as any, shinyImageUrl: t.shinyImageUrl || null,
           }
         })
         setAllTazos(mapped)
@@ -266,7 +275,7 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
   }
 
   // ════════════════════════════════════════════════════════
-  // STEP 2: Fill Your Tube
+  // STEP 2: Fill Your Deck
   // ════════════════════════════════════════════════════════
   if (step === 2) {
     const tubeTazos = selectedTazos.slice(0, 15).map(t => ({
@@ -472,7 +481,58 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
 
             {/* Right: Stats summary */}
             <div className="flex-1 space-y-4">
-              <p className="text-[10px] font-bold text-[#1a1a1a]/35">Your battle deck is ready to be sealed</p>
+              {/* ── Starter Selection ── */}
+              <div>
+                <h4 className="text-xs font-black text-[#1a1a1a] uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <Swords className="w-3.5 h-3.5 text-[#E3350D]" />
+                  Starters <span className="text-[#E3350D]">({((s: Set<string>) => s.size)(starters)}/5)</span>
+                </h4>
+                <p className="text-[9px] font-bold text-[#1a1a1a]/35 mb-3">
+                  Pick up to 5 tazos as your opening hand. They&apos;ll be drawn first at battle start.
+                </p>
+                <div className="flex flex-wrap gap-2 max-h-[140px] overflow-y-auto p-2 border-2 border-[#E3350D]/15 bg-[#E3350D]/3">
+                  {selectedTazos.map(t => {
+                    const isStarter = starters.has(t.id)
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => {
+                          setStarters(prev => {
+                            const next = new Set(prev)
+                            if (next.has(t.id)) next.delete(t.id)
+                            else if (next.size < 5) next.add(t.id)
+                            return next
+                          })
+                        }}
+                        className={`flex items-center gap-1 p-1.5 border-2 transition-all ${
+                          isStarter
+                            ? "border-[#E3350D] bg-[#E3350D]/10 shadow-[2px_2px_0_#E3350D]"
+                            : "border-[#1a1a1a]/10 bg-white hover:border-[#1a1a1a]/25"
+                        }`}
+                      >
+                        <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0 border border-[#1a1a1a]/15 bg-[#1a1a1a]">
+                          <TazoDiscImage src={t.imageUrl} alt={t.name} size="100%" borderWidth={0}
+                            franchiseSlug={t.franchiseSlug} finish={(t as any).finish}
+                            creatureVariant={(t as any).creatureVariant} shinyImageUrl={t.shinyImageUrl} lazy />
+                        </div>
+                        <div className="text-left min-w-0">
+                          <p className="text-[8px] font-black text-[#1a1a1a] truncate max-w-[90px]">{t.displayName || t.name}</p>
+                          <p className="text-[6px] font-bold text-[#1a1a1a]/30">ATK {t.attack}</p>
+                        </div>
+                        {isStarter && <Star className="w-3 h-3 text-[#E3350D] fill-[#E3350D] flex-shrink-0" />}
+                      </button>
+                    )
+                  })}
+                  {selectedTazos.length === 0 && (
+                    <p className="text-[9px] font-bold text-[#1a1a1a]/20 text-center w-full py-3">
+                      Add tazos in Step 2 first, then pick starters here.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <p className="text-[10px] font-bold text-[#1a1a1a]/35">Review your deck before sealing</p>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <div className="p-3 border-2 border-[#1a1a1a] bg-[#fffef0] text-center">
@@ -541,6 +601,7 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
                     onClick={() => onSave({
                       name, color,
                       tazoIds: Array.from(selectedIds),
+                      starters: Array.from(starters),
                       textureUrl: tubeTexture,
                       tubeSlug,
                     })}

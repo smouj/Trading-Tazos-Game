@@ -4,6 +4,8 @@ import { useEffect, useState, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, ShieldCheck, Disc3 } from "lucide-react"
+import MagazineHeader from "@/components/game/magazine-header"
+import MagazineFooter from "@/components/game/magazine-footer"
 
 function EmailVerifier() {
   const searchParams = useSearchParams()
@@ -87,24 +89,7 @@ function EmailVerifier() {
 export default function VerifyEmailPage() {
   return (
     <div className="min-h-screen flex flex-col mag-bg">
-      {/* Masthead */}
-      <header className="bg-[#FFCC00] border-b-4 border-[#1a1a1a] mag-stripes">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
-          <Link href="/" className="text-[#1a1a1a] hover:opacity-70">
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <div className="flex items-center gap-3">
-            <img
-              src="/logo/logo-tg-yellow.png"
-              alt="TTG"
-              className="w-10 h-10 drop-shadow-[3px_3px_0px_rgba(26,26,26,0.3)]"
-            />
-            <h1 className="text-xl sm:text-2xl font-black text-[#1a1a1a] uppercase tracking-tight mag-stroke-sm">
-              Verify Email
-            </h1>
-          </div>
-        </div>
-      </header>
+      <MagazineHeader />
 
       {/* Card */}
       <main className="flex-1 flex items-center justify-center px-4 py-12">
@@ -147,6 +132,7 @@ export default function VerifyEmailPage() {
           </div>
         </div>
       </main>
+      <MagazineFooter />
     </div>
   )
 }

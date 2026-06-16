@@ -106,7 +106,7 @@ export function RewardedAdButton({ isAuthenticated, onRewardClaimed }: RewardedA
             textTransform: "uppercase",
             letterSpacing: "0.05em",
           }}>
-            Watch & Earn Free Credits
+            Watch & Earn Free CREDITS
           </span>
         </div>
         <p style={{
@@ -174,7 +174,7 @@ export function RewardedAdButton({ isAuthenticated, onRewardClaimed }: RewardedA
             fontWeight: 600,
             marginTop: "1px",
           }}>
-            Watch a short ad to earn free credits
+            Watch a short ad to earn free CREDITS
           </div>
         </div>
       </div>

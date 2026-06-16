@@ -2143,6 +2143,7 @@ export default function LauncherView() {
                 ["faq", "FAQ"],
                 ["shop", "Shop"],
                 ["wiki", "Wiki"],
+                ["contact", "Contact"],
               ] as [PageId, string][]).map(([id, label]) => (
                 <button key={id} onClick={() => navigate(id)}
                   className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider transition-colors ${
@@ -2273,6 +2274,8 @@ export default function LauncherView() {
             <div className="flex items-center gap-3 sm:gap-4">
               <button onClick={() => navigate("tazos")} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Tazos</button>
               <button onClick={() => navigate("shop")} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Shop</button>
+              <button onClick={() => navigate("wiki")} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Wiki</button>
+              <button onClick={() => navigate("collections")} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Collections</button>
               <button onClick={() => navigate("how-to-play")} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">How to Play</button>
               <button onClick={() => navigate("faq")} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">FAQ</button>
               <button onClick={() => navigate("privacy")} className="text-[9px] font-bold text-white/30 hover:text-[#FFCC00] uppercase tracking-wider transition-colors">Privacy</button>

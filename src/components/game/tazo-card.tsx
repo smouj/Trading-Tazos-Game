@@ -147,7 +147,7 @@ export default function TazoCard({ tazo, onClick, forceFlipped }: TazoCardProps)
                 alt={tazo.displayName || tazo.name || "?"}
                 size="100%"
                 borderWidth={0}
-                scale={0.87}
+                scale={0.88}
                 franchiseSlug={franchiseSlug}
                 finish={tazo.finish as TazoFinish || "normal"}
                 creatureVariant={tazo.creatureVariant as TazoCreatureVariant || "standard"}

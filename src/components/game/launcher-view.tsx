@@ -848,7 +848,7 @@ function SeriesPreviewHome({ onNavigate }: { onNavigate: (page: PageId) => void 
             <div className="h-1.5" style={{ background: s.color }} />
             <div className="p-3 sm:p-4">
               {/* Tazo grid */}
-              <div className="flex items-center justify-center gap-1.5 mb-3">
+              <div className="flex items-center justify-center gap-2 mb-3">
                 {/* Series logo */}
               <div className="flex justify-center mb-2">
                 <Image src={`/logo/series-${s.slug}.png`} alt={`${s.name} logo`} width={200} height={80}
@@ -856,7 +856,7 @@ function SeriesPreviewHome({ onNavigate }: { onNavigate: (page: PageId) => void 
               </div>
               {/* Tazo grid */}
               {tazos.slice(0, 3).map((t, i) => (
-                  <div key={t.id || i} className="w-11 h-11 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-[#1a1a1a]/30 bg-white group-hover:border-[#1a1a1a]/60 transition-colors" style={{ boxShadow: "0 2px 6px rgba(0,0,0,0.12)" }}>
+                  <div key={t.id || i} className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border-[3px] border-[#1a1a1a]/40 bg-white group-hover:border-[#1a1a1a]/80 group-hover:scale-110 group-hover:shadow-lg transition-all" style={{ boxShadow: "0 3px 8px rgba(0,0,0,0.18)" }}>
                     {t.imageUrl ? (
                       <TazoDiscImage src={t.imageUrl} alt={t.name || ''} size="100%" borderWidth={0} scale={0.88}
                         franchiseSlug={t.franchiseSlug || (typeof t.franchise === "string" ? t.franchise : "minimon")}

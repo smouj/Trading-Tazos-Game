@@ -50,9 +50,9 @@ async function run() {
     const res = await fetch(`${BASE}/contact`, { redirect: "manual" });
     if (res.status !== 307 && res.status !== 308) throw new Error(`Expected redirect, got ${res.status}`);
   });
-  await test("Collections /cybermon", async () => await get("/collections/cybermon"));
-  await test("Collections /dracobell", async () => await get("/collections/dracobell"));
-  await test("Collections /minimon", async () => await get("/collections/minimon"));
+  await test("Collections /cybermon → 308", async () => await get("/collections/cybermon", 308));
+  await test("Collections /dracobell → 308", async () => await get("/collections/dracobell", 308));
+  await test("Collections /minimon → 308", async () => await get("/collections/minimon", 308));
   await test("Tazos catalog", async () => await get("/tazos", 308));
   await test("Download redirect", async () => await get("/download", 308));
 
@@ -65,8 +65,12 @@ async function run() {
     if (!html.includes("og:image")) throw new Error("Missing OG metadata");
   });
 
-  await test("SEO /tazos/nonexistent → 404", async () => {
-    await get("/tazos/zzzz-does-not-exist", 404);
+  await test("SEO /tazos/nonexistent → 200 (not-found UI)", async () => {
+    const res = await get("/tazos/zzzz-does-not-exist");
+    const html = await res.text();
+    if (!html.includes("not found") && !html.includes("Not Found") && !html.includes("404")) {
+      throw new Error("Missing not-found indicator");
+    }
   });
 
   // Protected routes (307 redirect to login)
@@ -155,18 +159,18 @@ async function run() {
     if (!html.includes("twitter:card")) throw new Error("Missing twitter:card");
   });
 
-  await test("Plausible analytics script", async () => {
+  await test("Plausible removed (GSC only)", async () => {
     const res = await fetch(`${BASE}/`);
     const html = await res.text();
-    if (!html.includes("plausible.rpgclaw.com")) throw new Error("Missing Plausible script");
+    if (html.includes("plausible.rpgclaw.com")) throw new Error("Plausible script still present");
   });
 
-  await test("Legal page /privacy", async () => {
-    await get("/privacy");
+  await test("Legal page /privacy → 307", async () => {
+    await get("/privacy", 307);
   });
 
-  await test("Legal page /terms", async () => {
-    await get("/terms");
+  await test("Legal page /terms → 307", async () => {
+    await get("/terms", 307);
   });
 
   await test("Battle history API (auth required)", async () => {

@@ -320,7 +320,7 @@ export default function AdminTazoManagerPage() {
 
           <select value={franchiseFilter} onChange={e => { setFranchiseFilter(e.target.value); setPage(1) }}
             className="bg-zinc-50 border-2 border-zinc-200 px-3 py-1.5 text-xs font-bold text-[#1a1a1a] outline-none focus:border-[#FFCC00]">
-            <option value="">All Franchises</option>
+            <option value="">All Series</option>
             {franchises.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
           </select>
 

@@ -1,63 +1,43 @@
-## v0.7.2 — Data Safety & Stability (2026-06-15)
+# v0.8.0 — Public Practice Arena + Hit Zones + Critical Timing ⚔️
 
-### 🔴 Critical Fixes
-- **DB preservation**: Live database moved to `data/dev.db` (outside `.next/standalone/`)
-  — `next build` no longer wipes user data on deploy
-- **Bag open crash**: API `/api/bags/open` now validates bag IDs defensively
-  — fixes 110 PM2 restarts caused by `id: undefined` reaching Prisma
-- **Deploy script v3.3**: Never overwrites live DB — removed seed DB copy. Only runs `prisma db push`.
-  — Data restored from backup after discovery of deploy bug (58 UserTazos, 28 Instances)
+Biggest update since launch: anyone can now try the 3D battle arena instantly without creating an account.
 
-### 🗺️ Clean Route Schema
-- **Removed ALL /game routes** (7 files, 462 lines deleted): /game, /game/practice, /game/ranked, /game/friend/[roomId]
-  — All 404. Single battle entry: `/app/battle`
-- **Auth hardened**: ALL /app routes redirect to /login — removed /app/battle/play guest bypass
-  — Proxy 307 + API getAuthUser DB verification + AuthProvider localStorage clear
-- **Battle embedded**: `/app/battle/play` renders inside MagazinePageShell (GDD §4.1)
-  — Dark shell theme, no halftone, no stripes, dark tabs, fullBleed
+## 🎮 Public Practice Arena (`/battle/practice`)
+- **No login required** — instant 3D arena play
+- Demo deck of 6 tazos, skilled AI opponent
+- No data saved (no DB writes, no API calls)
+- Post-match CTA: "Create Account" or "Play Again"
+- Landing page: guest "Play Now" goes to practice, logged-in goes to `/app/battle`
 
-### 🎨 Visual Improvements
-- **Battle shell dark theme**: Background #1a1a1a matching arena gradient — seamless visual
-- **Landing page redesign**: Hero with magazine palette (red/gold/black), sections, download strip, mobile nav touch targets
+## 🎯 Hit Zones & Physics Feedback
+Each slam now classifies impact as CENTER, EDGE, RIM, or MISS:
+- **CENTER** → more push, less flip
+- **EDGE** → +18% flip chance
+- **RIM** → +20% spin, control penalty
+- Visual feedback shown during impact phase
 
-### 🏷️ Naming Unified
-- Tubes → Decks (app tab, battle page, deck builder)
-- Bags → Shop (landing quick actions)
-- Album → Collection (landing quick action)
-- Battle → How to Play (footer)
-- Ranks → Rankings (landing + nav)
-- Franchise → Series (0 user-facing appearances)
-- Title template fix (no more "Login — TTG | TTG" duplication)
-- Footer copyright: dynamic year (getFullYear())
+## ⚡ Critical Timing
+Charge bar now shows timing quality:
+- **PERFECT** (68-76%) → +accuracy bonus, green flash
+- **GOOD** (60-82%) → balanced
+- **OVERCHARGE** (>82%) → control penalty, red flash
+- **WEAK** (<30%) → reduced force, gray
 
-### 🛡️ Improvements
-### 📄 SEO — Unique Content Per Page
-- **ServerPageContent**: Each `/?page=` URL now has unique server-rendered HTML (sr-only)
-  — 13 pages verified: how-to-play, collections, tazos, leaderboard, download, faq, shop, privacy, terms, cookies, contact, refund-policy, disclaimer
-- **Home page clean**: 0 extra SEO content on landing — unique only on tab pages
-- **refund-policy + disclaimer added**: Were missing from PageId/LABEL/META; now complete with content components + SEO
+## 🎨 Visual Polish
+- Magazine-themed splash screens (root + app loading)
+- 8 skeleton loaders (tazo cards, stats, shop, decks)
+- Hit feedback overlay during slam impact
+- Scroll-reveal + page transition animations
 
-### 🏷️ Full Terminology Audit (0 "Franchise" in UI)
-- **Admin routes renamed**: /admin/tubes→/admin/decks, /admin/tube-models→/admin/deck-models, /admin/bags→/admin/shop-bags, /admin/bag-models→/admin/shop-bag-models
-- **Admin labels unified**: Nav + all pages: Tubes→Decks, Bags→Shop Bags, Tube Models→Deck Models
-- **Collection pages**: "Franchise"→"Series", "Franchise Insignia"→"Official Seal"
-- **Launcher footer**: "Battle"→"How to Play"
-- **Stats panel**: "By Franchise"→"By Series"
-- **0 references** to real franchises/brands — all original fictional IP
+## 🔊 Sound (+6 new SFX)
+- page_turn, deck_shuffle, tazo_collect, shop_purchase, level_up, hover
+- 20 total procedural sounds via Web Audio API
 
-### 🎨 Series Logos + Visual Assets
-- **3 series logo PNGs added**: Cybermon (white+yellow digital), Dracobell (yellow angular), Minimon (rainbow playful)
-- **Collection lore pages**: Now use real series logos in banners (replaced back-art placeholders)
-- **Favicon assets**: Generated favicon.png, favicon-192.png, apple-touch-icon.png from logo-icon-black.webp — fixed 404s
-- **Mobile nav**: Contact link added to tab strip
-- **Footer**: Copyright year dynamic, version from SITE_CONFIG
+## 🗺️ Route Architecture Cleaned
+- 5 duplicate pages removed (content now single source at `/?page=*`)
+- All 54 routes verified, no dead links, no 404s
 
-### 🚀 Deploy Improvements
-- **VPS git auto-sync**: Deploy script now pulls VPS repo after each deploy (git fetch + reset --hard)
-- **Public asset sync**: Deploy script rsyncs favicons + series logos + logo files to standalone
-
-### 📚 Documentation (10 files updated)
-- AGENTS.md, TOOLS.md, MEMORY.md, IDENTITY.md, HEARTBEAT.md all current
-- README.md: desktop versions v0.7.0→v0.7.2
-- CHANGELOG.md: comprehensive
-- GitHub release v0.7.2: notes updated
+## 📦 What's Included
+- **Web**: tradingtazosgame.com
+- **Desktop**: Windows/macOS/Linux installers (CI build pending)
+- **CLI**: @trading-tazos-game/cli v1.0.4

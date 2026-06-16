@@ -105,19 +105,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Maximum 20 tazos per battle deck" }, { status: 400 })
     }
 
-    // Auto-assign starters if not provided (Quick Deck & new decks)
-    let finalStarters = starterIds && Array.isArray(starterIds) && starterIds.length > 0
-      ? starterIds.slice(0, 5)
-      : finalTazoIds.slice(0, Math.min(5, finalTazoIds.length))
-
     // Build settings JSON
     const settings: Record<string, any> = {}
     if (color) settings.color = color
     if (textureUrl) settings.textureUrl = textureUrl
     if (tubeSlug) settings.tubeSlug = tubeSlug
-    if (finalStarters.length > 0) {
-      settings.starterIds = finalStarters
-    }
+
 
     // Verify user owns all tazos
     const userTazos = await db.userTazo.findMany({
@@ -158,7 +151,7 @@ export async function POST(request: NextRequest) {
       color: settings.color || null,
       textureUrl: settings.textureUrl || null,
       tubeSlug: settings.tubeSlug || null,
-      starters: finalStarters,
+      starters: [],
     })
   } catch (error) {
     if (error instanceof Response) throw error

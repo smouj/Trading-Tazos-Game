@@ -54,7 +54,7 @@ export default function DecksPage() {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState("")
 
-  const handleSaveBuilder = async (data: { name: string; color: string; tazoIds: string[]; starters?: string[]; textureUrl?: string; tubeSlug?: string }) => {
+  const handleSaveBuilder = async (data: { name: string; color: string; tazoIds: string[]; textureUrl?: string; tubeSlug?: string }) => {
     if (data.tazoIds.length < 1) return
     setSaving(true)
     setSaveError("")
@@ -69,7 +69,6 @@ export default function DecksPage() {
         color: data.color,
         textureUrl: data.textureUrl,
         tubeSlug: data.tubeSlug,
-        starterIds: data.starters || [],
       }
       if (editingDeck) body.name = data.name
 
@@ -159,7 +158,6 @@ export default function DecksPage() {
             textureUrl: editingDeck.textureUrl || undefined,
             tubeSlug: editingDeck.tubeSlug || undefined,
             tazos: editingDeck.tazos,
-            starters: editingDeck.starters || undefined,
           } : undefined}
           onSave={handleSaveBuilder}
           onCancel={() => { setShowBuilder(false); setEditingDeck(null); setSaveError("") }}

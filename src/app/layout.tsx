@@ -257,7 +257,9 @@ export default function RootLayout({
           </AuthProviderComponent>
         </I18nClientWrapper>
         <Toaster />
-        <CookieConsentBanner />
+        <div data-ttg-hide-on-battle>
+          <CookieConsentBanner />
+        </div>
       </body>
     </html>
   );

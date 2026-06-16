@@ -2,6 +2,11 @@
 // Trading Tazos Game — SFX Engine
 // Lightweight procedural sound effects using Web Audio API.
 // No external files, zero dependencies, ~2KB gzipped.
+//
+// FIX (2026-06-16): AudioContext is now fully lazy.
+//   - No AudioContext created until user gesture unlocks it.
+//   - playSFX silently no-ops until unlocked (was firing before
+//     user gesture, triggering autoplay policy warnings).
 // ============================================================
 
 type SFXName = 'click' | 'bag_open' | 'bag_tear' | 'reveal' | 'battle_hit'
@@ -17,9 +22,10 @@ interface SFXOptions {
 
 let audioCtx: AudioContext | null = null
 let muted = false
+let unlocked = false
 
 function getCtx(): AudioContext | null {
-  if (muted) return null
+  if (muted || !unlocked) return null
   if (!audioCtx) {
     try {
       audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)()
@@ -27,6 +33,7 @@ function getCtx(): AudioContext | null {
       return null
     }
   }
+  // Only resume if we're unlocked AND state is suspended
   if (audioCtx.state === 'suspended') {
     audioCtx.resume().catch(() => {})
   }
@@ -50,27 +57,29 @@ export function sfxIsMuted(): boolean {
 
 // Unlock audio on first user gesture (required by browsers)
 export function sfxUnlock() {
-  const ctx = getCtx()
+  if (unlocked) return
+  unlocked = true
+  const ctx = audioCtx
   if (ctx && ctx.state === 'suspended') {
     ctx.resume()
   }
 }
 
-let unlocked = false
 export function sfxEnsureUnlocked() {
   if (unlocked) return
   unlocked = true
-  sfxUnlock()
-  // Also add one-shot unlock on first click/touch
-  const unlock = () => {
-    sfxUnlock()
-    document.removeEventListener('click', unlock)
-    document.removeEventListener('touchstart', unlock)
-    document.removeEventListener('keydown', unlock)
+
+  // Try to create/initialize AudioContext now that user has interacted
+  try {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)()
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(() => {})
+    }
+  } catch {
+    // Silently fail — audio just won't play
   }
-  document.addEventListener('click', unlock, { once: true })
-  document.addEventListener('touchstart', unlock, { once: true })
-  document.addEventListener('keydown', unlock, { once: true })
 }
 
 export function playSFX(name: SFXName, opts: SFXOptions = {}) {

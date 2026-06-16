@@ -271,8 +271,8 @@ export default function GameLobby({ playerTazos, playerDecks, selectedDeckId, on
           ) : (
             <p className="text-center text-[11px] font-bold text-[#1a1a1a]/25 py-6">
               {playerDecks && playerDecks.length > 0
-                ? "Pick a Battle Tube above to see its stats"
-                : "Create a Battle Tube in Decks first!"}
+                ? "Pick a Deck above to see its stats"
+                : "Create a Deck in Decks first!"}
             </p>
           )}
         </div>

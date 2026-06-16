@@ -29,6 +29,7 @@ import type { PvPWebSocket, TurnAction } from "@/lib/battle/use-pvp-websocket"
 import BattleErrorBoundary from "./battle/battle-error-boundary"
 import GameLobby from "./battle/game-lobby"
 import BattleArena3D from "./battle/battle-arena-3d"
+import WebGLGuard from "@/components/game/webgl-guard"
 import SlamControls from "./battle/slam-controls"
 import BattleResultPanel from "./battle/battle-result-panel"
 import BattleHand from "./battle/battle-hand"
@@ -1105,6 +1106,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
 
   return (
     <BattleErrorBoundary>
+    <WebGLGuard>
     <div ref={containerRef} className={`w-full h-full ${isFullscreen ? "fixed inset-0 z-[9999]" : "absolute inset-0"}`} style={isFullscreen ? { background: "#0a0a0a" } : undefined}>
       {/* Tutorial */}
       {showTutorial && <BattleTutorial onClose={() => setShowTutorial(false)} />}
@@ -1397,6 +1399,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
         )}
       </BattleArena3D>
     </div>
+    </WebGLGuard>
     </BattleErrorBoundary>
   )
 }

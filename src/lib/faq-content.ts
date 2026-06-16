@@ -34,7 +34,7 @@ export const FAQ_ENTRIES: FaqEntry[] = [
     a: "Yes! Visit tradingtazosgame.com on your phone, install as PWA, and play full-screen. Desktop versions also available.",
   },
   {
-    q: "How do credits work?",
+    q: "How do CREDITS work?",
     a: "CREDITS buy tazo bags (100 CREDITS each). Earn them through battles (10 CREDITS/win, max 10 wins/day), quests, daily bonuses (25 CREDITS), and rewarded ads (5×20 CREDITS). The Starter CREDITS pack gives you 5 bags — perfect to begin your collection.",
   },
   {

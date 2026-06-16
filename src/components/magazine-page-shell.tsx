@@ -5,9 +5,7 @@
 // Uses MagazineHeader (variant="app") + MagazineFooter
 // with app-specific tab strip in magazine style.
 //
-// fullBleed: removes max-w/padding on main content area so
-// full-screen components (BattleView) fill the available space.
-// Hides halftone overlay + changes background to dark in battle.
+// For battle gameplay (fullscreen), see GameFullscreenShell.
 // ============================================================
 "use client"
 
@@ -62,13 +60,9 @@ function GameHUD({ credits, tazoCount }: { credits?: number; tazoCount?: number 
 export default function MagazinePageShell({
   children,
   currentTab,
-  showFooter = true,
-  fullBleed = false,
 }: {
   children: React.ReactNode
   currentTab?: TabId
-  showFooter?: boolean
-  fullBleed?: boolean
 }) {
   const { user } = useAuth()
   const pathname = usePathname()
@@ -91,29 +85,20 @@ export default function MagazinePageShell({
     sfxEnsureUnlocked()
   }, [])
 
-  const isBattlePlay = pathname?.startsWith("/app/battle/play")
-
-  // During battle: dark background that matches the arena
-  // Normal pages: cream paper magazine aesthetic
-  const shellBg = isBattlePlay ? "#1a1a1a" : "#FFF9E6"
-  const tabBg = isBattlePlay ? "#2a2a2a" : "bg-white"
-  const tabText = isBattlePlay ? "text-white/50 hover:text-white/80" : "text-[#1a1a1a]/35 hover:text-[#1a1a1a]/70"
-  const tabActive = isBattlePlay
-    ? "bg-[#FFCC00] text-[#1a1a1a] border-2 border-[#FFCC00]"
-    : "bg-[#FFCC00] text-[#1a1a1a] border-2 border-[#1a1a1a]"
-  const tabHover = isBattlePlay
-    ? "border-transparent hover:text-white/80 hover:border-white/15 hover:bg-white/5"
-    : "border-transparent hover:text-[#1a1a1a]/70 hover:border-[#1a1a1a]/15 hover:bg-[#1a1a1a]/3"
+  // Magazine aesthetic — cream paper background
+  const shellBg = "#FFF9E6"
+  const tabBg = "bg-white"
+  const tabText = "text-[#1a1a1a]/35 hover:text-[#1a1a1a]/70"
+  const tabActive = "bg-[#FFCC00] text-[#1a1a1a] border-2 border-[#1a1a1a]"
+  const tabHover = "border-transparent hover:text-[#1a1a1a]/70 hover:border-[#1a1a1a]/15 hover:bg-[#1a1a1a]/3"
 
   return (
     <div
       className="min-h-screen flex flex-col relative"
       style={{ background: shellBg }}
     >
-      {/* Halftone overlay — hidden during battle for clean arena view */}
-      {!isBattlePlay && (
-        <div className="mag-halftone absolute inset-0 opacity-40 pointer-events-none" />
-      )}
+      {/* Halftone overlay */}
+      <div className="mag-halftone absolute inset-0 opacity-40 pointer-events-none" />
 
       {/* ═══ MASTHEAD ═══ */}
       <MagazineHeader variant="app" />
@@ -128,7 +113,7 @@ export default function MagazinePageShell({
         aria-label="App navigation"
       >
         {NAV_ITEMS.map(({ id, label, icon: Icon, href }) => {
-          const isActive = currentTab === id || pathname === href || (id === "battle" && isBattlePlay)
+          const isActive = currentTab === id || pathname === href
           return (
             <Link
               key={id}
@@ -152,25 +137,19 @@ export default function MagazinePageShell({
         role="main"
         aria-label="Page content"
       >
-        {fullBleed ? (
-          children
-        ) : (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-2 pb-12">
-            {children}
-          </div>
-        )}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-2 pb-12">
+          {children}
+        </div>
       </main>
 
-      {/* ═══ GAME HUD (bottom status bar) — hidden during battle ═══ */}
-      {!isBattlePlay && <GameHUD credits={credits} tazoCount={user?.tazoCount} />}
+      {/* ═══ GAME HUD (bottom status bar) ═══ */}
+      <GameHUD credits={credits} tazoCount={user?.tazoCount} />
 
-      {/* ═══ MAGAZINE FOOTER — hidden on battle ═══ */}
-      {showFooter && !isBattlePlay && (
-        <>
-          <div className="relative z-10 h-2 mag-stripes opacity-30 pointer-events-none" />
-          <MagazineFooter />
-        </>
-      )}
+      {/* ═══ MAGAZINE FOOTER ═══ */}
+      <>
+        <div className="relative z-10 h-2 mag-stripes opacity-30 pointer-events-none" />
+        <MagazineFooter />
+      </>
     </div>
   )
 }

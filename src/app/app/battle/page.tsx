@@ -16,6 +16,7 @@ import TazoDiscImage from "@/components/game/tazo-disc-image"
 import {
   Swords, Bot, Globe, Play, Zap, Shield, Crosshair, Star,
   ChevronRight, Layers, Loader2, AlertTriangle, CheckCircle,
+  Disc3,
 } from "lucide-react"
 
 // ── Mode definitions ──
@@ -119,6 +120,8 @@ export default function BattlePage() {
   const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [starting, setStarting] = useState(false)
+  const [isLaunching, setIsLaunching] = useState(false)
+  const [launchMsg, setLaunchMsg] = useState("")
 
   // Fetch user decks
   useEffect(() => {
@@ -157,24 +160,91 @@ export default function BattlePage() {
   }, [selectedDeck])
 
   const handleStart = () => {
-    if (!selectedDeckId || starting) return
+    if (!selectedDeckId || starting || isLaunching) return
     sfxEnsureUnlocked()
     playSFX("equip")
-    setStarting(true)
+    setIsLaunching(true)
 
-    if (mode === "practice") {
-      sessionStorage.setItem("battle_mode", "practice")
-      sessionStorage.setItem("battle_difficulty", difficulty)
-      sessionStorage.setItem("battle_deckId", selectedDeckId)
-      router.push("/app/battle/play")
+    // Set sessionStorage for BattleView to auto-start
+    sessionStorage.setItem("battle_mode", "practice")
+    sessionStorage.setItem("battle_difficulty", difficulty)
+    sessionStorage.setItem("battle_deckId", selectedDeckId)
+
+    // ── Launch sequence messages ──
+    const messages = [
+      "Preparing arena…",
+      "Loading selected deck…",
+      "Shuffling 20 tazos…",
+      "Drawing starting hand…",
+      "Entering battle…",
+    ]
+    let i = 0
+    const showNext = () => {
+      if (i < messages.length) {
+        setLaunchMsg(messages[i])
+        i++
+        setTimeout(showNext, 250)
+      } else {
+        // Final delay then navigate
+        setTimeout(() => {
+          router.push("/app/battle/play")
+        }, 300)
+      }
     }
+    showNext()
+    setStarting(true)
   }
 
-  const canStart = selectedDeckId && deckStats.count >= 1 && mode === "practice"
+  const canStart = selectedDeckId && deckStats.count >= 1 && mode === "practice" && !isLaunching
   const noDecks = !loading && decks.length === 0
 
   return (
     <div className="w-full py-4 sm:py-6 space-y-6">
+      {/* ═══ BATTLE LAUNCH OVERLAY ═══ */}
+      {isLaunching && (
+        <div
+          className="fixed inset-0 z-[999] flex flex-col items-center justify-center gap-6"
+          style={{
+            background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)",
+          }}
+        >
+          {/* Scanlines */}
+          <div className="absolute inset-0 pointer-events-none"
+            style={{
+              backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px)",
+            }}
+          />
+          {/* Diagonal stripes */}
+          <div className="absolute inset-0 pointer-events-none opacity-10"
+            style={{
+              backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(255,204,0,0.3) 8px, rgba(255,204,0,0.3) 10px)",
+            }}
+          />
+
+          {/* Spinner + message */}
+          <div className="relative z-10 flex flex-col items-center gap-4">
+            <div className="relative">
+              <Disc3 className="w-16 h-16 animate-spin text-[#FFCC00]" style={{ filter: "drop-shadow(0 0 20px rgba(255,204,0,0.4))" }} />
+              <div className="absolute inset-0 rounded-full border-2 border-[#FFCC00]/20 animate-ping" />
+            </div>
+            <div className="h-8 flex items-center justify-center">
+              <span
+                className="text-sm font-black text-white/80 uppercase tracking-[0.2em] animate-[fadeInLeft_0.3s_ease-out]"
+                key={launchMsg}
+              >
+                {launchMsg || "Preparing…"}
+              </span>
+            </div>
+          </div>
+
+          {/* Bottom tagline */}
+          <div className="absolute bottom-12 text-center">
+            <span className="text-[7px] font-black text-[#FFCC00]/20 uppercase tracking-[0.5em]">
+              Trading Tazos Game · v0.8.0
+            </span>
+          </div>
+        </div>
+      )}
       {/* ═══════════════════════════════════════════ */}
       {/* MAGAZINE BANNER                           */}
       {/* ═══════════════════════════════════════════ */}

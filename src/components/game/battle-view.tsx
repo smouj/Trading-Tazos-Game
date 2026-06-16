@@ -463,7 +463,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
     setOpponentHand(oppHand)
     const config: MatchConfig = {
       mode, aiDifficulty: diff, arena: DEFAULT_ARENA_3D,
-      scoreToWin: 5, playerDeck: hand, opponentDeck: oppFull,
+      scoreToWin: 5, playerDeck: d, opponentDeck: oppFull,
     }
 
     engine.startMatch(config)

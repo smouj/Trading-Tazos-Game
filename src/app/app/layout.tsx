@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation"
 import MagazinePageShell from "@/components/magazine-page-shell"
 import ErrorBoundary from "@/components/ui/error-boundary"
+import GameFullscreenShell from "@/components/game/game-fullscreen-shell"
 
 const PATH_TO_TAB: Record<string, string> = {
   "/app/battle": "battle",
@@ -24,14 +25,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // Battle play routes get fullBleed (no max-w/padding) and no footer
+  // Battle play routes get a fullscreen game shell
+  // (no dashboard chrome: header, tabbar, footer, HUD all hidden)
   const isBattlePlay = pathname?.startsWith("/app/battle/play")
-  const fullBleed = isBattlePlay
-  const showFooter = !isBattlePlay
+
+  if (isBattlePlay) {
+    return (
+      <ErrorBoundary>
+        <GameFullscreenShell>
+          {children}
+        </GameFullscreenShell>
+      </ErrorBoundary>
+    )
+  }
 
   return (
     <ErrorBoundary>
-      <MagazinePageShell currentTab={tab as any} fullBleed={fullBleed} showFooter={showFooter}>
+      <MagazinePageShell currentTab={tab as any}>
         {children}
       </MagazinePageShell>
     </ErrorBoundary>

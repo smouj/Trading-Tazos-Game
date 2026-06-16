@@ -161,12 +161,18 @@ export function useBattleEngine(): BattleEngine {
   }, [send])
 
   const doCoinFlip = useCallback((): "player" | "opponent" => {
-    const winner = coinFlip()
+    // Use the winner already determined by STAKES_REVEALED transition
+    const winner = ctxRef.current?.coinWinner || coinFlip()
     send({ type: "COIN_DECIDED", winner })
     return winner
   }, [send])
 
   const lockAim = useCallback((targetX: number, targetZ: number) => {
+    // Set the throwing tazo from context for slam params
+    const c = ctxRef.current
+    if (c?.playerBetTazo) {
+      setUIState(s => ({ ...s, throwing: c.playerBetTazo! }))
+    }
     send({ type: "AIM_LOCKED", targetX, targetZ })
   }, [send])
 

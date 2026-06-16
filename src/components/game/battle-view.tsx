@@ -462,7 +462,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
     setOpponentHand(oppHand)
     const config: MatchConfig = {
       mode, aiDifficulty: diff, arena: DEFAULT_ARENA_3D,
-      scoreToWin: 5, playerDeck: hand, opponentDeck: oppHand,
+      scoreToWin: 5, playerDeck: hand, opponentDeck: oppFull,
     }
 
     engine.startMatch(config)
@@ -550,24 +550,20 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
               engine.setBusy(false)
             } else {
               playerWentFirstRef.current = false
-              // AI wins coin flip — DON'T call lockAim, run opponent turn instead
+              // AI wins coin flip — run opponent turn
               setBettingPhase("idle")
-              // Let the opponent turn aftermath code handle it via a phase-aware effect
-              // For now, we set airborne null and mark engine not busy
-              // The existing opponent turn code in handleSlamRelease will not run yet
-              // because the player hasn't slammed.
-              // Instead, we need to run the opponent's turn here:
-              const ctx = engine.ctx
-              if (!ctx) { engine.setBusy(false); return }
-              const aiTazo = cfg.opponentDeck[Math.floor(Math.random() * cfg.opponentDeck.length)]
+              const latestCtx = engine.ctx
+              if (!latestCtx) { engine.setBusy(false); return }
+              // Use the STAKED opponent bet tazo (not random from deck!)
+              const aiTazo = latestCtx.opponentBetTazo
               if (!aiTazo) { engine.setBusy(false); return }
               
               // Show AI tazo airborne
               const ab = createAirborneTazo(aiTazo, "opponent", cfg.arena)
               setAirborne(ab)
               
-              // AI aim, then charge, then slam (mirrors opponent turn code)
-              const aiSlam = generateAISlam(aiTazo, ctx.stakedTazos, cfg.arena, cfg.aiDifficulty, ctx.opponent.score - ctx.player.score)
+              // AI aim, then charge, then slam
+              const aiSlam = generateAISlam(aiTazo, latestCtx.stakedTazos, cfg.arena, cfg.aiDifficulty, latestCtx.opponent.score - latestCtx.player.score)
               
               setTimeout(() => {
                 if (!engine.ctx || !cfg) return
@@ -588,10 +584,11 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
                   engine.setShowImpact(false)
                   setAirborne(null)
                   
-                  const newPR = Math.max(0, (engine.ctx?.playerRemaining ?? ctx.playerRemaining) - aiScoring.playerLostTazos)
+                  const newPR = Math.max(0, (engine.ctx?.playerRemaining ?? latestCtx.playerRemaining) - aiScoring.playerLostTazos)
                   const newPS = (engine.ctx?.player.score ?? 0) + aiScoring.playerDelta
                   const newOS = (engine.ctx?.opponent.score ?? 0) + aiScoring.opponentDelta
-                  const end = checkMatchEnd(newPS, newOS, newPR, ctx.opponentRemaining)
+                  const endCheckCtx = engine.ctx
+                  const end = checkMatchEnd(newPS, newOS, newPR, endCheckCtx?.opponentRemaining ?? 0)
                   
                   if (end) {
                     engine.showResult()
@@ -713,6 +710,10 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
       const newPScore = currentCtx.player.score + playerDelta
       const newOScore = currentCtx.opponent.score + opponentDelta
       const end = checkMatchEnd(newPScore, newOScore, newPR, newOR)
+      
+      // Keep FSM in sync: advance past impact state
+      // (FSM requires RESULT_SHOWN to transition impact→resolve_impact)
+      setTimeout(() => engine.send({ type: "RESULT_SHOWN", who: "player" } as any), 10)
 
       setTimeout(() => {
         if (!mountedRef.current) return
@@ -757,13 +758,14 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
               // Simulate brief charge, then slam down
               setTimeout(() => {
                 if (!mountedRef.current) return
-                if (!engine.ctx) { engine.setBusy(false); return }
+                const latestCtx = engine.ctx
+                if (!latestCtx) { engine.setBusy(false); return }
                 playSfx("slam_impact", 0.6)
 
                 // Animate airborne falling to impact
                 setAirborne(prev => prev ? { ...prev, state: "falling", position: [aiSlam.impactX * 0.3, 0.05, aiSlam.impactZ * 0.3] } : prev)
 
-                const { staked: newStakedAI, result: aiImpact } = simulateSlam(aiTazo, aiSlam, engine.ctx.stakedTazos, cfg.arena, "opponent", ctxDefenders)
+                const { staked: newStakedAI, result: aiImpact } = simulateSlam(aiTazo, aiSlam, latestCtx.stakedTazos, cfg.arena, "opponent", ctxDefenders)
                 const aiScoring = scoreBettingImpact(aiImpact, "opponent")
 
                 engine.resolveImpact(aiImpact, "opponent")
@@ -774,12 +776,15 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
             if (aiScoring.playerDelta > 0) { spawnPopup(`+${aiScoring.playerDelta}`, "#29ADFF", "left"); playSfx("score_pop", 0.3) }
             if (aiScoring.playerLostTazos > 0) { spawnPopup(`-${aiScoring.playerLostTazos} tazo`, "#FF004D", "left"); playSfx("damage_taken", 0.35) }
 
-            const ctx2 = engine.ctx
+            const ctx2 = latestCtx
             const finalPR = Math.max(0, (ctx2?.playerRemaining ?? newPR) - aiScoring.playerLostTazos)
             const finalOR = Math.max(0, (ctx2?.opponentRemaining ?? newOR) - aiScoring.opponentLostTazos)
             const finalPS = (ctx2?.player.score ?? newPScore) + aiScoring.playerDelta
             const finalOS = (ctx2?.opponent.score ?? newOScore) + aiScoring.opponentDelta
             const aiEnd = checkMatchEnd(finalPS, finalOS, finalPR, finalOR)
+
+            // Keep FSM in sync after AI slam
+            setTimeout(() => engine.send({ type: "RESULT_SHOWN", who: "opponent" } as any), 10)
 
             setTimeout(() => {
               if (!mountedRef.current) return

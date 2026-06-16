@@ -207,7 +207,7 @@ export const BATTLE_TRANSITIONS: StateTransition[] = [
     to: "player_aim",
     event: "COIN_DECIDED",
     guard(ctx) {
-      return ctx.coinWinner === "player" || ctx.coinWinner === null
+      const ev = event as unknown as Extract<BattleEvent, { type: "COIN_DECIDED" }>; return ev.winner === "player"
     },
     action(ctx) {
       if (!ctx.playerBetTazo) return ctx
@@ -220,7 +220,7 @@ export const BATTLE_TRANSITIONS: StateTransition[] = [
     to: "opponent_aim",
     event: "COIN_DECIDED",
     guard(ctx) {
-      return ctx.coinWinner === "opponent"
+      const ev = event as unknown as Extract<BattleEvent, { type: "COIN_DECIDED" }>; return ev.winner === "opponent"
     },
   },
 

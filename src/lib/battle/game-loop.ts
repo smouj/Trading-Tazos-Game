@@ -888,6 +888,14 @@ export function coinFlip(): "player" | "opponent" {
 // ────────────────────────────────────────
 
 export function drawHand(deck: TazoCard[], count: number = 5): { hand: TazoCard[]; remaining: TazoCard[] } {
+  // If deck doesn't have enough cards for a full hand, recycle used cards
+  if (deck.length < count) {
+    // Shuffle all deck cards plus recycle pool
+    const pool = [...deck]
+    // Not enough — just take what we have
+    const shuffled = [...pool].sort(() => rng() - 0.5)
+    return { hand: shuffled, remaining: [] }
+  }
   const shuffled = [...deck].sort(() => rng() - 0.5)
   const hand = shuffled.slice(0, Math.min(count, shuffled.length))
   const remaining = shuffled.slice(Math.min(count, shuffled.length))

@@ -24,7 +24,7 @@ export default function MinimonWikiPage() {
   const cfg = WIKI_SERIES_CONFIG.minimon;
 
   return (
-    <WikiLayout series="minimon">
+    <WikiLayout>
       <WikiHero
         series="minimon"
         title="Minimon Wiki"

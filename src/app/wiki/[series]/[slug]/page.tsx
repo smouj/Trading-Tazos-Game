@@ -72,10 +72,8 @@ export default async function WikiEntityPage({ params }: PageProps) {
     return notFound();
   }
 
-  const cfg = WIKI_SERIES_CONFIG[seriesKey];
-
   return (
-    <WikiLayout series={seriesKey}>
+    <WikiLayout>
       <WikiDetailShell entity={entity} />
     </WikiLayout>
   );

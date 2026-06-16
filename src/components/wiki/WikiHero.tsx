@@ -1,3 +1,6 @@
+"use client"
+
+import Image from "next/image";
 import { WIKI_SERIES_CONFIG } from "@/lib/wiki-types";
 import type { TTGWikiSeries } from "@/lib/wiki-types";
 
@@ -8,50 +11,69 @@ interface WikiHeroProps {
   total?: number;
 }
 
+const SERIES_LOGO_MAP: Record<TTGWikiSeries, string> = {
+  minimon: "/logo/series-minimon.png",
+  cybermon: "/logo/series-cybermon.png",
+  draco_bell: "/logo/series-dracobell.png",
+};
+
 export default function WikiHero({ series, title, subtitle, total }: WikiHeroProps) {
   const cfg = series ? WIKI_SERIES_CONFIG[series] : null;
+  const logoPath = series ? SERIES_LOGO_MAP[series] : null;
 
   return (
     <div
       className="relative overflow-hidden border-2 border-[#1a1a1a] mb-8"
       style={{
         backgroundColor: cfg?.bgColor || "#FFF9E6",
-        boxShadow: "4px 4px 0 #1a1a1a",
+        boxShadow: "6px 6px 0 #1a1a1a",
       }}
     >
-      {/* Halftone dots background */}
+      {/* ── Wallpaper: Halftone dots ── */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          backgroundImage: `radial-gradient(circle, ${cfg?.color || "#1a1a1a"} 1px, transparent 1px)`,
-          backgroundSize: "8px 8px",
-          opacity: 0.08,
+          backgroundImage: `radial-gradient(circle, ${cfg?.color || "#1a1a1a"} 1.5px, transparent 1.5px)`,
+          backgroundSize: "10px 10px",
+          opacity: 0.1,
         }}
       />
 
-      {/* Corner accents */}
-      <div className="absolute top-0 left-0 w-16 h-16 pointer-events-none">
-        <div
-          className="absolute top-0 left-0 w-full h-1"
-          style={{ backgroundColor: cfg?.color || "#1a1a1a" }}
-        />
-        <div
-          className="absolute top-0 left-0 w-1 h-full"
-          style={{ backgroundColor: cfg?.color || "#1a1a1a" }}
-        />
+      {/* ── Wallpaper: Gradient sweep ── */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: cfg
+            ? `linear-gradient(135deg, ${cfg.color}08 0%, transparent 40%, ${cfg.color}12 100%)`
+            : "linear-gradient(135deg, #1a1a1a08 0%, transparent 40%, #FFCC0012 100%)",
+        }}
+      />
+
+      {/* ── Corner accents ── */}
+      <div className="absolute top-0 left-0 w-20 h-20 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-[3px]" style={{ backgroundColor: cfg?.color || "#1a1a1a" }} />
+        <div className="absolute top-0 left-0 w-[3px] h-full" style={{ backgroundColor: cfg?.color || "#1a1a1a" }} />
       </div>
-      <div className="absolute bottom-0 right-0 w-16 h-16 pointer-events-none">
-        <div
-          className="absolute bottom-0 right-0 w-full h-1"
-          style={{ backgroundColor: cfg?.color || "#1a1a1a" }}
-        />
-        <div
-          className="absolute bottom-0 right-0 w-1 h-full"
-          style={{ backgroundColor: cfg?.color || "#1a1a1a" }}
-        />
+      <div className="absolute bottom-0 right-0 w-20 h-20 pointer-events-none">
+        <div className="absolute bottom-0 right-0 w-full h-[3px]" style={{ backgroundColor: cfg?.color || "#1a1a1a" }} />
+        <div className="absolute bottom-0 right-0 w-[3px] h-full" style={{ backgroundColor: cfg?.color || "#1a1a1a" }} />
       </div>
 
       <div className="relative px-6 py-8 sm:px-10 sm:py-12">
+        {/* ── Series logo ── */}
+        {logoPath && (
+          <div className="mb-4">
+            <Image
+              src={logoPath}
+              alt={`${cfg?.label || ""} series logo`}
+              width={320}
+              height={120}
+              className="h-14 sm:h-20 w-auto object-contain"
+              style={{ filter: "drop-shadow(3px 3px 0 rgba(26,26,26,0.2))" }}
+            />
+          </div>
+        )}
+
         <h1 className="text-2xl sm:text-4xl font-black text-[#1a1a1a] uppercase tracking-[0.05em] leading-none">
           {title}
         </h1>
@@ -66,7 +88,7 @@ export default function WikiHero({ series, title, subtitle, total }: WikiHeroPro
               className="text-xs font-black text-white px-3 py-1.5 border-2 border-[#1a1a1a]"
               style={{
                 backgroundColor: cfg?.color || "#1a1a1a",
-                boxShadow: "2px 2px 0 #1a1a1a",
+                boxShadow: "3px 3px 0 #1a1a1a",
               }}
             >
               {total} TAZOS

@@ -7,14 +7,14 @@ import WikiHero from "@/components/wiki/WikiHero";
 import WikiCardGrid from "@/components/wiki/WikiCardGrid";
 
 export const metadata: Metadata = {
-  title: "Cybermon Wiki — 128 Tazos de Aventura Digital | TTG Wiki",
+  title: "Cybermon Wiki — 128 Tazos Digitales | TTG Wiki",
   description:
-    "Catálogo completo de los 128 tazos Cybermon: Niños Vinculados, Cybermons compañeros, rivales, villanos, objetos y escenarios de Cybernet.",
+    "Catálogo completo de los 128 Cybermon: Niños Vinculados, Cybermons compañeros, villanos digitales y aliados del ciberespacio.",
   alternates: { canonical: `${SITE_CONFIG.canonicalUrl}/wiki/cybermon` },
   openGraph: {
     title: "Cybermon Wiki — 128 Tazos Digitales | TTG Wiki",
     description:
-      "Explora los 128 tazos Cybermon de Trading Tazos Game. Aventura digital con Niños Vinculados, criaturas compañeras y villanos de Cybernet.",
+      "Explora los 128 Cybermon de Trading Tazos Game. Aventura digital, Niños Vinculados y Cybermons compañeros.",
     url: `${SITE_CONFIG.canonicalUrl}/wiki/cybermon`,
   },
 };
@@ -24,7 +24,7 @@ export default function CybermonWikiPage() {
   const cfg = WIKI_SERIES_CONFIG.cybermon;
 
   return (
-    <WikiLayout series="cybermon">
+    <WikiLayout>
       <WikiHero
         series="cybermon"
         title="Cybermon Wiki"

@@ -41,8 +41,8 @@ const MODES = [
     desc: "Competitive matchmaking with leaderboard",
     color: "#E3350D",
     gradient: "linear-gradient(135deg, #E3350D, #C62828)",
-    badge: "RANKED",
-    available: true,
+    badge: "COMING SOON",
+    available: false,
   },
   {
     id: "pvp_friend" as const,
@@ -51,8 +51,8 @@ const MODES = [
     desc: "Room code duel with a friend",
     color: "#3B4CCA",
     gradient: "linear-gradient(135deg, #3B4CCA, #283593)",
-    badge: "DIRECT",
-    available: true,
+    badge: "COMING SOON",
+    available: false,
   },
 ]
 

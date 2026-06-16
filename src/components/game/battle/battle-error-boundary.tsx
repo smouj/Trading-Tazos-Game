@@ -13,7 +13,17 @@ export default class BattleErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: { componentStack: string }) {
-    console.error("[BattleErrorBoundary]", error.message, info.componentStack?.slice(0, 200))
+    const msg = error.message.slice(0, 300)
+    const stack = info.componentStack?.slice(0, 500) || ""
+    console.error("[BattleErrorBoundary]", msg, stack)
+    // Report to server for diagnostics
+    try {
+      fetch("/api/battle/error", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ error: msg, stack, userAgent: navigator.userAgent }),
+      }).catch(() => {})
+    } catch {}
   }
 
   handleReset = () => {

@@ -7,7 +7,7 @@
 // Navigates to /app/battle/play for actual gameplay.
 // ============================================================
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 import { playSFX, sfxEnsureUnlocked } from "@/lib/audio/sfx-engine"
@@ -57,6 +57,57 @@ const DIFFICULTIES = [
   { id: "skilled", label: "Skilled", desc: "Fair fight — balanced AI" },
   { id: "master", label: "Master", desc: "Expert — no mercy" },
 ] as const
+
+function CreateQuickDeckButton({ onCreated }: { onCreated: (deckId: string) => void }) {
+  const [creating, setCreating] = useState(false)
+  const [error, setError] = useState("")
+
+  const handleCreate = useCallback(async () => {
+    setCreating(true)
+    setError("")
+    try {
+      const token = localStorage.getItem("token")
+      const res = await fetch("/api/decks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ name: "Battle Deck", isActive: true }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || "Failed to create deck")
+      onCreated(data.deck?.id || data.id)
+    } catch (e: any) {
+      setError(e.message || "Could not create deck")
+    } finally {
+      setCreating(false)
+    }
+  }, [onCreated])
+
+  return (
+    <div className="inline-flex flex-col items-center gap-1">
+      <button
+        onClick={handleCreate}
+        disabled={creating}
+        className="inline-block py-3 px-8 bg-[#22C55E] text-white text-sm font-black uppercase tracking-widest border-[3px] border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_#1a1a1a] transition-all disabled:opacity-50 disabled:cursor-wait"
+      >
+        {creating ? (
+          <span className="flex items-center gap-2">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Creating...
+          </span>
+        ) : (
+          <span className="flex items-center gap-2">
+            <Zap className="w-4 h-4" />
+            Quick Deck
+          </span>
+        )}
+      </button>
+      {error && <span className="text-[9px] font-bold text-[#E3350D]">{error}</span>}
+    </div>
+  )
+}
 
 export default function BattlePage() {
   const { user } = useAuth()
@@ -170,15 +221,30 @@ export default function BattlePage() {
             No Decks Yet
           </h2>
           <p className="text-xs font-bold text-[#1a1a1a]/40 max-w-xs mx-auto mb-5 leading-relaxed">
-            You need a Deck to enter the arena. Build one with your best tazos in the Decks section, then come back here.
+            You need a Deck to enter the arena. Create one instantly with your best 5 tazos, or build custom in Decks.
           </p>
-          <a
-            href="/app/decks"
-            className="inline-block py-3 px-8 mag-btn bg-[#3B4CCA] text-white text-sm font-black uppercase tracking-widest border-[3px] border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_#1a1a1a] transition-all no-underline"
-          >
-            <Layers className="w-4 h-4 inline mr-1.5" />
-            Go to Decks
-          </a>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
+            <CreateQuickDeckButton onCreated={(deckId: string) => {
+              setSelectedDeckId(deckId)
+              // Refresh deck list
+              const token = localStorage.getItem("token")
+              fetch("/api/decks", {
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+              })
+                .then(r => r.json())
+                .then(d => {
+                  setDecks(d.decks || [])
+                  setLoading(false)
+                })
+            }} />
+            <a
+              href="/app/decks"
+              className="inline-block py-3 px-8 bg-white text-[#1a1a1a] text-sm font-black uppercase tracking-widest border-[3px] border-[#1a1a1a] hover:bg-zinc-50 transition-all no-underline"
+            >
+              <Layers className="w-4 h-4 inline mr-1.5" />
+              Custom Deck
+            </a>
+          </div>
         </div>
       )}
 

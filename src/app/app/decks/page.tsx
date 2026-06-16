@@ -24,7 +24,7 @@ interface DeckTazo {
 }
 interface Deck {
   id: string; name: string; isActive: boolean; tazoCount: number; tazos: DeckTazo[]
-  color?: string; textureUrl?: string; tubeSlug?: string; starters?: string[]; createdAt: string; updatedAt?: string
+  color?: string; textureUrl?: string; tubeSlug?: string; createdAt: string; updatedAt?: string
 }
 
 function totalPower(t: DeckTazo): number {
@@ -233,7 +233,6 @@ export default function DecksPage() {
                         imageUrl: t.imageUrl, franchiseSlug: t.franchiseSlug || t.franchise,
                         finish: t.finish, creatureVariant: t.creatureVariant, shinyImageUrl: t.shinyImageUrl,
                       }))}
-                      starters={deck.starters || []}
                       size="md"
                     />
                   </div>
@@ -259,10 +258,7 @@ export default function DecksPage() {
                               <>{deck.tazoCount}/20 tazos</>
                             )}
                           </span>
-                          {/* Starter count */}
-                          <span className="text-[9px] font-bold text-[#E3350D] flex items-center gap-0.5">
-                            <Swords className="w-2.5 h-2.5" /> {deck.starters?.length || 0} starters
-                          </span>
+
                           {deck.isActive && (
                             <span className="inline-flex items-center gap-1 text-[9px] bg-[#FFCC00] text-[#1a1a1a] font-black px-2 py-0.5 border-2 border-[#1a1a1a] uppercase tracking-wider shadow-[2px_2px_0px_#1a1a1a]">
                               <Star className="w-2.5 h-2.5 fill-[#1a1a1a]" />
@@ -324,17 +320,11 @@ export default function DecksPage() {
                       {/* Tazo chip pills — compact, just circles */}
                       <div className="flex items-center gap-1 flex-wrap">
                         {deck.tazos.slice(0, 12).map(t => {
-                          const isStarter = deck.starters?.includes(t.id)
                           return (
                             <div
                               key={t.id}
-                              className="w-7 h-7 rounded-full overflow-hidden border-2 flex-shrink-0"
-                              style={{
-                                background: "transparent",
-                                borderColor: isStarter ? deck.color || "#E3350D" : "#1a1a1a/15",
-                                boxShadow: isStarter ? `0 0 6px ${deck.color || "#E3350D"}40` : "none",
-                              }}
-                              title={`${t.displayName || t.name}${isStarter ? " (Starter)" : ""}`}
+                              className="w-7 h-7 rounded-full overflow-hidden border-2 flex-shrink-0 border-[#1a1a1a]/15"
+                              title={t.displayName || t.name}
                             >
                               <TazoDiscImage
                                 src={t.imageUrl}
@@ -378,7 +368,7 @@ export default function DecksPage() {
             No Decks Yet
           </h2>
           <p className="text-xs font-bold text-[#1a1a1a]/40 max-w-xs mx-auto mb-5">
-            Build a 20-tazo deck, pick 5 starters, and seal it for battle.
+            Build a 20-tazo deck and seal it for battle.
           </p>
           <button
             onClick={() => setShowBuilder(true)}

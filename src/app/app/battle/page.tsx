@@ -409,7 +409,7 @@ export default function BattlePage() {
                       shinyImageUrl: t.shinyImageUrl,
                       franchiseSlug: t.franchiseSlug || t.franchise,
                     }))}
-                    starters={selectedDeck.starters || []}
+
                     size="md"
                   />
                 </div>

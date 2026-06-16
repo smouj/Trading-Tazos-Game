@@ -418,7 +418,6 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
                   count={selectedIds.size}
                   maxCount={20}
                   tazos={tubeTazos}
-                  starters={[]}
                   size="md"
                   showLabel
                 />
@@ -472,7 +471,6 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
                 count={selectedIds.size}
                 maxCount={20}
                 tazos={tubeTazos}
-                starters={[]}
                 size="md"
               />
             </div>

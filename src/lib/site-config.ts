@@ -238,6 +238,12 @@ export const PAGE_META: Record<string, PageMeta> = {
       "How Trading Tazos Game uses cookies. Essential functional cookies, analytics (Google Search Console), and third-party advertising cookies.",
     canonicalPath: "/?page=cookies",
   },
+  wiki: {
+    title: "TTG Wiki — Catálogo Oficial de Criaturas, Héroes y Villanos | Trading Tazos Game",
+    description:
+      "Explora el catálogo oficial de Trading Tazos Game: 151 Minimon, 128 Cybermon y 72 Draco Bell. Criaturas, personajes, villanos, aliados, técnicas y lore del universo TTG.",
+    canonicalPath: "/?page=wiki",
+  },
 }
 
 // ── Footer links ──

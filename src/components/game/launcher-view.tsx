@@ -38,7 +38,7 @@ import { Skeleton } from "@/components/ui/loading-skeletons"
 
 // ── Types ──
 
-type PageId = "home" | "how-to-play" | "collections" | "collections-minimon"
+type PageId = "home" | "how-to-play" | "collections" | "collections-minimon" | "wiki"
   | "collections-cybermon" | "collections-dracobell" | "tazos" | "leaderboard"
   | "download" | "faq" | "shop" | "privacy" | "terms" | "cookies" | "contact"
   | "refund-policy" | "disclaimer"
@@ -59,6 +59,7 @@ const PAGE_LABELS: Record<PageId, string> = {
   cookies: "Cookies",
   contact: "Contact",
   "refund-policy": "Refund Policy",
+  wiki: "Wiki",
   disclaimer: "Disclaimer",
   shop: "Shop",
 }
@@ -2089,6 +2090,8 @@ export default function LauncherView() {
     setCurrentPage(page)
     if (page === "home") {
       router.replace("/", { scroll: false })
+    } else if (page === "wiki") {
+      router.push("/wiki")
     } else {
       router.replace(`/?page=${page}`, { scroll: false })
     }
@@ -2138,6 +2141,7 @@ export default function LauncherView() {
                 ["download", "Download"],
                 ["faq", "FAQ"],
                 ["shop", "Shop"],
+                ["wiki", "Wiki"],
               ] as [PageId, string][]).map(([id, label]) => (
                 <button key={id} onClick={() => navigate(id)}
                   className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider transition-colors ${

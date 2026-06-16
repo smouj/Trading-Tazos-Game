@@ -111,7 +111,7 @@ export default function AdminTubesPage() {
       <div className="flex items-center gap-3">
         <Package className="w-6 h-6 text-[#FF6B00]" />
         <h1 className="text-lg sm:text-xl font-black uppercase text-[#1a1a1a] tracking-wide">
-          Tube Textures
+          Deck Textures
         </h1>
         <span className="text-sm font-black text-[#1a1a1a]/25">{textures.length} files</span>
       </div>
@@ -126,7 +126,7 @@ export default function AdminTubesPage() {
       {/* ── Upload card ── */}
       <div className="border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] bg-white p-5">
         <h2 className="text-sm font-black uppercase text-[#1a1a1a] mb-4 flex items-center gap-2">
-          <Upload className="w-4 h-4 text-[#E3350D]" /> Upload Tube Texture
+          <Upload className="w-4 h-4 text-[#E3350D]" /> Upload Deck Texture
         </h2>
         <div className="flex flex-wrap gap-3 items-end">
           <div>
@@ -149,7 +149,7 @@ export default function AdminTubesPage() {
           </label>
         </div>
         <p className="text-[9px] font-bold text-[#1a1a1a]/25 mt-3">
-          Upload .png textures (recommended: 512×1024 or wider). Files are placed in /public/textures/tubes/.
+          Upload .png textures (recommended: 512×1024 or wider). Files are placed in /public/textures/decks/.
         </p>
       </div>
 

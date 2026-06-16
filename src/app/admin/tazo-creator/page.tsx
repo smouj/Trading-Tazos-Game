@@ -306,7 +306,7 @@ export default function AdminTazoCreatorPage() {
             <div className="grid sm:grid-cols-3 gap-4">
               {/* Franchise */}
               <div className="mag-card p-4 border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a]">
-                <h3 className="text-[10px] font-black uppercase tracking-wider text-[#1a1a1a]/50 mb-3">Franchise</h3>
+                <h3 className="text-[10px] font-black uppercase tracking-wider text-[#1a1a1a]/50 mb-3">Series</h3>
                 <div className="space-y-2">
                   {FRANCHISES.map(f => (
                     <button

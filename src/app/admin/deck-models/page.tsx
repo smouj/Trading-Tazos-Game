@@ -98,7 +98,7 @@ export default function AdminTubeModelsPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this tube model?")) return
+    if (!confirm("Delete this deck model?")) return
     await fetch(`/api/admin/tube-models?id=${id}`, { method: "DELETE" })
     await fetchModels()
   }
@@ -125,7 +125,7 @@ export default function AdminTubeModelsPage() {
   return (
     <AdminShell accentColor="#EF4444" actions={
       <button onClick={() => setShowAdd(!showAdd)} className="flex items-center gap-1.5 px-3 py-1.5 bg-[#EF4444] text-white text-[10px] font-black uppercase border-2 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a] hover:shadow-[1px_1px_0px]">
-        <Plus className="w-3.5 h-3.5" /> New Tube
+        <Plus className="w-3.5 h-3.5" /> New Deck
       </button>
     }>
       <div className="max-w-6xl mx-auto px-4 py-6 space-y-4">
@@ -139,7 +139,7 @@ export default function AdminTubeModelsPage() {
             <h3 className="text-xs font-black uppercase tracking-wider text-[#1a1a1a]/50 mb-3">New Deck Model</h3>
             <div className="grid sm:grid-cols-2 gap-3 mb-3">
               <div><label className="text-[9px] font-black uppercase text-[#1a1a1a]/40">Name</label><input value={newName} onChange={e => setNewName(e.target.value)} placeholder="Classic Deck" className="w-full p-2 border-2 border-[#1a1a1a] text-xs font-bold" /></div>
-              <div><label className="text-[9px] font-black uppercase text-[#1a1a1a]/40">Texture URL</label><input value={newTextureUrl} onChange={e => setNewTextureUrl(e.target.value)} placeholder="/tazos-tubes/tube-minimon.png" className="w-full p-2 border-2 border-[#1a1a1a] text-xs font-bold" /></div>
+              <div><label className="text-[9px] font-black uppercase text-[#1a1a1a]/40">Texture URL</label><input value={newTextureUrl} onChange={e => setNewTextureUrl(e.target.value)} placeholder="/tazos-tubes/deck-minimon.png" className="w-full p-2 border-2 border-[#1a1a1a] text-xs font-bold" /></div>
               <div><label className="text-[9px] font-black uppercase text-[#1a1a1a]/40">Franchise</label><select value={newFranchise} onChange={e => setNewFranchise(e.target.value)} className="w-full p-2 border-2 border-[#1a1a1a] text-xs font-bold">{FRANCHISES.map(f => <option key={f} value={f}>{f.toUpperCase()}</option>)}</select></div>
               <div><label className="text-[9px] font-black uppercase text-[#1a1a1a]/40">Sort Order</label><input type="number" value={newSortOrder} onChange={e => setNewSortOrder(Number(e.target.value))} className="w-full p-2 border-2 border-[#1a1a1a] text-xs font-bold" /></div>
             </div>
@@ -156,7 +156,7 @@ export default function AdminTubeModelsPage() {
           <div className="text-center py-16 border-3 border-[#1a1a1a] bg-white shadow-[3px_3px_0px]">
             <Package className="w-10 h-10 text-[#1a1a1a]/15 mx-auto mb-3" />
             <p className="font-black text-sm text-[#1a1a1a]/30 uppercase">No deck models yet</p>
-            <p className="text-[10px] font-bold text-[#1a1a1a]/20 mt-1">Click &quot;New Tube&quot; to create one</p>
+            <p className="text-[10px] font-bold text-[#1a1a1a]/20 mt-1">Click &quot;New Deck&quot; to create one</p>
           </div>
         ) : (
           <div className="grid gap-4">

@@ -34,6 +34,7 @@ interface Franchise { id: string; name: string; slug: string }
 const RARITIES = ["common", "uncommon", "rare", "ultra", "legendary", "epic"]
 const FINISHES = ["normal", "holo", "reverse_holo", "prismatic", "foil", "glossy", "metallic", "chrome", "gold", "rainbow", "glitter", "stardust", "aurora", "cracked_ice", "oil_slick", "lenticular", "pearlescent", "matte"]
 const ROLES = ["attacker", "tank", "technical", "bouncer", "heavy", "light", "balanced", "special"]
+const ROLE_SHORT = { attacker: "ATK", tank: "TNK", technical: "TEC", bouncer: "BNC", heavy: "HVY", light: "LGT", balanced: "BAL", special: "SPC" } as const
 const COMBAT_TYPES = [
   // Minimon
   "fire", "water", "grass", "electric", "psychic", "ghost", "dragon", "normal",
@@ -557,7 +558,7 @@ export default function AdminTazoManagerPage() {
                           <div className="flex items-center gap-1 text-[9px] font-bold text-zinc-400 uppercase tracking-wider">
                             <span>{tazo.franchise.name}</span><span>·</span><span>{tazo.rarity}</span>
                             {tazo.finish !== "normal" && <><span>·</span><span className="text-[#FFCC00]">{tazo.finish}</span></>}
-                            {tazo.role && <><span>·</span><span>{tazo.role.slice(0,4)}</span></>}
+                            {tazo.role && <><span>·</span><span>{ROLE_SHORT[tazo.role as keyof typeof ROLE_SHORT] ?? tazo.role}</span></>}
                           </div>
                           <div className="flex gap-1 pt-0.5">
                             {[{ v: tazo.attack, c: "#E3350D" },{ v: tazo.defense, c: "#3B4CCA" },{ v: tazo.resistance, c: "#22C55E" },{ v: tazo.weight, c: "#F59E0B" },{ v: tazo.stability, c: "#A855F7" }].map(s => (

@@ -44,7 +44,7 @@ export default function AdminBagsPage() {
     const file = e.target.files?.[0]
     if (!file) return
     if (!franchise) {
-      setMessage("Select a franchise first")
+      setMessage("Select a series first")
       return
     }
 
@@ -133,13 +133,13 @@ export default function AdminBagsPage() {
         </h2>
         <div className="flex flex-wrap gap-3 items-end">
           <div>
-            <label className="block text-[10px] font-black text-[#1a1a1a]/40 uppercase mb-1">Franchise</label>
+            <label className="block text-[10px] font-black text-[#1a1a1a]/40 uppercase mb-1">Series</label>
             <select
               value={franchise}
               onChange={e => setFranchise(e.target.value)}
               className="px-4 py-2.5 text-xs font-black border-3 border-[#1a1a1a] bg-white text-[#1a1a1a] uppercase shadow-[2px_2px_0px_#1a1a1a]"
             >
-              <option value="">— Pick franchise —</option>
+              <option value="">— Pick series —</option>
               <option value="minimon">Minimon</option>
               <option value="cybermon">Cybermon</option>
               <option value="dracobell">Dracobell</option>

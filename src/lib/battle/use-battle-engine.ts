@@ -182,13 +182,23 @@ export function useBattleEngine(): BattleEngine {
     send({ type: "CHARGE_LOCKED", charge: chg })
   }, [send])
 
-  const releaseSlam = useCallback(() => {
+  const setTimingAccuracy = useCallback((charge: number) => {
+    if (charge >= 0.68 && charge <= 0.76) return 0.95  // PERFECT
+    if (charge >= 0.60 && charge <= 0.82) return 0.80  // GOOD
+    if (charge <= 0.30) return 0.40                     // WEAK
+    if (charge > 0.82) return 0.55                      // OVERCHARGE
+    return 0.70                                          // OK
+  }, [])
+
+  const releaseSlam = useCallback((chargeQuality?: number) => {
+    const charge = uiRef.current.charge
+    const timingAcc = chargeQuality ?? 0.7
     send({ type: "SLAM_RELEASED", params: {
       tazoId: uiRef.current.throwing?.id || "",
       impactX: uiRef.current.reticleX,
       impactZ: uiRef.current.reticleZ,
-      verticalForce: uiRef.current.charge,
-      timingAccuracy: 0.7,
+      verticalForce: charge,
+      timingAccuracy: timingAcc,
       tilt: "flat",
       tiltIntensity: uiRef.current.tiltIntensity,
       spinIntensity: uiRef.current.spinIntensity,

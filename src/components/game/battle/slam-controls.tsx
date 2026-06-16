@@ -140,9 +140,14 @@ export default function SlamControls(props: SlamControlsProps) {
     onTilt(Math.atan2(dy, dx) * (180 / Math.PI), Math.min(1, Math.sqrt(dx * dx + dy * dy) / (rect.width * 0.4)))
   }, [onTilt])
 
-  const isPerfect = charge >= 0.6 && charge <= 0.82
-  const isOver = charge > 0.82
-  const barColor = isOver ? "#FF004D" : isPerfect ? "#22C55E" : charge > 0.25 ? "#FFCC00" : "#FFCC0060"
+  // Critical timing zones: PERFECT 68-76%, GOOD 60-82%, OVERCHARGE >82%, WEAK <30%
+  const timingQuality = charge >= 0.68 && charge <= 0.76 ? "PERFECT" : charge >= 0.60 && charge <= 0.82 ? "GOOD" : charge > 0.82 ? "OVERCHARGE" : charge < 0.30 ? "WEAK" : "OK"
+  const isPerfect = timingQuality === "PERFECT"
+  const isGood = timingQuality === "GOOD" || isPerfect
+  const isOver = timingQuality === "OVERCHARGE"
+  const isWeak = timingQuality === "WEAK"
+    // (isOver defined above)
+  const barColor = isOver ? "#FF004D" : isPerfect ? "#22C55E" : isGood ? "#FFCC00" : isWeak ? "#888" : charge > 0.15 ? "#FFCC0080" : "#FFCC0040"
 
   // ═════════════════════════════════════
   // AIM — auto-moving reticle
@@ -267,7 +272,7 @@ export default function SlamControls(props: SlamControlsProps) {
         <div className="flex items-center justify-between px-1">
           <span className="text-[8px] font-black text-white/15 uppercase tracking-[0.3em]">Force</span>
           <span className="text-[13px] font-black tracking-wider" style={{ color: barColor, textShadow: `0 0 16px ${barColor}40` }}>
-            {isPerfect ? <span className="inline-flex items-center gap-1.5 animate-pulse"><Zap className="w-3.5 h-3.5" />PERFECT</span> : Math.round(charge * 100) + "%"}
+            {timingQuality === "PERFECT" ? <span className="inline-flex items-center gap-1.5 animate-pulse text-[#22C55E]"><Zap className="w-3.5 h-3.5" />PERFECT</span> : timingQuality === "GOOD" ? <span className="inline-flex items-center gap-1.5 text-[#FFCC00]"><Zap className="w-3 h-3" />GOOD</span> : timingQuality === "OVERCHARGE" ? <span className="inline-flex items-center gap-1.5 text-[#FF004D]">⚠ OVER</span> : timingQuality === "WEAK" ? <span className="inline-flex items-center gap-1.5 text-gray-500">WEAK</span> : Math.round(charge * 100) + "%"}
           </span>
         </div>
         {/* Magazine-rule progress bar */}

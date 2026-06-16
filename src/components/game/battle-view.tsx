@@ -361,7 +361,8 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
 
   // ── Auto-save on match_end ──
   useEffect(() => {
-    if (phase === "match_end" && result && !resultSaved.current && user && token) {
+    // Public practice: never save
+    if (phase === "match_end" && result && !resultSaved.current && user && token && sessionStorage.getItem("battle_public_practice") !== "1") {
       resultSaved.current = true
       const saveMatch = async () => {
         const pr = await engine.saveBattle(token)
@@ -649,12 +650,27 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
     // Drive FSM: player_tilt → slamming
     engine.releaseSlam()
 
+    // Determine timing quality for feedback
+    const timingQuality: string =
+      charge >= 0.68 && charge <= 0.76 ? "PERFECT"
+      : charge >= 0.60 && charge <= 0.82 ? "GOOD"
+      : charge > 0.82 ? "OVERCHARGE"
+      : charge < 0.30 ? "WEAK"
+      : "OK"
+    // Store in UI for display
+    engine.setImpactMsg(timingQuality)
+
     const slam: SlamParams = {
       tazoId: t.id,
       impactX: reticleX,
       impactZ: reticleZ,
       verticalForce: charge,
-      timingAccuracy: charge > 0.6 && charge < 0.82 ? 0.95 : 0.6,
+      // Critical timing: PERFECT 68-76%, GOOD 60-82%, OVERCHARGE >82%, WEAK <30%
+      timingAccuracy: charge >= 0.68 && charge <= 0.76 ? 0.95
+        : charge >= 0.60 && charge <= 0.82 ? 0.80
+        : charge > 0.82 ? 0.55
+        : charge < 0.30 ? 0.40
+        : 0.70,
       tilt: tiltDir,
       tiltIntensity,
       spinIntensity,
@@ -696,7 +712,11 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
       engine.resolveImpact(impact, "player")
       setAirborne(null)
 
-      engine.setImpactMsg(impact.description)
+      engine.setImpactMsg(
+                impact.hitZone && impact.hitZone !== "MISS"
+                  ? `${impact.description} · ${impact.hitZone}`
+                  : impact.description
+              )
       engine.setShowImpact(true)
 
       if (playerDelta > 0) { spawnPopup(`+${playerDelta}`, "#29ADFF", "left"); playSfx("score_pop", 0.3) }
@@ -842,6 +862,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
     // Opponent's slam — simulate it locally to see the result
     if (action.slamParams) {
       const oppTazo = cfg.opponentDeck.find(t => t.id === action.slamParams!.tazoId) || cfg.opponentDeck[0]
+
       const slam: SlamParams = {
         tazoId: action.slamParams.tazoId,
         impactX: action.slamParams.impactX,
@@ -861,7 +882,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
         const { result: impact } = simulateSlam(oppTazo, slam, engine.ctx.stakedTazos, cfg.arena, "opponent", ctxDefenders)
         const scoring = scoreBettingImpact(impact, "opponent")
         engine.resolveImpact(impact, "opponent")
-        engine.setImpactMsg(impact.description)
+        engine.setImpactMsg(impact.description || "")
         engine.setShowImpact(true)
 
         if (scoring.opponentDelta > 0) { spawnPopup(`+${scoring.opponentDelta}`, "#FF004D", "right"); playSfx("score_pop", 0.3) }
@@ -948,7 +969,12 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
       phase: "slam",
       betTazoId: t.id,
       slamParams: { tazoId: t.id, impactX: reticleX, impactZ: reticleZ, verticalForce: charge,
-        timingAccuracy: charge > 0.6 && charge < 0.82 ? 0.95 : 0.6,
+        // Critical timing: PERFECT 68-76%, GOOD 60-82%, OVERCHARGE >82%, WEAK <30%
+      timingAccuracy: charge >= 0.68 && charge <= 0.76 ? 0.95
+        : charge >= 0.60 && charge <= 0.82 ? 0.80
+        : charge > 0.82 ? 0.55
+        : charge < 0.30 ? 0.40
+        : 0.70,
         tilt: tiltDir, tiltIntensity, spinIntensity,
         aimPrecision: Math.max(0.2, (t.precision || 50) / 100) },
     })
@@ -961,15 +987,34 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
     setTimeout(() => {
       if (!engine.ctx || !cfg) { engine.setBusy(false); return }
       playSfx("slam_impact", 0.6)
-      const slam: SlamParams = { tazoId: t.id, impactX: reticleX, impactZ: reticleZ, verticalForce: charge,
-        timingAccuracy: charge > 0.6 && charge < 0.82 ? 0.95 : 0.6,
+      // Determine timing quality for feedback
+    const timingQuality: string =
+      charge >= 0.68 && charge <= 0.76 ? "PERFECT"
+      : charge >= 0.60 && charge <= 0.82 ? "GOOD"
+      : charge > 0.82 ? "OVERCHARGE"
+      : charge < 0.30 ? "WEAK"
+      : "OK"
+    // Store in UI for display
+    engine.setImpactMsg(timingQuality)
+
+    const slam: SlamParams = { tazoId: t.id, impactX: reticleX, impactZ: reticleZ, verticalForce: charge,
+        // Critical timing: PERFECT 68-76%, GOOD 60-82%, OVERCHARGE >82%, WEAK <30%
+      timingAccuracy: charge >= 0.68 && charge <= 0.76 ? 0.95
+        : charge >= 0.60 && charge <= 0.82 ? 0.80
+        : charge > 0.82 ? 0.55
+        : charge < 0.30 ? 0.40
+        : 0.70,
         tilt: tiltDir, tiltIntensity, spinIntensity,
         aimPrecision: Math.max(0.2, (t.precision || 50) / 100) }
       const { result: impact } = simulateSlam(t, slam, engine.ctx.stakedTazos, cfg.arena, "player", ctxDefenders)
       const scoring = scoreBettingImpact(impact, "player")
       engine.resolveImpact(impact, "player")
       setAirborne(null)
-      engine.setImpactMsg(impact.description)
+      engine.setImpactMsg(
+                impact.hitZone && impact.hitZone !== "MISS"
+                  ? `${impact.description} · ${impact.hitZone}`
+                  : impact.description
+              )
       engine.setShowImpact(true)
 
       if (scoring.playerDelta > 0) { spawnPopup(`+${scoring.playerDelta}`, "#29ADFF", "left"); playSfx("score_pop", 0.3) }
@@ -1220,6 +1265,35 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
               }}
             >{p.text}</div>
           ))}
+
+          {/* ── Hit Feedback Overlay ── */}
+          {(phase === "impact" || engine.ui.showImpact) && engine.ui.impactMsg && (
+            <div className="absolute top-1/4 left-1/2 -translate-x-1/2 pointer-events-none z-40">
+              <div className="animate-[popUp_0.35s_ease-out] text-center">
+                <div className={[
+                  "text-4xl sm:text-5xl font-black tracking-tight",
+                  engine.ui.impactMsg === "PERFECT" ? "text-[#22C55E]" :
+                  engine.ui.impactMsg === "GOOD" ? "text-[#FFCC00]" :
+                  engine.ui.impactMsg === "OVERCHARGE" ? "text-[#FF004D]" :
+                  engine.ui.impactMsg === "WEAK" ? "text-gray-400" :
+                  engine.ui.impactMsg === "CENTER HIT" ? "text-[#29ADFF]" :
+                  engine.ui.impactMsg === "EDGE HIT" ? "text-[#FF8800]" :
+                  engine.ui.impactMsg === "RIM HIT" ? "text-[#FFCC00]/70" :
+                  engine.ui.impactMsg === "DOUBLE FLIP!" ? "text-[#FFCC00]" :
+                  engine.ui.impactMsg === "CAPTURED!" ? "text-[#22C55E]" :
+                  engine.ui.impactMsg === "SECURED!" ? "text-[#29ADFF]" :
+                  "text-white"
+                ].join(" ")}
+                style={{ textShadow: engine.ui.impactMsg === "PERFECT" ? "0 0 40px rgba(34,197,94,0.8)" : engine.ui.impactMsg === "DOUBLE FLIP!" ? "0 0 40px rgba(255,204,0,0.8)" : engine.ui.impactMsg === "CAPTURED!" ? "0 0 30px rgba(34,197,94,0.6)" : "0 0 20px rgba(0,0,0,0.5)" }}>
+                  {engine.ui.impactMsg === "PERFECT" ? "⚡ PERFECT SLAM!" :
+                   engine.ui.impactMsg === "GOOD" ? "GOOD SLAM" :
+                   engine.ui.impactMsg === "OVERCHARGE" ? "OVERCHARGE!" :
+                   engine.ui.impactMsg === "WEAK" ? "TOO WEAK" :
+                   engine.ui.impactMsg}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Impact particles */}
           {(phase === "impact" || engine.ui.showImpact) && (

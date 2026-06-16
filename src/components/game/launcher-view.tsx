@@ -630,7 +630,7 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
             <div className="p-3 sm:p-4 space-y-3">
               <div>
                 <p className="text-[10px] font-black text-[#1a1a1a]/30 uppercase tracking-[0.15em]">{user ? "Ready for battle" : "Practice Arena Ready"}</p>
-                <p className="text-[11px] font-bold text-[#1a1a1a]/45">{user ? "Signed in — progress saved" : "Play as Guest · Sign in to save progress"}</p>
+                <p className="text-[11px] font-bold text-[#1a1a1a]/45">{user ? "Signed in — progress saved" : "Play as Guest · Try the arena free!"}</p>
               </div>
 
               {/* Quick Actions — magazine navigation cards */}
@@ -2057,13 +2057,13 @@ export default function LauncherView() {
   }, [router])
 
   const handlePlay = useCallback(() => {
-    // Direct to game hub — guests can play Practice without login
-    window.location.href = "/app/battle"
-  }, [])
+    // Guests → public practice, logged-in → app battle
+    window.location.href = user ? "/app/battle" : "/battle/practice"
+  }, [user])
   const handleSplashDone = useCallback(() => {
     setShowSplash(false)
-    window.location.href = "/app/battle"
-  }, [])
+    window.location.href = user ? "/app/battle" : "/battle/practice"
+  }, [user])
 
   const isHome = currentPage === "home"
 

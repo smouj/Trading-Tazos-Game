@@ -261,6 +261,16 @@ export interface PlayerGameState {
 // Round / Match Results
 // ────────────────────────────────────────
 
+// ── Hit Zone Classification ──
+export type HitZone = "CENTER" | "EDGE" | "RIM" | "MISS"
+
+export const HIT_ZONE_CONFIG = {
+  CENTER: { maxDist: 0.35, pushMultiplier: 1.12, flipMultiplier: 0.92, label: "CENTER HIT" },
+  EDGE:   { maxDist: 0.78, pushMultiplier: 1.0,  flipMultiplier: 1.18, label: "EDGE HIT" },
+  RIM:    { maxDist: 1.05, pushMultiplier: 0.90, flipMultiplier: 0.85, label: "RIM HIT", spinMultiplier: 1.20, controlPenalty: 0.90 },
+  MISS:   { maxDist: Infinity, pushMultiplier: 0.5, flipMultiplier: 0.3, label: "MISS" },
+} as const
+
 export interface ImpactResult {
   flipped: string[]        // Tazo ids flipped face-up
   wobbled: string[]        // Wobbled but stayed down
@@ -274,6 +284,10 @@ export interface ImpactResult {
   lostLauncher: boolean
   /** Whether the opponent's staked tazo was captured */
   opponentCaptured: boolean
+  /** Hit zone classification for feedback */
+  hitZone?: HitZone
+  /** Distance from impact point to nearest staked tazo (0-1 normalized) */
+  hitDistance?: number
 }
 
 export interface RoundResult {
@@ -442,6 +456,15 @@ export function simulateSlam(
     const dz = actualZ - st.position[2]
     const dist = Math.sqrt(dx * dx + dz * dz)
 
+    // Hit zone classification (based on normalized distance to tazo center)
+    // Used for feedback; first hit gets priority
+    let hitZone: HitZone | undefined
+    const zoneDist = dist / 1.2  // Normalize: tazo center spacing ~1.2 units
+    if (zoneDist < 0.35) hitZone = "CENTER"
+    else if (zoneDist < 0.78) hitZone = "EDGE"
+    else if (zoneDist < 1.05) hitZone = "RIM"
+    else hitZone = "MISS"
+
     // Impact degrades with distance
     const distFalloff = Math.max(0, 1 - dist / 0.9)  // 0 at >0.9 units
     if (distFalloff < 0.05) return st  // Too far, no effect
@@ -483,17 +506,24 @@ export function simulateSlam(
       weightPenaltyFactor = 0
     }
 
+    // Hit zone modifiers for flip/push
+    const zoneConfig = HIT_ZONE_CONFIG[hitZone || "EDGE"]
+    const zoneFlipMod = zoneConfig.flipMultiplier
+    const zonePushMod = zoneConfig.pushMultiplier
+    const zoneSpinMod = (zoneConfig as any).spinMultiplier || 1.0
+    const zoneControlPenalty = (zoneConfig as any).controlPenalty || 1.0
+
     const flipScore =
-      (slamPower * 0.35) +
+      ((slamPower * zonePushMod) * 0.35) +
       (attackFactor * 0.20) +
       (weightFactor * 0.12) +
-      (edgeBonus * 0.15) +
+      (edgeBonus * 0.15 * zoneFlipMod) +
       (distBonus * 0.08) +
-      (spinBonus * 0.10) -
+      (spinBonus * 0.10 * zoneSpinMod) -
       (defenseFactor * 0.08) -
       (resistFactor * 0.06) -
-      (stabilityFactor * 0.06) -
-      weightPenaltyFactor  // Heavier defenders resist flips slightly more
+      (stabilityFactor * 0.06 * zoneControlPenalty) -
+      weightPenaltyFactor
 
     // ── Bounce check (knock out of circle) ──
     const bounceChance = launcher.bounce / 120 + slamPower * 0.15
@@ -554,6 +584,24 @@ export function simulateSlam(
   // Launcher is lost if no tazo was flipped at all
   const lostLauncher = flipped.length === 0 && !badLanding
 
+  // Determine best hit zone across all staked tazos
+  const bestHitZone = (() => {
+    const zones = newStaked.map(st => {
+      const dx = actualX - st.position[0]
+      const dz = actualZ - st.position[2]
+      const d = Math.sqrt(dx * dx + dz * dz) / 1.2
+      if (d < 0.35) return "CENTER" as HitZone
+      if (d < 0.78) return "EDGE" as HitZone
+      if (d < 1.05) return "RIM" as HitZone
+      return "MISS" as HitZone
+    })
+    // Priority: best zone that was actually hit
+    if (zones.includes("CENTER")) return "CENTER"
+    if (zones.includes("EDGE")) return "EDGE"
+    if (zones.includes("RIM")) return "RIM"
+    return "MISS"
+  })()
+
   const result: ImpactResult = {
     flipped,
     wobbled,
@@ -561,6 +609,12 @@ export function simulateSlam(
     doubleFlip,
     badLanding,
     impactForce: slamPower,
+    hitZone: bestHitZone,
+    hitDistance: Math.min(...newStaked.map(st => {
+      const dx = actualX - st.position[0]
+      const dz = actualZ - st.position[2]
+      return Math.sqrt(dx * dx + dz * dz) / 1.2
+    })),
     edgeBonus: hitsEdge ? 1.5 : 1.0,
     lostLauncher: lostLauncher && !badLanding,
     opponentCaptured,

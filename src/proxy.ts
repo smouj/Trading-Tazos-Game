@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from "next/server"
 
 const ROOT_REDIRECTS: Record<string, string> = {
-  // /app now renders the Dashboard page — no redirect
+  "/app": "/app/collection",
   "/privacy": "/?page=privacy",
   "/terms": "/?page=terms",
   "/cookies": "/?page=cookies",

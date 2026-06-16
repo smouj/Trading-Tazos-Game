@@ -210,7 +210,7 @@ function ServerPrivacy() {
   return (
     <section className="sr-only">
       <h1>Privacy Policy — Trading Tazos Game</h1>
-      <p>We collect minimal data to provide the game experience. Your tazos, deck builds, and battle history are stored to serve your personal collection. We use cookies for authentication and Plausible for anonymous analytics. No personal data is sold. Email support@tradingtazosgame.com for privacy requests.</p>
+      <p>We collect minimal data to provide the game experience. Your tazos, deck builds, and battle history are stored to serve your personal collection. We use cookies for authentication. Anonymous traffic data is collected via Google Search Console. No personal data is sold. Email support@tradingtazosgame.com for privacy requests.</p>
     </section>
   )
 }
@@ -230,7 +230,7 @@ function ServerCookies() {
   return (
     <section className="sr-only">
       <h1>Cookie Policy — Trading Tazos Game</h1>
-      <p>We use essential cookies for authentication and session management. Anonymous analytics via Plausible. No third-party tracking cookies. You can disable cookies in your browser, but login functionality requires them.</p>
+      <p>We use essential cookies for authentication and session management. Anonymous traffic data via Google Search Console. No third-party tracking cookies. You can disable cookies in your browser, but login functionality requires them.</p>
     </section>
   )
 }

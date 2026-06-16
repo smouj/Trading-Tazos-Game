@@ -243,8 +243,7 @@ export default function RootLayout({
             src="https://fundingchoicesmessages.google.com/i/pub-4932643710484609?ers=1"
           />
         )}
-        {/* Plausible Analytics — privacy-first, no cookies */}
-        <script defer data-domain="tradingtazosgame.com" src="https://plausible.rpgclaw.com/js/script.js" />
+
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden bg-background text-foreground`}

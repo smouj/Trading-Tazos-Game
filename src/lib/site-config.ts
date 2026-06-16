@@ -172,7 +172,7 @@ export const PAGE_META: Record<string, PageMeta> = {
   privacy: {
     title: "Privacy Policy — Trading Tazos Game",
     description:
-      "How Trading Tazos Game collects, uses, and protects your data. Cookie usage, analytics (Plausible), and your privacy rights under GDPR.",
+      "How Trading Tazos Game collects, uses, and protects your data. Cookie usage, analytics (Google Search Console), and your privacy rights under GDPR.",
     canonicalPath: "/?page=privacy",
   },
   terms: {
@@ -235,7 +235,7 @@ export const PAGE_META: Record<string, PageMeta> = {
   cookies: {
     title: "Cookie Policy — Trading Tazos Game",
     description:
-      "How Trading Tazos Game uses cookies. Essential functional cookies, analytics (Plausible), and third-party advertising cookies.",
+      "How Trading Tazos Game uses cookies. Essential functional cookies, analytics (Google Search Console), and third-party advertising cookies.",
     canonicalPath: "/?page=cookies",
   },
 }

@@ -51,7 +51,7 @@ export const FAQ_ENTRIES: FaqEntry[] = [
   },
   {
     q: "What data does the site collect?",
-    a: "We collect your username, email, gameplay data (tazos, decks, battles), and technical logs for security. We use Plausible Analytics (privacy-friendly, no personal data). See our Privacy Policy for details.",
+    a: "We collect your username, email, gameplay data (tazos, decks, battles), and technical logs for security. We use Google Search Console for traffic analytics (privacy-friendly, no personal data). See our Privacy Policy for details.",
   },
   {
     q: "Does the site show ads?",

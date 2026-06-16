@@ -466,7 +466,7 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
                 maxCount={20}
                 tazos={tubeTazos}
                 starters={[]}
-                size="lg"
+                size="md"
               />
             </div>
 
@@ -491,7 +491,7 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
 
               {/* Texture + Franchise preview */}
               <div className="flex items-center gap-3 p-3 bg-[#fffef0] border-2 border-[#1a1a1a]">
-                <div className="w-full aspect-[3/4] overflow-hidden border border-[#1a1a1a]/20 flex-shrink-0">
+                <div className="w-32 aspect-[3/4] overflow-hidden border border-[#1a1a1a]/20 flex-shrink-0">
                   <Image src={tubeTexture} alt="Tube texture" fill className="object-cover" sizes="300px" />
                 </div>
                 <div>

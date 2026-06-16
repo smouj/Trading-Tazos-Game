@@ -19,8 +19,8 @@ const BattleView = dynamic(() => import("@/components/game/battle-view"), {
   loading: () => (
     <div
       style={{
-        width: "100%",
-        height: "100%",
+        position: "fixed",
+        inset: 0,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",

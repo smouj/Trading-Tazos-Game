@@ -52,7 +52,7 @@ function IntroCinematic({ playerName, deckName, deckSize, playerHand, opponentHa
   return (
     <div className="absolute inset-0 z-30 pointer-events-none flex flex-col items-center justify-center">
       {/* Top: VS banner */}
-      <div className="absolute top-[8%] left-1/2 -translate-x-1/2">
+      <div className="absolute top-[14%] left-1/2 -translate-x-1/2">
         <div style={{
           background: "rgba(0,0,0,0.75)",
           border: "2px solid rgba(255,204,0,0.4)",
@@ -67,7 +67,7 @@ function IntroCinematic({ playerName, deckName, deckSize, playerHand, opponentHa
 
       {/* Player vs AI presentation */}
       <div style={{
-        position: "absolute", top: "18%", left: 0, right: 0,
+        position: "absolute", top: "24%", left: 0, right: 0,
         display: "flex", alignItems: "center", justifyContent: "center",
         gap: "2rem"
       }}>
@@ -1429,7 +1429,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
           {/* Score popups */}
           {scorePopups.map(p => (
             <div key={p.id}
-              className="absolute top-1/3 left-1/2 -translate-x-1/2 pointer-events-none z-30"
+              className="absolute top-[45%] left-1/2 -translate-x-1/2 pointer-events-none z-30"
               style={{
                 color: p.color,
                 fontSize: p.text.length > 2 ? "20px" : "36px",
@@ -1443,7 +1443,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
 
           {/* ── Hit Feedback Overlay ── */}
           {(phase === "impact" || engine.ui.showImpact) && engine.ui.impactMsg && (
-            <div className="absolute top-1/4 left-1/2 -translate-x-1/2 pointer-events-none z-40">
+            <div className="absolute top-[40%] left-1/2 -translate-x-1/2 pointer-events-none z-40">
               <div className="animate-[popUp_0.35s_ease-out] text-center">
                 <div className={[
                   "text-4xl sm:text-5xl font-black tracking-tight",
@@ -1472,7 +1472,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
 
           {/* Impact particles */}
           {(phase === "impact" || engine.ui.showImpact) && (
-            <div className="absolute top-1/2 left-1/2 pointer-events-none" style={{ marginLeft: -120, marginTop: -120 }}>
+            <div className="absolute top-1/2 left-1/2 pointer-events-none" style={{ transform: "translate(-50%, -50%)" }}>
               {[...Array(20)].map((_, i) => {
                 const angle = (i / 20) * Math.PI * 2
                 const dist = 50 + Math.random() * 100
@@ -1509,7 +1509,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
 
           {/* Round banner */}
           {roundBanner !== null && (
-            <div className="absolute top-1/3 left-1/2 -translate-x-1/2 pointer-events-none z-30">
+            <div className="absolute top-[45%] left-1/2 -translate-x-1/2 pointer-events-none z-30">
               <div className="animate-[popUp_0.3s_ease-out]" key={roundBanner}>
                 <div className="text-[10px] font-black text-[#FFCC00]/40 uppercase tracking-[0.3em] text-center mb-1">Round</div>
                 <div className="text-5xl font-black text-[#FFCC00] text-center" style={{ textShadow: "0 0 30px #FFCC0060" }}>
@@ -1556,7 +1556,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
             onBack={back}
           />
         ) : (
-          <div className="absolute bottom-0 left-0 right-0 z-20 flex justify-center pb-3 pointer-events-none">
+          <div className="absolute bottom-0 left-0 right-0 z-20 flex justify-center pb-24 pointer-events-none">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full flex justify-center pointer-events-auto">
             <button onClick={back}
               className="px-4 py-1.5 text-[8px] font-black text-white/20 hover:text-white/50 uppercase tracking-[0.2em] rounded-full transition-all"

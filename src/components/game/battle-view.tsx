@@ -38,6 +38,150 @@ import BattleTutorial, { isTutorialDone } from "./battle/battle-tutorial"
 import BattleSideStack from "./battle/battle-side-stack"
 import { Disc3, RotateCcw, Crosshair, ArrowDown, Maximize, Minimize, Lock, Zap, Swords } from "lucide-react"
 
+
+// ── IntroCinematic: Pre-match presentation with player intro + deck preview ──
+function IntroCinematic({ playerName, deckName, deckSize, playerHand, opponentHand, countdown, introCinematicPhase }: {
+  playerName: string
+  deckName: string
+  deckSize: number
+  playerHand: TazoCard[]
+  opponentHand: TazoCard[]
+  countdown: number | null
+  introCinematicPhase: "players" | "decks" | "countdown" | null
+}) {
+  return (
+    <div className="absolute inset-0 z-30 pointer-events-none flex flex-col items-center justify-center">
+      {/* Top: VS banner */}
+      <div className="absolute top-[8%] left-1/2 -translate-x-1/2">
+        <div style={{
+          background: "rgba(0,0,0,0.75)",
+          border: "2px solid rgba(255,204,0,0.4)",
+          padding: "8px 32px",
+          textAlign: "center",
+        }}>
+          <p style={{ fontSize: 10, fontWeight: 900, color: "rgba(255,204,0,0.6)", textTransform: "uppercase", letterSpacing: "0.3em", margin: 0 }}>
+            Practice Battle
+          </p>
+        </div>
+      </div>
+
+      {/* Player vs AI presentation */}
+      <div style={{
+        position: "absolute", top: "18%", left: 0, right: 0,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        gap: "2rem"
+      }}>
+        {/* Player side */}
+        <div style={{
+          background: "rgba(0,0,0,0.7)",
+          border: "2px solid #29ADFF",
+          padding: "12px 20px",
+          textAlign: "center",
+          minWidth: 160,
+        }}>
+          <div style={{
+            width: 48, height: 48, borderRadius: "50%",
+            background: "linear-gradient(135deg, #29ADFF, #003388)",
+            margin: "0 auto 8px",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <span style={{ fontSize: 20, fontWeight: 900, color: "#fff" }}>
+              {playerName?.slice(0, 2).toUpperCase() || "YOU"}
+            </span>
+          </div>
+          <p style={{ fontSize: 11, fontWeight: 900, color: "#29ADFF", textTransform: "uppercase", margin: 0, letterSpacing: "0.05em" }}>
+            {playerName || "Player"}
+          </p>
+          <p style={{ fontSize: 8, fontWeight: 700, color: "rgba(255,255,255,0.4)", margin: "3px 0 0", textTransform: "uppercase" }}>
+            {deckName || "Battle Deck"} &middot; {deckSize} tazos
+          </p>
+          <div style={{ display: "flex", gap: 3, justifyContent: "center", marginTop: 6 }}>
+            {playerHand.slice(0, 5).map((t, i) => (
+              <div key={i} style={{
+                width: 28, height: 28, borderRadius: "50%",
+                border: "1px solid rgba(255,255,255,0.2)",
+                overflow: "hidden", background: "#1a1a1a"
+              }}>
+                {t.imageUrl ? (
+                  <img src={t.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", transform: "scale(1.14)" }} />
+                ) : (
+                  <span style={{ fontSize: 8, color: "#29ADFF", display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                    {t.name?.[0] || "?"}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* VS */}
+        <div style={{ textAlign: "center" }}>
+          <span style={{
+            fontSize: 36, fontWeight: 900, color: "#FFCC00",
+            textShadow: "0 0 20px rgba(255,204,0,0.5)",
+            lineHeight: 1,
+          }}>VS</span>
+        </div>
+
+        {/* AI side */}
+        <div style={{
+          background: "rgba(0,0,0,0.7)",
+          border: "2px solid #FF004D",
+          padding: "12px 20px",
+          textAlign: "center",
+          minWidth: 160,
+        }}>
+          <div style={{
+            width: 48, height: 48, borderRadius: "50%",
+            background: "linear-gradient(135deg, #FF004D, #880000)",
+            margin: "0 auto 8px",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <Swords style={{ width: 24, height: 24, color: "#fff" }} />
+          </div>
+          <p style={{ fontSize: 11, fontWeight: 900, color: "#FF004D", textTransform: "uppercase", margin: 0, letterSpacing: "0.05em" }}>
+            Arena AI
+          </p>
+          <p style={{ fontSize: 8, fontWeight: 700, color: "rgba(255,255,255,0.4)", margin: "3px 0 0", textTransform: "uppercase" }}>
+            Full Deck &middot; 20 tazos
+          </p>
+          <div style={{ display: "flex", gap: 3, justifyContent: "center", marginTop: 6 }}>
+            {opponentHand.slice(0, 5).map((t, i) => (
+              <div key={i} style={{
+                width: 28, height: 28, borderRadius: "50%",
+                border: "1px solid rgba(255,255,255,0.2)",
+                overflow: "hidden", background: "#1a1a1a"
+              }}>
+                {t.imageUrl ? (
+                  <img src={t.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", transform: "scale(1.14)" }} />
+                ) : (
+                  <span style={{ fontSize: 8, color: "#FF004D", display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                    {t.name?.[0] || "?"}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom: phase hint */}
+      <div className="absolute bottom-[12%] left-1/2 -translate-x-1/2 text-center">
+        <p style={{
+          fontSize: 10, fontWeight: 900, color: "rgba(255,255,255,0.35)",
+          textTransform: "uppercase", letterSpacing: "0.2em", margin: 0,
+          animation: "pulse 2s ease-in-out infinite",
+        }}>
+          {introCinematicPhase === "players" ? "Presenting contestants..." :
+           introCinematicPhase === "decks" ? "Deck preview..." :
+           introCinematicPhase === "countdown" ? "Get ready..." :
+           "Camera orbits arena · Free orbit with mouse"}
+        </p>
+      </div>
+    </div>
+  )
+}
+
 // ── PhaseBadge: Magazine editorial phase indicator ──
 function PhaseBadge({ phase, bettingPhase, chargePct, tazoName }: { phase: string; bettingPhase?: string; chargePct?: number; tazoName?: string }) {
   const config: Record<string, { icon?: React.ReactNode; text: string; color: string; pulse?: boolean }> = {
@@ -267,6 +411,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
   const playerWentFirstRef = useRef(false)
   const [showTutorial, setShowTutorial] = useState(false)
   const [introCountdown, setIntroCountdown] = useState<number | null>(null)
+  const [introCinematicPhase, setIntroCinematicPhase] = useState<"players" | "decks" | "countdown" | null>(null)
   const [roundBanner, setRoundBanner] = useState<number | null>(null)
   const [scoreFlash, setScoreFlash] = useState<"player" | "opponent" | null>(null)
 
@@ -331,14 +476,28 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
       else playSfx("defeat_sting", 0.4)
     }
     if (phase === "intro") {
-      // Visible countdown: 3 → 2 → 1 → FIGHT!
-      setIntroCountdown(3)
-      const t1 = setTimeout(() => setIntroCountdown(2), 600)
-      const t2 = setTimeout(() => setIntroCountdown(1), 1200)
-      const t3 = setTimeout(() => setIntroCountdown(null), 1800)
-      ;[600, 1200, 1800].forEach(d => setTimeout(() => playSfx("countdown_beep", 0.3), d))
-      setTimeout(() => playSfx("battle_start", 0.4), 2400)
-      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
+      // Cinematic intro sequence:
+      // 0-2.5s: Camera orbit + player vs AI intro
+      // 2.5-4.5s: Deck preview + stats
+      // 4.5-6.8s: Countdown 3→2→1→BATTLE!
+      setIntroCinematicPhase("players")
+      const tPlayers = setTimeout(() => setIntroCinematicPhase("decks"), 2500)
+      const tDecks = setTimeout(() => { setIntroCinematicPhase("countdown"); setIntroCountdown(3) }, 4500)
+      ;[0, 600, 1200].forEach((d, i) => setTimeout(() => {
+        setIntroCountdown(3 - i)
+        if (i < 2) playSfx("countdown_beep", 0.3)
+      }, 4500 + d))
+      const tFight = setTimeout(() => {
+        setIntroCountdown(0)
+        playSfx("battle_start", 0.5)
+      }, 6300)
+      const tDone = setTimeout(() => {
+        setIntroCountdown(null)
+        setIntroCinematicPhase(null)
+      }, 6800)
+      return () => {
+        clearTimeout(tPlayers); clearTimeout(tDecks); clearTimeout(tFight); clearTimeout(tDone)
+      }
     }
   }, [phase, result])
 
@@ -471,12 +630,12 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
     engine.startMatch(config)
 
     // ── Sequence: intro → betting ──
-    setTimeout(() => engine.introDone(), 2000)
+    setTimeout(() => engine.introDone(), 6800)
     setTimeout(() => {
       engine.startBetting()
       setBettingPhase("betting")
       // Wait for player to select their tazo via handleBet()
-    }, 3500)
+    }, 7300)
   }, [engine])
 
   // ── Auto-start from sessionStorage (set by /app/battle lobby) ──
@@ -1173,6 +1332,16 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
           airborneId={airborne?.id}
           onSelect={handleBet}
         />
+
+        {phase === "intro" && <IntroCinematic
+          playerName={user?.name || user?.email?.split("@")[0] || "Player"}
+          deckName={selectedDeckName}
+          deckSize={deck.length}
+          playerHand={playerHand}
+          opponentHand={opponentHand}
+          countdown={introCountdown}
+          introCinematicPhase={introCinematicPhase}
+        />}
 
         {/* ── HUD overlay — Magazine Editorial Style ── */}
         <div className="absolute top-0 left-0 right-0 z-20 pointer-events-none">

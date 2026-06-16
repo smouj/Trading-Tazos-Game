@@ -461,10 +461,24 @@ function ImpactLight({ impactPhase }: { impactPhase: string }) {
 }
 
 // ─── Camera (adaptive to game phase) with screen shake on impact ───
+// v2: Free orbit — only auto-lerps after phase changes, not every frame.
+//     User can rotate/pan freely; camera only resets on phase transitions.
+//     Intro: cinematic orbit pan. Always enabled OrbitControls.
 function ArenaCamera({ gamePhase }: { gamePhase: string }) {
   const { camera } = useThree()
   const targetRef = useRef(new THREE.Vector3(0, 0, 0))
   const shakeRef = useRef({ intensity: 0, time: 0 })
+  const userInteractedRef = useRef(false)
+  const prevPhaseRef = useRef(gamePhase)
+  const introTimeRef = useRef(0)
+
+  // Phase change → allow auto-pan to new position
+  useEffect(() => {
+    if (gamePhase !== prevPhaseRef.current) {
+      userInteractedRef.current = false
+      prevPhaseRef.current = gamePhase
+    }
+  }, [gamePhase])
 
   // Trigger shake on impact
   useEffect(() => {
@@ -474,7 +488,7 @@ function ArenaCamera({ gamePhase }: { gamePhase: string }) {
     }
   }, [gamePhase])
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     // Screen shake
     const sh = shakeRef.current
     if (sh.intensity > 0.01) {
@@ -486,7 +500,25 @@ function ArenaCamera({ gamePhase }: { gamePhase: string }) {
       camera.position.x += sx; camera.position.y += sy; camera.position.z += sz
     }
 
-    if (gamePhase === "player_aim" || gamePhase === "placing_stakes") {
+    // Auto-lerp only when user hasn't manually moved the camera
+    if (userInteractedRef.current) return
+
+    // Cinematic intro orbit (~8s full rotation, gentle vertical wave)
+    if (gamePhase === "intro") {
+      introTimeRef.current += delta
+      const angle = introTimeRef.current * 0.8
+      const radius = 8
+      const height = 5 + Math.sin(angle * 0.7) * 2
+      const target = new THREE.Vector3(0, 1, 0)
+      const pos = new THREE.Vector3(
+        Math.cos(angle) * radius,
+        height,
+        Math.sin(angle) * radius
+      )
+      targetRef.current.lerp(target, 0.03)
+      camera.position.lerp(pos, 0.03)
+      camera.lookAt(targetRef.current)
+    } else if (gamePhase === "player_aim" || gamePhase === "placing_stakes") {
       // Bird's-eye for aiming — see the full circle
       const target = new THREE.Vector3(0, 0, 0)
       const pos = new THREE.Vector3(0, 14, 1)
@@ -494,21 +526,21 @@ function ArenaCamera({ gamePhase }: { gamePhase: string }) {
       camera.position.lerp(pos, 0.05)
       camera.lookAt(targetRef.current)
     } else if (gamePhase === "player_charge" || gamePhase === "player_tilt") {
-      // Angled view showing height + tilt — pull back slightly
+      // Angled view showing height + tilt
       const target = new THREE.Vector3(0, 2, 0)
       const pos = new THREE.Vector3(7, 8, 7)
       targetRef.current.lerp(target, 0.06)
       camera.position.lerp(pos, 0.05)
       camera.lookAt(targetRef.current)
     } else if (gamePhase === "slamming" || gamePhase === "impact" || gamePhase === "resolve_impact") {
-      // Low cinematic angle to see the impact — tighter on the action
+      // Low cinematic angle — tight on the action
       const target = new THREE.Vector3(0, 0.2, 0)
       const pos = new THREE.Vector3(4, 3, 5)
       targetRef.current.lerp(target, 0.08)
       camera.position.lerp(pos, 0.06)
       camera.lookAt(targetRef.current)
     } else {
-      // Default: orbit-friendly position
+      // Default: orbit-friendly (round_start, betting, coin_flip, etc.)
       const target = new THREE.Vector3(0, 0.5, 0)
       const pos = new THREE.Vector3(4, 8, 5)
       targetRef.current.lerp(target, 0.03)
@@ -529,7 +561,8 @@ function ArenaCamera({ gamePhase }: { gamePhase: string }) {
       enablePan={true}
       panSpeed={0.6}
       rotateSpeed={0.4}
-      enabled={gamePhase !== "slamming" && gamePhase !== "impact"}
+      enabled={true}
+      onStart={() => { userInteractedRef.current = true }}
       mouseButtons={{ LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.PAN, RIGHT: THREE.MOUSE.ROTATE }}
     />
   )

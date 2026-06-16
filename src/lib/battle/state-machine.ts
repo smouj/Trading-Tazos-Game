@@ -207,12 +207,12 @@ export const BATTLE_TRANSITIONS: StateTransition[] = [
     to: "player_aim",
     event: "COIN_DECIDED",
     guard(ctx) {
-      const ev = event as unknown as Extract<BattleEvent, { type: "COIN_DECIDED" }>; return ev.winner === "player"
+      return ctx.coinWinner === "player"
     },
     action(ctx) {
       if (!ctx.playerBetTazo) return ctx
       const airborne = createAirborneTazo(ctx.playerBetTazo, "player", ctx.config.arena)
-      return { ...ctx, state: "player_aim", airborneTazo: airborne }
+      return { ...ctx, state: "player_aim", airborneTazo: airborne, currentThrower: "player" }
     },
   },
   {
@@ -220,7 +220,12 @@ export const BATTLE_TRANSITIONS: StateTransition[] = [
     to: "opponent_aim",
     event: "COIN_DECIDED",
     guard(ctx) {
-      const ev = event as unknown as Extract<BattleEvent, { type: "COIN_DECIDED" }>; return ev.winner === "opponent"
+      return ctx.coinWinner === "opponent"
+    },
+    action(ctx) {
+      if (!ctx.opponentBetTazo) return ctx
+      const airborne = createAirborneTazo(ctx.opponentBetTazo, "opponent", ctx.config.arena)
+      return { ...ctx, state: "opponent_aim", airborneTazo: airborne, currentThrower: "opponent" }
     },
   },
 

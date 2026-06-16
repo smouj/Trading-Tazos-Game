@@ -489,7 +489,7 @@ export default function BagShopPage() {
           <div className="flex items-center gap-1.5">
             <Coins className="w-4 h-4 text-[#FFCC00]" />
             {initialLoading ? (
-              <Skeleton className="h-4 w-12 rounded" />
+              <Skeleton className="h-4 w-12" />
             ) : (
               <span className="font-black text-sm text-white">{credits}</span>
             )}

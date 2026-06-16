@@ -315,7 +315,7 @@ export default function SlamControls(props: SlamControlsProps) {
         <div className="flex-1 space-y-1.5">
           <span className="block text-center text-[7px] font-black text-white/10 uppercase tracking-[0.3em]">Tilt</span>
           <div
-            className="relative w-full aspect-square max-w-[120px] mx-auto rounded-2xl cursor-grab active:cursor-grabbing pointer-events-auto"
+            className="relative w-full aspect-square max-w-[120px] mx-auto cursor-grab active:cursor-grabbing pointer-events-auto"
             style={{
               background: "radial-gradient(circle at center, rgba(255,204,0,0.04), transparent)",
               border: "1px solid rgba(255,255,255,0.06)",
@@ -351,7 +351,7 @@ export default function SlamControls(props: SlamControlsProps) {
               style={{ background: "rgba(255,255,255,0.06)" }} />
           </div>
           <button onClick={() => { playSfx("slam_launch", 0.4); onRelease() }}
-            className="w-full py-3 font-black text-sm uppercase rounded-xl tracking-wider shadow-[0_0_24px_rgba(255,204,0,0.4)] active:scale-95 pointer-events-auto transition-all"
+            className="w-full py-3 font-black text-sm uppercase tracking-wider shadow-[0_0_24px_rgba(255,204,0,0.4)] active:scale-95 pointer-events-auto transition-all"
             style={{ background: "linear-gradient(135deg, #FFCC00, #FFD633)", color: "#0a0a0a" }}>
             <Zap className="w-4 h-4 inline mr-1.5" /> SLAM!
           </button>

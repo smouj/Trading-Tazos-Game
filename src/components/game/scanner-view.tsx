@@ -512,7 +512,7 @@ export function ScannerView() {
                 return (
                   <div key={s.key} className="flex items-center gap-1">
                     <div
-                      className={`flex items-center gap-1 rounded-md border-2 px-2 py-1 text-xs font-black transition-all ${
+                      className={`flex items-center gap-1 border-2 px-2 py-1 text-xs font-black transition-all ${
                         isActive
                           ? 'border-black bg-yellow-400 text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
                           : isDone
@@ -639,7 +639,7 @@ export function ScannerView() {
 
             {/* Canvas area */}
             <div className="bg-white p-3">
-              <div className="relative overflow-hidden rounded-lg border-2 border-black">
+              <div className="relative overflow-hidden border-2 border-black">
                 <canvas
                   ref={canvasRef}
                   className="mx-auto block max-h-[400px] w-auto"
@@ -703,7 +703,7 @@ export function ScannerView() {
                   <button
                     key={index}
                     onClick={() => toggleRegion(index)}
-                    className={`flex items-center gap-2 rounded-lg border-3 p-2 text-left text-xs transition-all ${
+                    className={`flex items-center gap-2 border-3 p-2 text-left text-xs transition-all ${
                       region.included
                         ? 'border-black bg-green-100 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5'
                         : 'border-gray-400 bg-zinc-100 opacity-60 hover:opacity-80'
@@ -795,7 +795,7 @@ export function ScannerView() {
                           placeholder="Enter tazo name..."
                           value={tazo.name}
                           onChange={(e) => updateExtractedTazo(tazo.id, 'name', e.target.value)}
-                          className="h-9 w-full rounded-md border-3 border-black bg-white px-3 text-sm font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                          className="h-9 w-full border-3 border-black bg-white px-3 text-sm font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] focus:outline-none focus:ring-2 focus:ring-yellow-400"
                         />
                       </div>
 

@@ -46,7 +46,7 @@ export default class ErrorBoundary extends React.Component<
                 An unexpected error occurred while rendering this page.
               </p>
               {this.state.error && (
-                <details className="text-left text-xs bg-red-50 border border-red-200 rounded p-2 text-[#E3350D]">
+                <details className="text-left text-xs bg-red-50 border border-red-200 p-2 text-[#E3350D]">
                   <summary className="font-bold cursor-pointer">
                     {this.state.error.message}
                   </summary>

@@ -72,17 +72,17 @@ export default function BattleHand({ hand, phase, selectedId, airborneId, onSele
             >
               {/* Selection ring — editorial highlight */}
               {isSelected && (
-                <div className="absolute -inset-1 rounded-xl border-[1.5px] border-[#FFCC00] shadow-[0_0_20px_rgba(255,204,0,0.35)] animate-pulse" />
+                <div className="absolute -inset-1 border-[1.5px] border-[#FFCC00] shadow-[0_0_20px_rgba(255,204,0,0.35)] animate-pulse" />
               )}
 
               {/* Hover ring */}
               {isHovered && !isSelected && (
-                <div className="absolute -inset-1 rounded-xl border-[1.5px] border-white/15 shadow-[0_0_16px_rgba(255,255,255,0.06)]" />
+                <div className="absolute -inset-1 border-[1.5px] border-white/15 shadow-[0_0_16px_rgba(255,255,255,0.06)]" />
               )}
 
               {/* Card — magazine-issue block */}
               <div
-                className="relative w-[56px] h-[56px] sm:w-[64px] sm:h-[64px] rounded-xl overflow-hidden transition-all"
+                className="relative w-[56px] h-[56px] sm:w-[64px] sm:h-[64px] overflow-hidden transition-all"
                 style={{
                   border: `1.5px solid ${isSelected ? "#FFCC00" : isHovered ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.05)"}`,
                   background: isSelected

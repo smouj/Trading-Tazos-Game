@@ -448,7 +448,7 @@ function HistoryTab({ token }: { token: string | null }) {
             {/* Info */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className={`text-[9px] font-black uppercase px-1.5 py-0.5 border rounded ${
+                <span className={`text-[9px] font-black uppercase px-1.5 py-0.5 border ${
                   h.status === 'sold' ? 'bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20' :
                   'bg-zinc-100 text-[#1a1a1a]/30 border-[#1a1a1a]/10'
                 }`}>

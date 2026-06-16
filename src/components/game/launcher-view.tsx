@@ -229,17 +229,17 @@ function SignUpPreview() {
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-full border-2 border-[#1a1a1a]/20 flex items-center justify-center"><User className="w-3 h-3 text-[#1a1a1a]/40" /></div>
             <span className="text-[10px] font-black text-[#1a1a1a]/30 uppercase">Name</span>
-            <div className="w-28 h-5 border-2 border-[#FFCC00]/30 rounded bg-[#FFF9E6]" />
+            <div className="w-28 h-5 border-2 border-[#FFCC00]/30 bg-[#FFF9E6]" />
           </div>
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-full border-2 border-[#1a1a1a]/20 flex items-center justify-center"><Mail className="w-3 h-3 text-[#1a1a1a]/40" /></div>
             <span className="text-[10px] font-black text-[#1a1a1a]/30 uppercase">Email</span>
-            <div className="w-28 h-5 border-2 border-[#1a1a1a]/10 rounded bg-white" />
+            <div className="w-28 h-5 border-2 border-[#1a1a1a]/10 bg-white" />
           </div>
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-full border-2 border-[#1a1a1a]/20 flex items-center justify-center"><Key className="w-3 h-3 text-[#1a1a1a]/40" /></div>
             <span className="text-[10px] font-black text-[#1a1a1a]/30 uppercase">Pass</span>
-            <div className="w-28 h-5 border-2 border-[#1a1a1a]/10 rounded bg-white flex items-center px-2">
+            <div className="w-28 h-5 border-2 border-[#1a1a1a]/10 bg-white flex items-center px-2">
               <span className="text-[7px] text-[#1a1a1a]/15">••••••••••</span>
             </div>
           </div>
@@ -265,7 +265,7 @@ function BagPreview({ tazos }: { tazos: any[] }) {
       <div className="flex items-center gap-3">
         {/* Bag types */}
         <div className="flex flex-col gap-1.5 items-center">
-          <div className="w-14 h-16 border-2 border-[#9CA3AF] rounded-lg bg-[#9CA3AF]/5 flex flex-col items-center justify-center relative overflow-hidden"
+          <div className="w-14 h-16 border-2 border-[#9CA3AF] bg-[#9CA3AF]/5 flex flex-col items-center justify-center relative overflow-hidden"
             style={{ boxShadow: "2px 2px 0 #9CA3AF30" }}>
             <span className="text-[7px] font-black text-[#9CA3AF] uppercase mt-1">Std</span>
             <span className="text-[6px] font-bold text-[#9CA3AF]/50">100 cr</span>
@@ -273,7 +273,7 @@ function BagPreview({ tazos }: { tazos: any[] }) {
           </div>
         </div>
         <div className="flex flex-col gap-1.5 items-center">
-          <div className="w-14 h-16 border-2 border-[#3B82F6] rounded-lg bg-[#3B82F6]/5 flex flex-col items-center justify-center relative overflow-hidden"
+          <div className="w-14 h-16 border-2 border-[#3B82F6] bg-[#3B82F6]/5 flex flex-col items-center justify-center relative overflow-hidden"
             style={{ boxShadow: "2px 2px 0 #3B82F630" }}>
             <span className="text-[7px] font-black text-[#3B82F6] uppercase mt-1">Prem</span>
             <span className="text-[6px] font-bold text-[#3B82F6]/50">100 cr</span>
@@ -281,7 +281,7 @@ function BagPreview({ tazos }: { tazos: any[] }) {
           </div>
         </div>
         <div className="flex flex-col gap-1.5 items-center">
-          <div className="w-14 h-16 border-2 border-[#A855F7] rounded-lg bg-[#A855F7]/5 flex flex-col items-center justify-center relative overflow-hidden"
+          <div className="w-14 h-16 border-2 border-[#A855F7] bg-[#A855F7]/5 flex flex-col items-center justify-center relative overflow-hidden"
             style={{ boxShadow: "2px 2px 0 #A855F730" }}>
             <span className="text-[7px] font-black text-[#A855F7] uppercase mt-1">Mega</span>
             <span className="text-[6px] font-bold text-[#A855F7]/50">100 cr</span>
@@ -296,7 +296,7 @@ function BagPreview({ tazos }: { tazos: any[] }) {
           <div key={t.id || i} className="w-12 h-12 rounded-full border-2 border-white/5 bg-transparent overflow-hidden flex-shrink-0 relative"
             style={{ zIndex: 4 - i }}>
             {t.imageUrl ? (
-              <TazoDiscImage src={t.imageUrl} alt={t.displayName || t.name} size="100%" borderWidth={0} scale={0.85}
+              <TazoDiscImage src={t.imageUrl} alt={t.displayName || t.name} size="100%" borderWidth={0} scale={0.87}
                 franchiseSlug={t.franchiseSlug || t.franchise?.slug} finish={t.finish} creatureVariant={t.creatureVariant} shinyImageUrl={t.shinyImageUrl}
                 className="w-full h-full" />
             ) : (
@@ -333,7 +333,7 @@ function DeckPreview({ tazos }: { tazos: any[] }) {
           <div key={t.id || i} className="w-14 h-14 rounded-full border-2 border-white/5 bg-transparent overflow-hidden flex-shrink-0"
             style={{ zIndex: 3 - i }}>
             {t.imageUrl ? (
-              <TazoDiscImage src={t.imageUrl} alt={t.displayName || t.name} size="100%" borderWidth={0} scale={0.85}
+              <TazoDiscImage src={t.imageUrl} alt={t.displayName || t.name} size="100%" borderWidth={0} scale={0.87}
                 franchiseSlug={t.franchiseSlug || t.franchise?.slug} finish={t.finish} creatureVariant={t.creatureVariant} shinyImageUrl={t.shinyImageUrl}
                 className="w-full h-full" />
             ) : (
@@ -360,8 +360,8 @@ function DeckPreview({ tazos }: { tazos: any[] }) {
         ].map(s => (
           <div key={s.label} className="flex items-center gap-1.5">
             <span className="text-[7px] font-black text-[#1a1a1a]/25 w-8">{s.label}</span>
-            <div className="flex-1 h-2 bg-[#1a1a1a]/5 rounded-full overflow-hidden border border-[#1a1a1a]/10">
-              <div className="h-full rounded-full transition-all" style={{ width: `${s.value}%`, background: s.color }} />
+            <div className="flex-1 h-2 bg-[#1a1a1a]/5 overflow-hidden border border-[#1a1a1a]/10">
+              <div className="h-full transition-all" style={{ width: `${s.value}%`, background: s.color }} />
             </div>
             <span className="text-[7px] font-black text-[#1a1a1a]/40 w-5 text-right">{s.value}</span>
           </div>
@@ -403,7 +403,7 @@ function ArenaPreview({ tazos }: { tazos: any[] }) {
         {tazos.length > 0 && tazos[0].imageUrl ? (
           <div className="absolute top-[10%] left-[50%] w-6 h-6 rounded-full overflow-hidden border border-[#FFCC00]/40 -translate-x-3 animate-bounce"
             style={{ boxShadow: "0 0 8px rgba(255,204,0,0.3)", background: "transparent" }}>
-            <TazoDiscImage src={tazos[0].imageUrl} alt="" size="100%" borderWidth={0} scale={0.85}
+            <TazoDiscImage src={tazos[0].imageUrl} alt="" size="100%" borderWidth={0} scale={0.87}
               franchiseSlug={tazos[0].franchiseSlug || tazos[0].franchise?.slug}
               finish={tazos[0].finish} creatureVariant={tazos[0].creatureVariant} shinyImageUrl={tazos[0].shinyImageUrl}
               className="w-full h-full" />
@@ -421,7 +421,7 @@ function ArenaPreview({ tazos }: { tazos: any[] }) {
           { label: "CHARGE", Icon: Zap, color: "#FF8800" },
           { label: "SLAM", Icon: Zap, color: "#E3350D" },
         ].map(p => (
-          <div key={p.label} className="flex items-center gap-1.5 px-2 py-1 rounded border"
+          <div key={p.label} className="flex items-center gap-1.5 px-2 py-1 border"
             style={{ borderColor: p.color + "25", background: p.color + "08" }}>
             <p.Icon className="w-3 h-3" style={{ color: p.color }} />
             <span className="text-[8px] font-black text-[#1a1a1a]/40 uppercase">{p.label}</span>
@@ -442,7 +442,7 @@ function QuestsPreview() {
         { tier: "Gold", color: "#FFD700" },
         { tier: "Platinum", color: "#A855F7" },
       ].map(a => (
-        <div key={a.tier} className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg border-2"
+        <div key={a.tier} className="flex flex-col items-center gap-1 px-3 py-2 border-2"
           style={{ borderColor: a.color + "30", background: a.color + "08", boxShadow: `0 2px 8px ${a.color}15` }}>
           {a.tier === "Platinum" ? (
             <Gem className="w-5 h-5" style={{ color: a.color }} />
@@ -455,7 +455,7 @@ function QuestsPreview() {
       {/* Arrow */}
       <div className="text-lg text-[#22C55E]/30 font-black">→</div>
       {/* Reward */}
-      <div className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg border-2 border-[#22C55E]/30 bg-[#22C55E]/05">
+      <div className="flex flex-col items-center gap-1 px-3 py-2 border-2 border-[#22C55E]/30 bg-[#22C55E]/05">
         <Coins className="w-5 h-5 text-[#22C55E]" />
         <span className="text-[7px] font-black text-[#22C55E] uppercase">+Credits</span>
       </div>
@@ -858,7 +858,7 @@ function SeriesPreviewHome({ onNavigate }: { onNavigate: (page: PageId) => void 
               {tazos.slice(0, 3).map((t, i) => (
                   <div key={t.id || i} className="w-11 h-11 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-[#1a1a1a]/30 bg-white group-hover:border-[#1a1a1a]/60 transition-colors" style={{ boxShadow: "0 2px 6px rgba(0,0,0,0.12)" }}>
                     {t.imageUrl ? (
-                      <TazoDiscImage src={t.imageUrl} alt={t.name || ''} size="100%" borderWidth={0} scale={0.85}
+                      <TazoDiscImage src={t.imageUrl} alt={t.name || ''} size="100%" borderWidth={0} scale={0.87}
                         franchiseSlug={t.franchiseSlug || (typeof t.franchise === "string" ? t.franchise : "minimon")}
                         finish={t.finish} creatureVariant={t.creatureVariant} shinyImageUrl={t.shinyImageUrl} lazy />
                     ) : null}
@@ -1295,7 +1295,7 @@ function TazosContent() {
               </p>
               <div className="flex items-center gap-1 mt-0.5">
                 <span className="text-[7px] font-bold text-[#1a1a1a]/30 uppercase">{t.franchiseName || t.franchise}</span>
-                <span className="ml-auto text-[7px] font-black px-1 py-px rounded" style={{ background: `${rarityColor}15`, color: rarityColor }}>
+                <span className="ml-auto text-[7px] font-black px-1 py-px" style={{ background: `${rarityColor}15`, color: rarityColor }}>
                   {(t.rarity || "common").replace("ultra-rare", "ultra").toUpperCase()}
                 </span>
               </div>
@@ -1378,7 +1378,7 @@ function ShopContent() {
             <div key={bag.type} className="mag-card border-3 border-[#1a1a1a] bg-white overflow-hidden" style={{ boxShadow: `4px 4px 0px ${bag.border}40` }}>
               <div className="px-4 sm:px-5 py-4 border-b-2 border-[#1a1a1a]/10" style={{ backgroundColor: bag.bg }}>
                 {/* 3D Bag Preview */}
-                <div className="-mx-4 sm:-mx-5 -mt-4 mb-0 rounded-t overflow-hidden" style={{ background: "linear-gradient(135deg, #2a2520 0%, #1a1815 50%, #0f0d0a 100%)" }}>
+                <div className="-mx-4 sm:-mx-5 -mt-4 mb-0 overflow-hidden" style={{ background: "linear-gradient(135deg, #2a2520 0%, #1a1815 50%, #0f0d0a 100%)" }}>
                   <BagCardMini3D
                     frontUrl={`/textures/bags/${bag.franchise}/bag-${bag.franchise}-front-01.png`}
                     backUrl={`/textures/bags/${bag.franchise}/bag-${bag.franchise}-back-01.png`}
@@ -1409,7 +1409,7 @@ function ShopContent() {
 
                 {/* Rarity bar */}
                 <div className="mt-3 space-y-1.5">
-                  <div className="flex h-2 rounded-full overflow-hidden border border-[#1a1a1a]/10">
+                  <div className="flex h-2 overflow-hidden border border-[#1a1a1a]/10">
                     {bag.rarity.map(r => (
                       <div key={r.l} className="h-full" style={{ width: `${r.p}%`, backgroundColor: RC[r.l] }} title={`${r.l}: ${r.p}%`} />
                     ))}
@@ -1451,7 +1451,7 @@ function ShopContent() {
                         {examples.slice(0, 4).map((t: any, idx: number) => (
                           <div key={t.id || idx} className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-[#1a1a1a]/15 overflow-hidden flex-shrink-0 hover:border-[#FFCC00] hover:scale-110 transition-all bg-white" title={t.displayName || t.name}>
                             <div className="w-full h-full rounded-full overflow-hidden relative">
-                              <TazoDiscImage src={t.imageUrl} alt={t.displayName || t.name} size="100%" borderWidth={0} scale={0.85}
+                              <TazoDiscImage src={t.imageUrl} alt={t.displayName || t.name} size="100%" borderWidth={0} scale={0.87}
                                 franchiseSlug={t.franchiseSlug || t.franchise?.slug}
                                 finish={t.finish} creatureVariant={t.creatureVariant} shinyImageUrl={t.shinyImageUrl} lazy />
                             </div>

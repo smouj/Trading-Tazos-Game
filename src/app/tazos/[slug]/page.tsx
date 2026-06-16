@@ -104,7 +104,7 @@ export default async function TazoPage({ params }: Props) {
             </div>
 
             {tazo.skill && (
-              <div className="border border-[#333] rounded-lg p-4 bg-[#222]">
+              <div className="border border-[#333] p-4 bg-[#222]">
                 <p className="text-[#FFCC00] text-xs font-bold">SKILL</p>
                 <p className="text-white font-bold">{tazo.skill}</p>
                 {tazo.skillDesc && <p className="text-[#888] text-sm mt-1">{tazo.skillDesc}</p>}
@@ -113,7 +113,7 @@ export default async function TazoPage({ params }: Props) {
 
             <div className="grid grid-cols-3 gap-2 text-xs">
               {(["attack","defense","resistance","weight","stability","spin","control"] as const).map((stat) => (
-                <div key={stat} className="bg-[#222] rounded p-2 text-center">
+                <div key={stat} className="bg-[#222] p-2 text-center">
                   <p className="text-[#888] uppercase">{stat}</p>
                   <p className="text-white font-bold text-lg">{tazo[stat] ?? 50}</p>
                 </div>

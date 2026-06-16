@@ -26,7 +26,7 @@ export default function AppLoading() {
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className="aspect-square rounded-xl border-2 border-[#1a1a1a]/10 bg-white overflow-hidden"
+            className="aspect-square border-2 border-[#1a1a1a]/10 bg-white overflow-hidden"
             style={{
               animation: `mag-entry-fade-up 0.5s ${0.1 + i * 0.08}s cubic-bezier(0.16, 1, 0.3, 1) both`,
             }}

@@ -38,7 +38,7 @@ function OAuthButton({ provider, redirectTo }: { provider: OAuthProvider; redire
   return (
     <a
       href={`/api/auth/oauth/login?provider=${provider}&redirect=${encodeURIComponent(redirectTo)}`}
-      className={`flex items-center justify-center gap-1.5 px-3 py-2.5 rounded text-xs font-bold uppercase tracking-wider text-white transition-colors shadow-sm ${OAUTH_COLORS[provider] || "bg-[#1a1a1a]"}`}
+      className={`flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-colors shadow-sm ${OAUTH_COLORS[provider] || "bg-[#1a1a1a]"}`}
       title={`Continue with ${OAUTH_LABELS[provider] || provider}`}
     >
       <span

@@ -6,7 +6,7 @@ export function Skeleton({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "rounded-lg bg-[#1a1a1a]/[0.04] animate-pulse",
+        "bg-[#1a1a1a]/[0.04] animate-pulse",
         className
       )}
       style={{
@@ -72,7 +72,7 @@ export function ShopBagSkeleton() {
   return (
     <div className="border-2 border-[#1a1a1a]/10 bg-white overflow-hidden">
       <div className="aspect-[4/5] bg-[#fafaf5] flex items-center justify-center">
-        <div className="w-1/2 h-2/3 rounded-lg bg-[#1a1a1a]/[0.04]" />
+        <div className="w-1/2 h-2/3 bg-[#1a1a1a]/[0.04]" />
       </div>
       <div className="p-3 space-y-2">
         <Skeleton className="h-3 w-2/3" />
@@ -131,7 +131,7 @@ export function PageSkeleton({ lines = 3, hero = false }: { lines?: number; hero
         {Array.from({ length: lines }).map((_, i) => (
           <div
             key={i}
-            className="h-3 rounded-md"
+            className="h-3"
             style={{
               width: `${100 - i * 15}%`,
               background: "linear-gradient(90deg, #1a1a1a08 25%, #1a1a1a10 50%, #1a1a1a08 75%)",

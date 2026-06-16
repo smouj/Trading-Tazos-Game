@@ -379,8 +379,8 @@ export default function SettingsPage() {
                     <input value={displayName} onChange={e => setDisplayName(e.target.value)}
                       className="flex-1 px-3 py-2 text-sm font-black text-[#1a1a1a] border-2 border-[#1a1a1a] bg-[#FFFEF0] focus:outline-none focus:border-[#FFCC00] uppercase"
                       placeholder="Display name" autoFocus maxLength={30} />
-                    <button onClick={() => setEditingName(false)} className="p-1.5 hover:bg-red-50 rounded"><X className="w-3.5 h-3.5 text-red-500" /></button>
-                    <button onClick={() => { saveProfile(); setEditingName(false) }} className="p-1.5 hover:bg-green-50 rounded"><Check className="w-3.5 h-3.5 text-green-500" /></button>
+                    <button onClick={() => setEditingName(false)} className="p-1.5 hover:bg-red-50"><X className="w-3.5 h-3.5 text-red-500" /></button>
+                    <button onClick={() => { saveProfile(); setEditingName(false) }} className="p-1.5 hover:bg-green-50"><Check className="w-3.5 h-3.5 text-green-500" /></button>
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 group/name">
@@ -388,7 +388,7 @@ export default function SettingsPage() {
                       {displayName || user.name}
                     </h3>
                     <button onClick={() => setEditingName(true)}
-                      className="opacity-0 group-hover/name:opacity-100 p-1 hover:bg-[#1a1a1a]/05 rounded transition-all">
+                      className="opacity-0 group-hover/name:opacity-100 p-1 hover:bg-[#1a1a1a]/05 transition-all">
                       <Edit3 className="w-3 h-3 text-[#1a1a1a]/30" />
                     </button>
                   </div>
@@ -406,8 +406,8 @@ export default function SettingsPage() {
                       className="flex-1 px-3 py-2 text-xs font-bold border-2 border-[#1a1a1a] bg-[#FFFEF0] focus:outline-none focus:border-[#FFCC00] resize-none"
                       placeholder="Tell others about your Tazo collection..." rows={3} maxLength={200} autoFocus />
                     <div className="flex flex-col gap-1">
-                      <button onClick={() => { saveProfile(); setEditingBio(false) }} className="p-1.5 hover:bg-green-50 rounded"><Check className="w-3.5 h-3.5 text-green-500" /></button>
-                      <button onClick={() => setEditingBio(false)} className="p-1.5 hover:bg-red-50 rounded"><X className="w-3.5 h-3.5 text-red-500" /></button>
+                      <button onClick={() => { saveProfile(); setEditingBio(false) }} className="p-1.5 hover:bg-green-50"><Check className="w-3.5 h-3.5 text-green-500" /></button>
+                      <button onClick={() => setEditingBio(false)} className="p-1.5 hover:bg-red-50"><X className="w-3.5 h-3.5 text-red-500" /></button>
                     </div>
                   </div>
                 ) : (
@@ -450,8 +450,8 @@ export default function SettingsPage() {
                       <Trash2 className="w-3 h-3" /> Remove
                     </button>
                   )}
-                  <button onClick={() => setEditingAvatar(false)} className="p-1 hover:bg-red-50 rounded"><X className="w-3.5 h-3.5 text-red-500" /></button>
-                  <button onClick={() => { saveProfile(); setEditingAvatar(false) }} className="p-1 hover:bg-green-50 rounded"><Check className="w-3.5 h-3.5 text-green-500" /></button>
+                  <button onClick={() => setEditingAvatar(false)} className="p-1 hover:bg-red-50"><X className="w-3.5 h-3.5 text-red-500" /></button>
+                  <button onClick={() => { saveProfile(); setEditingAvatar(false) }} className="p-1 hover:bg-green-50"><Check className="w-3.5 h-3.5 text-green-500" /></button>
                 </div>
                 <p className="text-[8px] font-bold text-[#1a1a1a]/30 uppercase">Max 5MB · JPEG, PNG, WebP, GIF · Auto-resized to 256×256</p>
               </div>

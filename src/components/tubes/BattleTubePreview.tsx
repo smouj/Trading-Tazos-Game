@@ -76,7 +76,7 @@ function getFranchiseColor(tazos: TubeTazo[]): string {
 
 function TubeLoadingFallback() {
   return (
-    <div className="rounded-2xl bg-[#1a1a1a]/5 animate-pulse"
+    <div className="bg-[#1a1a1a]/5 animate-pulse"
       style={{ width: 120, height: 180 }} />
   )
 }
@@ -110,7 +110,7 @@ export default function BattleTubePreview({
           showTazos={count > 0}
           tazoImageUrls={tazoUrls}
           style={{ width: "100%", height: "100%" }}
-          className="rounded-lg overflow-hidden"
+          className="overflow-hidden"
         />
       </div>
 

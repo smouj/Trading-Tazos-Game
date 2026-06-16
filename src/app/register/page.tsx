@@ -206,7 +206,7 @@ export default function RegisterPage() {
                     {[1, 2, 3, 4].map((level) => (
                       <div
                         key={level}
-                        className="h-1.5 flex-1 border border-[#1a1a1a]/15 transition-colors rounded-sm"
+                        className="h-1.5 flex-1 border border-[#1a1a1a]/15 transition-colors"
                         style={{
                           background:
                             level <= strength.score ? strength.color : "#E5E7EB",

@@ -82,7 +82,7 @@ export default function BattleResultPanel({ result, playerName, opponentName, on
           { icon: Award, value: result.playerCaptures, label: "Captures", color: "#22C55E" },
           { icon: Shield, value: result.opponentCaptures, label: "Lost", color: "#E3350D" },
         ].map((s, i) => (
-          <div key={i} className="rounded-xl py-2.5 px-1"
+          <div key={i} className="py-2.5 px-1"
             style={{
               background: "rgba(255,255,255,0.12)",
               border: `1px solid rgba(255,255,255,0.1)`,
@@ -127,7 +127,7 @@ export default function BattleResultPanel({ result, playerName, opponentName, on
       {/* Rematch CTA — editorial button */}
       <button
         onClick={onRematch}
-        className="w-full py-3 px-6 font-black text-sm uppercase tracking-[0.15em] rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-2"
+        className="w-full py-3 px-6 font-black text-sm uppercase tracking-[0.15em] transition-all active:scale-95 inline-flex items-center justify-center gap-2"
         style={{
           background: isWin ? "#1a1a1a" : "white",
           color: isWin ? "white" : "#1a1a1a",

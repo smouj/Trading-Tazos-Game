@@ -103,7 +103,7 @@ export default function BattleTutorial({ onClose }: { onClose: () => void }) {
       {/* Spot glow for highlight area */}
       {current.highlight === "battle-arena" && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-[60vw] h-[50vh] rounded-2xl ring-4 ring-[#FFCC00]/70 animate-pulse shadow-[0_0_60px_rgba(255,204,0,0.3)]" />
+          <div className="w-[60vw] h-[50vh] ring-4 ring-[#FFCC00]/70 animate-pulse shadow-[0_0_60px_rgba(255,204,0,0.3)]" />
         </div>
       )}
       {current.highlight === "battle-hand" && (
@@ -154,7 +154,7 @@ export default function BattleTutorial({ onClose }: { onClose: () => void }) {
             <div className="flex gap-2">
               <button
                 onClick={handleNext}
-                className="px-5 py-2.5 bg-[#FFCC00] text-black text-xs font-black uppercase tracking-wider rounded-xl hover:bg-[#FFD940] transition-colors flex items-center gap-1.5 shadow-lg shadow-[#FFCC00]/20"
+                className="px-5 py-2.5 bg-[#FFCC00] text-black text-xs font-black uppercase tracking-wider hover:bg-[#FFD940] transition-colors flex items-center gap-1.5 shadow-lg shadow-[#FFCC00]/20"
               >
                 {isLast ? "Let's Go!" : "Next"} <ChevronRight className="w-3.5 h-3.5" />
               </button>

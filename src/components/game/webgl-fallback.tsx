@@ -78,21 +78,21 @@ export default function WebGLFallback({ onRetry, fullPage = false }: WebGLFallba
         <div className="flex flex-wrap gap-3 justify-center mt-2">
           <Link
             href="/"
-            className="flex items-center gap-2 px-5 py-2.5 bg-white/5 border-2 border-white/10 text-white/60 text-xs font-black uppercase tracking-wider rounded-xl hover:bg-white/10 hover:text-white/80 transition-all"
+            className="flex items-center gap-2 px-5 py-2.5 bg-white/5 border-2 border-white/10 text-white/60 text-xs font-black uppercase tracking-wider hover:bg-white/10 hover:text-white/80 transition-all"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             Back Home
           </Link>
           <Link
             href="/?page=collections"
-            className="flex items-center gap-2 px-5 py-2.5 bg-white/5 border-2 border-white/10 text-white/60 text-xs font-black uppercase tracking-wider rounded-xl hover:bg-white/10 hover:text-white/80 transition-all"
+            className="flex items-center gap-2 px-5 py-2.5 bg-white/5 border-2 border-white/10 text-white/60 text-xs font-black uppercase tracking-wider hover:bg-white/10 hover:text-white/80 transition-all"
           >
             <Disc3 className="w-3.5 h-3.5" />
             Browse Tazos
           </Link>
           <Link
             href="/?page=download"
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#FFCC00] text-black text-xs font-black uppercase tracking-wider rounded-xl hover:bg-[#FFD940] transition-colors"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#FFCC00] text-black text-xs font-black uppercase tracking-wider hover:bg-[#FFD940] transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5" />
             Desktop App

@@ -92,7 +92,7 @@ export default function TazoCard({ tazo, onClick, forceFlipped }: TazoCardProps)
   return (
     <div
       className={`
-        tazo-card-hover mag-card relative cursor-pointer rounded-lg
+        tazo-card-hover mag-card relative cursor-pointer
         p-3 flex flex-col items-center gap-2
         transition-all duration-300 select-none
         ${isNotOwned ? 'grayscale-[60%] opacity-75' : ''}
@@ -115,7 +115,7 @@ export default function TazoCard({ tazo, onClick, forceFlipped }: TazoCardProps)
 
       {/* Not owned overlay */}
       {isNotOwned && (
-        <div className="absolute inset-0 z-20 rounded-lg bg-white/40 flex items-center justify-center">
+        <div className="absolute inset-0 z-20 bg-white/40 flex items-center justify-center">
           <Lock
             className="w-10 h-10 text-zinc-400"
             style={{ animation: 'lock-pulse 2s ease-in-out infinite' }}
@@ -147,6 +147,7 @@ export default function TazoCard({ tazo, onClick, forceFlipped }: TazoCardProps)
                 alt={tazo.displayName || tazo.name || "?"}
                 size="100%"
                 borderWidth={0}
+                scale={0.87}
                 franchiseSlug={franchiseSlug}
                 finish={tazo.finish as TazoFinish || "normal"}
                 creatureVariant={tazo.creatureVariant as TazoCreatureVariant || "standard"}
@@ -182,6 +183,7 @@ export default function TazoCard({ tazo, onClick, forceFlipped }: TazoCardProps)
                 alt={`${franchiseSlug} series back`}
                 size="100%"
                 borderWidth={0}
+                scale={1.0}
                 isBack
                 finish="normal"
                 number={tazo.number}

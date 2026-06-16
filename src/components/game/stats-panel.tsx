@@ -364,7 +364,7 @@ export default function StatsPanel({ refreshKey }: StatsPanelProps) {
 
                   {/* Icon */}
                   <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border-2 border-[#1a1a1a]"
+                    className="w-8 h-8 flex items-center justify-center shrink-0 border-2 border-[#1a1a1a]"
                     style={{ backgroundColor: `${color}20` }}
                   >
                     <Icon className="w-4 h-4" style={{ color }} />

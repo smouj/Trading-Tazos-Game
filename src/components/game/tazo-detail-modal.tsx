@@ -291,7 +291,7 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned, on
                     <Lock className="w-4 h-4 text-[#FFCC00]" />
                   </div>
                   {/* "Undiscovered" label */}
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-[#1a1a1a]/80 rounded-full border border-white/10">
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-[#1a1a1a]/80 border border-white/10">
                     <span className="text-[8px] font-black text-white/50 uppercase tracking-wider">Undiscovered</span>
                   </div>
                 </div>
@@ -425,7 +425,7 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned, on
                   }}
                 >
                   <span
-                    className="w-5 h-5 flex items-center justify-center text-[9px] font-black rounded-sm"
+                    className="w-5 h-5 flex items-center justify-center text-[9px] font-black"
                     style={{ background: stat.color + '30', color: stat.color, border: '1px solid ' + stat.color + '40' }}
                   >
                     {stat.label.slice(0, 2)}

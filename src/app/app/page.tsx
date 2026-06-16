@@ -80,17 +80,17 @@ export default async function DashboardPage() {
             Welcome back, {displayName}
           </h1>
           <div className="flex flex-wrap gap-4 mt-3">
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-[#FFFDF5] border-2 border-[#FFCC00]/30 rounded-lg">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-[#FFFDF5] border-2 border-[#FFCC00]/30">
               <span className="text-[9px] font-black text-[#1a1a1a]/40 uppercase tracking-wider">Credits</span>
               <span className="text-[16px] font-black text-[#FFCC00]">{user.credits}</span>
             </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-[#F0FDF4] border-2 border-[#22C55E]/30 rounded-lg">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-[#FFFDF5] border-2 border-[#FFCC00]/30">
               <span className="text-[9px] font-black text-[#1a1a1a]/40 uppercase tracking-wider">Tazos</span>
               <span className="text-[16px] font-black text-[#22C55E]">{user.uniqueTazos}</span>
               <span className="text-[9px] font-bold text-[#1a1a1a]/30">/150</span>
             </div>
             {user.recentBattle && (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-[#FEF2F2] border-2 border-[#E3350D]/30 rounded-lg">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-[#FFFDF5] border-2 border-[#FFCC00]/30">
                 <span className="text-[9px] font-black text-[#1a1a1a]/40 uppercase tracking-wider">Last Battle</span>
                 <span className="text-[13px] font-black text-[#E3350D]">
                   {user.recentBattle.winner === "player" ? "🏆 Won" : user.recentBattle.winner === "opponent" ? "💥 Lost" : "🤝 Draw"}
@@ -111,7 +111,7 @@ export default async function DashboardPage() {
             style={{ boxShadow: "3px 3px 0px #1a1a1a15" }}
           >
             <div className="p-3 sm:p-4 flex flex-col items-center text-center gap-2">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors"
+              <div className="w-10 h-10 flex items-center justify-center transition-colors"
                 style={{ background: action.bg }}>
                 <action.icon className="w-5 h-5" style={{ color: action.color }} />
               </div>
@@ -141,7 +141,7 @@ export default async function DashboardPage() {
                 href={`/?page=collections`}
                 className="text-center group transition-all hover:-translate-y-0.5"
               >
-                <div className="w-full aspect-square rounded-xl mb-1.5 border-2 border-[#1a1a1a]/10 transition-colors group-hover:border-[#1a1a1a]/30"
+                <div className="w-full aspect-square mb-1.5 border-2 border-[#1a1a1a]/10 transition-colors group-hover:border-[#1a1a1a]/30"
                   style={{ background: `${f.color}15` }}>
                   <div className="w-full h-full flex items-center justify-center">
                     <span className="text-[24px]">{f.slug === "cybermon" ? "🤖" : f.slug === "dracobell" ? "🐉" : "🌟"}</span>

@@ -13,6 +13,7 @@ import {
   ShoppingBag, Gift, Camera, Search, Eye, Heart, PlusCircle,
   Disc3,
 } from "lucide-react"
+import UserIdCard from "@/components/game/user-id-card"
 
 // ── Types ──────────────────────────────────────────────
 interface DeckTazo { id: string; name: string; displayName: string; slug: string; number: string; imageUrl: string; rarity: string; franchiseSlug: string; attack: number; defense: number; resistance: number }

@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getAuthUser } from "@/lib/auth"
 import { db as prisma, isoNow } from "@/lib/db"
+import { getLevelInfo } from "@/lib/leveling"
 
 // ─── GET: List quests ───────────────────────────────────────
 export async function GET(req: NextRequest) {
@@ -65,12 +66,35 @@ export async function POST(req: NextRequest) {
   if (uq.claimed) return NextResponse.json({ error: "Reward already claimed" }, { status: 400 })
 
   // Claim reward
+  const rewardXp = uq.quest.rewardXp || 50
+  let didLevelUp = false
+  let newLevel = 1
+  let newXp = 0
+
   await prisma.$transaction(async (tx) => {
     await tx.userQuest.update({ where: { id: uq.id }, data: { claimed: true } })
     await tx.user.update({ where: { id: user.id }, data: { credits: { increment: uq.quest.rewardCredits } } })
     await tx.creditTransaction.create({
       data: { userId: user.id, amount: uq.quest.rewardCredits, source: "quest", reference: questId },
     })
+    // Award XP
+    const currentUser = await tx.user.findUnique({ where: { id: user.id }, select: { xp: true, level: true } })
+    if (currentUser) {
+      const totalXp = currentUser.xp + rewardXp
+      const info = getLevelInfo(totalXp)
+      didLevelUp = info.level > currentUser.level
+      newLevel = info.level
+      newXp = totalXp
+      await tx.user.update({
+        where: { id: user.id },
+        data: {
+          xp: totalXp,
+          level: info.level,
+          xpToNext: info.xpToNext,
+          totalQuestsDone: { increment: 1 },
+        },
+      })
+    }
     // Give tazo reward if applicable
     if (uq.quest.rewardTazoId) {
       await tx.userTazo.upsert({
@@ -81,6 +105,17 @@ export async function POST(req: NextRequest) {
     }
   })
 
-  const updatedUser = await prisma.user.findUnique({ where: { id: user.id }, select: { credits: true } })
-  return NextResponse.json({ claimed: true, rewardCredits: uq.quest.rewardCredits, credits: updatedUser!.credits })
+  const updatedUser = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: { credits: true, level: true, xp: true, xpToNext: true },
+  })
+  return NextResponse.json({
+    claimed: true,
+    rewardCredits: uq.quest.rewardCredits,
+    rewardXp,
+    didLevelUp,
+    level: newLevel,
+    xp: newXp,
+    credits: updatedUser!.credits,
+  })
 }

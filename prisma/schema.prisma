@@ -30,6 +30,19 @@ model User {
   avatarUrl    String?
   bio          String?
   credits      Int        @default(100)
+  // ── Level / XP System ──
+  level        Int        @default(1)
+  xp           Int        @default(0)
+  xpToNext     Int        @default(100)
+  // ── Cached stats (for ID card + leaderboard) ──
+  totalBattles     Int    @default(0)
+  totalWins        Int    @default(0)
+  totalLosses      Int    @default(0)
+  totalTazosOwned  Int    @default(0)
+  totalBagsOpened  Int    @default(0)
+  totalQuestsDone  Int    @default(0)
+  joinDate         DateTime @default(now())
+  // ── Auth ──
   oauthProvider   String?   // "github" | "google" | "discord" | null
   oauthProviderId String?   // external provider user id
   emailVerified Boolean   @default(false)
@@ -277,7 +290,9 @@ model Quest {
   requirement   String     // "place_pixels" | "win_battles" | "open_bags" | "collect_tazos" | "create_deck" | "perfect_throw"
   target        Int        @default(1)         // How many to complete
   rewardCredits Int        @default(50)        // Credit reward
+  rewardXp      Int        @default(50)        // XP reward
   rewardTazoId  String?    // Optional tazo reward
+  minLevel      Int        @default(1)         // Minimum level required
   isActive      Boolean    @default(true)
   orderIndex    Int        @default(0)         // Display order
   expiresAt     DateTime?  // For time-limited quests

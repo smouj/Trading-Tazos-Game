@@ -19,6 +19,7 @@ import {
   Music, Radio, Link as LinkIcon, TicketPercent,
   Loader2,
 } from "lucide-react"
+import UserIdCard from "@/components/game/user-id-card"
 
 // ── localStorage helpers ────────────────────────────
 const LS_KEYS = {

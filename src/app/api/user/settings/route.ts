@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAuthUser } from '@/lib/auth'
 import { db } from '@/lib/db'
 
+const USER_SELECT = {
+  id: true, name: true, email: true, displayName: true,
+  avatarUrl: true, bio: true, credits: true,
+  level: true, xp: true, xpToNext: true,
+  totalBattles: true, totalWins: true, totalLosses: true,
+  totalTazosOwned: true, totalBagsOpened: true, totalQuestsDone: true,
+  joinDate: true, createdAt: true,
+}
+
 export async function GET(request: NextRequest) {
   try {
     const user = await getAuthUser(request)
@@ -9,11 +18,7 @@ export async function GET(request: NextRequest) {
 
     const full = await db.user.findUnique({
       where: { id: user.id },
-      select: {
-        id: true, name: true, email: true, displayName: true,
-        avatarUrl: true, bio: true, credits: true,
-        createdAt: true,
-      },
+      select: USER_SELECT,
     })
 
     if (!full) return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -51,7 +56,7 @@ export async function PUT(request: NextRequest) {
     const updated = await db.user.update({
       where: { id: user.id },
       data: updates,
-      select: { id: true, name: true, email: true, displayName: true, avatarUrl: true, bio: true, credits: true },
+      select: USER_SELECT,
     })
 
     return NextResponse.json({ user: updated })

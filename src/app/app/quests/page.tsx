@@ -11,14 +11,15 @@ import { useI18n } from "@/lib/i18n"
 import {
   Target, Swords, ShoppingBag, Package, Layers, Crosshair,
   Star, Sparkles, BookOpen, Coins, Gift,
-  Loader2, Check, Clock
+  Loader2, Check, Clock, TrendingUp, Zap, Crown, Lock
 } from "lucide-react"
+import { getTitleForLevel } from "@/lib/leveling"
 
 interface QuestData {
   id: string; title: string; description: string; icon: string
   category: string; difficulty: string; requirement: string
-  target: number; rewardCredits: number; rewardTazoId: string | null
-  orderIndex: number
+  target: number; rewardCredits: number; rewardXp: number; rewardTazoId: string | null
+  minLevel: number; orderIndex: number
 }
 
 interface UserQuestData {
@@ -62,6 +63,9 @@ export default function QuestsPage() {
   const [claiming, setClaiming] = useState<string | null>(null)
   const [category, setCategory] = useState("all")
   const [credits, setCredits] = useState(0)
+  const [userLevel, setUserLevel] = useState(1)
+  const [userXp, setUserXp] = useState(0)
+  const [levelUp, setLevelUp] = useState(false)
 
   const loadQuests = useCallback(async () => {
     try {
@@ -97,6 +101,12 @@ export default function QuestsPage() {
       if (res.ok) {
         setUserQuests(prev => prev.map(uq => uq.questId === questId ? { ...uq, claimed: true } : uq))
         setCredits(data.credits)
+        if (data.didLevelUp) {
+          setUserLevel(data.level)
+          setUserXp(data.xp)
+          setLevelUp(true)
+          setTimeout(() => setLevelUp(false), 4000)
+        }
       }
     } catch { /* ignore */ }
     setClaiming(null)
@@ -139,11 +149,36 @@ export default function QuestsPage() {
           <span className="text-sm font-black text-[#22C55E] tracking-tight">
             {completed}/{quests.length} COMPLETED
           </span>
-          <div className="flex items-center gap-1.5 ml-auto px-3 py-1.5 bg-white/10 border border-white/20 shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
-            <Coins className="w-4 h-4 text-[#FFCC00]" />
-            <span className="font-black text-xs text-white">{credits}</span>
+          <div className="flex items-center gap-3 ml-auto">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 border border-white/20 shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
+              <Crown className="w-4 h-4 text-[#FFCC00]" />
+              <span className="font-black text-xs text-white">Lv.{userLevel}</span>
+            </div>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 border border-white/20 shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
+              <Coins className="w-4 h-4 text-[#FFCC00]" />
+              <span className="font-black text-xs text-white">{credits}</span>
+            </div>
           </div>
         </div>
+
+        {/* Level Up Celebration */}
+        {levelUp && (
+          <div className="animate-mag-enter-fade-up p-4 rounded-2xl border-3 border-[#FFCC00] bg-gradient-to-r from-[#FFCC00]/10 via-[#FFD700]/10 to-[#FFCC00]/10"
+            style={{ boxShadow: "3px 3px 0px #FFCC00" }}>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-[#FFCC00] border-3 border-[#1a1a1a] flex items-center justify-center animate-bounce"
+                style={{ boxShadow: "2px 2px 0px #1a1a1a" }}>
+                <TrendingUp className="w-6 h-6 text-[#1a1a1a]" />
+              </div>
+              <div>
+                <p className="text-sm font-black text-[#1a1a1a] uppercase">🎉 LEVEL UP!</p>
+                <p className="text-xs font-bold text-[#1a1a1a]/50">
+                  You reached <span className="text-[#E3350D] font-black">Level {userLevel}</span> — {getTitleForLevel(userLevel)}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Progress bar */}
         <div className="border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] p-4" style={{ background: "white" }}>
@@ -234,6 +269,9 @@ export default function QuestsPage() {
                     <div className="flex items-center gap-3 mt-2 text-[10px] font-black">
                       <span className="flex items-center gap-1 text-[#F59E0B]">
                         <Coins className="w-3.5 h-3.5" /> +{q.rewardCredits} credits
+                      </span>
+                      <span className="flex items-center gap-1 text-[#A855F7]">
+                        <Zap className="w-3.5 h-3.5" /> +{q.rewardXp || 50} XP
                       </span>
                       {q.rewardTazoId && (
                         <span className="flex items-center gap-1 text-[#A855F7]">

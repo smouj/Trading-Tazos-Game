@@ -1,4 +1,5 @@
 "use client"
+import Image from "next/image"
 
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -303,7 +304,7 @@ export default function LoginPage() {
           <main className="flex-1 flex items-center justify-center px-4 py-12 relative">
             <div className="mag-halftone absolute inset-0 opacity-25 pointer-events-none" />
             <div className="relative z-10 flex flex-col items-center gap-4">
-              <img src="/logo/logo-tg-yellow.png" alt="TTG" className="w-12 h-12 animate-pulse" />
+              <Image src="/logo/logo-tg-yellow.png" alt="TTG" width={48} height={48} className="animate-pulse" priority />
               <p className="text-xs font-black text-[#1a1a1a]/30 uppercase tracking-[0.3em]">Loading&hellip;</p>
             </div>
           </main>

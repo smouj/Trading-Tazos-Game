@@ -3,6 +3,9 @@
 // Magazine-themed splash shown during initial page load
 // ============================================================
 
+import Image from "next/image"
+import logoTgYellow from "@/../public/logo/logo-tg-yellow.png"
+
 export default function RootLoading() {
   return (
     <div className="fixed inset-0 z-[99999] flex flex-col items-center justify-center" style={{ background: "#FFF9E6" }}>
@@ -28,11 +31,14 @@ export default function RootLoading() {
         {/* Logo pulse */}
         <div className="relative w-20 h-20">
           <div className="absolute inset-0 rounded-full bg-[#FFCC00]/20 animate-ping" style={{ animationDuration: "2s" }} />
-          <img
-            src="/logo/logo-tg-yellow.png"
+          <Image
+            src={logoTgYellow}
             alt="Trading Tazos Game"
-            className="relative w-20 h-20 object-contain animate-pulse"
+            width={80}
+            height={80}
+            className="relative object-contain animate-pulse"
             style={{ animationDuration: "1.5s" }}
+            priority
           />
         </div>
       </div>

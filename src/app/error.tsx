@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import Link from "next/link"
 import { Home, RefreshCw } from "lucide-react"
+import Image from "next/image"
 import type { Metadata } from "next"
 
 export default function ErrorPage({
@@ -24,7 +25,7 @@ export default function ErrorPage({
       <header className="border-b-[5px] border-[#1a1a1a] bg-white">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2">
-            <img src="/logo/logo-icon-black.webp" alt="TTG" className="w-8 h-8" />
+            <Image src="/logo/logo-icon-black.webp" alt="TTG" width={32} height={32} priority />
             <span className="text-sm font-black text-[#1a1a1a] uppercase tracking-tight hidden sm:inline">Trading Tazos Game</span>
           </Link>
           <span className="ml-auto text-[10px] font-black text-[#E3350D] uppercase tracking-wider">System Error</span>

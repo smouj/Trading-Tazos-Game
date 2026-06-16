@@ -3,6 +3,7 @@
 // No auth required. No progress saved. Instant gameplay.
 // ============================================================
 "use client"
+import Image from "next/image"
 
 import { useEffect, useState } from "react"
 import dynamic from "next/dynamic"
@@ -16,7 +17,7 @@ const BattleView = dynamic(() => import("@/components/game/battle-view"), {
       <div className="flex flex-col items-center gap-6">
         <div className="relative w-16 h-16">
           <div className="absolute inset-0 rounded-full bg-[#FFCC00]/15 animate-ping" />
-          <img src="/logo/logo-tg-yellow.png" alt="" className="relative w-16 h-16 animate-pulse" />
+          <Image src="/logo/logo-tg-yellow.png" alt="" width={64} height={64} className="relative animate-pulse" priority />
         </div>
         <div className="w-8 h-8 rounded-full border-[3px] border-white/10 border-t-[#FFCC00] animate-spin" />
         <p className="text-xs font-bold text-white/20 uppercase tracking-[0.3em] animate-pulse">

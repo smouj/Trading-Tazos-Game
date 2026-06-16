@@ -1,4 +1,5 @@
 "use client"
+import Image from "next/image"
 // ============================================================
 // Trading Tazos Game — Battle View v4 (FSM-powered)
 //
@@ -87,7 +88,7 @@ function BettingReveal({ playerTazo, opponentTazo }: { playerTazo: TazoCard; opp
         <div className="flex flex-col items-center gap-2 animate-[fadeInLeft_0.5s_ease-out]">
           <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl border-2 border-[#29ADFF]/40 overflow-hidden bg-[#29ADFF]/5 flex items-center justify-center">
             {playerTazo.imageUrl ? (
-              <img src={playerTazo.imageUrl} alt={playerTazo.name} className="w-full h-full object-contain" />
+              <Image src={playerTazo.imageUrl} alt={playerTazo.name} fill className="object-contain" sizes="200px" />
             ) : (
               <span className="text-[#29ADFF] text-2xl font-black">{playerTazo.name[0]}</span>
             )}
@@ -106,7 +107,7 @@ function BettingReveal({ playerTazo, opponentTazo }: { playerTazo: TazoCard; opp
         <div className="flex flex-col items-center gap-2 animate-[fadeInRight_0.5s_ease-out]">
           <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl border-2 border-[#FF004D]/40 overflow-hidden bg-[#FF004D]/5 flex items-center justify-center">
             {opponentTazo.imageUrl ? (
-              <img src={opponentTazo.imageUrl} alt={opponentTazo.name} className="w-full h-full object-contain" />
+              <Image src={opponentTazo.imageUrl} alt={opponentTazo.name} fill className="object-contain" sizes="200px" />
             ) : (
               <span className="text-[#FF004D] text-2xl font-black">{opponentTazo.name[0]}</span>
             )}

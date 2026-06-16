@@ -9,6 +9,7 @@
 // and FAQ inside the same magazine shell, replacing the hero.
 // ============================================================
 "use client"
+import Image from "next/image"
 
 import { useState, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
@@ -105,12 +106,13 @@ function MagazineSplash({ onFinish }: { onFinish: () => void }) {
           <div className="absolute w-20 h-20 sm:w-28 sm:h-28 rounded-full border-[4px] border-[#FFCC00]/40" />
           <div className="absolute w-16 h-16 sm:w-24 sm:h-24 rounded-full border-[3px] border-[#E3350D]/20" />
         </div>
-        <img
+        <Image
           src="/logo/logo-icon-black.webp"
           alt="Trading Tazos"
+          width={144}
+          height={144}
           className="w-28 h-28 sm:w-36 sm:h-36 relative z-10"
           loading="lazy"
-          fetchPriority="low"
           style={{ filter: "drop-shadow(6px 6px 0 rgba(26,26,26,0.3))" }}
         />
       </div>
@@ -567,8 +569,8 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
 
             {/* Logo + Title as a unified block */}
             <div className="flex items-center gap-3 sm:gap-4">
-              <img src="/logo/logo-icon-black.webp" alt="TTG"
-                className="w-14 h-14 sm:w-18 sm:h-18 md:w-24 md:h-24 lg:w-28 lg:h-28 drop-shadow-[5px_5px_0_rgba(26,26,26,0.25)] shrink-0" />
+              <Image src="/logo/logo-icon-black.webp" alt="TTG" width={112} height={112}
+                className="w-14 h-14 sm:w-18 sm:h-18 md:w-24 md:h-24 lg:w-28 lg:h-28 drop-shadow-[5px_5px_0_rgba(26,26,26,0.25)] shrink-0" priority />
               <div className="leading-none">
                 <h1 className="text-[2rem] sm:text-[2.25rem] md:text-[2.75rem] lg:text-[3.25rem] font-black text-[#1a1a1a] uppercase tracking-[-0.02em] leading-[0.82] text-center md:text-left">
                   <span className="text-[#E3350D]">TRADING</span><br />
@@ -849,7 +851,7 @@ function SeriesPreviewHome({ onNavigate }: { onNavigate: (page: PageId) => void 
               <div className="flex items-center justify-center gap-1.5 mb-3">
                 {/* Series logo */}
               <div className="flex justify-center mb-2">
-                <img src={`/logo/series-${s.slug}.png`} alt={`${s.name} logo`}
+                <Image src={`/logo/series-${s.slug}.png`} alt={`${s.name} logo`} width={200} height={80}
                   className="h-7 sm:h-8 object-contain opacity-90 group-hover:opacity-100 transition-opacity" />
               </div>
               {/* Tazo grid */}
@@ -1102,7 +1104,7 @@ function CollectionsContent({ onNavigate }: { onNavigate: (page: PageId) => void
             {/* Info section */}
             <div className="p-5">
               <div className="flex items-center gap-2 mb-1">
-                <img src={`/logo/series-${c.slug}.png`} alt={`${c.name}`}
+                <Image src={`/logo/series-${c.slug}.png`} alt={`${c.name}`} width={200} height={80}
                   className="h-5 object-contain" />
               </div>
               <h3 className="text-lg font-black text-[#1a1a1a] uppercase">{c.name}</h3>
@@ -1387,7 +1389,7 @@ function ShopContent() {
                       <Skeleton className="w-10 h-10 rounded-full flex-shrink-0" />
                     ) : examples.length > 0 ? (
                       <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#1a1a1a]/30 flex-shrink-0 bg-white" style={{ boxShadow: "2px 2px 0 #1a1a1a" }}>
-                        <img src={examples[0].imageUrl || "/tazos-artgen/backs/minimon-back.png"} alt={examples[0].displayName || examples[0].name}
+                        <Image src={examples[0].imageUrl || "/tazos-artgen/backs/minimon-back.png"} alt={examples[0].displayName || examples[0].name} width={300} height={300}
                           className="w-full h-full object-cover" />
                       </div>
                     ) : null}
@@ -2106,7 +2108,7 @@ export default function LauncherView() {
           <div className="flex items-center justify-between px-4 sm:px-6 py-2.5">
             <div className="flex items-center gap-2.5">
               <button onClick={() => navigate("home")} className="cursor-pointer">
-                <img src="/logo/logo-tg-yellow.png" alt="TTG" className="w-7 h-7 sm:w-8 sm:h-8" />
+                <Image src="/logo/logo-tg-yellow.png" alt="TTG" width={32} height={32} className="w-7 h-7 sm:w-8 sm:h-8" />
               </button>
               <div>
                 <h2 className="text-lg sm:text-xl font-black text-white uppercase tracking-[0.08em] leading-none">

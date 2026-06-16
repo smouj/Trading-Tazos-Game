@@ -3,6 +3,7 @@
 // Step 1: Name & Texture, Step 2: Fill Tube, Step 3: Review & Seal
 // ============================================================
 "use client"
+import Image from "next/image"
 
 import { useState, useEffect, useMemo } from "react"
 import { useAuth } from "@/lib/auth-context"
@@ -221,7 +222,7 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
                           : "border-[#1a1a1a]/20 bg-white hover:border-[#1a1a1a]/50"
                       }`}>
                       <div className="w-full aspect-[3/4] rounded overflow-hidden mb-1.5" style={{ background: opt.color + "08" }}>
-                        <img src={opt.textureUrl} alt={opt.name} className="w-full h-full object-cover" />
+                        <Image src={opt.textureUrl} alt={opt.name} fill className="object-cover" sizes="150px" />
                       </div>
                       <span className="text-[9px] font-black uppercase text-[#1a1a1a] block text-center">{opt.name}</span>
                       {tubeSlug === opt.slug && (
@@ -491,7 +492,7 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
               {/* Texture + Franchise preview */}
               <div className="flex items-center gap-3 p-3 bg-[#fffef0] border-2 border-[#1a1a1a]">
                 <div className="w-10 h-14 rounded overflow-hidden border border-[#1a1a1a]/20 flex-shrink-0">
-                  <img src={tubeTexture} alt="Tube texture" className="w-full h-full object-cover" />
+                  <Image src={tubeTexture} alt="Tube texture" fill className="object-cover" sizes="300px" />
                 </div>
                 <div>
                   <span className="text-[10px] font-black text-[#1a1a1a] block">Tube: {TUBE_TEXTURE_OPTIONS.find(o => o.slug === tubeSlug)?.name || "Custom"}</span>

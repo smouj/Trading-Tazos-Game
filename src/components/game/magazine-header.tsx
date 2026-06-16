@@ -1,4 +1,5 @@
 "use client"
+import Image from "next/image"
 
 // ============================================================
 // Magazine Header — shared across all pages.
@@ -48,10 +49,13 @@ export default function MagazineHeader({
           href="/"
           className="flex items-center gap-2.5 cursor-pointer no-underline group"
         >
-          <img
+          <Image
             src="/logo/logo-tg-yellow.png"
             alt="TTG"
+            width={32}
+            height={32}
             className="w-7 h-7 sm:w-8 sm:h-8"
+            priority
           />
           <div>
             <h2 className="text-lg sm:text-xl font-black text-white uppercase tracking-[0.08em] leading-none">

@@ -1,4 +1,5 @@
 "use client"
+import Image from "next/image"
 import { Suspense } from "react"
 import type { ReactNode } from "react"
 
@@ -11,7 +12,7 @@ export function AppShellSuspense({ children }: { children: ReactNode }) {
         <div className="relative z-10 flex flex-col items-center gap-6">
           <div className="relative w-16 h-16">
             <div className="absolute inset-0 rounded-full bg-[#FFCC00]/15 animate-ping" />
-            <img src="/logo/logo-tg-yellow.png" alt="" className="relative w-16 h-16 animate-pulse" />
+            <Image src="/logo/logo-tg-yellow.png" alt="" width={64} height={64} className="relative animate-pulse" priority />
           </div>
           
           <div className="w-8 h-8 rounded-full border-[3px] border-[#1a1a1a]/10 border-t-[#FFCC00] animate-spin" />

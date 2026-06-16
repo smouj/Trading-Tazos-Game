@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Home, Search } from "lucide-react"
 import type { Metadata } from "next"
 
+import Image from "next/image"
 export const metadata: Metadata = {
   title: "404 - Page Not Found | Trading Tazos Game",
   description: "The page you're looking for doesn't exist. Return home to collect and battle tazos.",
@@ -17,7 +18,7 @@ export default function NotFoundPage() {
       <header className="border-b-[5px] border-[#1a1a1a] bg-white">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2">
-            <img src="/logo/logo-icon-black.webp" alt="TTG" className="w-8 h-8" />
+            <Image src="/logo/logo-icon-black.webp" alt="TTG" width={32} height={32} priority />
             <span className="text-sm font-black text-[#1a1a1a] uppercase tracking-tight hidden sm:inline">Trading Tazos Game</span>
           </Link>
         </div>

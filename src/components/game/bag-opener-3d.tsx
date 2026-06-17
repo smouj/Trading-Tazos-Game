@@ -68,6 +68,7 @@ export default function BagOpener3D({ bag, frontUrl: propFrontUrl, backUrl: prop
   const tearPaths = useRef<{ x: number; y: number }[]>([])
   const tearing = useRef(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const innerTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const [canvasH, setCanvasH] = useState(500)
   const [bagScale, setBagScale] = useState(1.15)
 
@@ -148,14 +149,33 @@ export default function BagOpener3D({ bag, frontUrl: propFrontUrl, backUrl: prop
   // Auto-open after animation completes
   useEffect(() => {
     if (stage === "opening") {
-      const t = setTimeout(() => {
+      const outer = setTimeout(() => {
         setStage("reveal")
         playSFX('reveal', { volume: 0.6 })
-        setTimeout(() => onOpen(), 100)
+        innerTimerRef.current = setTimeout(() => {
+          innerTimerRef.current = undefined
+          onOpen()
+        }, 100)
       }, 800)
-      return () => clearTimeout(t)
+      return () => {
+        clearTimeout(outer)
+        if (innerTimerRef.current !== undefined) {
+          clearTimeout(innerTimerRef.current)
+          innerTimerRef.current = undefined
+        }
+      }
     }
   }, [stage, onOpen])
+
+  // Clean up any pending timers on unmount
+  useEffect(() => {
+    return () => {
+      if (innerTimerRef.current !== undefined) {
+        clearTimeout(innerTimerRef.current)
+        innerTimerRef.current = undefined
+      }
+    }
+  }, [])
 
   return (
     <div ref={containerRef} className="relative w-full select-none touch-none" style={{ height: canvasH }}>
@@ -184,11 +204,11 @@ export default function BagOpener3D({ bag, frontUrl: propFrontUrl, backUrl: prop
         {/* Key — main front-upper spot */}
         <spotLight position={[2.5, 3.5, 4]} intensity={3.2} angle={0.35} penumbra={0.4} color="#fffef8" />
         {/* Fill — softer lower-front */}
-        <pointLight position={[0, 0.5, 2.5]} intensity={0.5} color="#fff5e8" />
+        <pointLight position={[0, 0.5, 2.5]} intensity={0.7} color="#fff5e8" />
         {/* Rim — subtle back edge light for depth */}
         <directionalLight position={[-1.5, 0.5, -3]} intensity={0.35} color="#e8d5c0" />
         {/* Ambient */}
-        <ambientLight intensity={0.65} color="#fffaf5" />
+        <ambientLight intensity={0.75} color="#fffaf5" />
 
         <Suspense fallback={null}>
           <PotatoChipBag3D

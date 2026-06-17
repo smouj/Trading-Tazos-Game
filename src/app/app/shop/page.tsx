@@ -366,10 +366,11 @@ export default function BagShopPage() {
       const data = await res.json()
       if (res.ok && data.tazo) {
         playSFX('reveal', { volume: 0.5 })
+        // Set both state values together so they batch into one render
+        // This prevents the gap where revealedTazo is set but stage is still "opening"
         setRevealedTazo(data.tazo)
         setBonusTazo(data.bonusTazo || null)
-        // Brief delay for bag reveal animation to complete
-        setTimeout(() => setStage("reveal"), 200)
+        setStage("reveal")
       } else if (res.ok) {
         setError("Bag opened but no tazo found — please try again")
         setStage("select")
@@ -973,5 +974,13 @@ export default function BagShopPage() {
     )
   }
 
-  return null
+  // Loading or unknown state — show spinner instead of blank
+  return (
+    <div className="flex items-center justify-center py-12 animate-fadeIn">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-10 h-10 border-3 border-[#1a1a1a]/10 border-t-[#FFCC00] rounded-full animate-spin" />
+        <p className="text-xs font-bold text-[#1a1a1a]/30 uppercase tracking-wider">Loading…</p>
+      </div>
+    </div>
+  )
 }

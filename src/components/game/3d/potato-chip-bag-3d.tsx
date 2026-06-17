@@ -59,8 +59,8 @@ export default function PotatoChipBag3D({
 
   const frontTex = useLoader(THREE.TextureLoader, frontUrl)
   const backTex = useLoader(THREE.TextureLoader, backUrl)
-  const seamColorHex = useMemo(() => darkenHex(bagColor, 0.68), [bagColor])
-  const sealColorHex = useMemo(() => darkenHex(bagColor, 0.52), [bagColor])
+  const seamColorHex = useMemo(() => darkenHex(bagColor, 0.78), [bagColor])
+  const sealColorHex = useMemo(() => darkenHex(bagColor, 0.66), [bagColor])
 
   const dims = BAG_LARGE
   const frontGeo = useMemo(() => buildFaceGeo(true, dims), [])
@@ -84,7 +84,7 @@ export default function PotatoChipBag3D({
     color: sealColorHex, roughness: 0.55, metalness: 0.03, side: THREE.FrontSide,
   }), [sealColorHex])
   const capMat = useMemo(() => new THREE.MeshStandardMaterial({
-    color: "#14100e", roughness: 0.85, metalness: 0, side: THREE.FrontSide,
+    color: "#3a2f25", roughness: 0.55, metalness: 0, side: THREE.FrontSide,
   }), [])
 
   useEffect(() => {
@@ -134,7 +134,7 @@ export default function PotatoChipBag3D({
     }
     if (interiorGlowRef.current) {
       const t = 1 - Math.pow(1 - Math.min(1, Math.max(0, (p - 0.2) / 0.5)), 3)
-      interiorGlowRef.current.intensity = t * 1.2 * (1 + Math.sin(Date.now() * 0.006) * 0.25 * t)
+      interiorGlowRef.current.intensity = t * 1.5 * (1 + Math.sin(Date.now() * 0.006) * 0.25 * t)
     }
   })
 
@@ -163,7 +163,7 @@ export default function PotatoChipBag3D({
 
       <mesh ref={interiorRef} position={[0, 0, 0]}>
         <boxGeometry args={[BAG_LARGE.wBot * 0.5, BAG_LARGE.h * 0.32, 0.02]} />
-        <meshStandardMaterial color="#050302" roughness={0.95} metalness={0} transparent opacity={0} depthWrite />
+        <meshStandardMaterial color="#1a1410" roughness={0.95} metalness={0} transparent opacity={0} depthWrite />
       </mesh>
       <pointLight ref={interiorGlowRef} position={[0, BAG_LARGE.h * 0.22, 0]} intensity={0} color="#ffdd55" distance={1.4} decay={2} />
     </group>

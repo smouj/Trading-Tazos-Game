@@ -45,9 +45,9 @@ function MiniBagModel({ frontUrl, backUrl, bagColor, franchiseSlug }: {
   const rotY = FRANCHISE_ROT_Y[franchiseSlug || ""] ?? -0.12
   const swayRef = useRef(0)
 
-  const seamColor = useMemo(() => darkenHex(bagColor, 0.62), [bagColor])
-  const sealColor = useMemo(() => darkenHex(bagColor, 0.48), [bagColor])
-  const capColor = "#14100e"
+  const seamColor = useMemo(() => darkenHex(bagColor, 0.78), [bagColor])
+  const sealColor = useMemo(() => darkenHex(bagColor, 0.66), [bagColor])
+  const capColor = "#3a2f25"
 
   const dims = BAG_SMALL
   const frontGeo = useMemo(() => buildFaceGeo(true, dims), [])
@@ -71,7 +71,7 @@ function MiniBagModel({ frontUrl, backUrl, bagColor, franchiseSlug }: {
     color: sealColor, roughness: 0.55, metalness: 0.03, side: THREE.FrontSide,
   }), [sealColor])
   const capMat = useMemo(() => new THREE.MeshStandardMaterial({
-    color: capColor, roughness: 0.85, metalness: 0, side: THREE.FrontSide,
+    color: capColor, roughness: 0.55, metalness: 0, side: THREE.FrontSide,
   }), [])
 
   useEffect(() => {
@@ -131,7 +131,7 @@ export default function BagCardMini3D({ frontUrl, backUrl, bagColor = "#d4d0c8",
         {/* Rim/back light — subtle edge glow for depth */}
         <directionalLight position={[-1.5, 1, -3]} intensity={0.35} color="#e8d5c0" />
         {/* Ambient — even base illumination */}
-        <ambientLight intensity={0.55} color="#fffaf5" />
+        <ambientLight intensity={0.65} color="#fffaf5" />
 
         <MiniBagModel
           frontUrl={frontUrl}

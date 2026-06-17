@@ -22,7 +22,6 @@ import {
 
 const BattleView = dynamic(() => import("@/components/game/battle-view"), {
   ssr: false,
-  prefetch: false,
   loading: () => (
     <div
       style={{

@@ -744,7 +744,7 @@ export default function SettingsPage() {
                 </div>
               )}
               <p className="text-[8px] font-bold text-[#1a1a1a]/20 uppercase text-center">
-                Enter a promo code to earn credits or rewards
+                Enter a promo code to earn CREDITS or rewards
               </p>
             </div>
           </div>

@@ -188,7 +188,7 @@ export function RewardedAdButton({ isAuthenticated, onRewardClaimed }: RewardedA
         fontSize: "0.8rem",
         fontWeight: 700,
       }}>
-        <span style={{ color: "#E3350D" }}>+{REWARDED_AD_CREDITS} credits</span>
+        <span style={{ color: "#E3350D" }}>+{REWARDED_AD_CREDITS} CREDITS</span>
         <span style={{ color: "#ccc" }}>·</span>
         <span style={{ color: "#888" }}>
           {status ? `${status.remaining}/${status.dailyLimit} remaining today` : "Loading..."}
@@ -219,7 +219,7 @@ export function RewardedAdButton({ isAuthenticated, onRewardClaimed }: RewardedA
           fontSize: "0.8rem",
           fontWeight: 700,
         }}>
-          ✅ +{REWARDED_AD_CREDITS} credits earned!
+          ✅ +{REWARDED_AD_CREDITS} CREDITS earned!
         </div>
       )}
 

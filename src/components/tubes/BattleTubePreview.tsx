@@ -5,15 +5,9 @@
 // ============================================================
 "use client"
 
-import dynamic from "next/dynamic"
 import TazoDiscImage from "@/components/game/tazo-disc-image"
 import { canUseWebGL } from "@/lib/browser/webgl-detector"
 import { useState, useEffect } from "react"
-
-const TubeCylinder3DStatic = dynamic(
-  () => import("@/components/tubes/TubeCylinder3D").then(m => ({ default: m.TubeCylinder3DStatic })),
-  { ssr: false, loading: () => <TubeLoadingFallback /> }
-)
 
 interface TubeTazo {
   id: string
@@ -89,9 +83,17 @@ export default function BattleTubePreview({
   className = "",
 }: BattleTubePreviewProps & { textureUrl?: string }) {
   const [hasWebGL, setHasWebGL] = useState<boolean | null>(null)
+  const [Tube3D, setTube3D] = useState<React.ComponentType<any> | null>(null)
 
   useEffect(() => {
-    setHasWebGL(canUseWebGL())
+    const webglOK = canUseWebGL()
+    setHasWebGL(webglOK)
+    if (webglOK) {
+      // Only load Three.js when WebGL is confirmed available
+      import("@/components/tubes/TubeCylinder3D").then(m => {
+        setTube3D(() => m.TubeCylinder3DStatic)
+      })
+    }
   }, [])
 
   const sizes = {
@@ -110,8 +112,8 @@ export default function BattleTubePreview({
     <div className={`flex flex-col items-center ${className}`}>
       {/* ═══ 3D Tube (only when WebGL available) ═══ */}
       <div style={{ width: s.width, height: s.height }}>
-        {hasWebGL === true ? (
-          <TubeCylinder3DStatic
+        {hasWebGL === true && Tube3D ? (
+          <Tube3D
             textureUrl={tubeTexture}
             color={tubeColor}
             rotationSpeed={0.25}

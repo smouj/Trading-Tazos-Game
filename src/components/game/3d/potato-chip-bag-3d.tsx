@@ -1,11 +1,10 @@
 // ============================================================
-// Trading Tazos Game — PotatoChipBag3D v12
+// Trading Tazos Game — PotatoChipBag3D v12 (fixed)
 //
 // Single closed superellipse pillow mesh. Full height body.
-// NO separate crimp seals — the continuous curve handles it.
-// UV mapping by angle for correct front/back texture display.
+// NO crimp seals, NO gaps. UV by angle from face center.
 //
-// Material groups (by cos θ):
+// Material groups (index buffer ordered: front → back → side):
 //   0 = front (cos > 0.18) → front texture
 //   1 = back  (cos < -0.18) → back texture
 //   2 = sides (the rest) → bag color
@@ -35,17 +34,9 @@ function darkenHex(hex: string, factor: number): string {
 
 // ════════════════════════════════════════════════════════
 // SUPER-ELLIPSE BODY — full height, no seals
-//
-// Cross-section: |x/a|^3.5 + |z/b|^3.5 = 1
-// True continuous closed surface — 0 gaps, 0 seams.
-//
-// UV mapping by angle from face center:
-//   Front: angle 0° ± 80° → U 0..1
-//   Back:  angle 180° ± 80° → U 0..1
-//   Sides: any UV (solid color)
 // ════════════════════════════════════════════════════════
 const COS_THRESHOLD = 0.18
-const ARC_HALF_RAD = Math.acos(COS_THRESHOLD) // ≈ 1.39 rad = 80°
+const ARC_HALF_RAD = Math.acos(COS_THRESHOLD) // ≈ 1.39 rad ≈ 80°
 
 function makePillowBodyGeo(
   wTop: number, wBot: number, h: number,
@@ -54,7 +45,7 @@ function makePillowBodyGeo(
   const positions: number[] = []
   const uvs: number[] = []
 
-  // Precompute vertex zones
+  // Precompute zones
   const zones: ("front" | "back" | "side")[] = []
   for (let i = 0; i < segsAround; i++) {
     const cosA = Math.cos((i / segsAround) * Math.PI * 2)
@@ -67,31 +58,23 @@ function makePillowBodyGeo(
     const t = yi / segsH
     const y = (t - 0.5) * h
     const halfW = lerp(wBot / 2, wTop / 2, t)
-    const yNorm = Math.abs(y) / (h / 2)
-    const hf = Math.pow(1 - Math.pow(yNorm, 5), 2.5)
+    const hf = Math.pow(1 - Math.pow(Math.abs(y) / (h / 2), 5), 2.5)
     const halfD = bulge * hf
 
     for (let i = 0; i < segsAround; i++) {
       const angle = (i / segsAround) * Math.PI * 2
-      const cosA = Math.cos(angle)
-      const sinA = Math.sin(angle)
+      const cosA = Math.cos(angle), sinA = Math.sin(angle)
       const n = 3.5
-      const r = Math.pow(
-        Math.pow(Math.abs(cosA), n) + Math.pow(Math.abs(sinA), n),
-        -1 / n
-      )
+      const r = Math.pow(Math.pow(Math.abs(cosA), n) + Math.pow(Math.abs(sinA), n), -1 / n)
       positions.push(r * cosA * halfW, y, r * sinA * halfD)
 
-      // Angle-based UV mapping — key fix for correct front/back textures
+      // Angle-based UV from face center
       let u = 0.5
-      const zone = zones[i]
-      if (zone === "front") {
-        // Front center at angle=0, span -ARC_HALF..+ARC_HALF
+      if (zones[i] === "front") {
         let a = angle > Math.PI ? angle - 2 * Math.PI : angle
         u = (a / ARC_HALF_RAD + 1) / 2
         if (u < 0) u = 0; if (u > 1) u = 1
-      } else if (zone === "back") {
-        // Back center at angle=π, span π-ARC_HALF..π+ARC_HALF
+      } else if (zones[i] === "back") {
         let a = angle - Math.PI
         u = (a / ARC_HALF_RAD + 1) / 2
         if (u < 0) u = 0; if (u > 1) u = 1
@@ -100,26 +83,32 @@ function makePillowBodyGeo(
     }
   }
 
-  // ── Indices with material groups ──
-  const allIdx: number[] = []
+  // ── Indices GROUPED by zone (front → back → side) ──
+  // Critical: groups must reference CONTIGUOUS ranges in the index buffer.
+  // Previously interleaved (front/back/side mixed) → wrong material assignment.
   const frontI: number[] = [], backI: number[] = [], sideI: number[] = []
-
   for (let yi = 0; yi < segsH; yi++) {
     const r0 = yi * segsAround, r1 = (yi + 1) * segsAround
     for (let i = 0; i < segsAround; i++) {
       const j = (i + 1) % segsAround
       const a = r0 + i, b = r1 + i, c = r0 + j, d = r1 + j
       const tgt = zones[i] === "front" ? frontI : zones[i] === "back" ? backI : sideI
-      allIdx.push(a, b, c); tgt.push(a, b, c)
-      allIdx.push(b, d, c); tgt.push(b, d, c)
+      tgt.push(a, b, c, b, d, c)
     }
   }
+  // Combine: front first, then back, then side — contiguous per group
+  const len = frontI.length + backI.length + sideI.length
+  const idx = new Uint32Array(len)
+  idx.set(frontI, 0)
+  idx.set(backI, frontI.length)
+  idx.set(sideI, frontI.length + backI.length)
 
   const geo = new THREE.BufferGeometry()
   geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3))
   geo.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2))
-  geo.setIndex(allIdx)
+  geo.setIndex(new THREE.BufferAttribute(idx, 1))
   geo.computeVertexNormals()
+
   geo.clearGroups()
   if (frontI.length) geo.addGroup(0, frontI.length, 0)
   if (backI.length) geo.addGroup(frontI.length, backI.length, 1)
@@ -156,7 +145,6 @@ export default function PotatoChipBag3D({
   const backTex = useLoader(THREE.TextureLoader, backUrl)
   const seamColorHex = useMemo(() => darkenHex(bagColor, 0.65), [bagColor])
 
-  // 72 verts/ring = ~5°, 20 rings — smooth pillow shape
   const bodyGeo = useMemo(
     () => makePillowBodyGeo(BAG_W_TOP, BAG_W_BOT, BAG_H, BULGE, 72, 20),
     []
@@ -185,21 +173,14 @@ export default function PotatoChipBag3D({
     if (opening && !wasOpening.current) popRef.current = 1.0
     wasOpening.current = opening
     popRef.current = Math.max(0, popRef.current - delta * 5)
-
     openRef.current = THREE.MathUtils.lerp(openRef.current, opening ? 1 : 0, 3.0 * delta)
     const p = Math.max(0, Math.min(1, openRef.current))
-
-    // Pop pulse
     const popEnv = Math.sin(popRef.current * Math.PI) * (1 - popRef.current * 0.3)
     g.scale.setScalar(baseScale * (1 + popRef.current * 0.06 * popEnv))
-
-    // Body squish
     if (bodyRef.current) {
       const t = 1 - Math.pow(1 - Math.min(1, Math.max(0, (p - 0.06) / 0.65)), 3)
       bodyRef.current.scale.y = 1 - t * 0.03
     }
-
-    // Interior glow
     if (interiorRef.current) {
       const t = 1 - Math.pow(1 - Math.min(1, Math.max(0, (p - 0.15) / 0.55)), 3)
       interiorRef.current.scale.setScalar(0.25 + t * 0.75)

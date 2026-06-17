@@ -1,9 +1,14 @@
 // ============================================================
-// Trading Tazos Game — BagCardMini3D v9
+// Trading Tazos Game — BagCardMini3D v10
 //
-// 3 meshes. Full UV 0→1 on each face (x-position based, not angle).
-// ClampToEdgeWrapping. Static franchise-specific orientation.
-// Front face dominant (70-85% visible), side just peeking.
+// Pillow-pouch bag with 6 separated sub-meshes:
+//   FrontPanel (textured)  BackPanel (textured)
+//   LeftSeam   (solid)     RightSeam  (solid)
+//   TopSeal    (solid)     BottomSeal (solid)
+//
+// Front/back textures: full UV 0→1, ClampToEdge, no stretch.
+// Sides & seals: solid bagColor-derived materials.
+// Franchise-specific static rotation for best shop-card angle.
 // ============================================================
 "use client"
 
@@ -11,156 +16,235 @@ import { useRef, useMemo, useEffect } from "react"
 import { Canvas, useFrame, useLoader } from "@react-three/fiber"
 import * as THREE from "three"
 
-const BAG_W_TOP = 0.72; const BAG_W_BOT = 0.64; const BAG_H = 1.02; const BULGE = 0.17
-const COS_THRESH = 0.18
+// ── Bag dimensions (normalised) ──
+const BW_TOP = 0.72
+const BW_BOT = 0.64
+const BH = 0.94
+const BD = 0.16
+const SH = 0.055
+const SW = 0.028
+const SEGS_W = 40
+const SEGS_H = 12
 
+// ── Helpers ──
 function lerp(a: number, b: number, t: number) { return a + (b - a) * t }
-function hexToRgb(hex: string): [number, number, number] {
+
+function darkenRgb(hex: string, factor: number): [number, number, number] {
   const h = hex.replace("#", "")
-  return [parseInt(h.slice(0, 2), 16) / 255, parseInt(h.slice(2, 4), 16) / 255, parseInt(h.slice(4, 6), 16) / 255]
-}
-function darkenHex(hex: string, factor: number): string {
-  const [r, g, b] = hexToRgb(hex)
-  return `#${Math.round(Math.max(0, r * factor) * 255).toString(16).padStart(2, "0")}${Math.round(Math.max(0, g * factor) * 255).toString(16).padStart(2, "0")}${Math.round(Math.max(0, b * factor) * 255).toString(16).padStart(2, "0")}`
+  return [
+    Math.max(0, parseInt(h.slice(0, 2), 16) / 255 * factor),
+    Math.max(0, parseInt(h.slice(2, 4), 16) / 255 * factor),
+    Math.max(0, parseInt(h.slice(4, 6), 16) / 255 * factor),
+  ]
 }
 
-function buildFaceGeo(
-  wTop: number, wBot: number, h: number, bulge: number,
-  segsAround: number, segsH: number,
-  vertexFilter: (angle: number) => boolean,
-): THREE.BufferGeometry {
+// ── Geometry builders ──
+
+/** Textured face panel (front or back).
+ *  Trapezoid that bulges outward in Z.
+ *  UVs: u = 0→1 left→right, v = 0→1 bottom→top. */
+function buildPanelGeo(front: boolean): THREE.BufferGeometry {
+  const zSign = front ? 1 : -1
   const positions: number[] = []
   const uvs: number[] = []
-  const oldToNew: number[][] = []
+  const indices: number[] = []
 
-  for (let yi = 0; yi <= segsH; yi++) {
-    const t = yi / segsH
-    const y = (t - 0.5) * h
-    const halfW = lerp(wBot / 2, wTop / 2, t)
-    const hf = Math.pow(1 - Math.pow(Math.abs(y) / (h / 2), 5), 2.5)
-    const halfD = bulge * hf
+  for (let yi = 0; yi <= SEGS_H; yi++) {
+    const t = yi / SEGS_H
+    const y = (t - 0.5) * BH
+    const halfW = lerp(BW_BOT / 2, BW_TOP / 2, t)
+    const depthFactor = Math.pow(1 - Math.pow(Math.abs(y) / (BH / 2), 6), 3)
+    const bulgeZ = BD * depthFactor
 
-    // Pass 1: find x-range
-    let xMin = Infinity, xMax = -Infinity
-    for (let i = 0; i < segsAround; i++) {
-      const angle = (i / segsAround) * Math.PI * 2
-      if (vertexFilter(angle)) {
-        const cosA = Math.cos(angle), sinA = Math.sin(angle)
-        const r = Math.pow(Math.pow(Math.abs(cosA), 3.5) + Math.pow(Math.abs(sinA), 3.5), -1 / 3.5)
-        const x = r * cosA * halfW
-        if (x < xMin) xMin = x
-        if (x > xMax) xMax = x
-      }
+    for (let xi = 0; xi <= SEGS_W; xi++) {
+      const u = xi / SEGS_W
+      const x = lerp(-halfW, halfW, u)
+      const xNorm = x / halfW
+      const z = bulgeZ * Math.pow(1 - Math.pow(Math.abs(xNorm), 2.5), 1 / 2.5) * zSign
+
+      positions.push(x, y, z)
+      uvs.push(u, t)
     }
-    const xRange = xMax - xMin || 1
-
-    // Pass 2: build ring with proper UVs
-    const row: number[] = []
-    for (let i = 0; i < segsAround; i++) {
-      const angle = (i / segsAround) * Math.PI * 2
-      if (vertexFilter(angle)) {
-        const cosA = Math.cos(angle), sinA = Math.sin(angle)
-        const r = Math.pow(Math.pow(Math.abs(cosA), 3.5) + Math.pow(Math.abs(sinA), 3.5), -1 / 3.5)
-        const x = r * cosA * halfW
-        positions.push(x, y, r * sinA * halfD)
-        uvs.push(Number(((x - xMin) / xRange).toFixed(6)), t)
-        row.push(positions.length / 3 - 1)
-      } else { row.push(-1) }
-    }
-    oldToNew.push(row)
   }
 
-  const indices: number[] = []
-  for (let yi = 0; yi < segsH; yi++) {
-    const r0 = oldToNew[yi], r1 = oldToNew[yi + 1]
-    for (let i = 0; i < segsAround; i++) {
-      const j = (i + 1) % segsAround
-      const a = r0[i], b = r1[i], c = r0[j], d = r1[j]
-      if (a >= 0 && b >= 0 && c >= 0 && d >= 0) indices.push(a, b, c, b, d, c)
+  const rowLen = SEGS_W + 1
+  for (let yi = 0; yi < SEGS_H; yi++) {
+    for (let xi = 0; xi < SEGS_W; xi++) {
+      const a = yi * rowLen + xi
+      const b = a + 1
+      const c = a + rowLen
+      const d = c + 1
+      if (front) { indices.push(a, b, c, b, d, c) }
+      else       { indices.push(a, c, b, b, c, d) }
     }
   }
 
   const geo = new THREE.BufferGeometry()
   geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3))
   geo.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2))
-  geo.setIndex(indices); geo.computeVertexNormals()
+  geo.setIndex(indices)
+  geo.computeVertexNormals()
   return geo
 }
 
-function buildSideGeo(
-  wTop: number, wBot: number, h: number, bulge: number,
-  segsAround: number, segsH: number,
-): THREE.BufferGeometry {
+/** Seal strip (top or bottom crimp) — thin slab with front/back/edges. */
+function buildSealGeo(top: boolean): THREE.BufferGeometry {
+  const yBody = top ? BH / 2 : -BH / 2
+  const yOuter = top ? BH / 2 + SH : -BH / 2 - SH
+  const halfW = top ? BW_TOP / 2 : BW_BOT / 2
+  const dz = 0.01
+  const segsV = 4
+
   const positions: number[] = []
   const uvs: number[] = []
-  const oldToNew: number[][] = []
+  const indices: number[] = []
 
-  for (let yi = 0; yi <= segsH; yi++) {
-    const t = yi / segsH
-    const y = (t - 0.5) * h
-    const halfW = lerp(wBot / 2, wTop / 2, t)
-    const hf = Math.pow(1 - Math.pow(Math.abs(y) / (h / 2), 5), 2.5)
-    const halfD = bulge * hf
-
-    const row: number[] = []
-    for (let i = 0; i < segsAround; i++) {
-      const angle = (i / segsAround) * Math.PI * 2
-      if (Math.abs(Math.cos(angle)) <= COS_THRESH) {
-        const cosA = Math.cos(angle), sinA = Math.sin(angle)
-        const r = Math.pow(Math.pow(Math.abs(cosA), 3.5) + Math.pow(Math.abs(sinA), 3.5), -1 / 3.5)
-        positions.push(r * cosA * halfW, y, r * sinA * halfD)
-        uvs.push(sinA > 0 ? 0.0 : 1.0, t)
-        row.push(positions.length / 3 - 1)
-      } else { row.push(-1) }
+  // Front face (z=+dz)
+  for (let yi = 0; yi <= segsV; yi++) {
+    const t = yi / segsV
+    const y = lerp(yBody, yOuter, t)
+    for (let xi = 0; xi <= SEGS_W; xi++) {
+      const u = xi / SEGS_W
+      positions.push(lerp(-halfW, halfW, u), y, dz)
+      uvs.push(u, t)
     }
-    oldToNew.push(row)
+  }
+  const rowLen = SEGS_W + 1
+  const frontCount = (segsV + 1) * rowLen
+
+  // Back face (z=-dz)
+  for (let yi = 0; yi <= segsV; yi++) {
+    const t = yi / segsV
+    const y = lerp(yBody, yOuter, t)
+    for (let xi = 0; xi <= SEGS_W; xi++) {
+      const u = xi / SEGS_W
+      positions.push(lerp(-halfW, halfW, u), y, -dz)
+      uvs.push(u, t)
+    }
   }
 
+  // Front triangles
+  for (let yi = 0; yi < segsV; yi++) {
+    for (let xi = 0; xi < SEGS_W; xi++) {
+      const a = yi * rowLen + xi, b = a + 1, c = a + rowLen, d = c + 1
+      indices.push(a, b, c, b, d, c)
+    }
+  }
+  // Back triangles
+  for (let yi = 0; yi < segsV; yi++) {
+    for (let xi = 0; xi < SEGS_W; xi++) {
+      const a = frontCount + yi * rowLen + xi, b = a + 1, c = a + rowLen, d = c + 1
+      indices.push(a, c, b, b, c, d)
+    }
+  }
+  // Top & bottom caps connecting front↔back
+  for (let xi = 0; xi < SEGS_W; xi++) {
+    const fTop = segsV * rowLen + xi
+    const bTop = frontCount + segsV * rowLen + xi
+    indices.push(fTop, bTop, fTop + 1, fTop + 1, bTop, bTop + 1)
+    const fBot = xi
+    const bBot = frontCount + xi
+    indices.push(fBot, fBot + 1, bBot, fBot + 1, bBot + 1, bBot)
+  }
+
+  const geo = new THREE.BufferGeometry()
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3))
+  geo.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2))
+  geo.setIndex(indices)
+  geo.computeVertexNormals()
+  return geo
+}
+
+/** Side seam strip — runs vertically along left or right folded edge. */
+function buildSideSeamGeo(right: boolean): THREE.BufferGeometry {
+  const xSign = right ? 1 : -1
+  const segsD = 8
+
+  const positions: number[] = []
+  const uvs: number[] = []
   const indices: number[] = []
-  for (let yi = 0; yi < segsH; yi++) {
-    const r0 = oldToNew[yi], r1 = oldToNew[yi + 1]
-    for (let i = 0; i < segsAround; i++) {
-      const j = (i + 1) % segsAround
-      const a = r0[i], b = r1[i], c = r0[j], d = r1[j]
-      if (a >= 0 && b >= 0 && c >= 0 && d >= 0) indices.push(a, b, c, b, d, c)
+
+  for (let yi = 0; yi <= SEGS_H; yi++) {
+    const t = yi / SEGS_H
+    const y = (t - 0.5) * BH
+    const halfW = lerp(BW_BOT / 2, BW_TOP / 2, t)
+    const depthFactor = Math.pow(1 - Math.pow(Math.abs(y) / (BH / 2), 6), 3)
+    const bulgeZ = BD * depthFactor
+
+    for (let di = 0; di <= segsD; di++) {
+      const dt = di / segsD
+      const angle = Math.PI / 2 + dt * Math.PI
+      const cosA = Math.cos(angle)
+      const sinA = Math.sin(angle)
+
+      const xEdge = xSign * halfW + cosA * SW
+      const zEdge = sinA * (bulgeZ + SW * 0.55)
+
+      positions.push(xEdge, y, zEdge)
+      uvs.push(dt, t)
+    }
+  }
+
+  const rowLen = segsD + 1
+  for (let yi = 0; yi < SEGS_H; yi++) {
+    for (let di = 0; di < segsD; di++) {
+      const a = yi * rowLen + di, b = a + 1, c = a + rowLen, d = c + 1
+      indices.push(a, b, c, b, d, c)
     }
   }
 
   const geo = new THREE.BufferGeometry()
   geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3))
   geo.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2))
-  geo.setIndex(indices); geo.computeVertexNormals()
+  geo.setIndex(indices)
+  geo.computeVertexNormals()
   return geo
 }
 
-// ── Franchise-specific rotation for best front-facing view ──
-const FRANCHISE_ROTATION: Record<string, number> = {
-  minimon: -0.25,    // slight left tilt
-  cybermon: 0.15,    // slight right tilt
-  dracobell: 0.25,   // moderate right tilt
+// ── Franchise rotations ──
+const FRANCHISE_ROT_Y: Record<string, number> = {
+  minimon: -0.25,
+  cybermon: 0.15,
+  dracobell: 0.25,
 }
+const TILT_X = -0.09
 
+// ── Inner model ──
 function MiniBagModel({ frontUrl, backUrl, bagColor, franchiseSlug }: {
   frontUrl: string; backUrl: string; bagColor: string; franchiseSlug?: string
 }) {
   const groupRef = useRef<THREE.Group>(null!)
   const frontTex = useLoader(THREE.TextureLoader, frontUrl)
   const backTex = useLoader(THREE.TextureLoader, backUrl)
-  const seamColorHex = useMemo(() => darkenHex(bagColor, 0.65), [bagColor])
 
-  const rotY = FRANCHISE_ROTATION[franchiseSlug || ""] ?? -0.15
+  const rotY = FRANCHISE_ROT_Y[franchiseSlug || ""] ?? -0.15
 
-  const frontGeo = useMemo(() => buildFaceGeo(BAG_W_TOP, BAG_W_BOT, BAG_H, BULGE, 48, 14,
-    (a) => Math.cos(a) > COS_THRESH,
-  ), [])
-  const backGeo = useMemo(() => buildFaceGeo(BAG_W_TOP, BAG_W_BOT, BAG_H, BULGE, 48, 14,
-    (a) => Math.cos(a) < -COS_THRESH,
-  ), [])
-  const sideGeo = useMemo(() => buildSideGeo(BAG_W_TOP, BAG_W_BOT, BAG_H, BULGE, 48, 14), [])
+  const [sr, sg, sb] = useMemo(() => darkenRgb(bagColor, 0.55), [bagColor])
+  const sealColor = useMemo(() => new THREE.Color(sr, sg, sb), [sr, sg, sb])
+  const sideColor = useMemo(() => {
+    const [r, g, b] = darkenRgb(bagColor, 0.42)
+    return new THREE.Color(r, g, b)
+  }, [bagColor])
 
-  const fMat = useMemo(() => new THREE.MeshStandardMaterial({ map: frontTex, roughness: 0.18, metalness: 0, side: THREE.FrontSide }), [frontTex])
-  const bMat = useMemo(() => new THREE.MeshStandardMaterial({ map: backTex, roughness: 0.18, metalness: 0, side: THREE.FrontSide }), [backTex])
-  const sMat = useMemo(() => new THREE.MeshStandardMaterial({ color: seamColorHex, roughness: 0.5, metalness: 0.04, side: THREE.FrontSide }), [seamColorHex])
+  const frontGeo = useMemo(() => buildPanelGeo(true), [])
+  const backGeo = useMemo(() => buildPanelGeo(false), [])
+  const topSealGeo = useMemo(() => buildSealGeo(true), [])
+  const bottomSealGeo = useMemo(() => buildSealGeo(false), [])
+  const leftSeamGeo = useMemo(() => buildSideSeamGeo(false), [])
+  const rightSeamGeo = useMemo(() => buildSideSeamGeo(true), [])
+
+  const fMat = useMemo(() => new THREE.MeshStandardMaterial({
+    map: frontTex, roughness: 0.15, metalness: 0, side: THREE.FrontSide,
+  }), [frontTex])
+  const bMat = useMemo(() => new THREE.MeshStandardMaterial({
+    map: backTex, roughness: 0.15, metalness: 0, side: THREE.FrontSide,
+  }), [backTex])
+  const sealMat = useMemo(() => new THREE.MeshStandardMaterial({
+    color: sealColor, roughness: 0.55, metalness: 0.02, side: THREE.FrontSide,
+  }), [sealColor])
+  const sideMat = useMemo(() => new THREE.MeshStandardMaterial({
+    color: sideColor, roughness: 0.45, metalness: 0.03, side: THREE.FrontSide,
+  }), [sideColor])
 
   useEffect(() => {
     for (const tex of [frontTex, backTex]) {
@@ -176,35 +260,46 @@ function MiniBagModel({ frontUrl, backUrl, bagColor, franchiseSlug }: {
     }
   }, [frontTex, backTex])
 
-  // Subtle idle sway (no spin)
-  useFrame((_, delta) => {
+  useFrame(() => {
     if (groupRef.current) {
-      groupRef.current.rotation.y = rotY + Math.sin(Date.now() * 0.0008) * 0.08
+      groupRef.current.rotation.y = rotY + Math.sin(Date.now() * 0.0008) * 0.06
     }
   })
 
   return (
-    <group ref={groupRef} scale={0.9} rotation={[0, rotY, 0.02]}>
+    <group ref={groupRef} scale={0.92} rotation={[TILT_X, rotY, 0]}>
       <mesh geometry={frontGeo} material={fMat} />
       <mesh geometry={backGeo} material={bMat} />
-      <mesh geometry={sideGeo} material={sMat} />
+      <mesh geometry={topSealGeo} material={sealMat} />
+      <mesh geometry={bottomSealGeo} material={sealMat} />
+      <mesh geometry={leftSeamGeo} material={sideMat} />
+      <mesh geometry={rightSeamGeo} material={sideMat} />
     </group>
   )
 }
 
-interface MiniProps {
+// ── Public component ──
+export default function BagCardMini3D({ frontUrl, backUrl, bagColor = "#d4d0c8", franchiseSlug }: {
   frontUrl: string; backUrl: string; bagColor?: string; franchiseSlug?: string
-}
-
-export default function BagCardMini3D({ frontUrl, backUrl, bagColor = "#d4d0c8", franchiseSlug }: MiniProps) {
+}) {
   return (
     <div className="w-full h-[180px] sm:h-[200px]" style={{ background: "transparent" }}>
-      <Canvas camera={{ position: [0, 0.02, 1.65], fov: 38 }} style={{ background: "transparent" }} gl={{ antialias: true, alpha: true }}>
-        <ambientLight intensity={0.7} />
-        <directionalLight position={[2, 2, 3]} intensity={1.5} />
-        <directionalLight position={[-1.5, 1, -1.5]} intensity={0.6} color="#ffeecc" />
-        <pointLight position={[0, 0.5, 2]} intensity={0.5} color="#FFCC00" />
-        <MiniBagModel frontUrl={frontUrl} backUrl={backUrl} bagColor={bagColor} franchiseSlug={franchiseSlug} />
+      <Canvas
+        camera={{ position: [0, 0.05, 1.7], fov: 40 }}
+        style={{ background: "transparent" }}
+        gl={{ antialias: true, alpha: true, preserveDrawingBuffer: false }}
+        dpr={[1, 1.5]}
+      >
+        <ambientLight intensity={0.65} />
+        <directionalLight position={[3, 2.5, 4]} intensity={1.6} />
+        <directionalLight position={[-2, 1.5, -2]} intensity={0.5} color="#ffeecc" />
+        <pointLight position={[0, 0.8, 2.5]} intensity={0.4} color="#FFCC00" />
+        <MiniBagModel
+          frontUrl={frontUrl}
+          backUrl={backUrl}
+          bagColor={bagColor}
+          franchiseSlug={franchiseSlug}
+        />
       </Canvas>
     </div>
   )

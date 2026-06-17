@@ -7,6 +7,8 @@
 
 import dynamic from "next/dynamic"
 import TazoDiscImage from "@/components/game/tazo-disc-image"
+import { canUseWebGL } from "@/lib/browser/webgl-detector"
+import { useState, useEffect } from "react"
 
 const TubeCylinder3DStatic = dynamic(
   () => import("@/components/tubes/TubeCylinder3D").then(m => ({ default: m.TubeCylinder3DStatic })),
@@ -86,6 +88,12 @@ export default function BattleTubePreview({
   size = "md", showLabel = true,
   className = "",
 }: BattleTubePreviewProps & { textureUrl?: string }) {
+  const [hasWebGL, setHasWebGL] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    setHasWebGL(canUseWebGL())
+  }, [])
+
   const sizes = {
     sm: { width: 80, height: 120 },
     md: { width: 130, height: 190 },
@@ -100,17 +108,43 @@ export default function BattleTubePreview({
 
   return (
     <div className={`flex flex-col items-center ${className}`}>
-      {/* ═══ 3D Tube ═══ */}
+      {/* ═══ 3D Tube (only when WebGL available) ═══ */}
       <div style={{ width: s.width, height: s.height }}>
-        <TubeCylinder3DStatic
-          textureUrl={tubeTexture}
-          color={tubeColor}
-          rotationSpeed={0.25}
-          showTazos={count > 0}
-          tazoImageUrls={tazoUrls}
-          style={{ width: "100%", height: "100%" }}
-          className="overflow-hidden"
-        />
+        {hasWebGL === false ? (
+          <div style={{
+            width: "100%", height: "100%",
+            background: `linear-gradient(135deg, ${tubeColor}22 0%, ${tubeColor}08 100%)`,
+            border: `3px solid ${tubeColor}33`,
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center", gap: 4,
+          }}>
+            {tazoUrls.length > 0 && (
+              <div style={{ display: "flex", gap: -8, flexWrap: "wrap", justifyContent: "center", maxWidth: "80%" }}>
+                {tazoUrls.slice(0, 4).map((url, i) => (
+                  <div key={i} style={{
+                    width: 28, height: 28, borderRadius: "50%",
+                    background: `url(${url}) center/cover`,
+                    border: "2px solid #1a1a1a",
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.4)",
+                  }} />
+                ))}
+              </div>
+            )}
+            <p style={{ fontSize: 8, fontWeight: 700, color: `${tubeColor}99`, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              {count}/{maxCount}
+            </p>
+          </div>
+        ) : (
+          <TubeCylinder3DStatic
+            textureUrl={tubeTexture}
+            color={tubeColor}
+            rotationSpeed={0.25}
+            showTazos={count > 0}
+            tazoImageUrls={tazoUrls}
+            style={{ width: "100%", height: "100%" }}
+            className="overflow-hidden"
+          />
+        )}
       </div>
 
       {/* ═══ LABEL / STICKER ═══ */}

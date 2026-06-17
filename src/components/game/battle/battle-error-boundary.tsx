@@ -27,7 +27,7 @@ export default class BattleErrorBoundary extends Component<Props, State> {
   }
 
   handleReset = () => {
-    this.setState({ error: null })
+    window.dispatchEvent(new Event("ttg:battle:exit"))
   }
 
   render() {

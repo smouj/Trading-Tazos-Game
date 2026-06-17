@@ -79,14 +79,14 @@ async function run() {
     await test(label, () => fetchStatus(path, 200));
   }
 
-  // ── Standalone legal pages (200) ──
+  // ── Legal redirects (307 → launcher) ──
   const legal = [
     ["/privacy", "Privacy"],
     ["/terms", "Terms"],
     ["/cookies", "Cookies"],
   ];
   for (const [path, label] of legal) {
-    await test(label, () => fetchContains(path, "<html", 200));
+    await test(label, () => fetchStatus(path, 307));
   }
 
   // ── Static files (200) ──

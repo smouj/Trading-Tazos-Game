@@ -122,7 +122,6 @@ export default function BagOpener3D({ bag, frontUrl: propFrontUrl, backUrl: prop
   const tearPaths = useRef<{ x: number; y: number }[]>([])
   const tearing = useRef(false)
   const containerRef = useRef<HTMLDivElement>(null)
-  const innerTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const [canvasH, setCanvasH] = useState(500)
   const [bagScale, setBagScale] = useState(1.15)
 
@@ -201,37 +200,32 @@ export default function BagOpener3D({ bag, frontUrl: propFrontUrl, backUrl: prop
   const isOpening = stage === "opening" || stage === "reveal"
 
   // Auto-open after animation completes
+  // ⚠️ Two separate effects to prevent race condition:
+  //    Effect A: visual transition (opening → reveal after 800ms)
+  //    Effect B: API call trigger (reveal → onOpen after 100ms)
+  //    Keeping them separate prevents the outer effect's cleanup
+  //    from killing the inner timer, which was the root cause of
+  //    the "freeze on opening" bug.
   useEffect(() => {
     if (stage === "opening") {
-      const outer = setTimeout(() => {
+      const t = setTimeout(() => {
         setStage("reveal")
         setParticlesActive(true)
         setTimeout(() => setParticlesActive(false), 900)
         playSFX('reveal', { volume: 0.6 })
-        innerTimerRef.current = setTimeout(() => {
-          innerTimerRef.current = undefined
-          onOpen()
-        }, 100)
       }, 800)
-      return () => {
-        clearTimeout(outer)
-        if (innerTimerRef.current !== undefined) {
-          clearTimeout(innerTimerRef.current)
-          innerTimerRef.current = undefined
-        }
-      }
+      return () => clearTimeout(t)
+    }
+  }, [stage])
+
+  useEffect(() => {
+    if (stage === "reveal") {
+      const t = setTimeout(() => onOpen(), 100)
+      return () => clearTimeout(t)
     }
   }, [stage, onOpen])
 
-  // Clean up any pending timers on unmount
-  useEffect(() => {
-    return () => {
-      if (innerTimerRef.current !== undefined) {
-        clearTimeout(innerTimerRef.current)
-        innerTimerRef.current = undefined
-      }
-    }
-  }, [])
+
 
   return (
     <div ref={containerRef} className="relative w-full select-none touch-none" style={{ height: canvasH }}>

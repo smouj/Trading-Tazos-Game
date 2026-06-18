@@ -748,10 +748,10 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
                   setAirborne(null)
                   
                   const newPR = Math.max(0, (engine.ctx?.playerRemaining ?? latestCtx.playerRemaining) - aiScoring.playerLostTazos)
+                  const newOR = Math.max(0, (engine.ctx?.opponentRemaining ?? latestCtx.opponentRemaining) - aiScoring.opponentLostTazos)
                   const newPS = (engine.ctx?.player.score ?? 0) + aiScoring.playerDelta
                   const newOS = (engine.ctx?.opponent.score ?? 0) + aiScoring.opponentDelta
-                  const endCheckCtx = engine.ctx
-                  const end = checkMatchEnd(newPS, newOS, newPR, endCheckCtx?.opponentRemaining ?? 0, cfg?.scoreToWin)
+                  const end = checkMatchEnd(newPS, newOS, newPR, newOR, cfg?.scoreToWin)
                   
                   if (end) {
                     engine.showResult()

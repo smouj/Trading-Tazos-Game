@@ -201,13 +201,14 @@ function BagCard({ bag, selected, onSelect, onBuy, buying, credits }: {
 
 // ── StatsRow (reveal view) ─────────────────────────────
 function StatsRow({ tazo }: { tazo: any }) {
+  const val = (n: unknown) => typeof n === 'number' && !isNaN(n) ? n : 0
   const stats = [
-    { label: "ATK", value: tazo.attack, color: 'var(--ttg-red)' },
-    { label: "DEF", value: tazo.defense, color: 'var(--ttg-blue)' },
-    { label: "SPD", value: Math.round((tazo.bounce + tazo.spin + tazo.precision) / 3), color: 'var(--ttg-success)' },
-    { label: "WGT", value: tazo.weight, color: "#78716C" },
-    { label: "STA", value: tazo.stability, color: "var(--ttg-warning)" },
-    { label: "CTL", value: tazo.control, color: "var(--ttg-cybermon)" },
+    { label: "ATK", value: val(tazo?.attack), color: 'var(--ttg-red)' },
+    { label: "DEF", value: val(tazo?.defense), color: 'var(--ttg-blue)' },
+    { label: "SPD", value: Math.round((val(tazo?.bounce) + val(tazo?.spin) + val(tazo?.precision)) / 3), color: 'var(--ttg-success)' },
+    { label: "WGT", value: val(tazo?.weight), color: "#78716C" },
+    { label: "STA", value: val(tazo?.stability), color: "var(--ttg-warning)" },
+    { label: "CTL", value: val(tazo?.control), color: "var(--ttg-cybermon)" },
   ]
   const total = stats.reduce((a, s) => a + s.value, 0)
   return (
@@ -736,9 +737,9 @@ export default function BagShopPage() {
   const effectiveRevealedTazo = revealedTazo || revealedTazoRef.current
   if (stage === "reveal" && effectiveRevealedTazo) {
     const _tazo = effectiveRevealedTazo
-    const rarityColor = RARITY_GRADIENT[_tazo.rarity]
-    const rarityLabel = RARITY_LABELS[_tazo.rarity] || _tazo.rarity
-    const rndRarity = _tazo.rarity
+    const rarityColor = RARITY_GRADIENT[_tazo.rarity] || "linear-gradient(135deg, #9CA3AF, #6B7280)"
+    const rarityLabel = RARITY_LABELS[_tazo.rarity] || _tazo.rarity || "Common"
+    const rndRarity = _tazo.rarity || "common"
     const isLegendary = rndRarity === "legendary"
     const isUltraRare = rndRarity === "ultra-rare"
     const isRare = rndRarity === "rare"
@@ -747,7 +748,7 @@ export default function BagShopPage() {
     const franchiseSlug = _tazo.franchiseSlug || selectedBag.franchise || "minimon"
 
     return (
-      <div className="max-w-lg mx-auto py-6 sm:py-8 px-4 space-y-6 text-center relative">
+      <div className="max-w-lg mx-auto py-6 sm:py-8 px-4 space-y-6 text-center relative overflow-visible">
         <ConfettiBurst active />
 
         {/* Legendary golden glow background */}
@@ -809,9 +810,9 @@ export default function BagShopPage() {
 
         {/* Tazo disc — larger, centered, with entrance animation */}
         <motion.div
-          initial={{ rotateY: 180, scale: 0.3, opacity: 0 }}
-          animate={{ rotateY: 0, scale: 1, opacity: 1 }}
-          transition={{ duration: 0.7, ease: [0.175, 0.885, 0.32, 1.275], delay: 0.1 }}
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
           className={`mx-auto w-56 h-56 sm:w-64 sm:h-64 rounded-full flex items-center justify-center overflow-hidden ${
           isLegendary ? "border-[5px]" : "border-4"
         } ${isHighRarity ? "animate-pulse" : ""}`}

@@ -130,7 +130,7 @@ export default function MagazinePageShell({
 
       {/* ═══ PAGE CONTENT ═══ */}
       <main
-        className="relative z-10 flex-1 w-full min-h-0 overflow-hidden"
+        className="relative z-10 flex-1 w-full min-h-0 overflow-y-auto overflow-x-hidden"
         id="main-content"
         role="main"
         aria-label="Page content"

@@ -46,7 +46,7 @@ function ImpactSpark({ trigger, pos }: { trigger: number; pos: [number, number, 
   return (
     <mesh ref={ringRef} position={[pos[0], 0.04, pos[2]]} rotation={[-Math.PI/2, 0, 0]} visible={false}>
       <ringGeometry args={[0.15, 0.2, 32]} />
-      <meshBasicMaterial color="var(--ttg-yellow)" transparent opacity={0.8} side={THREE.DoubleSide} depthWrite={false} />
+      <meshBasicMaterial color="#FFCC00" transparent opacity={0.8} side={THREE.DoubleSide} depthWrite={false} />
     </mesh>
   )
 }
@@ -72,10 +72,10 @@ function Floor({ config }: { config: Arena3DConfig }) {
     ctx.strokeStyle = "#b8a888"; ctx.lineWidth = 20
     ctx.beginPath(); ctx.arc(512, 512, config.radius * 48, 0, Math.PI * 2); ctx.stroke()
     // Inner gold ring
-    ctx.strokeStyle = "var(--ttg-yellow)"; ctx.lineWidth = 4
+    ctx.strokeStyle = "#FFCC00"; ctx.lineWidth = 4
     ctx.beginPath(); ctx.arc(512, 512, config.radius * 48 - 10, 0, Math.PI * 2); ctx.stroke()
     // Dark outline
-    ctx.strokeStyle = "var(--ttg-black)"; ctx.lineWidth = 2
+    ctx.strokeStyle = "#1a1a1a"; ctx.lineWidth = 2
     ctx.beginPath(); ctx.arc(512, 512, config.radius * 48 + 10, 0, Math.PI * 2); ctx.stroke()
     // Concentric guide rings (faint)
     ctx.strokeStyle = "rgba(0,0,0,0.03)"; ctx.lineWidth = 1.5
@@ -147,7 +147,7 @@ function Reticle({
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
         <ringGeometry args={[0.44, 0.50, 32]} />
         <meshBasicMaterial
-          color={isCharging ? "var(--ttg-yellow)" : "#FFFFFF"}
+          color={isCharging ? "#FFCC00" : "#FFFFFF"}
           transparent opacity={isCharging ? 0.6 : 0.2}
           side={THREE.DoubleSide}
           depthWrite={false}
@@ -156,21 +156,21 @@ function Reticle({
       {/* Inner ring */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
         <ringGeometry args={[0.38, 0.42, 24]} />
-        <meshBasicMaterial color="var(--ttg-yellow)" transparent opacity={0.45} side={THREE.DoubleSide} depthWrite={false} />
+        <meshBasicMaterial color="#FFCC00" transparent opacity={0.45} side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
       {/* Crosshair lines */}
       <mesh position={[0, 0.03, 0]}>
         <boxGeometry args={[0.03, 0.005, 0.75]} />
-        <meshBasicMaterial color="var(--ttg-yellow)" transparent opacity={0.5} />
+        <meshBasicMaterial color="#FFCC00" transparent opacity={0.5} />
       </mesh>
       <mesh position={[0, 0.03, 0]}>
         <boxGeometry args={[0.75, 0.005, 0.03]} />
-        <meshBasicMaterial color="var(--ttg-yellow)" transparent opacity={0.5} />
+        <meshBasicMaterial color="#FFCC00" transparent opacity={0.5} />
       </mesh>
       {/* Center dot */}
       <mesh position={[0, 0.03, 0]}>
         <sphereGeometry args={[0.04, 8, 8]} />
-        <meshBasicMaterial color="var(--ttg-yellow)" />
+        <meshBasicMaterial color="#FFCC00" />
       </mesh>
     </group>
   )
@@ -402,7 +402,7 @@ function AirborneTazoMesh({
         <mesh position={[0, 0.03, 0]}>
           <ringGeometry args={[0.44, 0.46, 32]} />
           <meshBasicMaterial
-            color="var(--ttg-yellow)"
+            color="#FFCC00"
             transparent
             opacity={0.25 + airborne.charge * 0.5}
             side={THREE.DoubleSide}
@@ -433,7 +433,7 @@ function AirborneTazoMesh({
         <mesh position={[0, 0.03, 0]}>
           <ringGeometry args={[0.15 * (2 - physRef.current.impactTime), 0.55 * (2 - physRef.current.impactTime), 32]} />
           <meshBasicMaterial
-            color="var(--ttg-yellow)"
+            color="#FFCC00"
             transparent
             opacity={physRef.current.impactTime * 0.6}
             side={THREE.DoubleSide}
@@ -707,7 +707,7 @@ export default function BattleArena3D({
   isDrawing, drawTrigger,
 }: Props) {
   return (
-    <div className="w-full h-full relative" style={{ background: "radial-gradient(ellipse at center, #2a2a2a 0%, var(--ttg-black) 55%, #0a0a0a 100%)" }}>
+    <div className="w-full h-full relative" style={{ background: "radial-gradient(ellipse at center, #2a2a2a 0%, #1a1a1a 55%, #0a0a0a 100%)" }}>
       {/* Magazine-style decorative frame overlay */}
       <div className="absolute inset-0 pointer-events-none z-10" style={{
         border: "1px solid rgba(255,255,255,0.04)",

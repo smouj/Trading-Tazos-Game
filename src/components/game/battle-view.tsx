@@ -31,6 +31,7 @@ import BattleErrorBoundary from "./battle/battle-error-boundary"
 import GameLobby from "./battle/game-lobby"
 import BattleArena3D from "./battle/battle-arena-3d"
 import WebGLGuard from "@/components/game/webgl-guard"
+import BattleHUD from "@/components/game/battle/battle-hud"
 import SlamControls from "./battle/slam-controls"
 import BattleResultPanel from "./battle/battle-result-panel"
 import BattleHand from "./battle/battle-hand"
@@ -1345,85 +1346,21 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
 
         {/* ── HUD overlay — Magazine Editorial Style ── */}
         <div className="absolute top-0 left-0 right-0 z-20 pointer-events-none">
-          {/* Masthead bar */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-2">
-          <div className="px-4 py-2.5"
-            style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.06)" }}>
-            <div className="flex items-center justify-between">
-              {/* Player score — editorial left rail */}
-              <div className="flex items-center gap-3">
-                <div className={`flex flex-col items-end ${scoreFlash === "player" ? "animate-[scorePop_0.4s_ease-out]" : ""}`}
-                  key={`ps-${pScore}`}>
-                  <span className="text-[7px] font-black text-[#29ADFF]/40 uppercase tracking-[0.3em]">Player</span>
-                  <span className="text-2xl sm:text-3xl font-black tabular-nums leading-none"
-                    style={{
-                      color: "#29ADFF",
-                      textShadow: scoreFlash === "player" ? "0 0 24px #29ADFF, 0 0 48px #29ADFF40" : "0 0 8px #29ADFF30",
-                    }}>
-                    {pScore}
-                  </span>
-                </div>
-                {/* Decorative vertical rule */}
-                <div className="w-px h-10" style={{ background: "linear-gradient(to bottom, transparent, #29ADFF20, transparent)" }} />
-                {phase === "player_aim" && (
-                  <span className="text-[8px] font-black text-[#29ADFF]/60 animate-pulse">AIMING</span>
-                )}
-              </div>
-
-              {/* Center — editorial byline */}
-              <div className="flex flex-col items-center gap-0.5">
-                {phase === "intro" ? (
-                  <>
-                    {introCountdown !== null ? (
-                      <div className="flex flex-col items-center gap-1">
-                        <span className="text-[7px] font-black text-white/15 uppercase tracking-[0.4em] animate-[fadeInLeft_0.3s_ease-out]">get ready</span>
-                        <span className="text-6xl sm:text-8xl font-black text-[#FFCC00] animate-[popUp_0.4s_ease-out]"
-                          style={{ textShadow: "0 0 60px #FFCC00, 0 0 120px #FFCC0040" }}
-                          key={introCountdown}>
-                          {introCountdown}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center gap-2 animate-[popUp_0.3s_ease-out]">
-                        <span className="text-3xl sm:text-4xl font-black text-[#FFCC00]"
-                          style={{ textShadow: "0 0 40px #FFCC00, 0 0 80px #FFCC0060" }}>
-                          ⚡ BATTLE!
-                        </span>
-                        <span className="text-[8px] font-black text-white/15 uppercase tracking-[0.4em]">let's go</span>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <span className="text-[7px] font-black text-white/15 uppercase tracking-[0.3em]">Round {round}</span>
-                    <PhaseBadge phase={phase} bettingPhase={bettingPhase} chargePct={Math.round(engine.ui.charge * 100)} tazoName={airborne?.tazoName} />
-                  </>
-                )}
-              </div>
-
-              {/* Opponent score — editorial right rail */}
-              <div className="flex items-center gap-3">
-                {(phase === "opponent_aim" || phase === "opponent_slam") && (
-                  <span className="text-[8px] font-black text-[#FF004D]/60 animate-pulse">{phase === "opponent_aim" ? "AIMING" : "SLAMMING"}</span>
-                )}
-                {/* Decorative vertical rule */}
-                <div className="w-px h-10" style={{ background: "linear-gradient(to bottom, transparent, #FF004D20, transparent)" }} />
-                <div className={`flex flex-col items-start ${scoreFlash === "opponent" ? "animate-[scorePop_0.4s_ease-out]" : ""}`}
-                  key={`os-${oScore}`}>
-                  <span className="text-[7px] font-black text-[#FF004D]/40 uppercase tracking-[0.3em]">
-                    {cfg?.mode === "practice" ? `AI ${cfg?.aiDifficulty || ""}` : "Rival"}
-                  </span>
-                  <span className="text-2xl sm:text-3xl font-black tabular-nums leading-none"
-                    style={{
-                      color: "#FF004D",
-                      textShadow: scoreFlash === "opponent" ? "0 0 24px #FF004D, 0 0 48px #FF004D40" : "0 0 8px #FF004D30",
-                    }}>
-                    {oScore}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+          
+          <div className="max-w-3xl mx-auto px-2 sm:px-4 mt-2 pointer-events-auto">
+            <BattleHUD
+              playerName={user?.name || user?.email?.split("@")[0] || "You"}
+              opponentName={cfg?.mode === "practice" ? `AI ${cfg?.aiDifficulty || "Skilled"}` : "Rival"}
+              playerScore={pScore}
+              opponentScore={oScore}
+              playerTazos={ctx?.playerRemaining ?? 0}
+              opponentTazos={ctx?.opponentRemaining ?? 0}
+              playerCaptured={ctx?.player?.captured ?? 0}
+              opponentCaptured={ctx?.opponent?.captured ?? 0}
+              round={round}
+              phase={phase}
+              turnPlayer={ctx?.currentThrower ?? null}
+            />
           </div>
 
           {/* Score popups */}

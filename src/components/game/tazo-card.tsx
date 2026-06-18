@@ -14,15 +14,15 @@ interface TazoCardProps {
 }
 
 const FRANCHISE_COLORS: Record<string, { from: string; to: string; text: string; strip: string }> = {
-  minimon: { from: '#FFCB05', to: '#FF8C00', text: '#7C2D12', strip: '#FFCB05' },
-  cybermon: { from: '#00A1E9', to: '#0057B7', text: '#1E3A5F', strip: '#00A1E9' },
-  dracobell: { from: '#FF6B00', to: '#CC4400', text: '#7C2D12', strip: '#FF6B00' },
+  minimon: { from: 'var(--ttg-minimon)', to: 'var(--ttg-minimon-dark)', text: 'var(--ttg-dracobell-text)', strip: 'var(--ttg-minimon)' },
+  cybermon: { from: 'var(--ttg-cybermon)', to: 'var(--ttg-cybermon-dark)', text: 'var(--ttg-cybermon-text)', strip: 'var(--ttg-cybermon)' },
+  dracobell: { from: 'var(--ttg-dracobell)', to: 'var(--ttg-dracobell-dark)', text: 'var(--ttg-dracobell-text)', strip: 'var(--ttg-dracobell)' },
 }
 
 const FRANCHISE_STRIP_TEXT: Record<string, string> = {
   minimon: '#92400E',
-  cybermon: '#FFFFFF',
-  dracobell: '#FFFFFF',
+  cybermon: '#fff',
+  dracobell: '#fff',
 }
 
 // Back art for each franchise
@@ -34,9 +34,9 @@ const FRANCHISE_BACK: Record<string, string> = {
 
 const STAT_CONFIG = [
   { key: 'attack' as const, label: 'ATK', color: '#EF4444' },
-  { key: 'defense' as const, label: 'DEF', color: '#3B82F6' },
+  { key: 'defense' as const, label: 'DEF', color: 'var(--ttg-rarity-rare)' },
   { key: 'resistance' as const, label: 'RES', color: '#6366F1' },
-  { key: 'weight' as const, label: 'WGT', color: '#F59E0B' },
+  { key: 'weight' as const, label: 'WGT', color: 'var(--ttg-warning)' },
   { key: 'stability' as const, label: 'STA', color: '#14B8A6' },
   { key: 'spin' as const, label: 'SPN', color: '#10B981' },
   { key: 'control' as const, label: 'CTR', color: '#EC4899' },
@@ -53,11 +53,11 @@ const RARITY_ORDER: Record<Rarity, number> = {
 }
 
 const RARITY_STICKER: Record<string, { bg: string; border: string; text: string }> = {
-  common: { bg: '#D1D5DB', border: '#6B7280', text: '#1F2937' },
+  common: { bg: 'var(--ttg-rarity-common)', border: 'var(--ttg-rarity-common-border)', text: 'var(--ttg-black)' },
   uncommon: { bg: '#4ADE80', border: '#16A34A', text: '#052E16' },
-  rare: { bg: '#60A5FA', border: '#2563EB', text: '#FFFFFF' },
-  ultra: { bg: '#C084FC', border: '#9333EA', text: '#FFFFFF' },
-  legendary: { bg: '#FBBF24', border: '#B45309', text: '#1F2937' },
+  rare: { bg: 'var(--ttg-rarity-rare)', border: 'var(--ttg-rarity-rare-dark)', text: '#fff' },
+  ultra: { bg: 'var(--ttg-rarity-ultra)', border: 'var(--ttg-rarity-ultra-dark)', text: '#fff' },
+  legendary: { bg: 'var(--ttg-warning)', border: 'var(--ttg-minimon-dark)', text: 'var(--ttg-black)' },
 }
 
 function getRarityStars(rarity: Rarity): string {
@@ -69,7 +69,7 @@ export default function TazoCard({ tazo, onClick, forceFlipped }: TazoCardProps)
   const showBack = forceFlipped !== undefined ? forceFlipped : flipped
   const franchiseSlug = tazo.franchise || tazo.franchiseSlug || 'minimon'
   const franchiseColors = FRANCHISE_COLORS[franchiseSlug] || FRANCHISE_COLORS.minimon
-  const franchiseStripText = FRANCHISE_STRIP_TEXT[franchiseSlug] || '#1F2937'
+  const franchiseStripText = FRANCHISE_STRIP_TEXT[franchiseSlug] || 'var(--ttg-black)'
   const rarityConfig = RARITY_CONFIG[tazo.rarity as Rarity]
   const conditionConfig = CONDITION_CONFIG[tazo.condition as TazoCondition]
   const raritySticker = RARITY_STICKER[tazo.rarity as string] || RARITY_STICKER.common
@@ -164,9 +164,9 @@ export default function TazoCard({ tazo, onClick, forceFlipped }: TazoCardProps)
                 <div
                   className="absolute -top-1 -left-1 z-10 w-7 h-7 flex items-center justify-center rounded-full"
                   style={{
-                    background: '#FFCC00',
-                    border: '2px solid #1a1a1a',
-                    boxShadow: '1px 1px 0px #1a1a1a',
+                    background: 'var(--ttg-yellow)',
+                    border: '2px solid var(--ttg-black)',
+                    boxShadow: '1px 1px 0px var(--ttg-black)',
                   }}
                 >
                   <Star className="w-4 h-4 text-yellow-900 fill-yellow-900" />
@@ -210,7 +210,7 @@ export default function TazoCard({ tazo, onClick, forceFlipped }: TazoCardProps)
 
         {/* Flip hint */}
         <div className="absolute -bottom-1 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <RotateCw className="w-3.5 h-3.5 text-[#1a1a1a]/30" />
+          <RotateCw className="w-3.5 h-3.5 text-ttg-black/30" />
         </div>
       </div>
 
@@ -218,7 +218,7 @@ export default function TazoCard({ tazo, onClick, forceFlipped }: TazoCardProps)
       <div className="text-center w-full min-h-[40px]">
         <p
           className="font-black text-sm sm:text-base leading-tight truncate"
-          style={{ color: '#1a1a1a' }}
+          style={{ color: 'var(--ttg-black)' }}
         >
           {tazo.displayName || tazo.name || "..."}
         </p>
@@ -241,8 +241,8 @@ export default function TazoCard({ tazo, onClick, forceFlipped }: TazoCardProps)
           className="px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider flex items-center gap-0.5"
           style={{
             background: sourceConfig?.bg || '#F3F4F6',
-            color: sourceConfig?.color?.replace('text-', '#') || '#6B7280',
-            border: '1.5px solid #1a1a1a',
+            color: sourceConfig?.color?.replace('text-', '#') || 'var(--ttg-rarity-common-border)',
+            border: '1.5px solid var(--ttg-black)',
           }}
           title={sourceConfig?.label || tazo.sourceStatus}
         >
@@ -258,7 +258,7 @@ export default function TazoCard({ tazo, onClick, forceFlipped }: TazoCardProps)
           style={{
             background: obtainedFromConfig.bg,
             color: obtainedFromConfig.color,
-            border: '1.5px solid #1a1a1a',
+            border: '1.5px solid var(--ttg-black)',
           }}
           title={`Obtained from: ${obtainedFromConfig.label}`}
         >
@@ -275,7 +275,7 @@ export default function TazoCard({ tazo, onClick, forceFlipped }: TazoCardProps)
             background: raritySticker.bg,
             color: raritySticker.text,
             border: `2px solid ${raritySticker.border}`,
-            boxShadow: '1px 1px 0px #1a1a1a',
+            boxShadow: '1px 1px 0px var(--ttg-black)',
           }}
         >
           {getRarityStars(tazo.rarity as Rarity)} {rarityConfig?.label}
@@ -283,10 +283,10 @@ export default function TazoCard({ tazo, onClick, forceFlipped }: TazoCardProps)
         <div
           className="px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold"
           style={{
-            background: '#FFFFFF',
-            color: '#1a1a1a',
-            border: '2px solid #1a1a1a',
-            boxShadow: '1px 1px 0px #1a1a1a',
+            background: '#fff',
+            color: 'var(--ttg-black)',
+            border: '2px solid var(--ttg-black)',
+            boxShadow: '1px 1px 0px var(--ttg-black)',
           }}
         >
           {conditionConfig?.icon} {conditionConfig?.label}
@@ -299,7 +299,7 @@ export default function TazoCard({ tazo, onClick, forceFlipped }: TazoCardProps)
           <div key={stat.key} className="flex items-center gap-1">
             <span
               className="text-[8px] sm:text-[9px] font-black w-6 text-right"
-              style={{ color: '#1a1a1a' }}
+              style={{ color: 'var(--ttg-black)' }}
             >
               {stat.label}
             </span>
@@ -307,7 +307,7 @@ export default function TazoCard({ tazo, onClick, forceFlipped }: TazoCardProps)
               className="flex-1 h-2.5 overflow-hidden"
               style={{
                 background: '#F3F4F6',
-                border: '1px solid #1a1a1a',
+                border: '1px solid var(--ttg-black)',
               }}
             >
               <div
@@ -320,7 +320,7 @@ export default function TazoCard({ tazo, onClick, forceFlipped }: TazoCardProps)
             </div>
             <span
               className="text-[8px] sm:text-[9px] font-black w-5 text-center"
-              style={{ color: '#1a1a1a' }}
+              style={{ color: 'var(--ttg-black)' }}
             >
               {tazo[stat.key]}
             </span>

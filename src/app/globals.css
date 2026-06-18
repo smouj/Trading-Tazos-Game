@@ -810,6 +810,12 @@
   0% { opacity: 0; transform: translateX(24px); }
   100% { opacity: 1; transform: translateX(0); }
 }
+/* ═══ Reveal animation — fade in from below with scale pop ═══ */
+@keyframes revealIn {
+  0%   { opacity: 0; transform: translateY(16px) scale(0.92); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 @keyframes popUp {
   0% { opacity: 1; transform: translateY(0) scale(1); }
   20% { opacity: 1; transform: translateY(-8px) scale(1.3); }

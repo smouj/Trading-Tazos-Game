@@ -737,7 +737,27 @@ export default function BagShopPage() {
   // ── REVEAL STAGE ───────────────────────────────────────
   // revealTazo from state, with ref fallback in case state gets clobbered
   const effectiveRevealedTazo = revealedTazo || revealedTazoRef.current
-  if (stage === "reveal" && effectiveRevealedTazo) {
+  if (stage === "reveal") {
+  if (!effectiveRevealedTazo) {
+    // Safety: if tazo data is missing, try to recover via ref
+    console.warn("[reveal] Missing tazo data — recovering")
+    if (revealedTazoRef.current) {
+      setRevealedTazo(revealedTazoRef.current)
+      return <div className="flex items-center justify-center py-12 animate-fadeIn"><div className="flex flex-col items-center gap-3"><div className="w-10 h-10 border-3 border-ttg-black/10 border-t-ttg-yellow rounded-full animate-spin" /><p className="text-xs font-bold text-ttg-black/30 uppercase tracking-wider">Loading…</p></div></div>
+    }
+    // Complete data loss — reset to select
+    return (
+      <div className="max-w-2xl mx-auto py-20 text-center space-y-6">
+        <p className="text-xl font-black text-ttg-black">{t.shop_title || "Tazo Shop"}</p>
+        <p className="text-sm font-bold text-ttg-black/30">Something went wrong — please try again</p>
+        <button onClick={handleReset} className="mag-btn px-6 py-3 font-black text-xs uppercase bg-ttg-yellow text-ttg-black border-3 border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)]">
+          Back to Shop
+        </button>
+      </div>
+    )
+  }
+  // ✅ Tazo data confirmed — render full reveal
+  {
     const _tazo = effectiveRevealedTazo
     const rarityColor = RARITY_GRADIENT[_tazo.rarity] || "linear-gradient(135deg, #9CA3AF, #6B7280)"
     const rarityLabel = RARITY_LABELS[_tazo.rarity] || _tazo.rarity || "Common"
@@ -792,7 +812,7 @@ export default function BagShopPage() {
 
         {/* Rarity badge — staggered entrance */}
         <div
-          className={`inline-block px-5 py-2 font-black text-sm uppercase tracking-wider animate-[popUp_0.5s_ease-out_both] ${
+          className={`inline-block px-5 py-2 font-black text-sm uppercase tracking-wider animate-[revealIn_0.5s_ease-out_both] ${
             isHighRarity ? "animate-pulse" : ""
           }`}
           style={{
@@ -853,7 +873,7 @@ export default function BagShopPage() {
             ease: isLegendary ? [0.16, 0.86, 0.22, 1.05] : [0.175, 0.885, 0.32, 1.275],
             delay: 0.1,
           }}
-          className={`mx-auto ${
+          className={`mx-auto flex items-center justify-center ${
           isLegendary ? "border-[5px]" : "border-4"
         } ${isHighRarity ? "animate-pulse" : ""}`}
           style={{
@@ -871,13 +891,6 @@ export default function BagShopPage() {
             width: "clamp(12rem, 50vw, 16rem)",
             height: "clamp(12rem, 50vw, 16rem)",
           }}>
-          {/* Finish badge */}
-          {_tazo.finish && _tazo.finish !== "normal" && _tazo.finish !== "standard" && _tazo.finish !== "matte" && (
-            <div className="absolute top-2 right-2 z-20 bg-ttg-yellow text-ttg-black text-[8px] font-black px-1.5 py-0.5 border-2 border-ttg-black uppercase"
-              style={{ boxShadow: "2px 2px 0px var(--ttg-black)" }}>
-              {_tazo.finish?.replace(/_/g, " ")}
-            </div>
-          )}
           {_tazo.imageUrl ? (
             <TazoDiscTilt background="var(--ttg-black)">
               <TazoDiscImage src={_tazo.imageUrl} alt={_tazo.name || ""}
@@ -893,8 +906,18 @@ export default function BagShopPage() {
           )}
         </motion.div>
 
+        {/* Finish badge — OUTSIDE the tazo disc, never covers it */}
+        {_tazo.finish && _tazo.finish !== "normal" && _tazo.finish !== "standard" && _tazo.finish !== "matte" && (
+          <div className="flex justify-center mt-1.5">
+            <span className="inline-block bg-ttg-yellow text-ttg-black text-[9px] font-black px-2.5 py-0.5 border-2 border-ttg-black uppercase tracking-wider"
+              style={{ boxShadow: "2px 2px 0px var(--ttg-black)" }}>
+              ✦ {_tazo.finish?.replace(/_/g, " ")} FINISH ✦
+            </span>
+          </div>
+        )}
+
         {/* Name + franchise */}
-        <div className="space-y-1 animate-[popUp_0.5s_ease-out_0.25s_both]">
+        <div className="space-y-1 animate-[revealIn_0.5s_ease-out_0.25s_both]">
           <h3 className={`uppercase font-black ${
             isLegendary ? "text-2xl sm:text-3xl" : isHighRarity ? "text-xl sm:text-2xl" : "text-xl"
           }`}
@@ -910,14 +933,14 @@ export default function BagShopPage() {
         </div>
 
         {/* Stats with rarity-tuned staggered animation */}
-        <div className="p-4 bg-white border-3 border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)] animate-[popUp_0.5s_ease-out_both]"
+        <div className="p-4 bg-white border-3 border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)] animate-[revealIn_0.5s_ease-out_both]"
           style={{ animationDelay: isLegendary ? "0.55s" : isUltraRare ? "0.45s" : isRare ? "0.25s" : "0.15s" }}>
           <StatsRow tazo={_tazo} />
         </div>
 
         {/* Legendary special message */}
         {isLegendary && (
-          <div className="animate-[popUp_0.7s_ease-out_both]" style={{ animationDelay: "0.65s" }}>
+          <div className="animate-[revealIn_0.7s_ease-out_both]" style={{ animationDelay: "0.65s" }}>
             <div className="inline-block px-4 py-2 bg-ttg-yellow/10 border-2 border-ttg-warning"
               style={{ boxShadow: "0 0 20px #f59e0b30" }}>
               <p className="text-sm font-black text-ttg-dracobell uppercase tracking-wider flex items-center gap-2">
@@ -932,7 +955,7 @@ export default function BagShopPage() {
 
         {/* Bonus tazo */}
         {bonusTazo && (
-          <div className="p-4 border-3 animate-[popUp_0.5s_ease-out_0.55s_both]"
+          <div className="p-4 border-3 animate-[revealIn_0.5s_ease-out_0.55s_both]"
             style={{ borderColor: "var(--ttg-warning)", background: "linear-gradient(135deg, #FEF3C7, #FFF8E7)", boxShadow: "3px 3px 0px var(--ttg-warning)" }}>
             <div className="flex items-center justify-center gap-2 mb-2">
               <Gift className="w-5 h-5 text-ttg-warning" />
@@ -958,7 +981,7 @@ export default function BagShopPage() {
         )}
 
         {/* Actions — delayed entrance for drama */}
-        <div className="flex flex-wrap gap-3 justify-center animate-[popUp_0.5s_ease-out_both]"
+        <div className="flex flex-wrap gap-3 justify-center animate-[revealIn_0.5s_ease-out_both]"
           style={{ animationDelay: isLegendary ? "0.8s" : isHighRarity ? "0.5s" : "0.3s" }}>
           <button onClick={handleReset}
             className="mag-btn px-6 py-3 font-black text-xs uppercase bg-ttg-yellow text-ttg-black border-3 border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
@@ -975,6 +998,7 @@ export default function BagShopPage() {
         </div>
       </div>
     )
+  }
   }
 
   // ── BULK REVEAL  // ── BULK REVEAL STAGE ────────────────────────────────────

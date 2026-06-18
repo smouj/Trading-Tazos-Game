@@ -1950,14 +1950,17 @@ function DisclaimerContent() {
 
 const COLLECTION_DETAILS: Record<string, {
   name: string; count: number; total: number; year: number; origin: string; color: string;
-  world: string; worldDesc: string;
+  world: string; worldDesc: string; originStory: string; backStory: string;
   sections: { title: string; items: { name: string; detail: string }[] }[]
-  features: string[]; motto: string; cta: string
+  highlights: { name: string; desc: string }[]
+  features: string[]; motto: string; cta: string; wikiPath: string
 }> = {
   minimon: {
-    name: "Minimon", count: FRANCHISE_BY_SLUG.minimon.count, total: FRANCHISE_BY_SLUG.minimon.total, year: 2026, origin: "TazoForge", color: "var(--ttg-yellow)",
+    name: "Minimon", count: FRANCHISE_BY_SLUG.minimon.count, total: FRANCHISE_BY_SLUG.minimon.total, year: 2026, origin: "TazoForge Studios", color: "var(--ttg-yellow)",
     world: "Luminara",
-    worldDesc: "Luminara is a luminous land of colorful regions, winding paths, small villages, natural laboratories, and places where elemental energy takes shape. It is not medieval or futuristic — it is a world of adventure, discovery, and wonder. Centuries ago, Luminara was filled with an invisible energy called Life Spark. This energy flowed through trees, rivers, caves, clouds, and mountains. When Life Spark accumulated in one place for a long time, a Minimon was born.",
+    worldDesc: "Luminara is a luminous land of colorful regions, winding paths, small villages, and places where elemental energy takes shape. It is not medieval or futuristic — it is a world of wonder, discovery, and adventure. Life Spark energy flows through every tree, river, cave, cloud, and mountain, giving birth to the creatures known as Minimon.",
+    originStory: "Created in 2026 by TazoForge Studios in Barcelona, the Minimon series was the first original franchise designed for Trading Tazos Game. Inspired by the wonder of discovering creatures in the wild, Minimon captures the magic of companionship between humans and the natural world — where trust, not capture, is the foundation of every bond.",
+    backStory: "Centuries ago, Luminara was filled with an invisible energy called Life Spark. This energy flowed through trees, rivers, caves, clouds, and mountains. When Life Spark accumulated in one place for a long time, a Minimon was born from pure elemental essence. But a creeping darkness known as The Stillness now threatens Luminara — it freezes growth, silences hearts, and creates Faded Minimon that lose their color and spirit. Only Pathfinders, bonded through trust, can restore the light.",
     sections: [
       { title: "Blooming Phases", items: [
         { name: "Tiny Form", detail: "Small, tender, and fragile — the first expression of a Life Spark" },
@@ -1971,17 +1974,27 @@ const COLLECTION_DETAILS: Record<string, {
         { name: "Bluefin Coast", detail: "Beaches, reefs, lighthouses — Water, Wind, Soft Ice" },
         { name: "Cinderpop Hills", detail: "Warm hills and volcanic caves — Fire, Rock, Metal" },
         { name: "Stormtail Ridge", detail: "Storm-swept mountain peaks — Electric, Flying, Lesser Dragon" },
+        { name: "Moonberry Hollow", detail: "Strange nocturnal zone — Shadow, Dream, Illusion" },
         { name: "Aurora Summit", detail: "Legendary endgame region — Rare forms and guardians" },
       ]},
     ],
-    features: ["Pathfinders discover, not capture", "Life Spark bonds and Blooming evolution", "Luminara Nodes connect regions", "The Stillness threatens growth"],
+    highlights: [
+      { name: "Bloomleaf", desc: "A beloved Grass-type starter from Sunnyvale Fields. Its bright petals glow when happy — a symbol of new Pathfinder journeys." },
+      { name: "Embertail", desc: "Fire-type from Cinderpop Hills. Fiercely loyal with a flaming tail that intensifies during Blooming." },
+      { name: "Stormwhisker", desc: "Electric-type from Stormtail Ridge. Fast, mischievous, and a favorite among competitive Pathfinders." },
+      { name: "Luminara Guardian", desc: "A Mythic Bloom form from Aurora Summit. Ultra-rare with prismatic elemental mastery." },
+    ],
+    features: ["Pathfinders discover, not capture", "Life Spark bonds and Blooming evolution", "Seven unique regions to explore", "The Stillness threatens all of Luminara"],
     motto: "Find them. Bond with them. Watch them bloom.",
     cta: `Browse All ${FRANCHISE_BY_SLUG.minimon.count} Minimon Tazos`,
+    wikiPath: "/wiki/minimon",
   },
   dracobell: {
-    name: "Dracobell", count: FRANCHISE_BY_SLUG.dracobell.count, total: FRANCHISE_BY_SLUG.dracobell.total, year: 2026, origin: "TazoForge", color: "var(--ttg-dracobell)",
+    name: "Dracobell", count: FRANCHISE_BY_SLUG.dracobell.count, total: FRANCHISE_BY_SLUG.dracobell.total, year: 2026, origin: "TazoForge Studios", color: "var(--ttg-dracobell)",
     world: "Bellora",
-    worldDesc: "Bellora is a world of combat regions governed by clans. Each clan protects a technique, a philosophy, and a fragment of an ancient sonic relic — the Dracobell. The Dracobell is a legendary bell forged from meteorite metal and ancient dragon scales. When the complete bell rings, it can awaken the true potential of any warrior. But it was shattered during a war between clans. Its fragments — the Bell Shards — are now scattered across Bellora.",
+    worldDesc: "Bellora is a world of combat regions governed by powerful clans. Each clan protects a sacred technique, a martial philosophy, and a fragment of an ancient sonic relic — the Dracobell. Warriors train from youth, channeling their inner Roar Aura through discipline, honor, and the pursuit of ultimate mastery.",
+    originStory: "Created in 2026 by TazoForge Studios in Barcelona, the Dracobell series brings martial arts fantasy to the world of Trading Tazos Game. Drawing from the energy of tournament arcs and clan rivalries, Dracobell warriors fight not just for victory — but for the right to reshape their world through the legendary Dracobell's power.",
+    backStory: "The Dracobell is a legendary bell forged from meteorite metal and ancient dragon scales. When complete, its ring can awaken the true potential of any warrior. But during the Great Bell War, the Dracobell was shattered. Its fragments — the Bell Shards — scattered across Bellora's regions. Now six great clans compete in the Grand Bell Tournament to gather shards and determine Bellora's fate. But a seventh force, the Silent Clan, works in shadow to prevent the bell's restoration forever.",
     sections: [
       { title: "Ascension Phases", items: [
         { name: "Base Fighter", detail: "The warrior's normal form — discipline, stance, breath" },
@@ -1999,14 +2012,23 @@ const COLLECTION_DETAILS: Record<string, {
         { name: "Golden Roar", detail: "Golden Shrine — Aura, mastery" },
       ]},
     ],
-    features: ["Roar Aura fuels Ascension", "Bell Shards shape the world conflict", "Grand Bell Tournament decides fate", "The Silent Clan opposes the bell's restoration"],
+    highlights: [
+      { name: "Kael Emberfist", desc: "Fiery striker from Ember Fist Clan. Hot-headed but honorable, his blazing fists have won three regional tournaments." },
+      { name: "Ryn Stormfang", desc: "Lightning-fast duelist from Storm Fang. Known for her impossible speed and the 'Thunder Step' technique." },
+      { name: "Torun Ironhorn", desc: "Unbreakable defender from Iron Horn. His endurance is legendary — he has never been knocked down in 100 matches." },
+      { name: "Sylas Dragonbell", desc: "A mysterious Champion who is rumored to carry the original Bell Shard. His Roar Aura is said to be unmatched." },
+    ],
+    features: ["Roar Aura fuels Ascension", "Bell Shards drive the global conflict", "Grand Bell Tournament decides all fates", "The Silent Clan opposes the bell's restoration"],
     motto: "Train hard. Ring loud. Rise beyond.",
     cta: `Browse All ${FRANCHISE_BY_SLUG.dracobell.count} Dracobell Tazos`,
+    wikiPath: "/wiki/draco-bell",
   },
   cybermon: {
-    name: "Cybermon", count: FRANCHISE_BY_SLUG.cybermon.count, total: FRANCHISE_BY_SLUG.cybermon.total, year: 2026, origin: "TazoForge", color: "var(--ttg-cybermon-alt)",
+    name: "Cybermon", count: FRANCHISE_BY_SLUG.cybermon.count, total: FRANCHISE_BY_SLUG.cybermon.total, year: 2026, origin: "TazoForge Studios", color: "var(--ttg-cybermon-alt)",
     world: "The Neon Grid",
-    worldDesc: "The Neon Grid is a hidden digital dimension behind all networks. It is not simply the internet — it is a living dimension formed by forgotten data, lost signals, ancient code, abandoned games, machine memories, and protocols that developed consciousness. During the Awakening Upload, millions of data fragments mixed with human emotions. That fusion produced something unexpected: code with instinct. The first Cybermon were not created — they awakened on their own.",
+    worldDesc: "The Neon Grid is a hidden digital dimension behind all networks. It is not simply the internet — it is a living realm formed by forgotten data, lost signals, ancient code, abandoned games, machine memories, and protocols that developed their own consciousness. Here, Cybermon fight, evolve, and protect the Grid from corruption.",
+    originStory: "Created in 2026 by TazoForge Studios in Barcelona, the Cybermon series brings digital fantasy to Trading Tazos Game. What if code could feel? What if abandoned data gained a soul? Cybermon explores a world where the boundary between human emotion and digital existence dissolves — and where trust between human and digital being creates unstoppable power.",
+    backStory: "During the Awakening Upload, millions of data fragments mixed with human emotions across the Grid. That fusion produced something unexpected: code with instinct. The first Cybermon were not created — they awakened on their own. Each one carries a Soul Protocol: a unique digital identity that cannot be copied or replaced. But the Null Signal, a corrupting force born from broken code, spreads through the Grid turning Cybermon into Null Shells — mindless, aggressive, and dangerous. Linkers — humans who bond with Cybermon through Link Pulse — are the only ones who can fight back and restore the Grid.",
     sections: [
       { title: "Shift Phases", items: [
         { name: "Boot Form", detail: "First stable startup — newly activated Soul Protocol" },
@@ -2025,11 +2047,19 @@ const COLLECTION_DETAILS: Record<string, {
         { name: "Kernel Tower", detail: "The core of the entire digital world — Advanced forms" },
       ]},
     ],
+    highlights: [
+      { name: "Pixl-01", desc: "A scrappy Boot-form Cybermon from Pixel Ruins. Small but determined, it's a favorite first partner for new Linkers." },
+      { name: "Voltraze", desc: "A sleek speed-type from Volt Highway. Its Overdrive form can outpace almost any threat on the Grid." },
+      { name: "Citadel-KN9", desc: "A heavily armored defender from Firewall Citadel. Its Prime Form is nearly indestructible against Null Shells." },
+      { name: "OMEGA-7", desc: "A legendary Omega Patch Cybermon from Kernel Tower. Restored from corruption, it is said to hold the key to breaking the Null Signal forever." },
+    ],
     features: ["Living digital creatures, not robots", "Soul Protocols as digital identity", "Null Signal corrupts into Null Shells", "Linkers synchronize through Link Pulse"],
     motto: "Log in. Link up. Break the Null.",
     cta: `Browse All ${FRANCHISE_BY_SLUG.cybermon.count} Cybermon Tazos`,
+    wikiPath: "/wiki/cybermon",
   },
 }
+
 
 function CollectionDetailContent({ collection }: { collection: string }) {
   const [detailCounts, setDetailCounts] = useState<Record<string,number> | null>(null)
@@ -2039,55 +2069,135 @@ function CollectionDetailContent({ collection }: { collection: string }) {
   }, [])
   const c = COLLECTION_DETAILS[collection]
   if (!c) return null
+
+  const count = detailCounts?.[c.name] ?? c.count
+  
+  // Wallpaper colors per series
+  const wallpaperColors: Record<string, string> = {
+    minimon: "linear-gradient(135deg, rgba(255,204,0,0.08), rgba(255,204,0,0.02), rgba(255,249,230,0.15), rgba(255,204,0,0.05))",
+    dracobell: "linear-gradient(135deg, rgba(255,107,0,0.07), rgba(255,107,0,0.02), rgba(227,53,13,0.06), rgba(255,107,0,0.04))",
+    cybermon: "linear-gradient(135deg, rgba(0,180,216,0.07), rgba(0,180,216,0.02), rgba(59,76,202,0.05), rgba(0,180,216,0.04))",
+  }
+
   return (
-    <div className="w-full max-w-3xl mx-auto space-y-5">
-      {/* Intro */}
-      <div className="border-2 border-ttg-black bg-white p-5" style={{ boxShadow: "4px 4px 0 var(--ttg-black)" }}>
-        <div className="h-2 mb-3" style={{ background: c.color }} />
-        <div className="flex items-baseline gap-2 mb-2">
-          <span className="text-2xl font-black text-ttg-black">{detailCounts?.[c.name] ?? c.count}</span>
-          <span className="text-[10px] font-bold text-ttg-black/25 uppercase">of {c.total} planned</span>
-          <span className="text-xs font-bold text-ttg-black/40 uppercase">tazos · {c.origin} {c.year}</span>
+    <div className="w-full max-w-4xl mx-auto space-y-6">
+      {/* ───── HERO / BANNER ───── */}
+      <div className="relative overflow-hidden border-3 border-ttg-black bg-white" style={{ boxShadow: "5px 5px 0 var(--ttg-black)" }}>
+        {/* Wallpaper background */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background: wallpaperColors[collection] || "transparent" }} />
+        <div className="absolute inset-0 mag-halftone opacity-15 pointer-events-none" />
+        
+        {/* Color strip top */}
+        <div className="relative h-2" style={{ background: c.color }} />
+        
+        {/* Logo + intro */}
+        <div className="relative px-5 sm:px-8 py-6 sm:py-8 flex flex-col sm:flex-row items-center gap-5">
+          <div className="shrink-0">
+            <Image src={`/logo/series-${collection}.png`} alt={`${c.name} logo`} width={280} height={110}
+              className="h-12 sm:h-16 object-contain" />
+          </div>
+          <div className="flex-1 text-center sm:text-left">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
+              <span className="text-2xl sm:text-3xl font-black text-ttg-black">{count}</span>
+              <span className="text-[9px] font-bold text-ttg-black/25 uppercase tracking-wider">of {c.total} planned tazos</span>
+            </div>
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-2">
+              <span className="inline-block px-2 py-0.5 text-[8px] font-black text-white uppercase tracking-wider border border-white/20" style={{ background: c.color }}>{c.origin}</span>
+              <span className="text-[9px] font-bold text-ttg-black/30 uppercase tracking-wider">{c.year}</span>
+              <span className="text-[9px] font-bold text-ttg-black/30 uppercase tracking-wider">· {c.world}</span>
+            </div>
+            <p className="text-xs font-bold text-ttg-black/55 leading-relaxed max-w-lg">{c.worldDesc}</p>
+          </div>
         </div>
-        <p className="text-xs font-bold text-ttg-black/60 leading-relaxed">{c.worldDesc}</p>
       </div>
 
-      {/* Sections */}
+      {/* ───── TWO-COLUMN LORE ───── */}
+      <div className="grid sm:grid-cols-2 gap-4">
+        {/* Origin Story */}
+        <div className="border-2 border-ttg-black bg-white p-5" style={{ boxShadow: "3px 3px 0 var(--ttg-black)" }}>
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles className="w-4 h-4" style={{ color: c.color }} />
+            <h3 className="text-sm font-black uppercase text-ttg-black tracking-wide">Origin Story</h3>
+          </div>
+          <p className="text-[10px] font-bold text-ttg-black/55 leading-relaxed">{c.originStory}</p>
+        </div>
+
+        {/* Back Story */}
+        <div className="border-2 border-ttg-black bg-white p-5" style={{ boxShadow: "3px 3px 0 var(--ttg-black)" }}>
+          <div className="flex items-center gap-2 mb-3">
+            <Disc3 className="w-4 h-4" style={{ color: c.color }} />
+            <h3 className="text-sm font-black uppercase text-ttg-black tracking-wide">The Story</h3>
+          </div>
+          <p className="text-[10px] font-bold text-ttg-black/55 leading-relaxed">{c.backStory}</p>
+        </div>
+      </div>
+
+      {/* ───── SECTIONS ───── */}
       {c.sections.map(s => (
         <div key={s.title}>
-          <h3 className="text-sm font-black uppercase text-ttg-black mb-2">{s.title}</h3>
+          <div className="flex items-center gap-2 mb-3">
+            <div className="h-0.5 flex-1 bg-ttg-black/8" />
+            <h3 className="text-xs font-black uppercase text-ttg-black/50 tracking-[0.15em]">{s.title}</h3>
+            <div className="h-0.5 flex-1 bg-ttg-black/8" />
+          </div>
           <div className="grid sm:grid-cols-2 gap-2">
             {s.items.map(item => (
-              <div key={item.name} className="border-2 border-ttg-black bg-white p-3" style={{ boxShadow: "2px 2px 0 var(--ttg-black)" }}>
-                <span className="text-[10px] font-black uppercase text-ttg-black block mb-0.5">{item.name}</span>
-                <span className="text-[9px] font-bold text-ttg-black/50">{item.detail}</span>
+              <div key={item.name} className="border-2 border-ttg-black bg-white p-3 hover:-translate-y-0.5 transition-transform" style={{ boxShadow: "2px 2px 0 var(--ttg-black)" }}>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: c.color }} />
+                  <span className="text-[10px] font-black uppercase text-ttg-black">{item.name}</span>
+                </div>
+                <span className="text-[9px] font-bold text-ttg-black/45 leading-relaxed">{item.detail}</span>
               </div>
             ))}
           </div>
         </div>
       ))}
 
-      {/* Features + Motto */}
-      <div className="border-2 border-ttg-black bg-white p-5" style={{ boxShadow: "3px 3px 0 var(--ttg-black)" }}>
-        <ul className="space-y-1 mb-3">
-          {c.features.map((f, i) => (
-            <li key={i} className="text-[10px] font-bold text-ttg-black/60 flex items-center gap-1.5">
-              <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: c.color }} /> {f}
-            </li>
+      {/* ───── TAZO HIGHLIGHTS ───── */}
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <div className="h-0.5 flex-1 bg-ttg-black/8" />
+          <div className="flex items-center gap-1.5">
+            <Star className="w-3 h-3" style={{ color: c.color }} />
+            <h3 className="text-xs font-black uppercase text-ttg-black/50 tracking-[0.15em]">Featured Tazos</h3>
+          </div>
+          <div className="h-0.5 flex-1 bg-ttg-black/8" />
+        </div>
+        <div className="grid sm:grid-cols-2 gap-2">
+          {c.highlights.map(h => (
+            <div key={h.name} className="border-2 border-ttg-black bg-white p-3" style={{ boxShadow: "2px 2px 0 var(--ttg-black)" }}>
+              <span className="text-[10px] font-black uppercase text-ttg-black block mb-1">{h.name}</span>
+              <span className="text-[9px] font-bold text-ttg-black/45 leading-relaxed">{h.desc}</span>
+            </div>
           ))}
-        </ul>
-        <p className="text-sm font-black uppercase text-ttg-black text-center">
-          &ldquo;{c.motto}&rdquo;
-        </p>
+        </div>
       </div>
 
-      {/* CTA */}
-      <div className="text-center">
+      {/* ───── MOTTO ───── */}
+      <div className="border-3 border-ttg-black bg-white p-5 text-center" style={{ boxShadow: "3px 3px 0 var(--ttg-black)" }}>
+        <p className="text-base sm:text-lg font-black uppercase text-ttg-black italic tracking-wide">
+          &ldquo;{c.motto}&rdquo;
+        </p>
+        <p className="text-[9px] font-bold text-ttg-black/25 uppercase mt-1 tracking-wider">— Official {c.name} Series Motto</p>
+      </div>
+
+      {/* ───── CTA ROW ───── */}
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
         <a href={`/tazos?collection=${collection}`}
-          className="inline-block px-6 py-2.5 text-[11px] font-black text-white bg-ttg-red uppercase tracking-wider border-2 border-ttg-black
+          className="inline-flex items-center gap-2 px-6 py-2.5 text-[11px] font-black text-white uppercase tracking-wider border-2 border-ttg-black
+                     shadow-[3px_3px_0_var(--ttg-black)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5px_5px_0_var(--ttg-black)]
+                     active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0_var(--ttg-black)] transition-all"
+          style={{ background: c.color }}>
+          <Disc3 className="w-3.5 h-3.5" />
+          {c.cta}
+        </a>
+        <a href={c.wikiPath}
+          className="inline-flex items-center gap-2 px-6 py-2.5 text-[11px] font-black text-ttg-black uppercase tracking-wider bg-white border-2 border-ttg-black
                      shadow-[3px_3px_0_var(--ttg-black)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5px_5px_0_var(--ttg-black)]
                      active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0_var(--ttg-black)] transition-all">
-          {c.cta}
+          <ExternalLink className="w-3.5 h-3.5" />
+          View Full Wiki
         </a>
       </div>
     </div>

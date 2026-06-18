@@ -23,7 +23,7 @@ interface DeckModel {
 
 const FRANCHISES = ["minimon", "cybermon", "dracobell"]
 const FRANCHISE_COLORS: Record<string, string> = {
-  minimon: 'var(--ttg-yellow)', cybermon: "#00A1E9", dracobell: "#FF6B00",
+  minimon: 'var(--ttg-yellow)', cybermon: "var(--ttg-cybermon)", dracobell: "var(--ttg-dracobell)",
 }
 
 export default function AdminDeckModelsPage() {
@@ -52,7 +52,7 @@ export default function AdminDeckModelsPage() {
 
   const fetchModels = async () => {
     try {
-      const res = await fetch("/api/admin/tube-models")
+      const res = await fetch("/api/admin/deck-models")
       const data = await res.json()
       setModels(data.models || [])
     } catch { /* ignore */ }
@@ -70,7 +70,7 @@ export default function AdminDeckModelsPage() {
     if (!newName || !newTextureUrl) return
     setSaving(true)
     try {
-      const res = await fetch("/api/admin/tube-models", {
+      const res = await fetch("/api/admin/deck-models", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newName, textureUrl: newTextureUrl, franchise: newFranchise, sortOrder: newSortOrder }),
@@ -85,7 +85,7 @@ export default function AdminDeckModelsPage() {
   const handleUpdate = async (id: string) => {
     setSaving(true)
     try {
-      await fetch("/api/admin/tube-models", {
+      await fetch("/api/admin/deck-models", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, name: editName, textureUrl: editTextureUrl, franchise: editFranchise, sortOrder: editSortOrder }),
@@ -99,12 +99,12 @@ export default function AdminDeckModelsPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this deck model?")) return
-    await fetch(`/api/admin/tube-models?id=${id}`, { method: "DELETE" })
+    await fetch(`/api/admin/deck-models?id=${id}`, { method: "DELETE" })
     await fetchModels()
   }
 
   const handleToggle = async (model: DeckModel) => {
-    await fetch("/api/admin/tube-models", {
+    await fetch("/api/admin/deck-models", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: model.id, isActive: !model.isActive }),
@@ -123,12 +123,17 @@ export default function AdminDeckModelsPage() {
   const cancelEdit = () => setEditingId(null)
 
   return (
-    <AdminShell accentColor="#EF4444" actions={
+    <AdminShell accentColor="var(--ttg-red)" actions={
       <button onClick={() => setShowAdd(!showAdd)} className="flex items-center gap-1.5 px-3 py-1.5 bg-ttg-red text-white text-[10px] font-black uppercase border-2 border-ttg-black shadow-[2px_2px_0px_var(--ttg-black)] hover:shadow-[1px_1px_0px]">
         <Plus className="w-3.5 h-3.5" /> New Deck
       </button>
     }>
       <div className="max-w-6xl mx-auto px-4 py-6 space-y-4">
+        <div className="flex items-center gap-3 mb-2">
+          <Package className="w-6 h-6 text-ttg-red" />
+          <h1 className="text-lg font-black uppercase text-ttg-black tracking-wider">Deck Models</h1>
+          <span className="text-sm font-black text-ttg-black/25">({models.length} models)</span>
+        </div>
         {message && (
           <div className="p-3 border-3 border-ttg-success bg-ttg-success/10 text-center text-[11px] font-black text-ttg-success uppercase">{message}</div>
         )}

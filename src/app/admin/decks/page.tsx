@@ -28,7 +28,7 @@ export default function AdminDecksPage() {
 
   const fetchTextures = async () => {
     try {
-      const res = await fetch("/api/admin/tubes")
+      const res = await fetch("/api/admin/decks")
       const data = await res.json()
       setTextures(data.textures || [])
     } catch { /* ignore */ }
@@ -56,7 +56,7 @@ export default function AdminDecksPage() {
     formData.append("franchise", franchise)
 
     try {
-      const res = await fetch("/api/admin/tubes", { method: "POST", body: formData })
+      const res = await fetch("/api/admin/decks", { method: "POST", body: formData })
       if (res.ok) {
         setMessage("✅ Texture uploaded!")
         fetchTextures()
@@ -74,7 +74,7 @@ export default function AdminDecksPage() {
   const handleDelete = async (name: string) => {
     if (!confirm(`Delete texture "${name}"?`)) return
     try {
-      const res = await fetch(`/api/admin/tubes?file=${encodeURIComponent(name)}`, { method: "DELETE" })
+      const res = await fetch(`/api/admin/decks?file=${encodeURIComponent(name)}`, { method: "DELETE" })
       if (res.ok) {
         setMessage("🗑️ Texture deleted")
         fetchTextures()
@@ -89,7 +89,7 @@ export default function AdminDecksPage() {
 
   if (loading) {
     return (
-      <AdminShell accentColor="#FF6B00">
+      <AdminShell accentColor="var(--ttg-dracobell)">
         <div className="flex items-center justify-center py-20">
           <div className="mag-spinner w-10 h-10 rounded-full border-4 border-ttg-yellow border-t-ttg-red" />
         </div>
@@ -105,7 +105,7 @@ export default function AdminDecksPage() {
   }
 
   return (
-    <AdminShell accentColor="#FF6B00">
+    <AdminShell accentColor="var(--ttg-dracobell)">
       <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 py-4 sm:py-6 space-y-6">
       {/* Title */}
       <div className="flex items-center gap-3">

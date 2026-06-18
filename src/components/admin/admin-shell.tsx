@@ -51,7 +51,7 @@ const ADMIN_TABS = [
     href: "/admin/deck-models",
     label: "Deck Models",
     icon: Database,
-    color: "#EF4444",
+    color: "var(--ttg-red)",
   },
   {
     href: "/admin/shop-bags",

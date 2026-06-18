@@ -16,7 +16,7 @@ interface TextureEntry {
   size?: number
 }
 
-export default function AdminBagsPage() {
+export default function AdminShopBagsPage() {
   const { user, loading: authLoading } = useAuth()
   const [textures, setTextures] = useState<TextureEntry[]>([])
   const [loading, setLoading] = useState(true)
@@ -114,7 +114,7 @@ export default function AdminBagsPage() {
       <div className="flex items-center gap-3">
         <ShoppingBag className="w-6 h-6 text-ttg-purple" />
         <h1 className="text-lg sm:text-xl font-black uppercase text-ttg-black tracking-wide">
-          Bag Textures
+          Shop Bag Textures
         </h1>
         <span className="text-sm font-black text-ttg-black/25">{textures.length} files</span>
       </div>
@@ -129,7 +129,7 @@ export default function AdminBagsPage() {
       {/* ── Upload card ── */}
       <div className="border-3 border-ttg-black shadow-[4px_4px_0px_var(--ttg-black)] bg-white p-5">
         <h2 className="text-sm font-black uppercase text-ttg-black mb-4 flex items-center gap-2">
-          <Upload className="w-4 h-4 text-ttg-dracobell" /> Upload Bag Texture
+          <Upload className="w-4 h-4 text-ttg-dracobell" /> Upload Shop Bag Texture
         </h2>
         <div className="flex flex-wrap gap-3 items-end">
           <div>
@@ -152,7 +152,7 @@ export default function AdminBagsPage() {
           </label>
         </div>
         <p className="text-[9px] font-bold text-ttg-black/25 mt-3">
-          Upload .png textures for bag designs. Files are placed in /public/textures/bags/&#123;franchise&#125;/.
+          Upload .png textures for shop bag designs. Files are placed in /public/textures/bags/&#123;franchise&#125;/.
         </p>
       </div>
 
@@ -195,7 +195,7 @@ export default function AdminBagsPage() {
       {textures.length === 0 && (
         <div className="text-center py-12 space-y-3">
           <ImageIcon aria-hidden="true" className="w-12 h-12 text-ttg-black/10 mx-auto" />
-          <p className="text-sm font-black text-ttg-black/20 uppercase">No bag textures uploaded yet</p>
+          <p className="text-sm font-black text-ttg-black/20 uppercase">No shop bag textures uploaded yet</p>
         </div>
       )}
       </div>

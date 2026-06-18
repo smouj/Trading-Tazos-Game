@@ -1,7 +1,7 @@
 "use client"
 
 // ============================================================
-// Trading Tazos Game — Admin Shop Bag Manager
+// Trading Tazos Game — Admin Shop Bag Model Manager
 // Create, edit, delete bag designs for the shop.
 // Includes 3D preview with Three.js.
 // ============================================================
@@ -31,13 +31,13 @@ interface BagModel {
 
 const FRANCHISES = ["minimon", "cybermon", "dracobell"]
 const FRANCHISE_COLORS: Record<string, string> = {
-  minimon: 'var(--ttg-yellow)', cybermon: "#00A1E9", dracobell: "#FF6B00",
+  minimon: 'var(--ttg-yellow)', cybermon: "var(--ttg-cybermon)", dracobell: "var(--ttg-dracobell)",
 }
 const FRANCHISE_BG: Record<string, string> = {
   minimon: "#FFF8E7", cybermon: "#E7F6FF", dracobell: "#FFF3EB",
 }
 
-export default function AdminBagModelsPage() {
+export default function AdminShopBagModelsPage() {
   const { user, loading: authLoading } = useAuth()
   const [models, setModels] = useState<BagModel[]>([])
   const [loading, setLoading] = useState(true)
@@ -151,6 +151,11 @@ export default function AdminBagModelsPage() {
       </button>
     }>
       <div className="max-w-6xl mx-auto px-4 py-6 space-y-4">
+        <div className="flex items-center gap-3 mb-2">
+          <ShoppingBag className="w-6 h-6 text-ttg-dracobell" />
+          <h1 className="text-lg font-black uppercase text-ttg-black tracking-wider">Shop Bag Models</h1>
+          <span className="text-sm font-black text-ttg-black/25">({models.length} models)</span>
+        </div>
         {message && (
           <div className="p-3 border-3 border-ttg-success bg-ttg-success/10 text-center text-[11px] font-black text-ttg-success uppercase">{message}</div>
         )}
@@ -158,7 +163,7 @@ export default function AdminBagModelsPage() {
         {/* Add form */}
         {showAdd && (
           <div className="mag-card p-4 border-3 border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)] bg-white">
-            <h3 className="text-xs font-black uppercase tracking-wider text-ttg-black/50 mb-3">New Bag Model</h3>
+            <h3 className="text-xs font-black uppercase tracking-wider text-ttg-black/50 mb-3">New Shop Bag Model</h3>
             <div className="grid sm:grid-cols-3 gap-3 mb-3">
               <div><label className="text-[9px] font-black uppercase text-ttg-black/40">Name</label><input value={newName} onChange={e => setNewName(e.target.value)} placeholder="Mega Bag" className="w-full p-2 border-2 border-ttg-black text-xs font-bold" /></div>
               <div><label className="text-[9px] font-black uppercase text-ttg-black/40">Front Image URL</label><input value={newFrontUrl} onChange={e => setNewFrontUrl(e.target.value)} placeholder="/textures/bags/minimon/bag-front.png" className="w-full p-2 border-2 border-ttg-black text-xs font-bold" /></div>
@@ -184,7 +189,7 @@ export default function AdminBagModelsPage() {
         ) : models.length === 0 ? (
           <div className="text-center py-16 border-3 border-ttg-black bg-white shadow-[3px_3px_0px]">
             <ShoppingBag className="w-10 h-10 text-ttg-black/15 mx-auto mb-3" />
-            <p className="font-black text-sm text-ttg-black/30 uppercase">No bag models yet</p>
+            <p className="font-black text-sm text-ttg-black/30 uppercase">No shop bag models yet</p>
             <p className="text-[10px] font-bold text-ttg-black/20 mt-1">Click &quot;New Bag&quot; to create one</p>
           </div>
         ) : (

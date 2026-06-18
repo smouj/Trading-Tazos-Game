@@ -127,14 +127,14 @@ export default function GameLobby({ playerTazos, playerDecks, selectedDeckId, on
                   onClick={() => onSelectDeck?.(active ? null : d.id)}
                   className={`p-3 border-2 text-left transition-all ${
                     active
-                      ? "border-ttg-yellow bg-[#FFCB050a] shadow-[2px_2px_0px_var(--ttg-yellow)]"
+                      ? "border-ttg-yellow bg-ttg-minimon/4 shadow-[2px_2px_0px_var(--ttg-yellow)]"
                       : "border-ttg-black/8 hover:border-ttg-black/20"
                   }`}
                 >
                   <div className="flex items-center gap-2">
                     <span className="font-black text-sm text-ttg-black">{d.name}</span>
                     {d.isActive && (
-                      <span className="text-[7px] font-black text-ttg-yellow border border-ttg-yellow/30 bg-[#FFCB0508] px-1 py-0.5 uppercase">
+                      <span className="text-[7px] font-black text-ttg-yellow border border-ttg-yellow/30 bg-ttg-minimon/3 px-1 py-0.5 uppercase">
                         Active
                       </span>
                     )}
@@ -202,7 +202,7 @@ export default function GameLobby({ playerTazos, playerDecks, selectedDeckId, on
                 onClick={() => setDifficulty(d)}
                 className={`p-3 border-2 text-center transition-all capitalize ${
                   difficulty === d
-                    ? "border-ttg-yellow bg-[#FFCB0508] shadow-[2px_2px_0px_var(--ttg-yellow)]"
+                    ? "border-ttg-yellow bg-ttg-minimon/3 shadow-[2px_2px_0px_var(--ttg-yellow)]"
                     : "border-ttg-black/8 hover:border-ttg-black/30"
                 }`}
               >
@@ -242,7 +242,7 @@ export default function GameLobby({ playerTazos, playerDecks, selectedDeckId, on
                   { icon: Star, label: "SPD+SPN", value: deckTotals.spd + deckTotals.spn, color: "var(--ttg-warning)" },
                 ]).map(s => (
                   <div key={s.label}
-                    className="flex items-center gap-1 px-2.5 py-1 bg-white border-2 border-ttg-black/10 text-[10px] font-black shadow-[1px_1px_0px_#1a1a1a08]">
+                    className="flex items-center gap-1 px-2.5 py-1 bg-white border-2 border-ttg-black/10 text-[10px] font-black shadow-[1px_1px_0px_var(--ttg-black)]/3">
                     <span style={{ color: s.color }}>
                       <s.icon className="w-3 h-3" />
                     </span>
@@ -258,7 +258,7 @@ export default function GameLobby({ playerTazos, playerDecks, selectedDeckId, on
               {/* Tazo mini chips */}
               <div className="flex gap-1 flex-wrap max-h-[80px] overflow-y-auto">
                 {selectedDeck.tazos?.slice(0, 20).map((t: any) => (
-                  <div key={t.id} className="flex items-center gap-1 p-1 border-2 border-ttg-black/8 bg-[#fffef0]">
+                  <div key={t.id} className="flex items-center gap-1 p-1 border-2 border-ttg-black/8 bg-ttg-cream">
                     <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0" style={{ background: "var(--ttg-black)" }}>
                       <TazoDiscImage src={t.imageUrl} alt={t.name} size="100%" borderWidth={0}
                         franchiseSlug={t.franchiseSlug} lazy className="w-full h-full" />

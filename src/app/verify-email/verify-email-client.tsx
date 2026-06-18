@@ -53,7 +53,7 @@ export function VerifyEmailClient() {
       <p className={`text-sm mb-6 ${tone}`}>
         {state === 'missing' ? 'No verification token was provided. Please use the link from your email.' : message}
       </p>
-      <a href={state === 'success' ? '/app' : '/login'} className="inline-flex items-center justify-center px-5 py-3 text-xs font-black uppercase bg-[#FFCC00] text-[#1a1a1a] border-2 border-[#1a1a1a] hover:bg-[#FFE566] transition-colors">
+      <a href={state === 'success' ? '/app' : '/login'} className="inline-flex items-center justify-center px-5 py-3 text-xs font-black uppercase bg-ttg-yellow text-ttg-black border-2 border-ttg-black hover:bg-ttg-yellow-hover transition-colors">
         {state === 'success' ? 'Open TTG' : 'Go to Login'}
       </a>
     </>

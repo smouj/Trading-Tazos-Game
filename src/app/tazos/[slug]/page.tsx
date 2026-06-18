@@ -55,10 +55,10 @@ export default async function TazoPage({ params }: Props) {
   const fc = FRANCHISE_BY_SLUG[tazo.franchise.slug];
 
   return (
-    <main className="min-h-screen bg-[#1a1a1a] py-12 px-4">
+    <main className="min-h-screen bg-ttg-black py-12 px-4">
       <article className="max-w-2xl mx-auto">
         <nav className="mb-8">
-          <a href="/?page=tazos" className="text-[#FFCC00] hover:underline text-sm font-bold">
+          <a href="/?page=tazos" className="text-ttg-yellow hover:underline text-sm font-bold">
             ← Back to Tazo Catalog
           </a>
         </nav>
@@ -76,45 +76,45 @@ export default async function TazoPage({ params }: Props) {
             />
           </div>
 
-          <div className="flex-1 text-[#e0e0e0] space-y-4">
+          <div className="flex-1 text-ttg-black/10 space-y-4">
             <div>
-              <p className="text-sm font-bold" style={{ color: fc?.color || "#FFCC00" }}>
+              <p className="text-sm font-bold" style={{ color: fc?.color || 'var(--ttg-yellow)' }}>
                 {tazo.franchise.name} #{tazo.number}
               </p>
               <h1 className="text-3xl font-black text-white mt-1">{tazo.name}</h1>
               {tazo.displayName && (
-                <p className="text-lg text-[#888] italic mt-1">{tazo.displayName}</p>
+                <p className="text-lg text-ttg-black/50 italic mt-1">{tazo.displayName}</p>
               )}
             </div>
 
             <div className="flex gap-2 flex-wrap">
-              <span className="px-3 py-1 rounded-full text-xs font-bold border border-[#333] text-[#e0e0e0]">
+              <span className="px-3 py-1 rounded-full text-xs font-bold border border-ttg-black/20 text-ttg-black/10">
                 {tazo.rarity}
               </span>
               {tazo.combatType && (
-                <span className="px-3 py-1 rounded-full text-xs font-bold border border-[#333] text-[#e0e0e0]">
+                <span className="px-3 py-1 rounded-full text-xs font-bold border border-ttg-black/20 text-ttg-black/10">
                   {tazo.combatType}
                 </span>
               )}
               {tazo.finish && tazo.finish !== "normal" && (
-                <span className="px-3 py-1 rounded-full text-xs font-bold border border-[#333] text-[#e0e0e0]">
+                <span className="px-3 py-1 rounded-full text-xs font-bold border border-ttg-black/20 text-ttg-black/10">
                   {tazo.finish}
                 </span>
               )}
             </div>
 
             {tazo.skill && (
-              <div className="border border-[#333] p-4 bg-[#222]">
-                <p className="text-[#FFCC00] text-xs font-bold">SKILL</p>
+              <div className="border border-ttg-black/20 p-4 bg-ttg-black">
+                <p className="text-ttg-yellow text-xs font-bold">SKILL</p>
                 <p className="text-white font-bold">{tazo.skill}</p>
-                {tazo.skillDesc && <p className="text-[#888] text-sm mt-1">{tazo.skillDesc}</p>}
+                {tazo.skillDesc && <p className="text-ttg-black/50 text-sm mt-1">{tazo.skillDesc}</p>}
               </div>
             )}
 
             <div className="grid grid-cols-3 gap-2 text-xs">
               {(["attack","defense","resistance","weight","stability","spin","control"] as const).map((stat) => (
-                <div key={stat} className="bg-[#222] p-2 text-center">
-                  <p className="text-[#888] uppercase">{stat}</p>
+                <div key={stat} className="bg-ttg-black p-2 text-center">
+                  <p className="text-ttg-black/50 uppercase">{stat}</p>
                   <p className="text-white font-bold text-lg">{tazo[stat] ?? 50}</p>
                 </div>
               ))}

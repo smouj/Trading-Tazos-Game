@@ -118,7 +118,7 @@ export default function DecksPage() {
   if (loading || fetching) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="mag-spinner w-10 h-10 rounded-full border-4 border-[#FFCC00] border-t-[#E3350D]" />
+        <div className="mag-spinner w-10 h-10 rounded-full border-4 border-ttg-yellow border-t-ttg-red" />
       </div>
     )
   }
@@ -126,13 +126,13 @@ export default function DecksPage() {
   if (!user) {
     return (
       <div className="py-20 text-center space-y-5">
-        <Layers className="w-14 h-14 text-[#1a1a1a]/15 mx-auto" />
-        <p className="font-black text-sm text-[#1a1a1a]/40 uppercase tracking-wider">
+        <Layers className="w-14 h-14 text-ttg-black/15 mx-auto" />
+        <p className="font-black text-sm text-ttg-black/40 uppercase tracking-wider">
           {t.auth_login_subtitle}
         </p>
         <Link
           href="/login"
-          className="inline-block py-3 px-8 mag-btn bg-[#E3350D] text-white text-xs font-black uppercase tracking-widest"
+          className="inline-block py-3 px-8 mag-btn bg-ttg-red text-white text-xs font-black uppercase tracking-widest"
         >
           {t.auth_login}
         </Link>
@@ -145,8 +145,8 @@ export default function DecksPage() {
     return (
       <div className="max-w-7xl mx-auto w-full py-4 sm:py-6 space-y-4">
         <div className="flex items-center gap-2">
-          <PackageOpen className="w-5 h-5 text-[#FFCC00]" />
-          <h2 className="text-lg font-black uppercase text-[#1a1a1a] tracking-wide">
+          <PackageOpen className="w-5 h-5 text-ttg-yellow" />
+          <h2 className="text-lg font-black uppercase text-ttg-black tracking-wide">
             {editingDeck ? `Edit: ${editingDeck.name}` : "Deck Builder"}
           </h2>
         </div>
@@ -154,7 +154,7 @@ export default function DecksPage() {
           initialDeck={editingDeck ? {
             id: editingDeck.id,
             name: editingDeck.name,
-            color: editingDeck.color || "#E3350D",
+            color: editingDeck.color || 'var(--ttg-red)',
             textureUrl: editingDeck.textureUrl || undefined,
             tubeSlug: editingDeck.tubeSlug || undefined,
             tazos: editingDeck.tazos,
@@ -183,18 +183,18 @@ export default function DecksPage() {
         }}
       >
         <div className="flex items-center gap-1.5">
-          <PackageOpen className="w-5 h-5 text-[#FFCC00]" />
+          <PackageOpen className="w-5 h-5 text-ttg-yellow" />
           <h1 className="text-sm sm:text-lg font-black text-white uppercase tracking-tight">
             Decks
           </h1>
         </div>
         <div className="w-px h-5 bg-white/15" />
-        <span className="text-sm font-black text-[#FFCC00] tracking-tight">
+        <span className="text-sm font-black text-ttg-yellow tracking-tight">
           {decks.length} DECKS
         </span>
         <button
           onClick={() => setShowBuilder(true)}
-          className="ml-auto mag-btn bg-[#3B4CCA] text-white flex items-center gap-1.5 px-4 py-2 text-[10px] font-black uppercase tracking-wider border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#1a1a1a] transition-all"
+          className="ml-auto mag-btn bg-ttg-blue text-white flex items-center gap-1.5 px-4 py-2 text-[10px] font-black uppercase tracking-wider border-3 border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_var(--ttg-black)] transition-all"
         >
           <Plus className="w-3.5 h-3.5" />
           Create Deck
@@ -218,14 +218,14 @@ export default function DecksPage() {
             return (
               <div
                 key={deck.id}
-                className="border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] bg-white hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_#1a1a1a] transition-all"
+                className="border-3 border-ttg-black shadow-[4px_4px_0px_var(--ttg-black)] bg-white hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_var(--ttg-black)] transition-all"
               >
                 <div className="flex flex-col sm:flex-row">
                   {/* Tube preview column */}
-                  <div className="flex-shrink-0 flex items-center justify-center py-4 px-3 sm:border-r-3 border-[#1a1a1a]/10" style={{ background: deck.color + "08" }}>
+                  <div className="flex-shrink-0 flex items-center justify-center py-4 px-3 sm:border-r-3 border-ttg-black/10" style={{ background: deck.color + "08" }}>
                     <BattleTubePreview
                       name={deck.name}
-                      color={deck.color || "#3B4CCA"}
+                      color={deck.color || 'var(--ttg-blue)'}
                       count={deck.tazoCount}
                       maxCount={20}
                       tazos={deck.tazos.slice(0, 10).map(t => ({
@@ -242,15 +242,15 @@ export default function DecksPage() {
                     {/* Top row: name + actions */}
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <h2 className="text-base sm:text-lg font-black text-[#1a1a1a] uppercase tracking-tight truncate">
+                        <h2 className="text-base sm:text-lg font-black text-ttg-black uppercase tracking-tight truncate">
                           {deck.name}
                         </h2>
                         <div className="flex flex-wrap items-center gap-2 mt-1">
                           {/* Fill badge */}
-                          <span className={`inline-flex items-center gap-1 text-[9px] font-black px-2 py-0.5 border-2 border-[#1a1a1a] uppercase tracking-wider shadow-[2px_2px_0px_#1a1a1a] ${
+                          <span className={`inline-flex items-center gap-1 text-[9px] font-black px-2 py-0.5 border-2 border-ttg-black uppercase tracking-wider shadow-[2px_2px_0px_var(--ttg-black)] ${
                             deck.tazoCount >= 20
-                              ? "bg-[#22C55E] text-white"
-                              : "bg-[#fffef0] text-[#1a1a1a]"
+                              ? "bg-ttg-success text-white"
+                              : "bg-ttg-cream text-ttg-black"
                           }`}>
                             {deck.tazoCount >= 20 ? (
                               <><CheckCircle className="w-2.5 h-2.5" /> Sealed</>
@@ -260,8 +260,8 @@ export default function DecksPage() {
                           </span>
 
                           {deck.isActive && (
-                            <span className="inline-flex items-center gap-1 text-[9px] bg-[#FFCC00] text-[#1a1a1a] font-black px-2 py-0.5 border-2 border-[#1a1a1a] uppercase tracking-wider shadow-[2px_2px_0px_#1a1a1a]">
-                              <Star className="w-2.5 h-2.5 fill-[#1a1a1a]" />
+                            <span className="inline-flex items-center gap-1 text-[9px] bg-ttg-yellow text-ttg-black font-black px-2 py-0.5 border-2 border-ttg-black uppercase tracking-wider shadow-[2px_2px_0px_var(--ttg-black)]">
+                              <Star className="w-2.5 h-2.5 fill-ttg-black" />
                               Active
                             </span>
                           )}
@@ -275,7 +275,7 @@ export default function DecksPage() {
                             setEditingDeck(deck)
                             setShowBuilder(true)
                           }}
-                          className="mag-btn bg-[#1a1a1a] text-[#FFCC00] px-2.5 py-2 text-[9px] font-black uppercase tracking-wider flex items-center gap-1 border-2 border-[#1a1a1a]"
+                          className="mag-btn bg-ttg-black text-ttg-yellow px-2.5 py-2 text-[9px] font-black uppercase tracking-wider flex items-center gap-1 border-2 border-ttg-black"
                           title="Edit deck"
                         >
                           <Edit3 className="w-3 h-3" />
@@ -284,7 +284,7 @@ export default function DecksPage() {
                         {!deck.isActive && (
                           <button
                             onClick={() => handleActivate(deck.id)}
-                            className="mag-btn bg-[#FFCC00] text-[#1a1a1a] px-2.5 py-2 text-[9px] font-black uppercase tracking-wider flex items-center gap-1 border-2 border-[#1a1a1a]"
+                            className="mag-btn bg-ttg-yellow text-ttg-black px-2.5 py-2 text-[9px] font-black uppercase tracking-wider flex items-center gap-1 border-2 border-ttg-black"
                           >
                             <Star className="w-3 h-3" />
                             <span className="hidden sm:inline">Set Active</span>
@@ -292,7 +292,7 @@ export default function DecksPage() {
                         )}
                         <button
                           onClick={() => handleDelete(deck.id)}
-                          className="mag-btn bg-white text-[#E3350D] px-2.5 py-2 text-[9px] font-black uppercase tracking-wider flex items-center gap-1 border-2 border-[#E3350D]"
+                          className="mag-btn bg-white text-ttg-red px-2.5 py-2 text-[9px] font-black uppercase tracking-wider flex items-center gap-1 border-2 border-ttg-red"
                         >
                           <Trash2 className="w-3 h-3" />
                         </button>
@@ -303,16 +303,16 @@ export default function DecksPage() {
                     <div className="mt-4 space-y-3">
                       {/* Stats row */}
                       <div className="flex flex-wrap gap-3 text-[10px] font-bold">
-                        <span className="text-[#E3350D] flex items-center gap-0.5">
+                        <span className="text-ttg-red flex items-center gap-0.5">
                           <Swords className="w-3 h-3" /> {avgAtk} ATK
                         </span>
-                        <span className="text-[#3B4CCA] flex items-center gap-0.5">
+                        <span className="text-ttg-blue flex items-center gap-0.5">
                           <Shield className="w-3 h-3" /> {avgDef} DEF
                         </span>
-                        <span className="text-[#FFCC00] flex items-center gap-0.5">
+                        <span className="text-ttg-yellow flex items-center gap-0.5">
                           <Zap className="w-3 h-3" /> {totalP} TP
                         </span>
-                        <span className="text-[#1a1a1a]/30">
+                        <span className="text-ttg-black/30">
                           Created {new Date(deck.createdAt).toLocaleDateString()}
                         </span>
                       </div>
@@ -323,7 +323,7 @@ export default function DecksPage() {
                           return (
                             <div
                               key={t.id}
-                              className="w-7 h-7 rounded-full overflow-hidden border-2 flex-shrink-0 border-[#1a1a1a]/15"
+                              className="w-7 h-7 rounded-full overflow-hidden border-2 flex-shrink-0 border-ttg-black/15"
                               title={t.displayName || t.name}
                             >
                               <TazoDiscImage
@@ -341,7 +341,7 @@ export default function DecksPage() {
                           )
                         })}
                         {deck.tazos.length > 12 && (
-                          <span className="text-[9px] font-black text-[#1a1a1a]/30 ml-1">
+                          <span className="text-[9px] font-black text-ttg-black/30 ml-1">
                             +{deck.tazos.length - 12}
                           </span>
                         )}
@@ -355,24 +355,24 @@ export default function DecksPage() {
         </div>
       ) : (
         /* Empty state — Deck illustration */
-        <div className="text-center py-20 border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a]" style={{ background: "#fffef0" }}>
+        <div className="text-center py-20 border-3 border-ttg-black shadow-[4px_4px_0px_var(--ttg-black)]" style={{ background: 'var(--ttg-cream)' }}>
           <div className="flex justify-center mb-6">
             <div className="relative">
-              <BattleTubePreview name="" color="#E3350D" count={0} maxCount={20} size="lg" showLabel={false} />
-              <div className="absolute -bottom-3 -right-3 w-10 h-10 bg-[#1a1a1a] border-3 border-[#FFCC00] flex items-center justify-center rounded-full shadow-[3px_3px_0px_#1a1a1a]">
-                <span className="text-[#FFCC00] text-lg font-black">?</span>
+              <BattleTubePreview name="" color='var(--ttg-red)' count={0} maxCount={20} size="lg" showLabel={false} />
+              <div className="absolute -bottom-3 -right-3 w-10 h-10 bg-ttg-black border-3 border-ttg-yellow flex items-center justify-center rounded-full shadow-[3px_3px_0px_var(--ttg-black)]">
+                <span className="text-ttg-yellow text-lg font-black">?</span>
               </div>
             </div>
           </div>
-          <h2 className="text-2xl font-black text-[#E3350D] mb-2 uppercase tracking-wider">
+          <h2 className="text-2xl font-black text-ttg-red mb-2 uppercase tracking-wider">
             No Decks Yet
           </h2>
-          <p className="text-xs font-bold text-[#1a1a1a]/40 max-w-xs mx-auto mb-5">
+          <p className="text-xs font-bold text-ttg-black/40 max-w-xs mx-auto mb-5">
             Build a 20-tazo deck and seal it for battle.
           </p>
           <button
             onClick={() => setShowBuilder(true)}
-            className="inline-block mt-4 py-3 px-8 mag-btn bg-[#3B4CCA] text-white text-sm font-black uppercase tracking-widest border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_#1a1a1a] transition-all"
+            className="inline-block mt-4 py-3 px-8 mag-btn bg-ttg-blue text-white text-sm font-black uppercase tracking-widest border-3 border-ttg-black shadow-[4px_4px_0px_var(--ttg-black)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_var(--ttg-black)] transition-all"
           >
             <Plus className="w-4 h-4 inline mr-1.5" />
             Create Deck

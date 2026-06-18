@@ -108,7 +108,7 @@ export default function BattleHistory() {
         <div className="p-4 border-b-3 border-ttg-black" style={{ background: 'linear-gradient(135deg, #fffef0 0%, #f5f3e0 100%)' }}>
           <div className="grid grid-cols-4 gap-2">
             <div className="text-center p-2 border-2 border-ttg-black bg-white" style={{ boxShadow: '2px 2px 0px var(--ttg-black)' }}>
-              <Trophy className="w-4 h-4 text-ttg-yellow fill-[#FFCC00] mx-auto mb-0.5" />
+              <Trophy className="w-4 h-4 text-ttg-yellow fill-ttg-yellow mx-auto mb-0.5" />
               <p className="text-xl font-black text-ttg-black leading-none">{stats.wins}</p>
               <p className="text-[0.55rem] font-black uppercase tracking-wider text-ttg-black/50">Wins</p>
             </div>
@@ -133,7 +133,7 @@ export default function BattleHistory() {
       )}
 
       {/* Battle list */}
-      <div className="divide-y-2 divide-[#1a1a1a]/10">
+      <div className="divide-y-2 divide-ttg-black/10">
         {stats && stats.total === 0 && (
           <div className="p-8 text-center mag-dots">
             <Swords className="w-10 h-10 text-ttg-black/20 mx-auto mb-3" />

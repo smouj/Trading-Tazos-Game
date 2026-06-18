@@ -23,7 +23,7 @@ export default function ScannerPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-[#FFCC00]" />
+        <Loader2 className="w-8 h-8 animate-spin text-ttg-yellow" />
       </div>
     )
   }

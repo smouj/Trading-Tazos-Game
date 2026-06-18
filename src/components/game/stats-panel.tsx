@@ -144,7 +144,7 @@ export default function StatsPanel({ refreshKey }: StatsPanelProps) {
             Complete
           </div>
           <div className="flex items-center gap-1">
-            <Star className="w-5 h-5 text-ttg-black fill-[#1a1a1a]" />
+            <Star className="w-5 h-5 text-ttg-black fill-ttg-black" />
             <TrendingUp className="w-4 h-4 text-ttg-black" />
           </div>
           <p className="text-4xl font-black text-ttg-black leading-none">{completionPct}%</p>
@@ -328,7 +328,7 @@ export default function StatsPanel({ refreshKey }: StatsPanelProps) {
 
         {/* Header banner */}
         <div className="px-4 py-3 flex items-center gap-2 border-b-3 border-ttg-black" style={{ background: 'linear-gradient(135deg, var(--ttg-yellow) 0%, #FF6B00 100%)' }}>
-          <Trophy className="w-5 h-5 text-ttg-black fill-[#1a1a1a]" />
+          <Trophy className="w-5 h-5 text-ttg-black fill-ttg-black" />
           <h3 className="text-lg font-black uppercase tracking-wider text-ttg-black mag-stroke-sm">
             Power Rankings
           </h3>

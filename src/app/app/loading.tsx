@@ -13,10 +13,10 @@ export default function AppLoading() {
       {/* Brand logo spacer */}
       <div className="relative z-10 flex flex-col items-center gap-4">
         <div className="relative w-14 h-14">
-          <div className="absolute inset-0 rounded-full bg-[#FFCC00]/15 animate-ping" />
+          <div className="absolute inset-0 rounded-full bg-ttg-yellow/15 animate-ping" />
           <Image src="/logo/logo-tg-yellow.png" alt="" width={56} height={56} className="relative" style={{ animation: "mag-entry-hero 0.6s cubic-bezier(0.16, 1, 0.3, 1) both" }} priority />
         </div>
-        <p className="text-sm font-black text-[#1a1a1a]/25 uppercase tracking-[0.2em]" style={{ animation: "mag-entry-fade-in 0.5s 0.2s ease-out both" }}>
+        <p className="text-sm font-black text-ttg-black/25 uppercase tracking-[0.2em]" style={{ animation: "mag-entry-fade-in 0.5s 0.2s ease-out both" }}>
           Loading Arena
         </p>
       </div>
@@ -26,12 +26,12 @@ export default function AppLoading() {
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className="aspect-square border-2 border-[#1a1a1a]/10 bg-white overflow-hidden"
+            className="aspect-square border-2 border-ttg-black/10 bg-white overflow-hidden"
             style={{
               animation: `mag-entry-fade-up 0.5s ${0.1 + i * 0.08}s cubic-bezier(0.16, 1, 0.3, 1) both`,
             }}
           >
-            <div className="w-full h-full flex items-center justify-center bg-[#fafaf5]">
+            <div className="w-full h-full flex items-center justify-center bg-ttg-paper">
               <div className="w-2/3 h-2/3 rounded-full" style={{
                 background: "#1a1a1a06",
                 animation: "mag-skeleton-shimmer 1.5s ease-in-out infinite",
@@ -44,7 +44,7 @@ export default function AppLoading() {
 
       {/* Bottom loading bar */}
       <div className="relative z-10 w-full max-w-xs mt-2">
-        <div className="h-1 w-full bg-[#1a1a1a]/5 rounded-full overflow-hidden">
+        <div className="h-1 w-full bg-ttg-black/5 rounded-full overflow-hidden">
           <div
             className="h-full rounded-full"
             style={{

@@ -51,7 +51,7 @@ const SECTION_TITLE_BG = {
 function StatsSkeleton() {
   return (
     <div className="max-w-7xl mx-auto w-full py-4 sm:py-6 space-y-3 px-4">
-      <div className="h-14 bg-[#1a1a1a]/[0.04] animate-pulse" />
+      <div className="h-14 bg-ttg-black/0.04 animate-pulse" />
       <StatsPanelSkeleton />
       <BattleHistorySkeleton rows={4} />
     </div>
@@ -84,11 +84,11 @@ function StatsContent() {
       {/* ═══ MAGAZINE BANNER ═══ */}
       <div className="px-4 py-2.5 flex flex-wrap items-center gap-3 relative overflow-hidden" style={BANNER_BG}>
         <div className="flex items-center gap-1.5">
-          <BarChart3 className="w-5 h-5 text-[#FFCC00]" />
+          <BarChart3 className="w-5 h-5 text-ttg-yellow" />
           <h1 className="text-sm sm:text-lg font-black text-white uppercase tracking-tight">STATS &amp; RANKINGS</h1>
         </div>
         <div className="w-px h-5 bg-white/15" />
-        <span className="text-[10px] font-black text-[#3B4CCA] tracking-tight uppercase">{TOTAL_PLANNED} SEASON 1 TAZOS</span>
+        <span className="text-[10px] font-black text-ttg-blue tracking-tight uppercase">{TOTAL_PLANNED} SEASON 1 TAZOS</span>
       </div>
 
       {/* ═══ USER ID CARD ═══ — only when authenticated */}
@@ -102,53 +102,53 @@ function StatsContent() {
       {/* ═══ LEADERBOARD + BATTLE HISTORY — side by side ═══ */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {/* ── Leaderboard Panel ── */}
-        <div className="border-3 border-[#1a1a1a] bg-white overflow-hidden" style={{ ...PANEL_SHADOW, ...HALFTONE_BG }}>
+        <div className="border-3 border-ttg-black bg-white overflow-hidden" style={{ ...PANEL_SHADOW, ...HALFTONE_BG }}>
           {/* Title bar — diagonal stripes */}
           <div className="px-4 py-2.5" style={SECTION_TITLE_BG}>
             <div className="flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-[#1a1a1a]" />
-              <h2 className="text-sm font-black text-[#1a1a1a] uppercase tracking-tight">Top Players</h2>
-              <span className="ml-auto text-[9px] font-black text-[#1a1a1a]/50 uppercase">By Level</span>
+              <Trophy className="w-4 h-4 text-ttg-black" />
+              <h2 className="text-sm font-black text-ttg-black uppercase tracking-tight">Top Players</h2>
+              <span className="ml-auto text-[9px] font-black text-ttg-black/50 uppercase">By Level</span>
             </div>
           </div>
-          <div className="divide-y divide-[#1a1a1a]/10">
+          <div className="divide-y divide-ttg-black/10">
             {leaderboard.length === 0 && (
               <div className="py-8 text-center">
-                <p className="text-xs font-bold text-[#1a1a1a]/25">No players ranked yet</p>
-                <p className="text-[10px] font-semibold text-[#1a1a1a]/15 mt-1">Complete battles to earn XP</p>
+                <p className="text-xs font-bold text-ttg-black/25">No players ranked yet</p>
+                <p className="text-[10px] font-semibold text-ttg-black/15 mt-1">Complete battles to earn XP</p>
               </div>
             )}
             {leaderboard.map((entry, i) => (
               <div key={entry.id}
-                className={`flex items-center gap-3 px-4 py-2.5 ${user?.id === entry.id ? "bg-[#FFCC00]/8" : ""}`}>
+                className={`flex items-center gap-3 px-4 py-2.5 ${user?.id === entry.id ? "bg-ttg-yellow/8" : ""}`}>
                 {/* Rank badge — sharp square */}
-                <div className="w-7 h-7 flex items-center justify-center shrink-0 border-2 border-[#1a1a1a]"
+                <div className="w-7 h-7 flex items-center justify-center shrink-0 border-2 border-ttg-black"
                   style={{
-                    background: i === 0 ? "#FFCC00" : i === 1 ? "#E8E8E8" : i === 2 ? "#E8C896" : "#FFFEF5",
+                    background: i === 0 ? 'var(--ttg-yellow)' : i === 1 ? "#E8E8E8" : i === 2 ? "#E8C896" : "#FFFEF5",
                   }}>
                   {i < 3 ? (
-                    <Medal className="w-3.5 h-3.5 text-[#1a1a1a]" />
+                    <Medal className="w-3.5 h-3.5 text-ttg-black" />
                   ) : (
-                    <span className="text-[10px] font-black text-[#1a1a1a]/40">{i + 1}</span>
+                    <span className="text-[10px] font-black text-ttg-black/40">{i + 1}</span>
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-black text-[#1a1a1a] truncate leading-tight">
+                  <p className="text-xs font-black text-ttg-black truncate leading-tight">
                     {entry.displayName || entry.name}
                     {user?.id === entry.id && (
-                      <span className="text-[9px] text-[#E3350D] ml-1 font-bold">YOU</span>
+                      <span className="text-[9px] text-ttg-red ml-1 font-bold">YOU</span>
                     )}
                   </p>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-[9px] font-bold text-[#1a1a1a] bg-[#FFCC00]/15 px-1.5 py-0.5 border border-[#FFCC00]/30 uppercase">
+                    <span className="text-[9px] font-bold text-ttg-black bg-ttg-yellow/15 px-1.5 py-0.5 border border-ttg-yellow/30 uppercase">
                       Lv.{entry.level}
                     </span>
-                    <span className="text-[9px] font-semibold text-[#1a1a1a]/25">{entry.totalTazosOwned} tazos</span>
+                    <span className="text-[9px] font-semibold text-ttg-black/25">{entry.totalTazosOwned} tazos</span>
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <div className="text-xs font-black text-[#1a1a1a] leading-tight">{entry.totalWins}W</div>
-                  <div className="text-[8px] font-bold text-[#1a1a1a]/25 uppercase">{entry.totalBattles} btl</div>
+                  <div className="text-xs font-black text-ttg-black leading-tight">{entry.totalWins}W</div>
+                  <div className="text-[8px] font-bold text-ttg-black/25 uppercase">{entry.totalBattles} btl</div>
                 </div>
               </div>
             ))}

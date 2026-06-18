@@ -252,8 +252,8 @@ export default function SlamControls(props: SlamControlsProps) {
             }}
             className={`px-5 py-2 font-black text-[10px] uppercase rounded-full tracking-wider pointer-events-auto transition-all active:scale-95 ${
               aimLocked
-                ? "bg-ttg-success hover:bg-ttg-success/90 text-[#0a0a0a] shadow-[0_0_24px_rgba(34,197,94,0.5)]"
-                : "bg-ttg-yellow hover:bg-[#FFD633] text-[#0a0a0a] shadow-[0_0_20px_rgba(255,204,0,0.3)] hover:shadow-[0_0_32px_rgba(255,204,0,0.5)]"
+                ? "bg-ttg-success hover:bg-ttg-success/90 text-ttg-arena-bg shadow-[0_0_24px_rgba(var(--ttg-success-ch)/0.5)]"
+                : "bg-ttg-yellow hover:bg-ttg-yellow-hover text-ttg-arena-bg shadow-[0_0_20px_rgba(var(--ttg-yellow-ch)/0.3)] hover:shadow-[0_0_32px_rgba(var(--ttg-yellow-ch)/0.5)]"
             }`}>
             {aimLocked ? <><Lock className="w-3 h-3 inline mr-1" />CHARGE</> : <><Crosshair className="w-3 h-3 inline mr-1" />LOCK AIM</>}
           </button>
@@ -295,8 +295,8 @@ export default function SlamControls(props: SlamControlsProps) {
           <button onClick={() => { stopSfx(chargeHumRef.current); chargeHumRef.current = null; playSfx("slam_launch", 0.4); onRelease() }}
             className={`px-5 py-2 font-black text-[10px] uppercase rounded-full tracking-wider active:scale-95 pointer-events-auto transition-all ${
               isPerfect
-                ? "bg-ttg-success hover:bg-ttg-success/90 text-[#0a0a0a] shadow-[0_0_32px_rgba(34,197,94,0.6)] animate-pulse"
-                : "bg-ttg-yellow hover:bg-[#FFD633] text-[#0a0a0a] shadow-[0_0_16px_rgba(255,204,0,0.3)]"
+                ? "bg-ttg-success hover:bg-ttg-success/90 text-ttg-arena-bg shadow-[0_0_32px_rgba(var(--ttg-success-ch)/0.6)] animate-pulse"
+                : "bg-ttg-yellow hover:bg-ttg-yellow-hover text-ttg-arena-bg shadow-[0_0_16px_rgba(var(--ttg-yellow-ch)/0.3)]"
             }`}>
             {isPerfect ? <><Zap className="w-3 h-3 inline mr-1" />READY!</> : "RELEASE"}
           </button>
@@ -344,9 +344,9 @@ export default function SlamControls(props: SlamControlsProps) {
             </div>
             <input type="range" min="0" max="100" value={spinIntensity * 100}
               onChange={(e) => onSpin(Number(e.target.value) / 100)}
-              className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-[#FFCC00] pointer-events-auto
+              className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-ttg-yellow pointer-events-auto
                 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full
-                [&::-webkit-slider-thumb]:bg-ttg-yellow [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#0a0a0a]
+                [&::-webkit-slider-thumb]:bg-ttg-yellow [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-ttg-arena-bg
                 [&::-webkit-slider-thumb]:shadow-[0_0_12px_rgba(255,204,0,0.5)]"
               style={{ background: "rgba(255,255,255,0.06)" }} />
           </div>

@@ -27,9 +27,9 @@ const OAUTH_LABELS: Record<string, string> = {
 }
 
 const OAUTH_COLORS: Record<string, string> = {
-  github: "bg-[#24292e] hover:bg-[#1b1f23]",
-  google: "bg-white hover:bg-gray-50 border-2 border-[#1a1a1a]/20 text-[#1a1a1a]",
-  discord: "bg-[#5865F2] hover:bg-[#4752c4]",
+  github: "bg-ttg-black hover:bg-ttg-black/90",
+  google: "bg-white hover:bg-gray-50 border-2 border-ttg-black/20 text-ttg-black",
+  discord: "bg-ttg-discord hover:bg-ttg-discord/80",
 }
 
 type OAuthProvider = "github" | "google" | "discord"
@@ -38,7 +38,7 @@ function OAuthButton({ provider, redirectTo }: { provider: OAuthProvider; redire
   return (
     <a
       href={`/api/auth/oauth/login?provider=${provider}&redirect=${encodeURIComponent(redirectTo)}`}
-      className={`flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-colors shadow-sm ${OAUTH_COLORS[provider] || "bg-[#1a1a1a]"}`}
+      className={`flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-colors shadow-sm ${OAUTH_COLORS[provider] || "bg-ttg-black"}`}
       title={`Continue with ${OAUTH_LABELS[provider] || provider}`}
     >
       <span
@@ -117,10 +117,10 @@ function LoginForm() {
         <div className="w-full max-w-md space-y-5">
           {/* Page Title */}
           <div className="text-center space-y-1">
-            <h1 className="text-3xl sm:text-4xl font-black text-[#1a1a1a] uppercase tracking-tight mag-stroke-sm">
+            <h1 className="text-3xl sm:text-4xl font-black text-ttg-black uppercase tracking-tight mag-stroke-sm">
               {t.auth_login}
             </h1>
-            <p className="text-xs font-bold text-[#1a1a1a]/40 uppercase tracking-widest">
+            <p className="text-xs font-bold text-ttg-black/40 uppercase tracking-widest">
               {t.auth_login_subtitle}
             </p>
           </div>
@@ -128,14 +128,14 @@ function LoginForm() {
           {/* Magazine-style card */}
           <form
             onSubmit={handleSubmit}
-            className="space-y-5 border-3 border-[#1a1a1a] shadow-[6px_6px_0px_#1a1a1a] p-6 sm:p-8"
+            className="space-y-5 border-3 border-ttg-black shadow-[6px_6px_0px_var(--ttg-black)] p-6 sm:p-8"
             style={{ background: "white" }}
           >
             {/* Error alert */}
             {error && (
-              <div className="border-3 border-[#E3350D] bg-[#E3350D0A] p-3 flex items-start gap-2.5">
-                <AlertTriangle className="w-4 h-4 text-[#E3350D] shrink-0 mt-0.5" />
-                <p className="text-xs font-bold text-[#E3350D] leading-relaxed">{error}</p>
+              <div className="border-3 border-ttg-red bg-ttg-red/4 p-3 flex items-start gap-2.5">
+                <AlertTriangle className="w-4 h-4 text-ttg-red shrink-0 mt-0.5" />
+                <p className="text-xs font-bold text-ttg-red leading-relaxed">{error}</p>
               </div>
             )}
 
@@ -143,7 +143,7 @@ function LoginForm() {
             <div>
               <label
                 htmlFor="login-email"
-                className="block text-xs font-black text-[#1a1a1a] uppercase tracking-wider mb-1.5"
+                className="block text-xs font-black text-ttg-black uppercase tracking-wider mb-1.5"
               >
                 <Mail className="w-3.5 h-3.5 inline mr-1.5" />
                 {t.auth_email}
@@ -156,7 +156,7 @@ function LoginForm() {
                 required
                 autoComplete="email"
                 placeholder={t.auth_email_placeholder || "you@email.com"}
-                className="w-full border-3 border-[#1a1a1a] px-4 py-3 text-sm font-bold text-[#1a1a1a] placeholder:text-[#1a1a1a]/25 placeholder:font-bold shadow-[3px_3px_0px_#1a1a1a] focus:outline-none focus:border-[#FFCC00] transition-colors"
+                className="w-full border-3 border-ttg-black px-4 py-3 text-sm font-bold text-ttg-black placeholder:text-ttg-black/25 placeholder:font-bold shadow-[3px_3px_0px_var(--ttg-black)] focus:outline-none focus:border-ttg-yellow transition-colors"
                 style={{ background: "#FFFEF7" }}
               />
             </div>
@@ -165,7 +165,7 @@ function LoginForm() {
             <div>
               <label
                 htmlFor="login-password"
-                className="block text-xs font-black text-[#1a1a1a] uppercase tracking-wider mb-1.5"
+                className="block text-xs font-black text-ttg-black uppercase tracking-wider mb-1.5"
               >
                 <Lock className="w-3.5 h-3.5 inline mr-1.5" />
                 {t.auth_password}
@@ -179,13 +179,13 @@ function LoginForm() {
                   required
                   autoComplete="current-password"
                   placeholder="••••••••"
-                  className="w-full border-3 border-[#1a1a1a] pl-4 pr-11 py-3 text-sm font-bold text-[#1a1a1a] placeholder:text-[#1a1a1a]/25 shadow-[3px_3px_0px_#1a1a1a] focus:outline-none focus:border-[#FFCC00] transition-colors"
+                  className="w-full border-3 border-ttg-black pl-4 pr-11 py-3 text-sm font-bold text-ttg-black placeholder:text-ttg-black/25 shadow-[3px_3px_0px_var(--ttg-black)] focus:outline-none focus:border-ttg-yellow transition-colors"
                   style={{ background: "#FFFEF7" }}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#1a1a1a]/25 hover:text-[#1a1a1a]/60 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-ttg-black/25 hover:text-ttg-black/60 transition-colors"
                   tabIndex={-1}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
@@ -197,7 +197,7 @@ function LoginForm() {
               <div className="mt-1.5 text-right">
                 <Link
                   href="/forgot-password"
-                  className="text-[10px] font-bold text-[#1a1a1a]/35 hover:text-[#E3350D] transition-colors uppercase tracking-wider no-underline"
+                  className="text-[10px] font-bold text-ttg-black/35 hover:text-ttg-red transition-colors uppercase tracking-wider no-underline"
                 >
                   Forgot password?
                 </Link>
@@ -208,7 +208,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3.5 mag-btn bg-[#E3350D] text-white flex items-center justify-center gap-2 text-sm font-black uppercase tracking-widest disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full py-3.5 mag-btn bg-ttg-red text-white flex items-center justify-center gap-2 text-sm font-black uppercase tracking-widest disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {submitting ? (
                 <Disc3 className="w-4 h-4 animate-spin" />
@@ -224,11 +224,11 @@ function LoginForm() {
             {oauthProviders.length > 0 && (
               <div className="space-y-2.5">
                 <div className="flex items-center gap-3">
-                  <div className="flex-1 border-t-2 border-[#1a1a1a]/10" />
-                  <span className="text-[9px] font-black text-[#1a1a1a]/25 uppercase tracking-widest">
+                  <div className="flex-1 border-t-2 border-ttg-black/10" />
+                  <span className="text-[9px] font-black text-ttg-black/25 uppercase tracking-widest">
                     {t.auth_oauth_divider || "or continue with"}
                   </span>
-                  <div className="flex-1 border-t-2 border-[#1a1a1a]/10" />
+                  <div className="flex-1 border-t-2 border-ttg-black/10" />
                 </div>
 
                 <div
@@ -245,13 +245,13 @@ function LoginForm() {
                   ))}
                 </div>
 
-                <p className="text-[8px] text-[#1a1a1a]/25 text-center leading-tight">
+                <p className="text-[8px] text-ttg-black/25 text-center leading-tight">
                   {t.auth_oauth_terms || "By continuing you agree to our"}{" "}
-                  <a href="/?page=terms" className="underline hover:text-[#1a1a1a]/50">
+                  <a href="/?page=terms" className="underline hover:text-ttg-black/50">
                     {t.auth_terms || "Terms"}
                   </a>{" "}
                   {t.common_and || "and"}{" "}
-                  <a href="/?page=privacy" className="underline hover:text-[#1a1a1a]/50">
+                  <a href="/?page=privacy" className="underline hover:text-ttg-black/50">
                     {t.auth_privacy || "Privacy"}
                   </a>
                 </p>
@@ -260,17 +260,17 @@ function LoginForm() {
 
             {/* Divider */}
             <div className="flex items-center gap-3">
-              <div className="flex-1 border-t-2 border-[#1a1a1a]/15" />
-              <span className="text-[9px] font-black text-[#1a1a1a]/30 uppercase tracking-wider">
+              <div className="flex-1 border-t-2 border-ttg-black/15" />
+              <span className="text-[9px] font-black text-ttg-black/30 uppercase tracking-wider">
                 {t.auth_no_account}
               </span>
-              <div className="flex-1 border-t-2 border-[#1a1a1a]/15" />
+              <div className="flex-1 border-t-2 border-ttg-black/15" />
             </div>
 
             {/* Register link */}
             <Link
               href="/register"
-              className="block w-full py-3 mag-btn bg-[#3B4CCA] text-white text-center text-sm font-black uppercase tracking-widest no-underline"
+              className="block w-full py-3 mag-btn bg-ttg-blue text-white text-center text-sm font-black uppercase tracking-widest no-underline"
             >
               {t.auth_register}
             </Link>
@@ -280,7 +280,7 @@ function LoginForm() {
           <div className="text-center pb-2">
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#1a1a1a]/35 hover:text-[#1a1a1a] transition-colors uppercase tracking-wider no-underline"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-ttg-black/35 hover:text-ttg-black transition-colors uppercase tracking-wider no-underline"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               {t.common_back || "Back to Home"}
@@ -305,7 +305,7 @@ export default function LoginPage() {
             <div className="mag-halftone absolute inset-0 opacity-25 pointer-events-none" />
             <div className="relative z-10 flex flex-col items-center gap-4">
               <Image src="/logo/logo-tg-yellow.png" alt="TTG" width={48} height={48} className="animate-pulse" priority />
-              <p className="text-xs font-black text-[#1a1a1a]/30 uppercase tracking-[0.3em]">Loading&hellip;</p>
+              <p className="text-xs font-black text-ttg-black/30 uppercase tracking-[0.3em]">Loading&hellip;</p>
             </div>
           </main>
           <div className="relative z-10 h-1.5 mag-stripes opacity-20 pointer-events-none" />

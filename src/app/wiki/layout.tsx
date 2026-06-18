@@ -19,7 +19,7 @@ const SERIES_SLUG_TO_KEY: Record<string, TTGWikiSeries> = {
 }
 
 const WIKI_NAV_ITEMS = [
-  { id: "wiki", label: "Wiki", href: "/wiki", color: "#1a1a1a" },
+  { id: "wiki", label: "Wiki", href: "/wiki", color: 'var(--ttg-black)' },
   ...Object.entries(WIKI_SERIES_CONFIG).map(([key, cfg]) => ({
     id: key,
     label: cfg.label,
@@ -59,7 +59,7 @@ export default function WikiMagazineLayout({
       <nav
         className="relative z-10 flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 py-2.5 overflow-x-auto
           [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
-          border-b-[3px] border-[#1a1a1a] shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] bg-white"
+          border-b-[3px] border-ttg-black shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] bg-white"
         role="navigation"
         aria-label="Wiki navigation"
       >
@@ -74,8 +74,8 @@ export default function WikiMagazineLayout({
               href={href}
               className={`flex items-center gap-1 sm:gap-1.5 px-3 sm:px-3.5 py-2 text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all whitespace-nowrap border-2 ${
                 isActive
-                  ? "bg-[#FFCC00] text-[#1a1a1a] border-[#1a1a1a]"
-                  : "text-[#1a1a1a]/40 hover:text-[#1a1a1a]/70 border-transparent hover:border-[#1a1a1a]/15 hover:bg-[#1a1a1a]/3"
+                  ? "bg-ttg-yellow text-ttg-black border-ttg-black"
+                  : "text-ttg-black/40 hover:text-ttg-black/70 border-transparent hover:border-ttg-black/15 hover:bg-ttg-black/3"
               }`}
               style={
                 isActive
@@ -97,10 +97,10 @@ export default function WikiMagazineLayout({
           )
         })}
         {/* Back to TTG link */}
-        <span className="text-[#1a1a1a]/15 font-black mx-1">|</span>
+        <span className="text-ttg-black/15 font-black mx-1">|</span>
         <Link
           href="/"
-          className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-[#1a1a1a]/30 hover:text-[#1a1a1a]/60 transition-colors whitespace-nowrap"
+          className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-ttg-black/30 hover:text-ttg-black/60 transition-colors whitespace-nowrap"
         >
           ← TTG
         </Link>

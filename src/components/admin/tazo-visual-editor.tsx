@@ -236,7 +236,7 @@ function DraggableElement({
         ${locked ? "cursor-not-allowed opacity-50" : "cursor-grab active:cursor-grabbing"}
         ${active ? "z-50" : "z-10"}
         ${active ? "ring-2 ring-offset-1 ring-ttg-yellow rounded" : ""}
-        ${isSnapped ? "ring-[#22C55E]" : ""}
+        ${isSnapped ? "ring-ttg-success" : ""}
         ${locked ? "ring-ttg-red" : ""}
       `}
       style={{
@@ -642,7 +642,7 @@ export default function TazoVisualEditor({
           onClick={() => setShowLayers(!showLayers)}
           className={`text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded flex items-center gap-1 transition-all ${
             showLayers
-              ? "bg-[#6366F1] text-white"
+              ? "bg-ttg-blue text-white"
               : "bg-ttg-black/5 text-ttg-black/50 hover:bg-ttg-black/10"
           }`}
         >
@@ -676,7 +676,7 @@ export default function TazoVisualEditor({
           onClick={() => setShowShortcuts(!showShortcuts)}
           className={`text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded flex items-center gap-1 transition-all ${
             showShortcuts
-              ? "bg-[#FBBF24] text-ttg-black"
+              ? "bg-ttg-yellow text-ttg-black"
               : "bg-ttg-black/5 text-ttg-black/50 hover:bg-ttg-black/10"
           }`}
           title="Keyboard shortcuts"
@@ -689,7 +689,7 @@ export default function TazoVisualEditor({
 
       {/* Shortcuts cheatsheet */}
       {showShortcuts && (
-        <div className="mag-card p-3 border-2 border-[#FBBF24] bg-[#FBBF24]/5">
+        <div className="mag-card p-3 border-2 border-ttg-yellow bg-ttg-yellow/5">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-0.5">
             {[
               ["🖱️ Drag", "Move element"],

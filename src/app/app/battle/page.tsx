@@ -35,7 +35,7 @@ const BattleView = dynamic(() => import("@/components/game/battle-view"), {
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none", opacity: 0.08,
         backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(255,204,0,0.3) 8px, rgba(255,204,0,0.3) 10px)" }} />
       <div style={{ position: "relative", zIndex: 1 }}>
-        <div style={{ width: 72, height: 72, borderRadius: "50%", border: "3px solid rgba(255,204,0,0.12)", borderTopColor: "#FFCC00", animation: "spin 0.8s linear infinite", boxShadow: "0 0 32px rgba(255,204,0,0.15)" }} />
+        <div style={{ width: 72, height: 72, borderRadius: "50%", border: "3px solid rgba(255,204,0,0.12)", borderTopColor: 'var(--ttg-yellow)', animation: "spin 0.8s linear infinite", boxShadow: "0 0 32px rgba(255,204,0,0.15)" }} />
         <div style={{ position: "absolute", inset: -6, borderRadius: "50%", border: "2px solid rgba(255,204,0,0.06)", animation: "ping 1.5s ease-out infinite" }} />
       </div>
       <div style={{ position: "relative", zIndex: 1, textAlign: "center" }}>
@@ -53,7 +53,7 @@ const MODES = [
     icon: Bot,
     title: "Practice",
     desc: "Train against AI — no pressure. Perfect your strategy with adjustable difficulty.",
-    color: "#22C55E",
+    color: 'var(--ttg-success)',
     gradient: "linear-gradient(135deg, #22C55E, #16A34A)",
     badge: "AVAILABLE",
     available: true,
@@ -63,7 +63,7 @@ const MODES = [
     icon: Globe,
     title: "Ranked PvP",
     desc: "Competitive matchmaking with global leaderboard and seasonal rewards.",
-    color: "#E3350D",
+    color: 'var(--ttg-red)',
     gradient: "linear-gradient(135deg, #E3350D, #C62828)",
     badge: "COMING SOON",
     available: false,
@@ -73,7 +73,7 @@ const MODES = [
     icon: Swords,
     title: "Friend Battle",
     desc: "Invite a friend with a room code. Direct 1v1, no leaderboard pressure.",
-    color: "#3B4CCA",
+    color: 'var(--ttg-blue)',
     gradient: "linear-gradient(135deg, #3B4CCA, #283593)",
     badge: "COMING SOON",
     available: false,
@@ -118,7 +118,7 @@ function CreateQuickDeckButton({ onCreated }: { onCreated: (deckId: string) => v
       <button
         onClick={handleCreate}
         disabled={creating}
-        className="inline-block py-3 px-8 bg-[#22C55E] text-white text-sm font-black uppercase tracking-widest border-[3px] border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_#1a1a1a] transition-all disabled:opacity-50 disabled:cursor-wait"
+        className="inline-block py-3 px-8 bg-ttg-success text-white text-sm font-black uppercase tracking-widest border-[3px] border-ttg-black shadow-[4px_4px_0px_var(--ttg-black)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_var(--ttg-black)] transition-all disabled:opacity-50 disabled:cursor-wait"
       >
         {creating ? (
           <span className="flex items-center gap-2">
@@ -132,7 +132,7 @@ function CreateQuickDeckButton({ onCreated }: { onCreated: (deckId: string) => v
           </span>
         )}
       </button>
-      {error && <span className="text-[9px] font-bold text-[#E3350D]">{error}</span>}
+      {error && <span className="text-[9px] font-bold text-ttg-red">{error}</span>}
     </div>
   )
 }
@@ -160,7 +160,7 @@ function LaunchOverlay({ fading }: { fading: boolean }) {
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none", backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px)" }} />
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none", opacity: 0.08, backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(255,204,0,0.3) 8px, rgba(255,204,0,0.3) 10px)" }} />
       <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "2rem" }}>
-        <div style={{ width: 72, height: 72, borderRadius: "50%", border: "3px solid rgba(255,204,0,0.12)", borderTopColor: "#FFCC00", animation: "spin 0.8s linear infinite", boxShadow: "0 0 32px rgba(255,204,0,0.15)" }} />
+        <div style={{ width: 72, height: 72, borderRadius: "50%", border: "3px solid rgba(255,204,0,0.12)", borderTopColor: 'var(--ttg-yellow)', animation: "spin 0.8s linear infinite", boxShadow: "0 0 32px rgba(255,204,0,0.15)" }} />
         <p style={{ fontSize: 14, fontWeight: 900, color: "rgba(255,255,255,0.8)", textTransform: "uppercase", letterSpacing: "0.25em" }}>
           {fading ? "Arena Ready" : "Entering Arena…"}
         </p>
@@ -310,12 +310,12 @@ export default function BattlePage() {
           boxShadow: "4px 4px 0px #FFCC00",
         }}
       >
-        <Swords className="w-5 h-5 text-[#FFCC00]" />
+        <Swords className="w-5 h-5 text-ttg-yellow" />
         <h1 className="text-sm sm:text-lg font-black text-white uppercase tracking-tight">
           Battle Arena
         </h1>
         <div className="w-px h-5 bg-white/15" />
-        <span className="text-xs sm:text-sm font-black text-[#FFCC00]">
+        <span className="text-xs sm:text-sm font-black text-ttg-yellow">
           {selectedDeck
             ? `${selectedDeck.name} · ${deckStats.count} tazos`
             : `${decks.length} DECKS AVAILABLE`}
@@ -327,24 +327,24 @@ export default function BattlePage() {
       {/* ═══════════════════════════════════════════ */}
       {noDecks && (
         <div
-          className="text-center py-16 border-[3px] border-[#1a1a1a]"
+          className="text-center py-16 border-[3px] border-ttg-black"
           style={{
-            background: "#fffef0",
+            background: 'var(--ttg-cream)',
             boxShadow: "4px 4px 0px #1a1a1a",
           }}
         >
           <div className="flex justify-center mb-4">
             <div className="relative">
-              <BattleTubePreview name="" color="#E3350D" count={0} maxCount={20} size="lg" showLabel={false} />
-              <div className="absolute -bottom-3 -right-3 w-10 h-10 bg-[#1a1a1a] border-[3px] border-[#FFCC00] flex items-center justify-center rounded-full shadow-[3px_3px_0px_#1a1a1a]">
-                <span className="text-[#FFCC00] text-lg font-black">?</span>
+              <BattleTubePreview name="" color='var(--ttg-red)' count={0} maxCount={20} size="lg" showLabel={false} />
+              <div className="absolute -bottom-3 -right-3 w-10 h-10 bg-ttg-black border-[3px] border-ttg-yellow flex items-center justify-center rounded-full shadow-[3px_3px_0px_var(--ttg-black)]">
+                <span className="text-ttg-yellow text-lg font-black">?</span>
               </div>
             </div>
           </div>
-          <h2 className="text-xl font-black text-[#E3350D] mb-2 uppercase tracking-wider">
+          <h2 className="text-xl font-black text-ttg-red mb-2 uppercase tracking-wider">
             No Decks Yet
           </h2>
-          <p className="text-xs font-bold text-[#1a1a1a]/40 max-w-xs mx-auto mb-5 leading-relaxed">
+          <p className="text-xs font-bold text-ttg-black/40 max-w-xs mx-auto mb-5 leading-relaxed">
             You need a Deck to enter the arena. Create one instantly with your best 5 tazos, or build custom in Decks.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
@@ -363,7 +363,7 @@ export default function BattlePage() {
             }} />
             <a
               href="/app/decks"
-              className="inline-block py-3 px-8 bg-white text-[#1a1a1a] text-sm font-black uppercase tracking-widest border-[3px] border-[#1a1a1a] hover:bg-zinc-50 transition-all no-underline"
+              className="inline-block py-3 px-8 bg-white text-ttg-black text-sm font-black uppercase tracking-widest border-[3px] border-ttg-black hover:bg-zinc-50 transition-all no-underline"
             >
               <Layers className="w-4 h-4 inline mr-1.5" />
               Custom Deck
@@ -381,22 +381,22 @@ export default function BattlePage() {
           <div className="lg:col-span-2 space-y-4">
             {/* Deck selector */}
             <div
-              className="bg-white border-[3px] border-[#1a1a1a] overflow-hidden"
+              className="bg-white border-[3px] border-ttg-black overflow-hidden"
               style={{ boxShadow: "3px 3px 0 #1a1a1a" }}
             >
-              <div className="bg-[#1a1a1a] px-4 py-2 flex items-center gap-2">
-                <Layers className="w-3.5 h-3.5 text-[#FFCC00]" />
-                <h3 className="text-[10px] font-black uppercase tracking-widest text-[#FFCC00]">
+              <div className="bg-ttg-black px-4 py-2 flex items-center gap-2">
+                <Layers className="w-3.5 h-3.5 text-ttg-yellow" />
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-ttg-yellow">
                   Select Deck
                 </h3>
               </div>
 
               {/* Tube visual */}
               {selectedDeck && (
-                <div className="flex justify-center py-4" style={{ background: "#fffef0" }}>
+                <div className="flex justify-center py-4" style={{ background: 'var(--ttg-cream)' }}>
                   <BattleTubePreview
                     name={selectedDeck.name}
-                    color={selectedDeck.color || "#3B4CCA"}
+                    color={selectedDeck.color || 'var(--ttg-blue)'}
                     count={selectedDeck.tazoCount || selectedDeck.tazos?.length || 0}
                     maxCount={20}
                     tazos={(selectedDeck.tazos || []).slice(0, 10).map((t: any) => ({
@@ -416,49 +416,49 @@ export default function BattlePage() {
               )}
 
               {/* Deck list */}
-              <div className="p-3 space-y-1.5 border-t-[3px] border-[#1a1a1a]/10">
+              <div className="p-3 space-y-1.5 border-t-[3px] border-ttg-black/10">
                 {loading ? (
                   <div className="flex items-center justify-center py-6">
-                    <Loader2 className="w-5 h-5 animate-spin text-[#1a1a1a]/20" />
+                    <Loader2 className="w-5 h-5 animate-spin text-ttg-black/20" />
                   </div>
                 ) : (
                   decks.map((d: any) => {
                     const active = d.id === selectedDeckId
                     const tazoCount = d.tazoCount || d.tazos?.length || 0
                     const isSealed = tazoCount >= 20
-                    const color = d.color || "#3B4CCA"
+                    const color = d.color || 'var(--ttg-blue)'
                     return (
                       <button
                         key={d.id}
                         onClick={() => setSelectedDeckId(active ? null : d.id)}
                         className={`w-full p-3 border-2 text-left transition-all ${
                           active
-                            ? "border-[#FFCC00] bg-[#FFCB0506]"
-                            : "border-[#1a1a1a]/8 hover:border-[#1a1a1a]/25"
+                            ? "border-ttg-yellow bg-ttg-minimon/2"
+                            : "border-ttg-black/8 hover:border-ttg-black/25"
                         }`}
                         style={active ? { boxShadow: "2px 2px 0 #FFCC00" } : undefined}
                       >
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2 min-w-0">
                             <span
-                              className="w-3 h-3 rounded-full flex-shrink-0 border-2 border-[#1a1a1a]/40"
+                              className="w-3 h-3 rounded-full flex-shrink-0 border-2 border-ttg-black/40"
                               style={{ background: color }}
                             />
-                            <span className="font-black text-xs text-[#1a1a1a] truncate">
+                            <span className="font-black text-xs text-ttg-black truncate">
                               {d.name}
                             </span>
                           </div>
                           <div className="flex items-center gap-1.5">
                             {isSealed && (
-                              <CheckCircle className="w-3 h-3 text-[#22C55E]" />
+                              <CheckCircle className="w-3 h-3 text-ttg-success" />
                             )}
-                            <span className={`text-[9px] font-black ${isSealed ? "text-[#22C55E]" : "text-[#1a1a1a]/30"}`}>
+                            <span className={`text-[9px] font-black ${isSealed ? "text-ttg-success" : "text-ttg-black/30"}`}>
                               {tazoCount}/20
                             </span>
                           </div>
                         </div>
                         {d.isActive && (
-                          <span className="inline-block text-[7px] font-black text-[#FFCC00] border border-[#FFCC00]/30 bg-[#FFCB0508] px-1 py-0.5 mt-1.5 uppercase">
+                          <span className="inline-block text-[7px] font-black text-ttg-yellow border border-ttg-yellow/30 bg-ttg-minimon/3 px-1 py-0.5 mt-1.5 uppercase">
                             {active ? "Selected" : "Active"}
                           </span>
                         )}
@@ -472,48 +472,48 @@ export default function BattlePage() {
             {/* Stats card — only when a deck is selected */}
             {selectedDeck && (
               <div
-                className="bg-white border-[3px] border-[#1a1a1a]"
+                className="bg-white border-[3px] border-ttg-black"
                 style={{ boxShadow: "3px 3px 0 #1a1a1a" }}
               >
-                <div className="bg-[#FFCC00] px-4 py-2 flex items-center gap-2 border-b-[3px] border-[#1a1a1a]">
-                  <Zap className="w-4 h-4 text-[#1a1a1a]" />
-                  <h3 className="text-xs font-black uppercase tracking-wider text-[#1a1a1a]">
+                <div className="bg-ttg-yellow px-4 py-2 flex items-center gap-2 border-b-[3px] border-ttg-black">
+                  <Zap className="w-4 h-4 text-ttg-black" />
+                  <h3 className="text-xs font-black uppercase tracking-wider text-ttg-black">
                     Deck Stats
                   </h3>
                 </div>
                 <div className="p-4">
                   <div className="grid grid-cols-2 gap-3">
                     {([
-                      { icon: Zap, label: "ATK", value: deckStats.atk, color: "#E3350D" },
-                      { icon: Shield, label: "DEF", value: deckStats.def, color: "#3B4CCA" },
-                      { icon: Crosshair, label: "PRC", value: deckStats.prc, color: "#A855F7" },
+                      { icon: Zap, label: "ATK", value: deckStats.atk, color: 'var(--ttg-red)' },
+                      { icon: Shield, label: "DEF", value: deckStats.def, color: 'var(--ttg-blue)' },
+                      { icon: Crosshair, label: "PRC", value: deckStats.prc, color: 'var(--ttg-purple)' },
                       { icon: Star, label: "SPD", value: deckStats.spd, color: "#F59E0B" },
                     ]).map(s => (
                       <div
                         key={s.label}
-                        className="p-3 border-2 border-[#1a1a1a]/8 bg-[#fffef0]"
+                        className="p-3 border-2 border-ttg-black/8 bg-ttg-cream"
                       >
                         <div className="flex items-center gap-1.5 mb-1">
                           <s.icon className="w-3.5 h-3.5" style={{ color: s.color }} />
-                          <span className="text-[9px] font-black text-[#1a1a1a]/30 uppercase tracking-wider">
+                          <span className="text-[9px] font-black text-ttg-black/30 uppercase tracking-wider">
                             {s.label}
                           </span>
                         </div>
-                        <div className="text-lg font-black text-[#1a1a1a]">{s.value}</div>
+                        <div className="text-lg font-black text-ttg-black">{s.value}</div>
                       </div>
                     ))}
                   </div>
                   {/* Tazo chips */}
                   {selectedDeck.tazos && selectedDeck.tazos.length > 0 && (
-                    <div className="mt-3 pt-3 border-t border-[#1a1a1a]/6">
-                      <p className="text-[8px] font-black text-[#1a1a1a]/25 uppercase tracking-widest mb-2">
+                    <div className="mt-3 pt-3 border-t border-ttg-black/6">
+                      <p className="text-[8px] font-black text-ttg-black/25 uppercase tracking-widest mb-2">
                         {deckStats.count} Tazos in deck
                       </p>
                       <div className="flex flex-wrap gap-1">
                         {selectedDeck.tazos.slice(0, 15).map((t: any) => (
                           <div
                             key={t.id}
-                            className="w-8 h-8 rounded-full overflow-hidden border-2 border-[#1a1a1a]/10 flex-shrink-0 bg-[#1a1a1a]/5"
+                            className="w-8 h-8 rounded-full overflow-hidden border-2 border-ttg-black/10 flex-shrink-0 bg-ttg-black/5"
                             title={t.displayName || t.name}
                           >
                             <TazoDiscImage
@@ -530,7 +530,7 @@ export default function BattlePage() {
                           </div>
                         ))}
                         {deckStats.count > 15 && (
-                          <span className="text-[9px] font-black text-[#1a1a1a]/30 self-center px-1">
+                          <span className="text-[9px] font-black text-ttg-black/30 self-center px-1">
                             +{deckStats.count - 15}
                           </span>
                         )}
@@ -546,7 +546,7 @@ export default function BattlePage() {
           <div className="lg:col-span-3 space-y-4">
             {/* Mode cards */}
             <div>
-              <h3 className="text-[10px] font-black text-[#1a1a1a]/30 uppercase tracking-widest mb-3 px-1">
+              <h3 className="text-[10px] font-black text-ttg-black/30 uppercase tracking-widest mb-3 px-1">
                 Select Game Mode
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -560,9 +560,9 @@ export default function BattlePage() {
                       disabled={!opt.available}
                       className={`relative p-4 text-left border-[3px] transition-all ${
                         active
-                          ? "bg-white border-[#1a1a1a]"
+                          ? "bg-white border-ttg-black"
                           : opt.available
-                          ? "bg-white/70 border-[#1a1a1a]/12 hover:border-[#1a1a1a]/40 hover:bg-white"
+                          ? "bg-white/70 border-ttg-black/12 hover:border-ttg-black/40 hover:bg-white"
                           : "bg-zinc-50 border-zinc-200 opacity-50 cursor-not-allowed"
                       }`}
                       style={active ? { boxShadow: "4px 4px 0 #1a1a1a" } : undefined}
@@ -570,17 +570,17 @@ export default function BattlePage() {
                       {/* Badge */}
                       <span className={`absolute -top-2 -right-2 text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 border-2 ${
                         active
-                          ? "bg-[#1a1a1a] text-white border-[#1a1a1a]"
+                          ? "bg-ttg-black text-white border-ttg-black"
                           : opt.available
-                          ? "border-[#1a1a1a]/15 text-[#1a1a1a]/25"
+                          ? "border-ttg-black/15 text-ttg-black/25"
                           : "border-zinc-300 text-zinc-400"
                       }`}>
                         {opt.badge}
                       </span>
 
                       <Icon className="w-5 h-5 mb-2.5" style={{ color: active ? opt.color : "#1a1a1a18" }} />
-                      <h3 className="font-black text-xs uppercase text-[#1a1a1a] mb-1">{opt.title}</h3>
-                      <p className="text-[9px] font-bold text-[#1a1a1a]/35 leading-relaxed">{opt.desc}</p>
+                      <h3 className="font-black text-xs uppercase text-ttg-black mb-1">{opt.title}</h3>
+                      <p className="text-[9px] font-bold text-ttg-black/35 leading-relaxed">{opt.desc}</p>
                       {active && (
                         <div className="absolute bottom-0 left-0 right-0 h-1.5" style={{ background: opt.gradient }} />
                       )}
@@ -593,7 +593,7 @@ export default function BattlePage() {
             {/* AI Difficulty */}
             {mode === "practice" && (
               <div>
-                <h3 className="text-[10px] font-black text-[#1a1a1a]/30 uppercase tracking-widest mb-3 px-1">
+                <h3 className="text-[10px] font-black text-ttg-black/30 uppercase tracking-widest mb-3 px-1">
                   AI Difficulty
                 </h3>
                 <div className="grid grid-cols-3 gap-2">
@@ -603,13 +603,13 @@ export default function BattlePage() {
                       onClick={() => setDifficulty(d.id)}
                       className={`p-3 border-2 text-center transition-all capitalize ${
                         difficulty === d.id
-                          ? "border-[#FFCC00] bg-[#FFCB0506]"
-                          : "border-[#1a1a1a]/8 hover:border-[#1a1a1a]/25"
+                          ? "border-ttg-yellow bg-ttg-minimon/2"
+                          : "border-ttg-black/8 hover:border-ttg-black/25"
                       }`}
                       style={difficulty === d.id ? { boxShadow: "2px 2px 0 #FFCC00" } : undefined}
                     >
-                      <div className="font-black text-xs text-[#1a1a1a]">{d.label}</div>
-                      <div className="text-[9px] font-bold text-[#1a1a1a]/25 mt-0.5">{d.desc}</div>
+                      <div className="font-black text-xs text-ttg-black">{d.label}</div>
+                      <div className="text-[9px] font-bold text-ttg-black/25 mt-0.5">{d.desc}</div>
                     </button>
                   ))}
                 </div>
@@ -619,15 +619,15 @@ export default function BattlePage() {
             {/* Unavailable mode info */}
             {mode !== "practice" && (
               <div
-                className="flex items-start gap-2 p-3 border-2 border-[#F59E0B]/30 bg-[#F59E0B]/5"
+                className="flex items-start gap-2 p-3 border-2 border-ttg-warning/30 bg-ttg-warning/5"
                 style={{ boxShadow: "2px 2px 0 #F59E0B20" }}
               >
-                <AlertTriangle className="w-4 h-4 text-[#F59E0B] flex-shrink-0 mt-0.5" />
+                <AlertTriangle className="w-4 h-4 text-ttg-warning flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-[10px] font-black text-[#F59E0B] uppercase tracking-wider">
+                  <p className="text-[10px] font-black text-ttg-warning uppercase tracking-wider">
                     Coming Soon
                   </p>
-                  <p className="text-[9px] font-bold text-[#1a1a1a]/35">
+                  <p className="text-[9px] font-bold text-ttg-black/35">
                     Ranked and Friend Battle are under development. Practice mode is fully playable right now.
                   </p>
                 </div>
@@ -639,9 +639,9 @@ export default function BattlePage() {
               <button
                 onClick={handleStart}
                 disabled={!canStart || launching}
-                className={`w-full sm:w-auto px-12 sm:px-14 py-5 font-black text-lg sm:text-xl uppercase tracking-wider border-[3px] border-[#1a1a1a] transition-all ${
+                className={`w-full sm:w-auto px-12 sm:px-14 py-5 font-black text-lg sm:text-xl uppercase tracking-wider border-[3px] border-ttg-black transition-all ${
                   canStart
-                    ? "bg-[#E3350D] text-white hover:brightness-110 active:translate-x-[2px] active:translate-y-[2px] hover:shadow-[2px_2px_0_#1a1a1a]"
+                    ? "bg-ttg-red text-white hover:brightness-110 active:translate-x-[2px] active:translate-y-[2px] hover:shadow-[2px_2px_0_#1a1a1a]"
                     : "bg-zinc-300 text-zinc-500 cursor-not-allowed"
                 }`}
                 style={canStart ? { boxShadow: "4px 4px 0 #1a1a1a" } : {}}
@@ -660,7 +660,7 @@ export default function BattlePage() {
                 )}
               </button>
               {mode !== "practice" && (
-                <p className="text-[10px] font-bold text-[#E3350D]/70 mt-2">
+                <p className="text-[10px] font-bold text-ttg-red/70 mt-2">
                   Practice mode is available now — switch to it above!
                 </p>
               )}

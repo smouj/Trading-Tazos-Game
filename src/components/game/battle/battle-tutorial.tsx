@@ -140,8 +140,8 @@ export default function BattleTutorial({ onClose }: { onClose: () => void }) {
             boxShadow: "0 32px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,204,0,0.04), 0 0 60px rgba(255,204,0,0.06)",
           }}>
           {/* Magazine page-edge accents */}
-          <div className="absolute top-0 left-3 right-3 h-px bg-gradient-to-r from-transparent via-[#FFCC00]/20 to-transparent" />
-          <div className="absolute bottom-0 left-3 right-3 h-px bg-gradient-to-r from-transparent via-[#FFCC00]/20 to-transparent" />
+          <div className="absolute top-0 left-3 right-3 h-px bg-gradient-to-r from-transparent via-ttg-yellow/20 to-transparent" />
+          <div className="absolute bottom-0 left-3 right-3 h-px bg-gradient-to-r from-transparent via-ttg-yellow/20 to-transparent" />
           {/* Step dots */}
           <div className="flex gap-1.5 mb-4 justify-center">
             {STEPS.map((_, i) => (
@@ -172,7 +172,7 @@ export default function BattleTutorial({ onClose }: { onClose: () => void }) {
             <div className="flex gap-2">
               <button
                 onClick={handleNext}
-                className="px-5 py-2.5 bg-ttg-yellow text-black text-xs font-black uppercase tracking-wider hover:bg-[#FFD940] transition-colors flex items-center gap-1.5 shadow-lg shadow-[#FFCC00]/20"
+                className="px-5 py-2.5 bg-ttg-yellow text-black text-xs font-black uppercase tracking-wider hover:bg-ttg-yellow-hover transition-colors flex items-center gap-1.5 shadow-lg shadow-ttg-yellow/20"
               >
                 {isLast ? "Let's Go!" : "Next"} <ChevronRight className="w-3.5 h-3.5" />
               </button>

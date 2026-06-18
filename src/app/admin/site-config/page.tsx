@@ -33,20 +33,20 @@ interface UserDetail extends UserResult {
 type TabId = "credits" | "promos" | "settings"
 
 const TAB_DEFS: { id: TabId; label: string; icon: any; color: string }[] = [
-  { id: "credits", label: "Credits", icon: Coins, color: "#FFCC00" },
-  { id: "promos", label: "Promo Codes", icon: TicketPercent, color: "#22C55E" },
-  { id: "settings", label: "Settings", icon: Settings, color: "#3B4CCA" },
+  { id: "credits", label: "Credits", icon: Coins, color: 'var(--ttg-yellow)' },
+  { id: "promos", label: "Promo Codes", icon: TicketPercent, color: 'var(--ttg-success)' },
+  { id: "settings", label: "Settings", icon: Settings, color: 'var(--ttg-blue)' },
 ]
 
 const PROMO_TYPES = [
-  { slug: "credits", name: "Credits Bonus", icon: Coins, color: "#FFCC00", desc: "Gives credits to the redeeming user" },
+  { slug: "credits", name: "Credits Bonus", icon: Coins, color: 'var(--ttg-yellow)', desc: "Gives credits to the redeeming user" },
   { slug: "bag", name: "Free Bag", icon: ShoppingBag, color: "#F97316", desc: "Grants a free bag purchase" },
-  { slug: "design", name: "Design Slot", icon: Edit3, color: "#A855F7", desc: "Unlocks a custom tazo design" },
+  { slug: "design", name: "Design Slot", icon: Edit3, color: 'var(--ttg-purple)', desc: "Unlocks a custom tazo design" },
   { slug: "premium", name: "Premium Access", icon: Shield, color: "#FBBF24", desc: "Grants premium features" },
 ]
 
 const TYPE_COLORS: Record<string, string> = {
-  credits: "#FFCC00", bag: "#F97316", design: "#A855F7", premium: "#FBBF24",
+  credits: 'var(--ttg-yellow)', bag: "#F97316", design: 'var(--ttg-purple)', premium: "#FBBF24",
 }
 
 // ── Main Component ──
@@ -294,16 +294,16 @@ export default function AdminSiteConfigPage() {
       <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
         {/* Header */}
         <div className="flex items-center gap-3">
-          <Settings className="w-6 h-6 text-[#06B6D4]" />
-          <h1 className="text-lg font-black uppercase text-[#1a1a1a] tracking-wider">Site Configuration</h1>
+          <Settings className="w-6 h-6 text-ttg-cybermon" />
+          <h1 className="text-lg font-black uppercase text-ttg-black tracking-wider">Site Configuration</h1>
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-[#FFCC00]" /></div>
+          <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-ttg-yellow" /></div>
         ) : (
           <>
             {/* Tab Switcher */}
-            <div className="flex bg-white border-2 border-[#1a1a1a] p-0.5 shadow-[2px_2px_0px_#1a1a1a] w-fit">
+            <div className="flex bg-white border-2 border-ttg-black p-0.5 shadow-[2px_2px_0px_var(--ttg-black)] w-fit">
               {TAB_DEFS.map(tab => (
                 <button
                   key={tab.id}
@@ -311,7 +311,7 @@ export default function AdminSiteConfigPage() {
                   className={`px-4 py-2 text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                     activeTab === tab.id
                       ? "text-white"
-                      : "text-[#1a1a1a]/40 hover:text-[#1a1a1a]"
+                      : "text-ttg-black/40 hover:text-ttg-black"
                   }`}
                   style={{ backgroundColor: activeTab === tab.id ? tab.color : "transparent" }}
                 >
@@ -326,9 +326,9 @@ export default function AdminSiteConfigPage() {
               <div className="grid lg:grid-cols-3 gap-6">
                 {/* User Search */}
                 <div className="lg:col-span-1">
-                  <div className="mag-card p-5 border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] space-y-4 sticky top-24">
-                    <h2 className="text-sm font-black uppercase tracking-wider text-[#1a1a1a] flex items-center gap-2">
-                      <Search className="w-4 h-4 text-[#FFCC00]" /> Find User
+                  <div className="mag-card p-5 border-3 border-ttg-black shadow-[4px_4px_0px_var(--ttg-black)] space-y-4 sticky top-24">
+                    <h2 className="text-sm font-black uppercase tracking-wider text-ttg-black flex items-center gap-2">
+                      <Search className="w-4 h-4 text-ttg-yellow" /> Find User
                     </h2>
                     <div className="flex gap-2">
                       <input
@@ -336,10 +336,10 @@ export default function AdminSiteConfigPage() {
                         onChange={e => setUserSearch(e.target.value)}
                         onKeyDown={e => e.key === "Enter" && searchUsers()}
                         placeholder="Search by email or name..."
-                        className="flex-1 border-2 border-[#1a1a1a] bg-white px-3 py-2 text-xs font-bold text-[#1a1a1a] placeholder:text-[#1a1a1a]/30 outline-none focus:border-[#FFCC00]"
+                        className="flex-1 border-2 border-ttg-black bg-white px-3 py-2 text-xs font-bold text-ttg-black placeholder:text-ttg-black/30 outline-none focus:border-ttg-yellow"
                       />
                       <button onClick={searchUsers}
-                        className="px-3 py-2 bg-[#FFCC00] text-[#1a1a1a] border-2 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a] font-black text-[10px] uppercase tracking-wider hover:shadow-[1px_1px_0px] transition-all">
+                        className="px-3 py-2 bg-ttg-yellow text-ttg-black border-2 border-ttg-black shadow-[2px_2px_0px_var(--ttg-black)] font-black text-[10px] uppercase tracking-wider hover:shadow-[1px_1px_0px] transition-all">
                         Find
                       </button>
                     </div>
@@ -352,20 +352,20 @@ export default function AdminSiteConfigPage() {
                             onClick={() => loadUserDetail(u.id)}
                             className={`w-full text-left px-3 py-2 border-2 text-xs transition-all ${
                               selectedUser?.id === u.id
-                                ? "border-[#FFCC00] bg-[#FFCC00]/5"
-                                : "border-[#1a1a1a]/10 hover:border-[#FFCC00]/30 bg-white"
+                                ? "border-ttg-yellow bg-ttg-yellow/5"
+                                : "border-ttg-black/10 hover:border-ttg-yellow/30 bg-white"
                             }`}
                           >
-                            <p className="font-black text-[#1a1a1a] truncate">{u.displayName || u.name}</p>
-                            <p className="text-[9px] font-bold text-[#1a1a1a]/40">{u.email}</p>
-                            <p className="text-[9px] font-black text-[#FFCC00]">{u.credits} cr</p>
+                            <p className="font-black text-ttg-black truncate">{u.displayName || u.name}</p>
+                            <p className="text-[9px] font-bold text-ttg-black/40">{u.email}</p>
+                            <p className="text-[9px] font-black text-ttg-yellow">{u.credits} cr</p>
                           </button>
                         ))}
                       </div>
                     )}
 
                     {userSearch && users.length === 0 && (
-                      <p className="text-[10px] font-bold text-[#1a1a1a]/30 text-center py-4">No users found</p>
+                      <p className="text-[10px] font-bold text-ttg-black/30 text-center py-4">No users found</p>
                     )}
                   </div>
                 </div>
@@ -374,39 +374,39 @@ export default function AdminSiteConfigPage() {
                 <div className="lg:col-span-2 space-y-4">
                   {selectedUser ? (
                     <>
-                      <div className="mag-card p-5 border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] bg-white">
-                        <h2 className="text-sm font-black uppercase tracking-wider text-[#1a1a1a] mb-4">Credit Adjustment</h2>
+                      <div className="mag-card p-5 border-3 border-ttg-black shadow-[4px_4px_0px_var(--ttg-black)] bg-white">
+                        <h2 className="text-sm font-black uppercase tracking-wider text-ttg-black mb-4">Credit Adjustment</h2>
                         <div className="grid sm:grid-cols-2 gap-4 mb-4">
-                          <div className="bg-[#1a1a1a]/5 p-3 border border-[#1a1a1a]/10">
-                            <span className="text-[8px] font-black uppercase text-[#1a1a1a]/40">User</span>
-                            <p className="text-sm font-black text-[#1a1a1a]">{selectedUser.displayName || selectedUser.name}</p>
-                            <p className="text-[9px] font-bold text-[#1a1a1a]/40">{selectedUser.email}</p>
+                          <div className="bg-ttg-black/5 p-3 border border-ttg-black/10">
+                            <span className="text-[8px] font-black uppercase text-ttg-black/40">User</span>
+                            <p className="text-sm font-black text-ttg-black">{selectedUser.displayName || selectedUser.name}</p>
+                            <p className="text-[9px] font-bold text-ttg-black/40">{selectedUser.email}</p>
                           </div>
-                          <div className="bg-[#FFCC00]/10 p-3 border border-[#FFCC00]/20">
-                            <span className="text-[8px] font-black uppercase text-[#FFCC00]/60">Current Balance</span>
-                            <p className="text-2xl font-black text-[#FFCC00] tabular-nums">{selectedUser.credits} <span className="text-sm">cr</span></p>
+                          <div className="bg-ttg-yellow/10 p-3 border border-ttg-yellow/20">
+                            <span className="text-[8px] font-black uppercase text-ttg-yellow/60">Current Balance</span>
+                            <p className="text-2xl font-black text-ttg-yellow tabular-nums">{selectedUser.credits} <span className="text-sm">cr</span></p>
                           </div>
                         </div>
 
                         <div className="grid sm:grid-cols-3 gap-3 mb-4">
                           <div>
-                            <label className="block text-[9px] font-black uppercase text-[#1a1a1a]/40 mb-1">Amount</label>
+                            <label className="block text-[9px] font-black uppercase text-ttg-black/40 mb-1">Amount</label>
                             <div className="flex gap-1">
                               <input type="number" value={creditAmount}
                                 onChange={e => setCreditAmount(parseInt(e.target.value) || 0)}
-                                className="w-full border-2 border-[#1a1a1a] bg-white px-3 py-2 text-sm font-black text-[#1a1a1a] outline-none focus:border-[#FFCC00] tabular-nums"
+                                className="w-full border-2 border-ttg-black bg-white px-3 py-2 text-sm font-black text-ttg-black outline-none focus:border-ttg-yellow tabular-nums"
                               />
                             </div>
                           </div>
                           <div>
-                            <label className="block text-[9px] font-black uppercase text-[#1a1a1a]/40 mb-1">Quick Amounts</label>
+                            <label className="block text-[9px] font-black uppercase text-ttg-black/40 mb-1">Quick Amounts</label>
                             <div className="flex gap-1">
                               {[50, 100, 500, 1000].map(a => (
                                 <button key={a} onClick={() => setCreditAmount(a)}
                                   className={`px-2 py-2 text-[9px] font-black border-2 transition-all tabular-nums ${
                                     creditAmount === a
-                                      ? "bg-[#FFCC00] border-[#1a1a1a] text-[#1a1a1a] shadow-[1px_1px_0px_#1a1a1a]"
-                                      : "bg-white border-[#1a1a1a]/20 text-[#1a1a1a]/40 hover:border-[#FFCC00]"
+                                      ? "bg-ttg-yellow border-ttg-black text-ttg-black shadow-[1px_1px_0px_var(--ttg-black)]"
+                                      : "bg-white border-ttg-black/20 text-ttg-black/40 hover:border-ttg-yellow"
                                   }`}>+{a}</button>
                               ))}
                             </div>
@@ -415,53 +415,53 @@ export default function AdminSiteConfigPage() {
                           </div>
                         </div>
                         <div className="mb-4">
-                          <label className="block text-[9px] font-black uppercase text-[#1a1a1a]/40 mb-1">Note (visible in transaction history)</label>
+                          <label className="block text-[9px] font-black uppercase text-ttg-black/40 mb-1">Note (visible in transaction history)</label>
                           <input type="text" value={creditNote}
                             onChange={e => setCreditNote(e.target.value)}
                             placeholder="e.g. Bug bounty reward, compensation..."
-                            className="w-full border-2 border-[#1a1a1a] bg-white px-3 py-2 text-xs font-bold text-[#1a1a1a] placeholder:text-[#1a1a1a]/20 outline-none focus:border-[#FFCC00]"
+                            className="w-full border-2 border-ttg-black bg-white px-3 py-2 text-xs font-bold text-ttg-black placeholder:text-ttg-black/20 outline-none focus:border-ttg-yellow"
                           />
                         </div>
 
                         <div className="flex gap-2 items-center">
                           <button onClick={handleGiveCredits} disabled={creditSaving || creditAmount === 0}
-                            className={`mag-btn px-5 py-2.5 text-[10px] font-black uppercase tracking-wider border-2 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] hover:shadow-[1px_1px_0px] hover:translate-x-[0.5px] hover:translate-y-[0.5px] transition-all flex items-center gap-1.5 disabled:opacity-40 ${
-                              creditAmount > 0 ? "bg-[#22C55E] text-white" : "bg-[#E3350D] text-white"
+                            className={`mag-btn px-5 py-2.5 text-[10px] font-black uppercase tracking-wider border-2 border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)] hover:shadow-[1px_1px_0px] hover:translate-x-[0.5px] hover:translate-y-[0.5px] transition-all flex items-center gap-1.5 disabled:opacity-40 ${
+                              creditAmount > 0 ? "bg-ttg-success text-white" : "bg-ttg-red text-white"
                             }`}>
                             {creditSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : creditAmount > 0 ? <Plus className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
                             {creditAmount > 0 ? `Give ${creditAmount} Credits` : `Remove ${Math.abs(creditAmount)} Credits`}
                           </button>
                           <button onClick={() => { setCreditAmount(-Math.abs(creditAmount)) }}
-                            className="text-[9px] font-bold text-[#E3350D]/50 hover:text-[#E3350D] underline">
+                            className="text-[9px] font-bold text-ttg-red/50 hover:text-ttg-red underline">
                             Switch to Remove
                           </button>
                         </div>
 
                         {creditMsg && (
                           <div className={`mt-3 p-3 border-2 text-xs font-bold ${
-                            creditMsg.startsWith("✅") ? "border-[#22C55E] bg-[#22C55E]/5 text-[#22C55E]" : "border-[#E3350D] bg-[#E3350D]/5 text-[#E3350D]"
+                            creditMsg.startsWith("✅") ? "border-ttg-success bg-ttg-success/5 text-ttg-success" : "border-ttg-red bg-ttg-red/5 text-ttg-red"
                           }`}>{creditMsg}</div>
                         )}
                       </div>
 
                       {/* Transaction History */}
-                      <div className="mag-card p-5 border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] bg-white">
-                        <h3 className="text-xs font-black uppercase tracking-wider text-[#1a1a1a]/50 mb-3 flex items-center gap-2">
+                      <div className="mag-card p-5 border-3 border-ttg-black shadow-[4px_4px_0px_var(--ttg-black)] bg-white">
+                        <h3 className="text-xs font-black uppercase tracking-wider text-ttg-black/50 mb-3 flex items-center gap-2">
                           <Clock className="w-3.5 h-3.5" /> Recent Transactions
                         </h3>
                         {selectedUser.creditTransactions.length === 0 ? (
-                          <p className="text-[10px] font-bold text-[#1a1a1a]/20 text-center py-4">No transactions yet</p>
+                          <p className="text-[10px] font-bold text-ttg-black/20 text-center py-4">No transactions yet</p>
                         ) : (
                           <div className="space-y-1 max-h-64 overflow-y-auto">
                             {selectedUser.creditTransactions.map(tx => (
-                              <div key={tx.id} className="flex items-center justify-between py-1.5 px-2 border-b border-[#1a1a1a]/5 text-[10px]">
+                              <div key={tx.id} className="flex items-center justify-between py-1.5 px-2 border-b border-ttg-black/5 text-[10px]">
                                 <div>
-                                  <span className="font-black text-[#1a1a1a]">{tx.source}</span>
-                                  {tx.reference && <span className="text-[#1a1a1a]/30 ml-2 font-bold">{tx.reference}</span>}
+                                  <span className="font-black text-ttg-black">{tx.source}</span>
+                                  {tx.reference && <span className="text-ttg-black/30 ml-2 font-bold">{tx.reference}</span>}
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <span className="text-[8px] font-bold text-[#1a1a1a]/20">{new Date(tx.createdAt).toLocaleDateString()}</span>
-                                  <span className={`font-black tabular-nums ${tx.amount > 0 ? "text-[#22C55E]" : "text-[#E3350D]"}`}>
+                                  <span className="text-[8px] font-bold text-ttg-black/20">{new Date(tx.createdAt).toLocaleDateString()}</span>
+                                  <span className={`font-black tabular-nums ${tx.amount > 0 ? "text-ttg-success" : "text-ttg-red"}`}>
                                     {tx.amount > 0 ? "+" : ""}{tx.amount}
                                   </span>
                                 </div>
@@ -472,9 +472,9 @@ export default function AdminSiteConfigPage() {
                       </div>
                     </>
                   ) : (
-                    <div className="mag-card p-10 border-3 border-[#1a1a1a] border-dashed text-center">
-                      <Search className="w-10 h-10 text-[#1a1a1a]/10 mx-auto mb-3" />
-                      <p className="text-sm font-black text-[#1a1a1a]/20 uppercase">Search for a user to manage credits</p>
+                    <div className="mag-card p-10 border-3 border-ttg-black border-dashed text-center">
+                      <Search className="w-10 h-10 text-ttg-black/10 mx-auto mb-3" />
+                      <p className="text-sm font-black text-ttg-black/20 uppercase">Search for a user to manage credits</p>
                     </div>
                   )}
                 </div>
@@ -488,79 +488,79 @@ export default function AdminSiteConfigPage() {
                 {promoMsg && (
                   <div className={`p-3 border-3 text-sm font-black ${
                     promoMsg.startsWith("✅") || promoMsg.startsWith("🗑️")
-                      ? "border-[#22C55E] bg-[#22C55E]/5 text-[#22C55E]"
-                      : "border-[#E3350D] bg-[#E3350D]/5 text-[#E3350D]"
+                      ? "border-ttg-success bg-ttg-success/5 text-ttg-success"
+                      : "border-ttg-red bg-ttg-red/5 text-ttg-red"
                   }`}>{promoMsg}</div>
                 )}
 
                 {/* Create Promo Form */}
                 {showNewPromo && (
-                  <div className="mag-card p-5 border-3 border-[#22C55E] shadow-[4px_4px_0px_#22C55E] bg-white">
-                    <h3 className="text-sm font-black uppercase tracking-wider text-[#22C55E] mb-4 flex items-center gap-2">
+                  <div className="mag-card p-5 border-3 border-ttg-success shadow-[4px_4px_0px_#22C55E] bg-white">
+                    <h3 className="text-sm font-black uppercase tracking-wider text-ttg-success mb-4 flex items-center gap-2">
                       <Gift className="w-4 h-4" /> New Promo Code
                     </h3>
                     <div className="grid sm:grid-cols-3 gap-3 mb-4">
                       <div>
-                        <label className="text-[9px] font-black uppercase text-[#1a1a1a]/40 mb-0.5 block">Code *</label>
+                        <label className="text-[9px] font-black uppercase text-ttg-black/40 mb-0.5 block">Code *</label>
                         <input type="text" value={newCode}
                           onChange={e => setNewCode(e.target.value.toUpperCase())}
                           placeholder="WELCOME50"
-                          className="w-full border-2 border-[#1a1a1a] bg-white px-3 py-2 text-sm font-black text-[#1a1a1a] uppercase placeholder:text-[#1a1a1a]/15 outline-none focus:border-[#22C55E]"
+                          className="w-full border-2 border-ttg-black bg-white px-3 py-2 text-sm font-black text-ttg-black uppercase placeholder:text-ttg-black/15 outline-none focus:border-ttg-success"
                         />
                       </div>
                       <div>
-                        <label className="text-[9px] font-black uppercase text-[#1a1a1a]/40 mb-0.5 block">Type</label>
+                        <label className="text-[9px] font-black uppercase text-ttg-black/40 mb-0.5 block">Type</label>
                         <select value={newType} onChange={e => setNewType(e.target.value)}
-                          className="w-full border-2 border-[#1a1a1a] bg-white px-3 py-2 text-xs font-bold text-[#1a1a1a] uppercase outline-none focus:border-[#22C55E]">
+                          className="w-full border-2 border-ttg-black bg-white px-3 py-2 text-xs font-bold text-ttg-black uppercase outline-none focus:border-ttg-success">
                           {PROMO_TYPES.map(t => <option key={t.slug} value={t.slug}>{t.name}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="text-[9px] font-black uppercase text-[#1a1a1a]/40 mb-0.5 block">
+                        <label className="text-[9px] font-black uppercase text-ttg-black/40 mb-0.5 block">
                           {newType === "credits" ? "Credits" : newType === "bag" ? "Bag ID" : newType === "design" ? "Design ID" : "Value"}
                         </label>
                         <input type="number" value={newValue}
                           onChange={e => setNewValue(parseInt(e.target.value) || 0)}
-                          className="w-full border-2 border-[#1a1a1a] bg-white px-3 py-2 text-sm font-black text-[#1a1a1a] tabular-nums outline-none focus:border-[#22C55E]"
+                          className="w-full border-2 border-ttg-black bg-white px-3 py-2 text-sm font-black text-ttg-black tabular-nums outline-none focus:border-ttg-success"
                         />
                       </div>
                       <div>
-                        <label className="text-[9px] font-black uppercase text-[#1a1a1a]/40 mb-0.5 block">Max Uses</label>
+                        <label className="text-[9px] font-black uppercase text-ttg-black/40 mb-0.5 block">Max Uses</label>
                         <input type="number" value={newMaxUses}
                           onChange={e => setNewMaxUses(parseInt(e.target.value) || 0)}
-                          className="w-full border-2 border-[#1a1a1a] bg-white px-3 py-2 text-sm font-black text-[#1a1a1a] tabular-nums outline-none focus:border-[#22C55E]"
+                          className="w-full border-2 border-ttg-black bg-white px-3 py-2 text-sm font-black text-ttg-black tabular-nums outline-none focus:border-ttg-success"
                         />
                       </div>
                       <div>
-                        <label className="text-[9px] font-black uppercase text-[#1a1a1a]/40 mb-0.5 block">Min Level</label>
+                        <label className="text-[9px] font-black uppercase text-ttg-black/40 mb-0.5 block">Min Level</label>
                         <input type="number" value={newMinLevel}
                           onChange={e => setNewMinLevel(parseInt(e.target.value) || 0)}
-                          className="w-full border-2 border-[#1a1a1a] bg-white px-3 py-2 text-sm font-black text-[#1a1a1a] tabular-nums outline-none focus:border-[#22C55E]"
+                          className="w-full border-2 border-ttg-black bg-white px-3 py-2 text-sm font-black text-ttg-black tabular-nums outline-none focus:border-ttg-success"
                         />
                       </div>
                       <div>
-                        <label className="text-[9px] font-black uppercase text-[#1a1a1a]/40 mb-0.5 block">Expires (optional)</label>
+                        <label className="text-[9px] font-black uppercase text-ttg-black/40 mb-0.5 block">Expires (optional)</label>
                         <input type="datetime-local" value={newExpiresAt}
                           onChange={e => setNewExpiresAt(e.target.value)}
-                          className="w-full border-2 border-[#1a1a1a] bg-white px-3 py-2 text-xs font-bold text-[#1a1a1a] outline-none focus:border-[#22C55E]"
+                          className="w-full border-2 border-ttg-black bg-white px-3 py-2 text-xs font-bold text-ttg-black outline-none focus:border-ttg-success"
                         />
                       </div>
                       <div>
-                        <label className="text-[9px] font-black uppercase text-[#1a1a1a]/40 mb-0.5 block">Description</label>
+                        <label className="text-[9px] font-black uppercase text-ttg-black/40 mb-0.5 block">Description</label>
                         <input type="text" value={newDesc}
                           onChange={e => setNewDesc(e.target.value)}
                           placeholder="Admin note..."
-                          className="w-full border-2 border-[#1a1a1a] bg-white px-3 py-2 text-xs font-bold text-[#1a1a1a] placeholder:text-[#1a1a1a]/20 outline-none focus:border-[#22C55E]"
+                          className="w-full border-2 border-ttg-black bg-white px-3 py-2 text-xs font-bold text-ttg-black placeholder:text-ttg-black/20 outline-none focus:border-ttg-success"
                         />
                       </div>
                     </div>
                     <div className="flex gap-2">
                       <button onClick={createPromo} disabled={promoSaving || !newCode.trim()}
-                        className="mag-btn px-5 py-2.5 text-[10px] font-black uppercase bg-[#22C55E] text-white border-2 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a] flex items-center gap-1.5 hover:shadow-[1px_1px_0px] transition-all disabled:opacity-40">
+                        className="mag-btn px-5 py-2.5 text-[10px] font-black uppercase bg-ttg-success text-white border-2 border-ttg-black shadow-[2px_2px_0px_var(--ttg-black)] flex items-center gap-1.5 hover:shadow-[1px_1px_0px] transition-all disabled:opacity-40">
                         <Plus className="w-3.5 h-3.5" /> Create Code
                       </button>
                       <button onClick={() => setShowNewPromo(false)}
-                        className="mag-btn px-5 py-2.5 text-[10px] font-black uppercase bg-white border-2 border-[#1a1a1a] flex items-center gap-1.5 hover:shadow-[1px_1px_0px] transition-all">
+                        className="mag-btn px-5 py-2.5 text-[10px] font-black uppercase bg-white border-2 border-ttg-black flex items-center gap-1.5 hover:shadow-[1px_1px_0px] transition-all">
                         <X className="w-3.5 h-3.5" /> Cancel
                       </button>
                     </div>
@@ -568,16 +568,16 @@ export default function AdminSiteConfigPage() {
                 )}
                 {!showNewPromo && (
                   <button onClick={() => setShowNewPromo(true)}
-                    className="mag-btn px-5 py-3 text-[10px] font-black uppercase bg-[#22C55E] text-white border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] flex items-center gap-2 hover:shadow-[2px_2px_0px] hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
+                    className="mag-btn px-5 py-3 text-[10px] font-black uppercase bg-ttg-success text-white border-3 border-ttg-black shadow-[4px_4px_0px_var(--ttg-black)] flex items-center gap-2 hover:shadow-[2px_2px_0px] hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
                     <Plus className="w-4 h-4" /> Create New Promo Code
                   </button>
                 )}
 
                 {/* Promo List */}
                 {promos.length === 0 ? (
-                  <div className="mag-card p-10 border-3 border-dashed border-[#1a1a1a] text-center">
-                    <TicketPercent className="w-10 h-10 text-[#1a1a1a]/10 mx-auto mb-3" />
-                    <p className="text-sm font-black text-[#1a1a1a]/20 uppercase">No promo codes yet</p>
+                  <div className="mag-card p-10 border-3 border-dashed border-ttg-black text-center">
+                    <TicketPercent className="w-10 h-10 text-ttg-black/10 mx-auto mb-3" />
+                    <p className="text-sm font-black text-ttg-black/20 uppercase">No promo codes yet</p>
                   </div>
                 ) : (
                   <div className="grid gap-3">
@@ -588,76 +588,76 @@ export default function AdminSiteConfigPage() {
                       const typeColor = TYPE_COLORS[p.type] || "#999"
 
                       return (
-                        <div key={p.id} className={`mag-card border-3 bg-white shadow-[3px_3px_0px_#1a1a1a] transition-all ${
-                          p.isActive && !expired && !exhausted ? "border-[#1a1a1a]/10" : "border-[#1a1a1a]/5 opacity-60"
+                        <div key={p.id} className={`mag-card border-3 bg-white shadow-[3px_3px_0px_var(--ttg-black)] transition-all ${
+                          p.isActive && !expired && !exhausted ? "border-ttg-black/10" : "border-ttg-black/5 opacity-60"
                         }`}>
                           <div className="p-4">
                             {isEditing ? (
                               <div className="grid sm:grid-cols-4 gap-2 mb-3">
-                                <div><label className="text-[8px] font-black text-[#1a1a1a]/40 uppercase">Code</label><input value={editCode} onChange={e => setEditCode(e.target.value.toUpperCase())} className="w-full p-1.5 border-2 border-[#1a1a1a] text-xs font-black uppercase" /></div>
-                                <div><label className="text-[8px] font-black text-[#1a1a1a]/40 uppercase">Type</label><select value={editType} onChange={e => setEditType(e.target.value)} className="w-full p-1.5 border-2 border-[#1a1a1a] text-xs font-bold">{PROMO_TYPES.map(t => <option key={t.slug} value={t.slug}>{t.name}</option>)}</select></div>
-                                <div><label className="text-[8px] font-black text-[#1a1a1a]/40 uppercase">Value</label><input type="number" value={editValue} onChange={e => setEditValue(parseInt(e.target.value) || 0)} className="w-full p-1.5 border-2 border-[#1a1a1a] text-xs font-bold tabular-nums" /></div>
-                                <div><label className="text-[8px] font-black text-[#1a1a1a]/40 uppercase">Active</label><select value={editActive ? "true" : "false"} onChange={e => setEditActive(e.target.value === "true")} className="w-full p-1.5 border-2 border-[#1a1a1a] text-xs font-bold"><option value="true">✅ Active</option><option value="false">❌ Disabled</option></select></div>
-                                <div><label className="text-[8px] font-black text-[#1a1a1a]/40 uppercase">Max Uses</label><input type="number" value={editMaxUses} onChange={e => setEditMaxUses(parseInt(e.target.value) || 0)} className="w-full p-1.5 border-2 border-[#1a1a1a] text-xs font-bold tabular-nums" /></div>
-                                <div><label className="text-[8px] font-black text-[#1a1a1a]/40 uppercase">Min Level</label><input type="number" value={editMinLevel} onChange={e => setEditMinLevel(parseInt(e.target.value) || 0)} className="w-full p-1.5 border-2 border-[#1a1a1a] text-xs font-bold tabular-nums" /></div>
-                                <div><label className="text-[8px] font-black text-[#1a1a1a]/40 uppercase">Expires</label><input type="datetime-local" value={editExpiresAt} onChange={e => setEditExpiresAt(e.target.value)} className="w-full p-1.5 border-2 border-[#1a1a1a] text-xs font-bold" /></div>
-                                <div><label className="text-[8px] font-black text-[#1a1a1a]/40 uppercase">Description</label><input value={editDesc} onChange={e => setEditDesc(e.target.value)} className="w-full p-1.5 border-2 border-[#1a1a1a] text-xs font-bold" /></div>
+                                <div><label className="text-[8px] font-black text-ttg-black/40 uppercase">Code</label><input value={editCode} onChange={e => setEditCode(e.target.value.toUpperCase())} className="w-full p-1.5 border-2 border-ttg-black text-xs font-black uppercase" /></div>
+                                <div><label className="text-[8px] font-black text-ttg-black/40 uppercase">Type</label><select value={editType} onChange={e => setEditType(e.target.value)} className="w-full p-1.5 border-2 border-ttg-black text-xs font-bold">{PROMO_TYPES.map(t => <option key={t.slug} value={t.slug}>{t.name}</option>)}</select></div>
+                                <div><label className="text-[8px] font-black text-ttg-black/40 uppercase">Value</label><input type="number" value={editValue} onChange={e => setEditValue(parseInt(e.target.value) || 0)} className="w-full p-1.5 border-2 border-ttg-black text-xs font-bold tabular-nums" /></div>
+                                <div><label className="text-[8px] font-black text-ttg-black/40 uppercase">Active</label><select value={editActive ? "true" : "false"} onChange={e => setEditActive(e.target.value === "true")} className="w-full p-1.5 border-2 border-ttg-black text-xs font-bold"><option value="true">✅ Active</option><option value="false">❌ Disabled</option></select></div>
+                                <div><label className="text-[8px] font-black text-ttg-black/40 uppercase">Max Uses</label><input type="number" value={editMaxUses} onChange={e => setEditMaxUses(parseInt(e.target.value) || 0)} className="w-full p-1.5 border-2 border-ttg-black text-xs font-bold tabular-nums" /></div>
+                                <div><label className="text-[8px] font-black text-ttg-black/40 uppercase">Min Level</label><input type="number" value={editMinLevel} onChange={e => setEditMinLevel(parseInt(e.target.value) || 0)} className="w-full p-1.5 border-2 border-ttg-black text-xs font-bold tabular-nums" /></div>
+                                <div><label className="text-[8px] font-black text-ttg-black/40 uppercase">Expires</label><input type="datetime-local" value={editExpiresAt} onChange={e => setEditExpiresAt(e.target.value)} className="w-full p-1.5 border-2 border-ttg-black text-xs font-bold" /></div>
+                                <div><label className="text-[8px] font-black text-ttg-black/40 uppercase">Description</label><input value={editDesc} onChange={e => setEditDesc(e.target.value)} className="w-full p-1.5 border-2 border-ttg-black text-xs font-bold" /></div>
                               </div>
                             ) : (
                               <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full flex items-center justify-center border-2 border-[#1a1a1a]" style={{ backgroundColor: typeColor + "20" }}>
+                                <div className="w-10 h-10 rounded-full flex items-center justify-center border-2 border-ttg-black" style={{ backgroundColor: typeColor + "20" }}>
                                   <Key className="w-5 h-5" style={{ color: typeColor }} />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-2 flex-wrap">
-                                    <h3 className="text-sm font-black text-[#1a1a1a] font-mono tracking-wider">{p.code}</h3>
+                                    <h3 className="text-sm font-black text-ttg-black font-mono tracking-wider">{p.code}</h3>
                                     <span className="text-[8px] font-black px-1.5 py-0.5 border uppercase" style={{ color: typeColor, borderColor: typeColor + "40" }}>{p.type}</span>
                                     <span className={`text-[8px] font-black px-1.5 py-0.5 border uppercase ${
-                                      p.isActive && !expired && !exhausted ? "text-[#22C55E] border-[#22C55E]/30" : "text-[#E3350D] border-[#E3350D]/30"
+                                      p.isActive && !expired && !exhausted ? "text-ttg-success border-ttg-success/30" : "text-ttg-red border-ttg-red/30"
                                     }`}>
                                       {p.isActive ? (expired ? "EXPIRED" : exhausted ? "EXHAUSTED" : "ACTIVE") : "DISABLED"}
                                     </span>
                                   </div>
-                                  <div className="flex gap-3 mt-1 text-[9px] font-bold text-[#1a1a1a]/30">
+                                  <div className="flex gap-3 mt-1 text-[9px] font-bold text-ttg-black/30">
                                     <span>{p.type === "credits" ? `${p.value}cr` : `ID: ${p.value}`}</span>
                                     <span>· Uses: {p.usedCount}/{p.maxUses || "∞"}</span>
                                     {p.minLevel > 0 && <span>· Min Lv. {p.minLevel}</span>}
-                                    {p.expiresAt && <span className={expired ? "text-[#E3350D]" : ""}>· {expired ? "Expired " : "Expires "}{new Date(p.expiresAt).toLocaleDateString()}</span>}
+                                    {p.expiresAt && <span className={expired ? "text-ttg-red" : ""}>· {expired ? "Expired " : "Expires "}{new Date(p.expiresAt).toLocaleDateString()}</span>}
                                   </div>
-                                  {p.description && <p className="text-[9px] font-bold text-[#1a1a1a]/20 mt-0.5">{p.description}</p>}
+                                  {p.description && <p className="text-[9px] font-bold text-ttg-black/20 mt-0.5">{p.description}</p>}
                                 </div>
                               </div>
                             )}
 
-                            <div className="flex items-center gap-1 mt-3 pt-3 border-t border-[#1a1a1a]/5">
+                            <div className="flex items-center gap-1 mt-3 pt-3 border-t border-ttg-black/5">
                               {isEditing ? (
                                 <>
                                   <button onClick={() => updatePromo(p.id)} disabled={promoSaving}
-                                    className="p-2 hover:bg-[#22C55E]/10 transition-colors" title="Save">
-                                    <Check className="w-4 h-4 text-[#22C55E]" />
+                                    className="p-2 hover:bg-ttg-success/10 transition-colors" title="Save">
+                                    <Check className="w-4 h-4 text-ttg-success" />
                                   </button>
                                   <button onClick={() => setEditingPromoId(null)}
-                                    className="p-2 hover:bg-[#E3350D]/10 transition-colors" title="Cancel">
-                                    <X className="w-4 h-4 text-[#E3350D]" />
+                                    className="p-2 hover:bg-ttg-red/10 transition-colors" title="Cancel">
+                                    <X className="w-4 h-4 text-ttg-red" />
                                   </button>
                                 </>
                               ) : (
                                 <>
                                   <button onClick={() => startEditPromo(p)}
-                                    className="p-2 hover:bg-[#FFCC00]/10 transition-colors" title="Edit">
-                                    <Edit3 className="w-4 h-4 text-[#1a1a1a]/50" />
+                                    className="p-2 hover:bg-ttg-yellow/10 transition-colors" title="Edit">
+                                    <Edit3 className="w-4 h-4 text-ttg-black/50" />
                                   </button>
                                   <button onClick={() => togglePromo(p)}
-                                    className="p-2 hover:bg-[#FFCC00]/10 transition-colors" title={p.isActive ? "Active — click to disable" : "Disabled — click to activate"}>
-                                    <span className={`text-[9px] font-black px-1 py-0.5 border ${p.isActive ? "text-[#22C55E] border-[#22C55E]/30" : "text-[#E3350D] border-[#E3350D]/30"}`}>{p.isActive ? "ON" : "OFF"}</span>
+                                    className="p-2 hover:bg-ttg-yellow/10 transition-colors" title={p.isActive ? "Active — click to disable" : "Disabled — click to activate"}>
+                                    <span className={`text-[9px] font-black px-1 py-0.5 border ${p.isActive ? "text-ttg-success border-ttg-success/30" : "text-ttg-red border-ttg-red/30"}`}>{p.isActive ? "ON" : "OFF"}</span>
                                   </button>
                                   <button onClick={() => deletePromo(p.id)}
-                                    className="p-2 hover:bg-[#E3350D]/10 transition-colors" title="Delete">
-                                    <Trash2 className="w-4 h-4 text-[#E3350D]/50" />
+                                    className="p-2 hover:bg-ttg-red/10 transition-colors" title="Delete">
+                                    <Trash2 className="w-4 h-4 text-ttg-red/50" />
                                   </button>
                                 </>
                               )}
-                              <span className="ml-auto text-[8px] font-bold text-[#1a1a1a]/15">
+                              <span className="ml-auto text-[8px] font-bold text-ttg-black/15">
                                 {p.createdBy && <>by {p.createdBy} · </>}
                                 {new Date(p.createdAt).toLocaleDateString()}
                               </span>
@@ -675,30 +675,30 @@ export default function AdminSiteConfigPage() {
             {activeTab === "settings" && (
               <div className="space-y-4">
                 {configMsg && (
-                  <div className={`p-3 border-3 text-sm font-black ${configMsg.startsWith("✅") ? "border-[#22C55E] bg-[#22C55E]/5 text-[#22C55E]" : "border-[#E3350D] bg-[#E3350D]/5 text-[#E3350D]"}`}>{configMsg}</div>
+                  <div className={`p-3 border-3 text-sm font-black ${configMsg.startsWith("✅") ? "border-ttg-success bg-ttg-success/5 text-ttg-success" : "border-ttg-red bg-ttg-red/5 text-ttg-red"}`}>{configMsg}</div>
                 )}
 
-                <div className="mag-card border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] bg-white">
-                  <div className="px-5 py-3 border-b-2 border-[#1a1a1a] bg-[#1a1a1a]/[0.02]">
-                    <h2 className="text-sm font-black uppercase tracking-wider text-[#1a1a1a] flex items-center gap-2">
-                      <Globe className="w-4 h-4 text-[#3B4CCA]" /> Site Settings
+                <div className="mag-card border-3 border-ttg-black shadow-[4px_4px_0px_var(--ttg-black)] bg-white">
+                  <div className="px-5 py-3 border-b-2 border-ttg-black bg-ttg-black/0.02">
+                    <h2 className="text-sm font-black uppercase tracking-wider text-ttg-black flex items-center gap-2">
+                      <Globe className="w-4 h-4 text-ttg-blue" /> Site Settings
                     </h2>
                   </div>
-                  <div className="divide-y divide-[#1a1a1a]/5">
+                  <div className="divide-y divide-ttg-black/5">
                     {configs.filter(c => CONFIG_LABELS[c.key]).map(cfg => {
                       const meta = CONFIG_LABELS[cfg.key]
                       const isSaving = configSaving[cfg.key]
 
                       return (
-                        <div key={cfg.key} className="p-4 flex items-center justify-between gap-4 hover:bg-[#1a1a1a]/[0.01] transition-colors">
+                        <div key={cfg.key} className="p-4 flex items-center justify-between gap-4 hover:bg-ttg-black/0.01 transition-colors">
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
-                              <h3 className="text-xs font-black uppercase text-[#1a1a1a]">{meta.label}</h3>
-                              {!cfg.isDefault && <span className="text-[7px] font-black bg-[#F59E0B]/10 text-[#F59E0B] px-1.5 py-0.5 uppercase">Custom</span>}
+                              <h3 className="text-xs font-black uppercase text-ttg-black">{meta.label}</h3>
+                              {!cfg.isDefault && <span className="text-[7px] font-black bg-ttg-warning/10 text-ttg-warning px-1.5 py-0.5 uppercase">Custom</span>}
                             </div>
-                            <p className="text-[9px] font-bold text-[#1a1a1a]/30 mt-0.5">{meta.desc}</p>
+                            <p className="text-[9px] font-bold text-ttg-black/30 mt-0.5">{meta.desc}</p>
                             {cfg.updatedAt && !cfg.isDefault && (
-                              <p className="text-[7px] font-bold text-[#1a1a1a]/15 mt-0.5">
+                              <p className="text-[7px] font-bold text-ttg-black/15 mt-0.5">
                                 Updated {new Date(cfg.updatedAt).toLocaleDateString()} by {cfg.updatedBy || "—"}
                               </p>
                             )}
@@ -713,9 +713,9 @@ export default function AdminSiteConfigPage() {
                                 title={cfg.value ? "Enabled — click to disable" : "Disabled — click to enable"}
                               >
                                 {cfg.value ? (
-                                  <ToggleRight className="w-8 h-8 text-[#22C55E]" />
+                                  <ToggleRight className="w-8 h-8 text-ttg-success" />
                                 ) : (
-                                  <ToggleLeft className="w-8 h-8 text-[#1a1a1a]/20" />
+                                  <ToggleLeft className="w-8 h-8 text-ttg-black/20" />
                                 )}
                               </button>
                             ) : (
@@ -727,19 +727,19 @@ export default function AdminSiteConfigPage() {
                                     const v = parseInt(e.target.value) || 0
                                     setConfigs(prev => prev.map(c => c.key === cfg.key ? { ...c, value: v } : c))
                                   }}
-                                  className="w-20 border-2 border-[#1a1a1a] px-2 py-1.5 text-xs font-black text-[#1a1a1a] tabular-nums outline-none focus:border-[#3B4CCA] text-center"
+                                  className="w-20 border-2 border-ttg-black px-2 py-1.5 text-xs font-black text-ttg-black tabular-nums outline-none focus:border-ttg-blue text-center"
                                 />
                                 <button
                                   onClick={() => saveConfig(cfg.key, cfg.value)}
                                   disabled={isSaving}
-                                  className="p-1.5 hover:bg-[#22C55E]/10 transition-colors"
+                                  className="p-1.5 hover:bg-ttg-success/10 transition-colors"
                                   title="Save"
                                 >
-                                  {isSaving ? <Loader2 className="w-4 h-4 animate-spin text-[#3B4CCA]" /> : <Save className="w-4 h-4 text-[#22C55E]" />}
+                                  {isSaving ? <Loader2 className="w-4 h-4 animate-spin text-ttg-blue" /> : <Save className="w-4 h-4 text-ttg-success" />}
                                 </button>
                               </div>
                             )}
-                            {isSaving && meta.type === "toggle" && <Loader2 className="w-4 h-4 animate-spin text-[#3B4CCA]" />}
+                            {isSaving && meta.type === "toggle" && <Loader2 className="w-4 h-4 animate-spin text-ttg-blue" />}
                           </div>
                         </div>
                       )
@@ -748,10 +748,10 @@ export default function AdminSiteConfigPage() {
                 </div>
 
                 {/* Unconfigured keys info */}
-                <div className="mag-card p-4 border-2 border-[#1a1a1a]/10 bg-[#1a1a1a]/[0.01]">
+                <div className="mag-card p-4 border-2 border-ttg-black/10 bg-ttg-black/0.01">
                   <div className="flex items-center gap-2 mb-2">
-                    <Shield className="w-3.5 h-3.5 text-[#1a1a1a]/30" />
-                    <span className="text-[10px] font-black uppercase text-[#1a1a1a]/30">
+                    <Shield className="w-3.5 h-3.5 text-ttg-black/30" />
+                    <span className="text-[10px] font-black uppercase text-ttg-black/30">
                       Config Keys — {configs.length} total
                     </span>
                   </div>
@@ -759,7 +759,7 @@ export default function AdminSiteConfigPage() {
                     {configs.map(c => (
                       <span key={c.key}
                         className={`text-[8px] font-mono font-bold px-1.5 py-0.5 border ${
-                          c.isDefault ? "text-[#1a1a1a]/20 border-[#1a1a1a]/5" : "text-[#3B4CCA] border-[#3B4CCA]/20"
+                          c.isDefault ? "text-ttg-black/20 border-ttg-black/5" : "text-ttg-blue border-ttg-blue/20"
                         }`}>
                         {c.key}
                       </span>

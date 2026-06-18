@@ -13,13 +13,13 @@ import { AuthProvider } from "@/lib/auth-context"
 const BattleView = dynamic(() => import("@/components/game/battle-view"), {
   ssr: false,
   loading: () => (
-    <div className="fixed inset-0 flex items-center justify-center bg-[#0a0a0a]">
+    <div className="fixed inset-0 flex items-center justify-center bg-ttg-arena-bg">
       <div className="flex flex-col items-center gap-6">
         <div className="relative w-16 h-16">
-          <div className="absolute inset-0 rounded-full bg-[#FFCC00]/15 animate-ping" />
+          <div className="absolute inset-0 rounded-full bg-ttg-yellow/15 animate-ping" />
           <Image src="/logo/logo-tg-yellow.png" alt="" width={64} height={64} className="relative animate-pulse" priority />
         </div>
-        <div className="w-8 h-8 rounded-full border-[3px] border-white/10 border-t-[#FFCC00] animate-spin" />
+        <div className="w-8 h-8 rounded-full border-[3px] border-white/10 border-t-ttg-yellow animate-spin" />
         <p className="text-xs font-bold text-white/20 uppercase tracking-[0.3em] animate-pulse">
           Loading Arena
         </p>
@@ -54,7 +54,7 @@ export default function PracticePage() {
   return (
     <AuthProvider>
       {/* Full viewport — no magazine shell, no header, no footer */}
-      <div className="fixed inset-0 bg-[#0a0a0a] overflow-hidden">
+      <div className="fixed inset-0 bg-ttg-arena-bg overflow-hidden">
         <BattleView />
       </div>
     </AuthProvider>

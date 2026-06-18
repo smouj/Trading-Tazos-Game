@@ -35,7 +35,7 @@ export default function WikiHomePage() {
           <a
             key={key}
             href={`/wiki/${cfg.slug}`}
-            className="group block border-2 border-[#1a1a1a] bg-white overflow-hidden transition-all hover:-translate-y-1"
+            className="group block border-2 border-ttg-black bg-white overflow-hidden transition-all hover:-translate-y-1"
             style={{ boxShadow: "4px 4px 0 #1a1a1a" }}
           >
             <div className="h-2 w-full" style={{ backgroundColor: cfg.color }} />
@@ -46,11 +46,11 @@ export default function WikiHomePage() {
               >
                 {cfg.label}
               </h2>
-              <p className="text-xs text-[#1a1a1a]/60 leading-relaxed mb-3">
+              <p className="text-xs text-ttg-black/60 leading-relaxed mb-3">
                 {cfg.description}
               </p>
               <span
-                className="inline-block text-[10px] font-black text-white px-3 py-1 border-2 border-[#1a1a1a]"
+                className="inline-block text-[10px] font-black text-white px-3 py-1 border-2 border-ttg-black"
                 style={{
                   backgroundColor: cfg.color,
                   boxShadow: "2px 2px 0 #1a1a1a",
@@ -64,11 +64,11 @@ export default function WikiHomePage() {
       </div>
 
       {/* About section */}
-      <section className="border-2 border-[#1a1a1a]/20 p-6 mb-10">
-        <h2 className="text-lg font-black text-[#1a1a1a] uppercase tracking-[0.05em] mb-2">
+      <section className="border-2 border-ttg-black/20 p-6 mb-10">
+        <h2 className="text-lg font-black text-ttg-black uppercase tracking-[0.05em] mb-2">
           Sobre el Wiki
         </h2>
-        <p className="text-sm text-[#1a1a1a]/60 leading-relaxed">
+        <p className="text-sm text-ttg-black/60 leading-relaxed">
           El TTG Wiki documenta cada tazo, personaje, criatura, villano, aliado, técnica,
           transformación y objeto de las tres series oficiales de Trading Tazos Game.
           Todo el contenido es original de TTG y sigue el canon establecido.

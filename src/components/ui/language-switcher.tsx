@@ -22,9 +22,9 @@ export default function LanguageSwitcher() {
             <button
               key={l.code}
               onClick={() => setLang(l.code)}
-              className={`w-full text-left px-3 py-1.5 text-xs hover:bg-[#FFCB0510] transition-colors ${
+              className={`w-full text-left px-3 py-1.5 text-xs hover:bg-ttg-minimon/5 transition-colors ${
                 lang === l.code
-                  ? "font-black text-ttg-black bg-[#FFCB0530]"
+                  ? "font-black text-ttg-black bg-ttg-minimon/15"
                   : "font-bold text-ttg-black/60"
               }`}
             >

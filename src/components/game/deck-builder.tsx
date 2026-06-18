@@ -214,7 +214,7 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
                   type="text" value={name}
                   onChange={e => setName(e.target.value)}
                   placeholder="e.g. Fire Squad"
-                  className="w-full border-3 border-ttg-black px-4 py-3 text-sm font-bold text-ttg-black placeholder:text-ttg-black/25 bg-[#fffef0] shadow-[2px_2px_0px_var(--ttg-black)] focus:outline-none focus:border-ttg-yellow"
+                  className="w-full border-3 border-ttg-black px-4 py-3 text-sm font-bold text-ttg-black placeholder:text-ttg-black/25 bg-ttg-cream shadow-[2px_2px_0px_var(--ttg-black)] focus:outline-none focus:border-ttg-yellow"
                   autoFocus
                   onKeyDown={e => { if (e.key === "Enter" && name.trim()) setStep(2) }}
                 />
@@ -343,7 +343,7 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
               {/* Tazo grid */}
               {loading ? (
                 <div className="flex justify-center py-12">
-                  <div className="mag-spinner w-8 h-8 rounded-full border-3 border-ttg-yellow border-t-[#E3350D]" />
+                  <div className="mag-spinner w-8 h-8 rounded-full border-3 border-ttg-yellow border-t-ttg-red" />
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-[50vh] overflow-y-auto p-1">
@@ -416,7 +416,7 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
 
             {/* Right: Battle Tube Panel (sticky) */}
             <div className="lg:w-44 flex-shrink-0">
-              <div className="lg:sticky lg:top-4 border-2 border-ttg-black bg-[#fffef0] p-3 flex flex-col items-center gap-2">
+              <div className="lg:sticky lg:top-4 border-2 border-ttg-black bg-ttg-cream p-3 flex flex-col items-center gap-2">
                 <p className="text-[9px] font-black uppercase text-ttg-black/30 tracking-wider">Battle Deck</p>
                 <BattleTubePreview
                   name={name || "Deck"}
@@ -429,7 +429,7 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
                   showLabel
                 />
                 {selectedIds.size >= 20 && (
-                  <div className="flex items-center gap-1 px-2 py-0.5 bg-ttg-success border border-[#16A34A] text-white">
+                  <div className="flex items-center gap-1 px-2 py-0.5 bg-ttg-success border border-ttg-success text-white">
                     <CheckCircle className="w-3 h-3" />
                     <span className="text-[8px] font-black uppercase">Deck Full</span>
                   </div>
@@ -494,22 +494,22 @@ export default function DeckBuilder({ initialDeck, onSave, onCancel, saving, sav
               <p className="text-[10px] font-bold text-ttg-black/35">Review your deck before sealing</p>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <div className="p-3 border-2 border-ttg-black bg-[#fffef0] text-center">
+                <div className="p-3 border-2 border-ttg-black bg-ttg-cream text-center">
                   <div className="text-[8px] font-black uppercase text-ttg-black/40 tracking-wider mb-1">Name</div>
                   <div className="text-sm font-black text-ttg-black">{name}</div>
                 </div>
-                <div className="p-3 border-2 border-ttg-black bg-[#fffef0] text-center">
+                <div className="p-3 border-2 border-ttg-black bg-ttg-cream text-center">
                   <div className="text-[8px] font-black uppercase text-ttg-black/40 tracking-wider mb-1">Tazos</div>
                   <div className={`text-sm font-black ${selectedIds.size >= 20 ? "text-ttg-success" : "text-ttg-blue"}`}>{selectedIds.size}/20</div>
                 </div>
-                <div className="p-3 border-2 border-ttg-black bg-[#fffef0] text-center">
+                <div className="p-3 border-2 border-ttg-black bg-ttg-cream text-center">
                   <div className="text-[8px] font-black uppercase text-ttg-black/40 tracking-wider mb-1">Total Power</div>
                   <div className="text-sm font-black text-ttg-yellow">{totalP}</div>
                 </div>
               </div>
 
               {/* Texture + Franchise preview */}
-              <div className="flex items-center gap-3 p-3 bg-[#fffef0] border-2 border-ttg-black">
+              <div className="flex items-center gap-3 p-3 bg-ttg-cream border-2 border-ttg-black">
                 <div className="relative w-32 aspect-[3/4] overflow-hidden border border-ttg-black/20 flex-shrink-0">
                   <Image src={tubeTexture} alt="Tube texture" fill className="object-cover" sizes="300px" />
                 </div>

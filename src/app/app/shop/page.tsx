@@ -44,7 +44,7 @@ interface BagConfig {
 const DEFAULT_BAGS: BagConfig[] = [
   {
     type: "standard", name: "Classic Bag", cost: 50,
-    bonusChance: 12, rareBoost: 2, color: "#FFCC00", bgColor: "#FFF8E7",
+    bonusChance: 12, rareBoost: 2, color: 'var(--ttg-yellow)', bgColor: "#FFF8E7",
     franchise: "minimon", icon: <ShoppingBag className="w-4 h-4" />,
     tagline: "Original collection tazos",
   },
@@ -96,15 +96,15 @@ function BagCard({ bag, selected, onSelect, onBuy, buying, credits }: {
       onClick={onSelect}
       className={`relative flex flex-col text-left border-3 overflow-hidden transition-all duration-200 group ${
         selected
-          ? "border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] -translate-x-0.5 -translate-y-0.5 bg-white"
-          : "border-[#1a1a1a]/12 shadow-[3px_3px_0px_#1a1a1a15] bg-white/70 hover:border-[#1a1a1a]/30 hover:bg-white hover:shadow-[3px_3px_0px_#1a1a1a]"
+          ? "border-ttg-black shadow-[4px_4px_0px_var(--ttg-black)] -translate-x-0.5 -translate-y-0.5 bg-white"
+          : "border-ttg-black/12 shadow-[3px_3px_0px_#1a1a1a15] bg-white/70 hover:border-ttg-black/30 hover:bg-white hover:shadow-[3px_3px_0px_var(--ttg-black)]"
       }`}
     >
       {/* Price badge */}
       <div className={`absolute top-2 right-2 z-10 px-2.5 py-1 flex items-center gap-1 border-2 text-[10px] font-black ${
         selected
-          ? "bg-[#1a1a1a] text-[#FFCC00] border-[#1a1a1a]"
-          : "bg-white text-[#1a1a1a] border-[#1a1a1a]/20 group-hover:border-[#1a1a1a]"
+          ? "bg-ttg-black text-ttg-yellow border-ttg-black"
+          : "bg-white text-ttg-black border-ttg-black/20 group-hover:border-ttg-black"
       }`}>
         <Coins className="w-3 h-3" />
         {bag.cost}
@@ -112,7 +112,7 @@ function BagCard({ bag, selected, onSelect, onBuy, buying, credits }: {
 
       {/* Franchise badge */}
       <div className={`absolute top-2 left-2 z-10 px-2 py-0.5 text-[8px] font-black uppercase tracking-widest border ${
-        selected ? "border-[#1a1a1a] bg-white" : "border-transparent bg-white/60"
+        selected ? "border-ttg-black bg-white" : "border-transparent bg-white/60"
       }`}>
         {bag.franchise}
       </div>
@@ -138,13 +138,13 @@ function BagCard({ bag, selected, onSelect, onBuy, buying, credits }: {
 
       {/* Info */}
       <div className="p-3 space-y-1.5">
-        <h3 className="font-black text-xs uppercase text-[#1a1a1a]">{bag.name}</h3>
-        <p className="text-[9px] font-bold text-[#1a1a1a]/40">{bag.tagline}</p>
+        <h3 className="font-black text-xs uppercase text-ttg-black">{bag.name}</h3>
+        <p className="text-[9px] font-bold text-ttg-black/40">{bag.tagline}</p>
         <div className="flex items-center gap-2 text-[8px] font-black">
-          <span className="flex items-center gap-1 text-[#1a1a1a]/50">
+          <span className="flex items-center gap-1 text-ttg-black/50">
             <Crosshair className="w-2.5 h-2.5" />{bag.rareBoost}x rare
           </span>
-          <span className="flex items-center gap-1 text-[#1a1a1a]/50">
+          <span className="flex items-center gap-1 text-ttg-black/50">
             <Gift className="w-2.5 h-2.5" />{bag.bonusChance}% bonus
           </span>
         </div>
@@ -155,29 +155,29 @@ function BagCard({ bag, selected, onSelect, onBuy, buying, credits }: {
             <div className="pt-1.5 space-y-1.5">
               <div className="grid grid-cols-3 gap-1">
                 <div role="button" onClick={(e) => { e.stopPropagation(); onBuy(1) }}
-                  className="py-2 text-center text-[10px] font-black uppercase tracking-wider border-2 border-[#1a1a1a] bg-[#22C55E] text-white shadow-[3px_3px_0px_#1a1a1a] hover:shadow-[2px_2px_0px_#1a1a1a] hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
+                  className="py-2 text-center text-[10px] font-black uppercase tracking-wider border-2 border-ttg-black bg-ttg-success text-white shadow-[3px_3px_0px_var(--ttg-black)] hover:shadow-[2px_2px_0px_var(--ttg-black)] hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
                   {buying ? <Loader2 className="w-3 h-3 animate-spin mx-auto" /> : <><Scissors className="w-3 h-3 inline mr-0.5" />x1</>}
                 </div>
                 <div role="button" onClick={(e) => { e.stopPropagation(); onBuy(5) }}
-                  className="py-2 text-center text-[10px] font-black uppercase tracking-wider border-2 border-[#1a1a1a] bg-[#3B82F6] text-white shadow-[3px_3px_0px_#1a1a1a] hover:shadow-[2px_2px_0px_#1a1a1a] hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
+                  className="py-2 text-center text-[10px] font-black uppercase tracking-wider border-2 border-ttg-black bg-ttg-blue text-white shadow-[3px_3px_0px_var(--ttg-black)] hover:shadow-[2px_2px_0px_var(--ttg-black)] hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
                   {buying ? <Loader2 className="w-3 h-3 animate-spin mx-auto" /> : <><Zap className="w-3 h-3 inline mr-0.5" />x5</>}
                 </div>
                 <div role="button" onClick={(e) => { e.stopPropagation(); onBuy(20) }}
-                  className="py-2 text-center text-[10px] font-black uppercase tracking-wider border-2 border-[#1a1a1a] bg-[#A855F7] text-white shadow-[3px_3px_0px_#1a1a1a] hover:shadow-[2px_2px_0px_#1a1a1a] hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
+                  className="py-2 text-center text-[10px] font-black uppercase tracking-wider border-2 border-ttg-black bg-ttg-purple text-white shadow-[3px_3px_0px_var(--ttg-black)] hover:shadow-[2px_2px_0px_var(--ttg-black)] hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
                   {buying ? <Loader2 className="w-3 h-3 animate-spin mx-auto" /> : <><Flame className="w-3 h-3 inline mr-0.5" />x20</>}
                 </div>
               </div>
-              <div className="text-center text-[8px] font-bold text-[#1a1a1a]/25">
+              <div className="text-center text-[8px] font-bold text-ttg-black/25">
                 {bag.cost} · {bag.cost * 5} · {bag.cost * 20} CREDITS
               </div>
             </div>
           ) : (
             <div className="pt-1.5">
               <div role="button"
-                className={`w-full py-2 text-center text-[10px] font-black uppercase tracking-wider border-2 border-[#1a1a1a] transition-all ${
+                className={`w-full py-2 text-center text-[10px] font-black uppercase tracking-wider border-2 border-ttg-black transition-all ${
                   selected && !canAfford
                     ? "bg-zinc-300 text-zinc-500 cursor-not-allowed"
-                    : "bg-[#1a1a1a]/5 text-[#1a1a1a]/30 group-hover:text-[#1a1a1a]/50"
+                    : "bg-ttg-black/5 text-ttg-black/30 group-hover:text-ttg-black/50"
                 }`}
               >
                 {selected && !canAfford ? (
@@ -202,9 +202,9 @@ function BagCard({ bag, selected, onSelect, onBuy, buying, credits }: {
 // ── StatsRow (reveal view) ─────────────────────────────
 function StatsRow({ tazo }: { tazo: any }) {
   const stats = [
-    { label: "ATK", value: tazo.attack, color: "#E3350D" },
-    { label: "DEF", value: tazo.defense, color: "#3B4CCA" },
-    { label: "SPD", value: Math.round((tazo.bounce + tazo.spin + tazo.precision) / 3), color: "#22C55E" },
+    { label: "ATK", value: tazo.attack, color: 'var(--ttg-red)' },
+    { label: "DEF", value: tazo.defense, color: 'var(--ttg-blue)' },
+    { label: "SPD", value: Math.round((tazo.bounce + tazo.spin + tazo.precision) / 3), color: 'var(--ttg-success)' },
     { label: "WGT", value: tazo.weight, color: "#78716C" },
     { label: "STA", value: tazo.stability, color: "#F59E0B" },
     { label: "CTL", value: tazo.control, color: "#06B6D4" },
@@ -214,16 +214,16 @@ function StatsRow({ tazo }: { tazo: any }) {
     <div className="space-y-2">
       <div className="grid grid-cols-3 gap-1.5">
         {stats.map(s => (
-          <div key={s.label} className="p-2 text-center bg-white border-2 border-[#1a1a1a]/10 shadow-[1px_1px_0px_#1a1a1a10]">
-            <div className="text-[8px] font-black text-[#1a1a1a]/30 uppercase mb-0.5">{s.label}</div>
+          <div key={s.label} className="p-2 text-center bg-white border-2 border-ttg-black/10 shadow-[1px_1px_0px_var(--ttg-black)]/5">
+            <div className="text-[8px] font-black text-ttg-black/30 uppercase mb-0.5">{s.label}</div>
             <div className="text-sm font-black" style={{ color: s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
       <div className="flex items-center justify-center gap-1">
-        <Flame className="w-3 h-3 text-[#E3350D]" />
-        <span className="text-[9px] font-black text-[#1a1a1a]/40">TOTAL POWER</span>
-        <span className="text-sm font-black text-[#E3350D]">{total}</span>
+        <Flame className="w-3 h-3 text-ttg-red" />
+        <span className="text-[9px] font-black text-ttg-black/40">TOTAL POWER</span>
+        <span className="text-sm font-black text-ttg-red">{total}</span>
       </div>
     </div>
   )
@@ -479,13 +479,13 @@ export default function BagShopPage() {
   if (!user) {
     return (
       <div className="max-w-2xl mx-auto py-20 text-center space-y-6">
-        <ShoppingBag className="w-16 h-16 mx-auto text-[#1a1a1a]/10" />
-        <h1 className="text-2xl font-black uppercase tracking-wider text-[#1a1a1a]">
+        <ShoppingBag className="w-16 h-16 mx-auto text-ttg-black/10" />
+        <h1 className="text-2xl font-black uppercase tracking-wider text-ttg-black">
           {t.shop_title || "Tazo Shop"}
         </h1>
-        <p className="text-sm font-bold text-[#1a1a1a]/30">{t.auth_login} to buy bags and open tazos</p>
+        <p className="text-sm font-bold text-ttg-black/30">{t.auth_login} to buy bags and open tazos</p>
         <Link href="/login"
-          className="mag-btn inline-block bg-[#FFCC00] text-[#1a1a1a] font-black uppercase px-6 py-3 border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
+          className="mag-btn inline-block bg-ttg-yellow text-ttg-black font-black uppercase px-6 py-3 border-3 border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
           {t.auth_login}
         </Link>
       </div>
@@ -508,14 +508,14 @@ export default function BagShopPage() {
           }}
         >
           <div className="flex items-center gap-2">
-            <ShoppingCart className="w-5 h-5 text-[#FFCC00]" />
+            <ShoppingCart className="w-5 h-5 text-ttg-yellow" />
             <h1 className="text-sm sm:text-lg font-black text-white uppercase tracking-tight">
               {t.shop_title || "Tazo Shop"}
             </h1>
           </div>
           <div className="w-px h-5 bg-white/15" />
           <div className="flex items-center gap-1.5" title="Your credits to buy bags">
-            <Coins className="w-4 h-4 text-[#FFCC00]" />
+            <Coins className="w-4 h-4 text-ttg-yellow" />
             {initialLoading ? (
               <Skeleton className="h-4 w-12" />
             ) : (
@@ -526,9 +526,9 @@ export default function BagShopPage() {
           {pendingBags > 0 && (
             <>
               <div className="flex items-center gap-1.5" title="You have bags ready to open">
-                <PackageOpen className="w-3.5 h-3.5 text-[#22C55E]" />
-                <span className="font-black text-xs text-[#22C55E]">{pendingBags}</span>
-                <span className="text-[9px] font-bold text-[#22C55E]/60 uppercase tracking-wider">TO OPEN</span>
+                <PackageOpen className="w-3.5 h-3.5 text-ttg-success" />
+                <span className="font-black text-xs text-ttg-success">{pendingBags}</span>
+                <span className="text-[9px] font-bold text-ttg-success/60 uppercase tracking-wider">TO OPEN</span>
               </div>
               <button
               onClick={async () => {
@@ -539,13 +539,13 @@ export default function BagShopPage() {
                   if (data.bags?.length > 0) {
                     const first = data.bags[0]
                     setBagId(first.id)
-                    setSelectedBag({ type: first.bagType || "standard", name: "Mystery Bag", cost: 0, bonusChance: 15, rareBoost: 2, color: "#FFCC00", bgColor: "#FFF8E7", franchise: first.preview?.franchise || "minimon", icon: <Gift className="w-4 h-4" />, tagline: "Free bag" })
+                    setSelectedBag({ type: first.bagType || "standard", name: "Mystery Bag", cost: 0, bonusChance: 15, rareBoost: 2, color: 'var(--ttg-yellow)', bgColor: "#FFF8E7", franchise: first.preview?.franchise || "minimon", icon: <Gift className="w-4 h-4" />, tagline: "Free bag" })
                     setBuying(false); setStage("opening")
                     sfxEnsureUnlocked(); playSFX('coin', { volume: 0.35 })
                   }
                 } catch { setError("Failed"); setBuying(false) }
               }}
-              className="ml-auto flex items-center gap-1.5 px-3 py-1.5 border-2 border-[#E3350D] bg-white text-[10px] font-black text-[#E3350D] uppercase hover:bg-[#E3350D] hover:text-white transition-colors shadow-[2px_2px_0px_#E3350D]"
+              className="ml-auto flex items-center gap-1.5 px-3 py-1.5 border-2 border-ttg-red bg-white text-[10px] font-black text-ttg-red uppercase hover:bg-ttg-red hover:text-white transition-colors shadow-[2px_2px_0px_var(--ttg-red)]"
             >
               <Gift className="w-3.5 h-3.5" />
               {pendingBags} free bag{pendingBags > 1 ? "s" : ""}
@@ -559,16 +559,16 @@ export default function BagShopPage() {
           <button onClick={() => setShopTab("bags")}
             className={`flex-1 py-2.5 text-xs font-black uppercase border-3 transition-all ${
               shopTab === "bags"
-                ? "bg-[#1a1a1a] text-[#FFCC00] border-[#1a1a1a]"
-                : "bg-white text-[#1a1a1a]/30 border-[#1a1a1a]/10 hover:text-[#1a1a1a]/50"
+                ? "bg-ttg-black text-ttg-yellow border-ttg-black"
+                : "bg-white text-ttg-black/30 border-ttg-black/10 hover:text-ttg-black/50"
             }`}>
             <ShoppingBag className="w-3.5 h-3.5 inline mr-1" />Bags
           </button>
           <button onClick={() => setShopTab("marketplace")}
             className={`flex-1 py-2.5 text-xs font-black uppercase border-3 transition-all ${
               shopTab === "marketplace"
-                ? "bg-[#1a1a1a] text-[#3B82F6] border-[#1a1a1a]"
-                : "bg-white text-[#1a1a1a]/30 border-[#1a1a1a]/10 hover:text-[#1a1a1a]/50"
+                ? "bg-ttg-black text-ttg-blue border-ttg-black"
+                : "bg-white text-ttg-black/30 border-ttg-black/10 hover:text-ttg-black/50"
             }`}>
             <Store className="w-3.5 h-3.5 inline mr-1" />Marketplace
           </button>
@@ -611,24 +611,24 @@ export default function BagShopPage() {
 
         )}
         {/* ── How to earn ── */}
-        <div className="p-3 bg-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a]">
+        <div className="p-3 bg-white border-3 border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)]">
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={claimDaily}
               disabled={!dailyClaimable || claimingDaily}
               className={`flex items-center gap-1.5 px-3 py-1.5 border-2 font-black text-[9px] uppercase transition-all ${
                 dailyClaimable
-                  ? "border-[#1a1a1a] bg-[#3B4CCA] text-white shadow-[2px_2px_0px_#1a1a1a] hover:shadow-[1px_1px_0px_#1a1a1a] hover:translate-x-[1px] hover:translate-y-[1px]"
-                  : "border-[#1a1a1a]/15 bg-zinc-100 text-zinc-400 cursor-not-allowed"
+                  ? "border-ttg-black bg-ttg-blue text-white shadow-[2px_2px_0px_var(--ttg-black)] hover:shadow-[1px_1px_0px_var(--ttg-black)] hover:translate-x-[1px] hover:translate-y-[1px]"
+                  : "border-ttg-black/15 bg-zinc-100 text-zinc-400 cursor-not-allowed"
               }`}
             >
               {claimingDaily ? <Loader2 className="h-3 w-3 animate-spin" /> : <Calendar className="h-3 w-3" />}
               {dailyClaimable ? "Claim +25 CREDITS Daily" : "Claimed Today"}
             </button>
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[9px] font-bold text-[#1a1a1a]/40">
-              <span className="flex items-center gap-1"><Swords className="w-2.5 h-2.5 text-[#E3350D]" />Battles +30 CREDITS</span>
-              <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5 text-[#3B4CCA]" />Daily +25 CREDITS</span>
-              <span className="flex items-center gap-1"><Trophy className="w-2.5 h-2.5 text-[#F59E0B]" />Quests +50-200 CREDITS</span>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[9px] font-bold text-ttg-black/40">
+              <span className="flex items-center gap-1"><Swords className="w-2.5 h-2.5 text-ttg-red" />Battles +30 CREDITS</span>
+              <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5 text-ttg-blue" />Daily +25 CREDITS</span>
+              <span className="flex items-center gap-1"><Trophy className="w-2.5 h-2.5 text-ttg-warning" />Quests +50-200 CREDITS</span>
             </div>
           </div>
         </div>
@@ -644,7 +644,7 @@ export default function BagShopPage() {
       <div className="max-w-2xl mx-auto py-3 sm:py-4 px-1 animate-fadeIn">
         <WebGLGuard fallback={
           <div className="text-center py-8 space-y-3">
-            <button onClick={openBag} className="px-6 py-3 bg-[#FFCC00] border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] font-black text-sm uppercase">
+            <button onClick={openBag} className="px-6 py-3 bg-ttg-yellow border-3 border-ttg-black shadow-[4px_4px_0px_var(--ttg-black)] font-black text-sm uppercase">
               ⚡ Open {selectedBag.name}
             </button>
           </div>
@@ -664,11 +664,11 @@ export default function BagShopPage() {
       return (
         <div className="max-w-lg mx-auto py-8 sm:py-12 px-4 text-center space-y-6 animate-fadeIn">
           <ConfettiBurst active />
-          <h2 className="text-xl font-black uppercase tracking-wider text-[#1a1a1a]">All {bulkTotal} bags opened!</h2>
+          <h2 className="text-xl font-black uppercase tracking-wider text-ttg-black">All {bulkTotal} bags opened!</h2>
           <div className="flex flex-wrap justify-center gap-3 min-h-[120px] items-start content-start">
             {revealedTazos.map((t, i) => (
               <div key={i}
-                className="w-20 h-20 rounded-full border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] flex items-center justify-center overflow-hidden bg-[#1a1a1a] animate-bounce-in"
+                className="w-20 h-20 rounded-full border-3 border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)] flex items-center justify-center overflow-hidden bg-ttg-black animate-bounce-in"
                 style={{ animationDelay: `${i * 80}ms` }}>
                 {t.imageUrl ? (
                   <TazoDiscImage src={t.imageUrl} alt={t.name} size="100%" borderWidth={0}
@@ -683,7 +683,7 @@ export default function BagShopPage() {
             ))}
           </div>
           <button onClick={() => setStage("reveal-bulk")}
-            className="mag-btn px-8 py-3 font-black text-sm uppercase bg-[#FFCC00] text-[#1a1a1a] border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all animate-bounce-in">
+            className="mag-btn px-8 py-3 font-black text-sm uppercase bg-ttg-yellow text-ttg-black border-3 border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all animate-bounce-in">
             <ChevronRight className="w-4 h-4 inline mr-1" />View All {bulkTotal} Tazos
           </button>
         </div>
@@ -692,13 +692,13 @@ export default function BagShopPage() {
     return (
       <div className="max-w-2xl mx-auto py-3 sm:py-4 px-1 animate-fadeIn">
         <div className="text-center mb-2">
-          <span className="text-[10px] font-black text-[#1a1a1a]/40 uppercase tracking-wider">
+          <span className="text-[10px] font-black text-ttg-black/40 uppercase tracking-wider">
             Bag {bulkIndex + 1} of {bulkTotal}
           </span>
         </div>
         <WebGLGuard fallback={
           <div className="text-center py-8 space-y-3">
-            <button onClick={openNextBulkBag} className="px-6 py-3 bg-[#FFCC00] border-3 border-[#1a1a1a] shadow-[4px_4px_0px_#1a1a1a] font-black text-sm uppercase">
+            <button onClick={openNextBulkBag} className="px-6 py-3 bg-ttg-yellow border-3 border-ttg-black shadow-[4px_4px_0px_var(--ttg-black)] font-black text-sm uppercase">
               ⚡ Open Bag {bulkIndex + 1}/{bulkTotal}
             </button>
           </div>
@@ -714,7 +714,7 @@ export default function BagShopPage() {
           <div className="flex justify-center gap-2 mt-3 flex-wrap">
             {revealedTazos.map((t, i) => (
               <div key={i}
-                className="w-14 h-14 rounded-full border-2 border-[#1a1a1a]/20 shadow-[2px_2px_0px_#1a1a1a]/20 flex items-center justify-center overflow-hidden bg-[#1a1a1a]/5 animate-bounce-in"
+                className="w-14 h-14 rounded-full border-2 border-ttg-black/20 shadow-[2px_2px_0px_var(--ttg-black)]/20 flex items-center justify-center overflow-hidden bg-ttg-black/5 animate-bounce-in"
                 style={{ animationDelay: `${i * 60}ms` }}>
                 {t.imageUrl ? (
                   <TazoDiscImage src={t.imageUrl} alt={t.name} size="100%" borderWidth={0}
@@ -819,8 +819,8 @@ export default function BagShopPage() {
           isLegendary ? "border-[5px]" : "border-4"
         } ${isHighRarity ? "animate-pulse" : ""}`}
           style={{
-            borderColor: isLegendary ? "#F59E0B" : isUltraRare ? "#A855F7" : isRare ? "#3B82F6" : "#1a1a1a",
-            background: "#1a1a1a",
+            borderColor: isLegendary ? "#F59E0B" : isUltraRare ? 'var(--ttg-purple)' : isRare ? "#3B82F6" : 'var(--ttg-black)',
+            background: 'var(--ttg-black)',
             boxShadow: isLegendary
               ? "8px 8px 0px #1a1a1a, 0 0 40px #F59E0B50, 0 0 80px #F59E0B30, inset 0 0 40px #F59E0B15"
               : isUltraRare
@@ -848,30 +848,30 @@ export default function BagShopPage() {
             isLegendary ? "text-2xl sm:text-3xl" : isHighRarity ? "text-xl sm:text-2xl" : "text-xl"
           }`}
             style={{
-              color: "#1a1a1a",
+              color: 'var(--ttg-black)',
               textShadow: isLegendary ? "0 0 20px #F59E0B40" : "none",
             }}>
             {_tazo.displayName || _tazo.name}
           </h3>
-          <p className="text-xs font-bold text-[#1a1a1a]/35 uppercase tracking-wider">
+          <p className="text-xs font-bold text-ttg-black/35 uppercase tracking-wider">
             #{_tazo.number || _tazo.id?.slice(-3)} · {_tazo.franchiseName || selectedBag.franchise}
           </p>
         </div>
 
         {/* Stats with staggered animation */}
-        <div className="p-4 bg-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] animate-[popUp_0.5s_ease-out_0.35s_both]">
+        <div className="p-4 bg-white border-3 border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)] animate-[popUp_0.5s_ease-out_0.35s_both]">
           <StatsRow tazo={_tazo} />
         </div>
 
         {/* Legendary special message */}
         {isLegendary && (
           <div className="animate-[popUp_0.5s_ease-out_0.45s_both]">
-            <div className="inline-block px-4 py-2 bg-[#FEF3C7] border-2 border-[#F59E0B]"
+            <div className="inline-block px-4 py-2 bg-ttg-yellow/10 border-2 border-ttg-warning"
               style={{ boxShadow: "0 0 20px #F59E0B30" }}>
-              <p className="text-sm font-black text-[#B45309] uppercase tracking-wider flex items-center gap-2">
+              <p className="text-sm font-black text-ttg-dracobell uppercase tracking-wider flex items-center gap-2">
                 <Trophy className="w-5 h-5" /> Legendary Find! <Trophy className="w-5 h-5" />
               </p>
-              <p className="text-[9px] font-bold text-[#B45309]/50 mt-0.5 uppercase tracking-[0.2em]">
+              <p className="text-[9px] font-bold text-ttg-dracobell/50 mt-0.5 uppercase tracking-[0.2em]">
                 One of the rarest tazos in the game
               </p>
             </div>
@@ -883,19 +883,19 @@ export default function BagShopPage() {
           <div className="p-4 border-3 animate-[popUp_0.5s_ease-out_0.55s_both]"
             style={{ borderColor: "#F59E0B", background: "linear-gradient(135deg, #FEF3C7, #FFF8E7)", boxShadow: "3px 3px 0px #F59E0B" }}>
             <div className="flex items-center justify-center gap-2 mb-2">
-              <Gift className="w-5 h-5 text-[#F59E0B]" />
-              <p className="text-sm font-black uppercase text-[#F59E0B]">Bonus Tazo!</p>
+              <Gift className="w-5 h-5 text-ttg-warning" />
+              <p className="text-sm font-black uppercase text-ttg-warning">Bonus Tazo!</p>
             </div>
             <div className="flex items-center justify-center gap-4 p-2">
               {bonusTazo.imageUrl && (
-                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a]" style={{ background: "#1a1a1a" }}>
+                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-ttg-black shadow-[2px_2px_0px_var(--ttg-black)]" style={{ background: 'var(--ttg-black)' }}>
                   <TazoDiscImage src={bonusTazo.imageUrl} alt={bonusTazo.name} size="100%" borderWidth={0}
                     franchiseSlug={bonusTazo.franchiseSlug} finish={bonusTazo.finish} creatureVariant={bonusTazo.creatureVariant} shinyImageUrl={bonusTazo.shinyImageUrl}
                     className="w-full h-full" />
                 </div>
               )}
               <div className="text-left">
-                <p className="font-black text-sm text-[#1a1a1a]">{bonusTazo.displayName || bonusTazo.name}</p>
+                <p className="font-black text-sm text-ttg-black">{bonusTazo.displayName || bonusTazo.name}</p>
                 <span className="text-[9px] font-black uppercase px-1.5 py-0.5 border"
                   style={{ borderColor: RARITY_GRADIENT[bonusTazo.rarity] || "#9CA3AF", color: RARITY_GRADIENT[bonusTazo.rarity] || "#9CA3AF" }}>
                   {RARITY_LABELS[bonusTazo.rarity] || bonusTazo.rarity}
@@ -908,15 +908,15 @@ export default function BagShopPage() {
         {/* Actions */}
         <div className="flex flex-wrap gap-3 justify-center animate-[popUp_0.5s_ease-out_0.6s_both]">
           <button onClick={handleReset}
-            className="mag-btn px-6 py-3 font-black text-xs uppercase bg-[#FFCC00] text-[#1a1a1a] border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
+            className="mag-btn px-6 py-3 font-black text-xs uppercase bg-ttg-yellow text-ttg-black border-3 border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
             <ShoppingBag className="w-4 h-4 inline mr-1" />Open Another
           </button>
           <Link href="/app/collection"
-            className="mag-btn px-6 py-3 font-black text-xs uppercase bg-[#1a1a1a] text-[#FFCC00] border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
+            className="mag-btn px-6 py-3 font-black text-xs uppercase bg-ttg-black text-ttg-yellow border-3 border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
             <ChevronRight className="w-4 h-4 inline mr-1" />Collection
           </Link>
           <button onClick={() => { handleReset(); window.location.href = "/app/shop"; }}
-            className="mag-btn px-6 py-3 font-black text-xs uppercase bg-white text-[#1a1a1a]/40 border-2 border-[#1a1a1a]/10 active:translate-x-0.5 active:translate-y-0.5 transition-all">
+            className="mag-btn px-6 py-3 font-black text-xs uppercase bg-white text-ttg-black/40 border-2 border-ttg-black/10 active:translate-x-0.5 active:translate-y-0.5 transition-all">
             Close
           </button>
         </div>
@@ -943,7 +943,7 @@ export default function BagShopPage() {
         <div className="space-y-1">
           <div className={`inline-block px-4 py-1.5 border-3 text-sm font-black uppercase tracking-wider ${hasLegendary ? "animate-pulse" : ""}`}
             style={{
-              borderColor: "#1a1a1a",
+              borderColor: 'var(--ttg-black)',
               background: RARITY_GRADIENT[maxRarity] || "#9CA3AF",
               color: "#fff",
               boxShadow: "3px 3px 0px #1a1a1a",
@@ -951,7 +951,7 @@ export default function BagShopPage() {
             <Gift className="w-4 h-4 inline mr-1" />
             {revealedTazos.length} Tazos Opened!
           </div>
-          <p className="text-[10px] font-bold text-[#1a1a1a]/30">
+          <p className="text-[10px] font-bold text-ttg-black/30">
             From {bulkTotal} {selectedBag.name}{bulkTotal > 1 ? "s" : ""}
           </p>
         </div>
@@ -970,19 +970,19 @@ export default function BagShopPage() {
         <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2">
           {revealedTazos.map((t, i) => (
             <div key={i}
-              className="flex flex-col items-center gap-1 p-2 bg-white border-2 border-[#1a1a1a]/10 shadow-[2px_2px_0px_#1a1a1a08] hover:border-[#1a1a1a]/30 hover:shadow-[2px_2px_0px_#1a1a1a15] transition-all animate-bounce-in"
+              className="flex flex-col items-center gap-1 p-2 bg-white border-2 border-ttg-black/10 shadow-[2px_2px_0px_var(--ttg-black)]/3 hover:border-ttg-black/30 hover:shadow-[2px_2px_0px_#1a1a1a15] transition-all animate-bounce-in"
               style={{ animationDelay: `${i * 60}ms` }}>
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-[#1a1a1a]/20 flex items-center justify-center overflow-hidden"
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-ttg-black/20 flex items-center justify-center overflow-hidden"
                 style={{ background: `radial-gradient(circle at 30% 30%, ${RARITY_GRADIENT[t.rarity] || "#9CA3AF"}20, #1a1a1a)` }}>
                 {t.imageUrl ? (
                   <TazoDiscImage src={t.imageUrl} alt={t.name} size="100%" borderWidth={0}
                     franchiseSlug={t.franchiseSlug} finish={t.finish} creatureVariant={t.creatureVariant}
                     shinyImageUrl={t.shinyImageUrl} className="w-full h-full" />
                 ) : (
-                  <span className="text-[#FFCC00]/40 text-lg font-black">?</span>
+                  <span className="text-ttg-yellow/40 text-lg font-black">?</span>
                 )}
               </div>
-              <span className="text-[8px] font-black text-[#1a1a1a] text-center leading-tight line-clamp-2">{t.name}</span>
+              <span className="text-[8px] font-black text-ttg-black text-center leading-tight line-clamp-2">{t.name}</span>
               <span className="text-[7px] font-bold uppercase px-1 py-0.5 rounded"
                 style={{ backgroundColor: `${RARITY_GRADIENT[t.rarity] || "#9CA3AF"}15`, color: RARITY_GRADIENT[t.rarity] || "#9CA3AF" }}>
                 {RARITY_LABELS[t.rarity] || t.rarity}
@@ -994,11 +994,11 @@ export default function BagShopPage() {
         {/* Actions */}
         <div className="flex flex-wrap gap-3 justify-center">
           <button onClick={handleReset}
-            className="mag-btn px-6 py-3 font-black text-xs uppercase bg-[#FFCC00] text-[#1a1a1a] border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
+            className="mag-btn px-6 py-3 font-black text-xs uppercase bg-ttg-yellow text-ttg-black border-3 border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
             <ShoppingBag className="w-4 h-4 inline mr-1" />Buy More
           </button>
           <Link href="/app/collection"
-            className="mag-btn px-6 py-3 font-black text-xs uppercase bg-[#1a1a1a] text-[#FFCC00] border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
+            className="mag-btn px-6 py-3 font-black text-xs uppercase bg-ttg-black text-ttg-yellow border-3 border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
             <ChevronRight className="w-4 h-4 inline mr-1" />Collection
           </Link>
         </div>
@@ -1010,8 +1010,8 @@ export default function BagShopPage() {
   return (
     <div className="flex items-center justify-center py-12 animate-fadeIn">
       <div className="flex flex-col items-center gap-3">
-        <div className="w-10 h-10 border-3 border-[#1a1a1a]/10 border-t-[#FFCC00] rounded-full animate-spin" />
-        <p className="text-xs font-bold text-[#1a1a1a]/30 uppercase tracking-wider">Loading…</p>
+        <div className="w-10 h-10 border-3 border-ttg-black/10 border-t-ttg-yellow rounded-full animate-spin" />
+        <p className="text-xs font-bold text-ttg-black/30 uppercase tracking-wider">Loading…</p>
       </div>
     </div>
   )

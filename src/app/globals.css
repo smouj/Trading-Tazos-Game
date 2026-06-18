@@ -67,6 +67,10 @@
   --color-ttg-rarity-ultra: var(--ttg-rarity-ultra-ch);
   --color-ttg-rarity-legendary: var(--ttg-rarity-legendary-ch);
   --color-dracobell: #FF6B00;
+  --color-ttg-cream-light: var(--ttg-cream-light-ch);
+  --color-ttg-paper: var(--ttg-paper-ch);
+  --color-ttg-arena-bg: var(--ttg-arena-bg-ch);
+  --color-ttg-arena-ink: var(--ttg-arena-ink-ch);
 }
 
 :root {

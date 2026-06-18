@@ -50,8 +50,8 @@ const FRANCHISE_COLORS: Record<string, string> = {
   minimon: "#FFCB05", cybermon: "#00A1E9", dracobell: "#FF6B00", "draco-bell": "#FF6B00",
 }
 const RARITY_COLORS: Record<string, string> = {
-  common: "#9CA3AF", uncommon: "#22C55E", rare: "#3B82F6",
-  ultra: "#A855F7", legendary: "#FBBF24", epic: "#EF4444",
+  common: "#9CA3AF", uncommon: 'var(--ttg-success)', rare: "#3B82F6",
+  ultra: 'var(--ttg-purple)', legendary: "#FBBF24", epic: "#EF4444",
 }
 const RARITY_STARS: Record<string, number> = {
   common: 1, uncommon: 2, rare: 3, epic: 4, ultra: 4, legendary: 5,
@@ -310,31 +310,31 @@ export default function AdminTazoManagerPage() {
     <AdminShell accentColor="#F59E0B">
       <div className="max-w-[1600px] mx-auto px-4 py-4">
         <div className="flex items-center gap-3 mb-4">
-          <Grid3X3 className="w-5 h-5 text-[#F59E0B]" />
-          <h1 className="text-lg font-black uppercase text-[#1a1a1a] tracking-wider">Tazo Manager</h1>
-          <span className="text-sm font-black text-[#1a1a1a]/25">({total} tazos)</span>
+          <Grid3X3 className="w-5 h-5 text-ttg-warning" />
+          <h1 className="text-lg font-black uppercase text-ttg-black tracking-wider">Tazo Manager</h1>
+          <span className="text-sm font-black text-ttg-black/25">({total} tazos)</span>
         </div>
 
       {/* ── Filter Bar ── */}
-        <div className="flex flex-wrap items-center gap-3 bg-white border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] p-3">
+        <div className="flex flex-wrap items-center gap-3 bg-white border-3 border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)] p-3">
           <div className="flex items-center gap-2 flex-1 min-w-[200px]">
             <Search className="w-4 h-4 text-zinc-400" />
             <input
               type="text" placeholder="Search by name..."
               value={search} onChange={e => { setSearch(e.target.value); setPage(1) }}
-              className="flex-1 bg-transparent text-sm font-bold text-[#1a1a1a] placeholder:text-zinc-300 outline-none py-1"
+              className="flex-1 bg-transparent text-sm font-bold text-ttg-black placeholder:text-zinc-300 outline-none py-1"
             />
-            {search && <button onClick={() => setSearch("")} className="text-zinc-400 hover:text-[#E3350D]"><X className="w-4 h-4" /></button>}
+            {search && <button onClick={() => setSearch("")} className="text-zinc-400 hover:text-ttg-red"><X className="w-4 h-4" /></button>}
           </div>
 
           <select value={franchiseFilter} onChange={e => { setFranchiseFilter(e.target.value); setPage(1) }}
-            className="bg-zinc-50 border-2 border-zinc-200 px-3 py-1.5 text-xs font-bold text-[#1a1a1a] outline-none focus:border-[#FFCC00]">
+            className="bg-zinc-50 border-2 border-zinc-200 px-3 py-1.5 text-xs font-bold text-ttg-black outline-none focus:border-ttg-yellow">
             <option value="">All Series</option>
             {franchises.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
           </select>
 
           <select value={rarityFilter} onChange={e => { setRarityFilter(e.target.value); setPage(1) }}
-            className="bg-zinc-50 border-2 border-zinc-200 px-3 py-1.5 text-xs font-bold text-[#1a1a1a] outline-none focus:border-[#FFCC00]">
+            className="bg-zinc-50 border-2 border-zinc-200 px-3 py-1.5 text-xs font-bold text-ttg-black outline-none focus:border-ttg-yellow">
             <option value="">All Rarities</option>
             {RARITIES.map(r => <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>)}
           </select>
@@ -343,7 +343,7 @@ export default function AdminTazoManagerPage() {
           <div className="flex items-center gap-1">
             <ArrowUpDown className="w-3.5 h-3.5 text-zinc-400" />
             <select value={sortField} onChange={e => setSortField(e.target.value as SortField)}
-              className="bg-zinc-50 border-2 border-zinc-200 px-2 py-1.5 text-[10px] font-bold text-[#1a1a1a] outline-none focus:border-[#FFCC00]">
+              className="bg-zinc-50 border-2 border-zinc-200 px-2 py-1.5 text-[10px] font-bold text-ttg-black outline-none focus:border-ttg-yellow">
               <option value="default">Default</option>
               <option value="name">Name</option>
               <option value="number">Number</option>
@@ -361,68 +361,68 @@ export default function AdminTazoManagerPage() {
 
           {(franchiseFilter || rarityFilter || search) && (
             <button onClick={() => { setFranchiseFilter(""); setRarityFilter(""); setSearch(""); setPage(1) }}
-              className="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-[#E3350D] hover:underline">
+              className="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-ttg-red hover:underline">
               <X className="w-3 h-3" /> Clear
             </button>
           )}
 
           <div className="ml-auto flex items-center gap-4 text-[10px] font-bold text-zinc-400">
             <span>Showing {sortedTazos.length} of {total}</span>
-            {selectedIds.size > 0 && <span className="text-[#FFCC00]">| {selectedIds.size} selected</span>}
+            {selectedIds.size > 0 && <span className="text-ttg-yellow">| {selectedIds.size} selected</span>}
           </div>
         </div>
 
         {/* Batch edit bar */}
         {selectedIds.size > 0 && (
-          <div className="mt-3 flex items-center gap-2 bg-[#FFCC00]/10 border-2 border-[#FFCC00] p-3">
+          <div className="mt-3 flex items-center gap-2 bg-ttg-yellow/10 border-2 border-ttg-yellow p-3">
             {!batchEditMode ? (
               <>
-                <span className="text-sm font-black text-[#1a1a1a]">{selectedIds.size} tazos selected</span>
+                <span className="text-sm font-black text-ttg-black">{selectedIds.size} tazos selected</span>
                 <button onClick={() => setBatchEditMode(true)}
-                  className="px-3 py-1 text-[10px] font-black uppercase tracking-wider bg-[#3B4CCA] text-white border-2 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a]">
+                  className="px-3 py-1 text-[10px] font-black uppercase tracking-wider bg-ttg-blue text-white border-2 border-ttg-black shadow-[2px_2px_0px_var(--ttg-black)]">
                   Batch Edit
                 </button>
                 <button onClick={() => setSelectedIds(new Set())}
-                  className="px-3 py-1 text-[10px] font-black uppercase tracking-wider bg-white text-[#1a1a1a] border-2 border-[#1a1a1a]">
+                  className="px-3 py-1 text-[10px] font-black uppercase tracking-wider bg-white text-ttg-black border-2 border-ttg-black">
                   Deselect All
                 </button>
               </>
             ) : (
               <>
-                <span className="text-xs font-black text-[#1a1a1a]">Apply to {selectedIds.size} tazos:</span>
+                <span className="text-xs font-black text-ttg-black">Apply to {selectedIds.size} tazos:</span>
                 <select onChange={e => setBatchEditData(prev => ({ ...prev, rarity: e.target.value }))} value={batchEditData.rarity || ""}
-                  className="text-[10px] font-bold bg-white border-2 border-zinc-200 px-2 py-1 outline-none focus:border-[#FFCC00]">
+                  className="text-[10px] font-bold bg-white border-2 border-zinc-200 px-2 py-1 outline-none focus:border-ttg-yellow">
                   <option value="">Rarity —</option>
                   {RARITIES.map(r => <option key={r} value={r}>{r}</option>)}
                 </select>
                 <select onChange={e => setBatchEditData(prev => ({ ...prev, finish: e.target.value }))} value={batchEditData.finish || ""}
-                  className="text-[10px] font-bold bg-white border-2 border-zinc-200 px-2 py-1 outline-none focus:border-[#FFCC00]">
+                  className="text-[10px] font-bold bg-white border-2 border-zinc-200 px-2 py-1 outline-none focus:border-ttg-yellow">
                   <option value="">Finish —</option>
                   {FINISHES.map(f => <option key={f} value={f}>{f.replace("_"," ")}</option>)}
                 </select>
                 <select onChange={e => setBatchEditData(prev => ({ ...prev, combatType: e.target.value }))} value={batchEditData.combatType || ""}
-                  className="text-[10px] font-bold bg-white border-2 border-zinc-200 px-2 py-1 outline-none focus:border-[#FFCC00]">
+                  className="text-[10px] font-bold bg-white border-2 border-zinc-200 px-2 py-1 outline-none focus:border-ttg-yellow">
                   <option value="">Combat —</option>
                   {COMBAT_TYPES.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
                 <select onChange={e => setBatchEditData(prev => ({ ...prev, role: e.target.value }))} value={batchEditData.role || ""}
-                  className="text-[10px] font-bold bg-white border-2 border-zinc-200 px-2 py-1 outline-none focus:border-[#FFCC00]">
+                  className="text-[10px] font-bold bg-white border-2 border-zinc-200 px-2 py-1 outline-none focus:border-ttg-yellow">
                   <option value="">Role —</option>
                   {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                 </select>
                 <select onChange={e => setBatchEditData(prev => ({ ...prev, publishStatus: e.target.value }))} value={batchEditData.publishStatus || ""}
-                  className="text-[10px] font-bold bg-white border-2 border-zinc-200 px-2 py-1 outline-none focus:border-[#FFCC00]">
+                  className="text-[10px] font-bold bg-white border-2 border-zinc-200 px-2 py-1 outline-none focus:border-ttg-yellow">
                   <option value="">Publish —</option>
                   <option value="published">✅ Published</option>
                   <option value="pending_review">⏳ Pending</option>
                   <option value="draft">📝 Draft</option>
                 </select>
                 <button onClick={applyBatchEdit} disabled={batchSaving}
-                  className="px-3 py-1 text-[10px] font-black uppercase tracking-wider bg-[#22C55E] text-white border-2 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a] disabled:opacity-50">
+                  className="px-3 py-1 text-[10px] font-black uppercase tracking-wider bg-ttg-success text-white border-2 border-ttg-black shadow-[2px_2px_0px_var(--ttg-black)] disabled:opacity-50">
                   {batchSaving ? "Saving..." : "Apply"}
                 </button>
                 <button onClick={() => { setBatchEditMode(false); setBatchEditData({}) }}
-                  className="px-3 py-1 text-[10px] font-black uppercase tracking-wider bg-white text-[#1a1a1a] border-2 border-[#1a1a1a]">
+                  className="px-3 py-1 text-[10px] font-black uppercase tracking-wider bg-white text-ttg-black border-2 border-ttg-black">
                   Cancel
                 </button>
               </>
@@ -434,7 +434,7 @@ export default function AdminTazoManagerPage() {
       {/* ── Tazo Grid ── */}
       <div className="max-w-[1600px] mx-auto px-4 pb-8">
         {loading ? (
-          <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-[#FFCC00]" /></div>
+          <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-ttg-yellow" /></div>
         ) : sortedTazos.length === 0 ? (
           <div className="text-center py-20 text-sm font-bold text-zinc-400">No tazos found.</div>
         ) : (
@@ -443,23 +443,23 @@ export default function AdminTazoManagerPage() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <button onClick={selectAll}
-                    className="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-[#1a1a1a]/40 hover:text-[#1a1a1a] transition-colors">
-                    {selectedIds.size === sortedTazos.length ? <CheckSquare className="w-4 h-4 text-[#3B4CCA]" /> : <Square className="w-4 h-4" />}
+                    className="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-ttg-black/40 hover:text-ttg-black transition-colors">
+                    {selectedIds.size === sortedTazos.length ? <CheckSquare className="w-4 h-4 text-ttg-blue" /> : <Square className="w-4 h-4" />}
                     {selectedIds.size > 0 ? `${selectedIds.size} selected` : "Select all"}
                   </button>
                 </div>
                 <div className="flex gap-1">
                   <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                    className="p-1.5 border-2 border-zinc-300 bg-white disabled:opacity-30 hover:border-[#FFCC00]"><ChevronLeft className="w-4 h-4" /></button>
+                    className="p-1.5 border-2 border-zinc-300 bg-white disabled:opacity-30 hover:border-ttg-yellow"><ChevronLeft className="w-4 h-4" /></button>
                   {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
                     const start = Math.max(1, Math.min(page - 2, totalPages - 4))
                     const p = start + i
                     if (p > totalPages) return null
                     return <button key={p} onClick={() => setPage(p)}
-                      className={`w-9 h-9 border-2 text-xs font-black ${p === page ? "bg-[#1a1a1a] text-white border-[#1a1a1a]" : "bg-white border-zinc-300 text-zinc-600 hover:border-[#FFCC00]"}`}>{p}</button>
+                      className={`w-9 h-9 border-2 text-xs font-black ${p === page ? "bg-ttg-black text-white border-ttg-black" : "bg-white border-zinc-300 text-zinc-600 hover:border-ttg-yellow"}`}>{p}</button>
                   })}
                   <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                    className="p-1.5 border-2 border-zinc-300 bg-white disabled:opacity-30 hover:border-[#FFCC00]"><ChevronRight className="w-4 h-4" /></button>
+                    className="p-1.5 border-2 border-zinc-300 bg-white disabled:opacity-30 hover:border-ttg-yellow"><ChevronRight className="w-4 h-4" /></button>
                 </div>
               </div>
             )}
@@ -476,23 +476,23 @@ export default function AdminTazoManagerPage() {
                     key={tazo.id}
                     className={`mag-card border-3 transition-all duration-200 ${
                       isEditing
-                        ? "border-[#FFCC00] shadow-[0_0_20px_rgba(255,204,0,0.2)] ring-2 ring-[#FFCC00]/30 scale-[1.02] z-10"
+                        ? "border-ttg-yellow shadow-[0_0_20px_rgba(255,204,0,0.2)] ring-2 ring-ttg-yellow/30 scale-[1.02] z-10"
                         : isSelected
-                        ? "border-[#3B4CCA] shadow-[0_0_10px_rgba(59,76,202,0.15)]"
-                        : "border-[#1a1a1a]/10 shadow-[2px_2px_0px_#1a1a1a10] hover:shadow-[3px_3px_0px_#1a1a1a20] hover:border-[#1a1a1a]/20"
+                        ? "border-ttg-blue shadow-[0_0_10px_rgba(59,76,202,0.15)]"
+                        : "border-ttg-black/10 shadow-[2px_2px_0px_var(--ttg-black)]/5 hover:shadow-[3px_3px_0px_#1a1a1a20] hover:border-ttg-black/20"
                     } bg-white overflow-hidden`}
                   >
                     {!isEditing ? (
                       /* ── VIEW MODE ── */
                       <div className="w-full">
-                        <div className="relative aspect-square bg-[#1a1a1a] flex items-center justify-center overflow-hidden cursor-pointer group"
+                        <div className="relative aspect-square bg-ttg-black flex items-center justify-center overflow-hidden cursor-pointer group"
                           onClick={() => startEdit(tazo)}>
                           {/* Select checkbox */}
                           <button
                             onClick={e => { e.stopPropagation(); toggleSelect(tazo.id) }}
-                            className="absolute top-2 left-2 z-10 p-0.5 bg-white/80 backdrop-blur-sm border border-zinc-300 hover:border-[#3B4CCA] transition-colors"
+                            className="absolute top-2 left-2 z-10 p-0.5 bg-white/80 backdrop-blur-sm border border-zinc-300 hover:border-ttg-blue transition-colors"
                           >
-                            {isSelected ? <CheckSquare className="w-4 h-4 text-[#3B4CCA]" /> : <Square className="w-4 h-4 text-zinc-400" />}
+                            {isSelected ? <CheckSquare className="w-4 h-4 text-ttg-blue" /> : <Square className="w-4 h-4 text-zinc-400" />}
                           </button>
                           {tazo.imageUrl ? (
                             <TazoDiscImage
@@ -512,47 +512,47 @@ export default function AdminTazoManagerPage() {
                             <ImageIcon className="w-10 h-10 text-zinc-300" />
                           )}
                           <div className="absolute top-0 left-0 right-0 h-1" style={{ background: fColor }} />
-                          <div className="absolute top-2 right-2 flex items-center gap-0.5 bg-[#1a1a1a]/80 backdrop-blur-sm px-1.5 py-0.5">
+                          <div className="absolute top-2 right-2 flex items-center gap-0.5 bg-ttg-black/80 backdrop-blur-sm px-1.5 py-0.5">
                             {Array.from({ length: RARITY_STARS[tazo.rarity] || 1 }, (_, i) => (
                               <Star key={i} className="w-2 h-2" fill={rColor} stroke={rColor} />
                             ))}
                           </div>
-                          <div className="absolute inset-0 bg-[#1a1a1a]/0 group-hover:bg-[#1a1a1a]/30 transition-colors flex items-center justify-center">
+                          <div className="absolute inset-0 bg-ttg-black/0 group-hover:bg-ttg-black/30 transition-colors flex items-center justify-center">
                             <Edit3 className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
                           </div>
                           {/* Delete button */}
                           <button
                             onClick={e => { e.stopPropagation(); setDeletingId(deletingId === tazo.id ? null : tazo.id) }}
-                            className="absolute bottom-2 right-2 p-1 bg-[#E3350D]/80 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[#E3350D]"
+                            className="absolute bottom-2 right-2 p-1 bg-ttg-red/80 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-ttg-red"
                             title="Delete tazo"
                           ><Trash2 className="w-3.5 h-3.5" /></button>
                           {/* Publish/unpublish quick toggle */}
                           <button
                             onClick={e => { e.stopPropagation(); togglePublish(tazo) }}
                             className={`absolute bottom-2 left-2 p-1 text-white opacity-0 group-hover:opacity-100 transition-opacity text-[8px] font-black uppercase tracking-wider ${
-                              tazo.publishStatus === "published" ? "bg-[#22C55E]/80 hover:bg-[#22C55E]" : "bg-[#3B4CCA]/80 hover:bg-[#3B4CCA]"
+                              tazo.publishStatus === "published" ? "bg-ttg-success/80 hover:bg-ttg-success" : "bg-ttg-blue/80 hover:bg-ttg-blue"
                             }`}
                             title="Toggle publish status"
                           >{tazo.publishStatus === "published" ? "Unpublish" : "Publish"}</button>
                         </div>
                         {/* Card info bar — shows publish status */}
                         <div className="px-2 py-1 flex items-center justify-between">
-                          <p className="text-[9px] font-black text-[#1a1a1a] truncate">{tazo.displayName || tazo.name || tazo.slug}</p>
+                          <p className="text-[9px] font-black text-ttg-black truncate">{tazo.displayName || tazo.name || tazo.slug}</p>
                           <span className={`text-[7px] font-black uppercase px-1.5 py-0.5 border ${
                             tazo.publishStatus === "published"
-                              ? "bg-[#22C55E]/10 border-[#22C55E]/30 text-[#22C55E]"
+                              ? "bg-ttg-success/10 border-ttg-success/30 text-ttg-success"
                               : tazo.publishStatus === "pending_review"
-                              ? "bg-[#F59E0B]/10 border-[#F59E0B]/30 text-[#F59E0B]"
+                              ? "bg-ttg-warning/10 border-ttg-warning/30 text-ttg-warning"
                               : "bg-zinc-50 border-zinc-200 text-zinc-400"
                           }`}>{tazo.publishStatus || "draft"}</span>
                         </div>
                         {/* Delete confirmation */}
                         {deletingId === tazo.id && (
-                          <div className="px-2.5 py-2 bg-[#E3350D]/5 border-t-2 border-[#E3350D]/20 space-y-1.5">
-                            <p className="text-[9px] font-bold text-[#E3350D]">Delete &quot;{tazo.name || tazo.slug}&quot;?</p>
+                          <div className="px-2.5 py-2 bg-ttg-red/5 border-t-2 border-ttg-red/20 space-y-1.5">
+                            <p className="text-[9px] font-bold text-ttg-red">Delete &quot;{tazo.name || tazo.slug}&quot;?</p>
                             <div className="flex gap-1.5">
                               <button onClick={() => deleteTazo(tazo.id)}
-                                className="flex-1 py-1 text-[8px] font-black uppercase text-white bg-[#E3350D]">Yes, delete</button>
+                                className="flex-1 py-1 text-[8px] font-black uppercase text-white bg-ttg-red">Yes, delete</button>
                               {deleteError && (
                       <div className="mb-3 p-2 bg-red-50 border-2 border-red-300 text-center">
                         <p className="text-[9px] font-black text-red-600">{deleteError}</p>
@@ -567,15 +567,15 @@ export default function AdminTazoManagerPage() {
                         <div className="p-2.5 space-y-1.5">
                           <div className="flex items-center gap-1.5">
                             <span className="inline-block w-2.5 h-2.5 rounded-full border border-white/20" style={{ background: rColor }} />
-                            <span className="text-[11px] font-black text-[#1a1a1a] truncate leading-tight">{tazo.name || tazo.slug}</span>
+                            <span className="text-[11px] font-black text-ttg-black truncate leading-tight">{tazo.name || tazo.slug}</span>
                           </div>
                           <div className="flex items-center gap-1 text-[9px] font-bold text-zinc-400 uppercase tracking-wider">
                             <span>{tazo.franchise.name}</span><span>·</span><span>{tazo.rarity}</span>
-                            {tazo.finish !== "normal" && <><span>·</span><span className="text-[#FFCC00]">{tazo.finish}</span></>}
+                            {tazo.finish !== "normal" && <><span>·</span><span className="text-ttg-yellow">{tazo.finish}</span></>}
                             {tazo.role && <><span>·</span><span>{ROLE_SHORT[tazo.role as keyof typeof ROLE_SHORT] ?? tazo.role}</span></>}
                           </div>
                           <div className="flex gap-1 pt-0.5">
-                            {[{ v: tazo.attack, c: "#E3350D" },{ v: tazo.defense, c: "#3B4CCA" },{ v: tazo.resistance, c: "#22C55E" },{ v: tazo.weight, c: "#F59E0B" },{ v: tazo.stability, c: "#A855F7" }].map(s => (
+                            {[{ v: tazo.attack, c: 'var(--ttg-red)' },{ v: tazo.defense, c: 'var(--ttg-blue)' },{ v: tazo.resistance, c: 'var(--ttg-success)' },{ v: tazo.weight, c: "#F59E0B" },{ v: tazo.stability, c: 'var(--ttg-purple)' }].map(s => (
                               <div key={s.c} className="flex-1 h-1 bg-white/10 overflow-hidden">
                                 <div className="h-full" style={{ width: `${s.v}%`, background: s.c }} />
                               </div>
@@ -607,9 +607,9 @@ export default function AdminTazoManagerPage() {
                         {/* Name + DisplayName */}
                         <div className="space-y-1.5">
                           <input type="text" value={editData?.name || ""} onChange={e => updateField("name", e.target.value)}
-                            className="w-full text-xs font-black text-[#1a1a1a] bg-zinc-50 border-2 border-zinc-200 px-2.5 py-1.5 outline-none focus:border-[#FFCC00]" placeholder="Name" />
+                            className="w-full text-xs font-black text-ttg-black bg-zinc-50 border-2 border-zinc-200 px-2.5 py-1.5 outline-none focus:border-ttg-yellow" placeholder="Name" />
                           <input type="text" value={editData?.displayName || ""} onChange={e => updateField("displayName", e.target.value)}
-                            className="w-full text-[10px] font-bold text-[#1a1a1a]/60 bg-zinc-50 border-2 border-zinc-200 px-2.5 py-1 outline-none focus:border-[#FFCC00]" placeholder="Display Name" />
+                            className="w-full text-[10px] font-bold text-ttg-black/60 bg-zinc-50 border-2 border-zinc-200 px-2.5 py-1 outline-none focus:border-ttg-yellow" placeholder="Display Name" />
                           <div className="flex justify-between text-[10px] font-bold text-zinc-500">
                             <span>{tazo.franchise.name}</span><span>#{tazo.number}</span>
                           </div>
@@ -636,8 +636,8 @@ export default function AdminTazoManagerPage() {
                           />
                           {artStatus !== "idle" && (
                             <div className={`text-[9px] font-bold flex items-center gap-1.5 ${
-                              artStatus === "error" ? "text-[#E3350D]" :
-                              artStatus === "done" ? "text-[#22C55E]" : "text-amber-600"
+                              artStatus === "error" ? "text-ttg-red" :
+                              artStatus === "done" ? "text-ttg-success" : "text-amber-600"
                             }`}>
                               {artStatus === "uploading" || artStatus === "compositing" ? (
                                 <Loader2 className="w-3 h-3 animate-spin" />
@@ -657,7 +657,7 @@ export default function AdminTazoManagerPage() {
                           <select
                             value={editData?.publishStatus || "pending_review"}
                             onChange={e => updateField("publishStatus", e.target.value)}
-                            className="w-full text-[10px] font-bold bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-[#FFCC00]"
+                            className="w-full text-[10px] font-bold bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-ttg-yellow"
                           >
                             <option value="published">✅ Published (visible everywhere)</option>
                             <option value="pending_review">⏳ Pending Review (hidden)</option>
@@ -669,7 +669,7 @@ export default function AdminTazoManagerPage() {
                         <div>
                           <label className="text-[8px] font-black uppercase text-zinc-400 tracking-wider mb-0.5 block">Description</label>
                           <textarea value={editData?.description || ""} onChange={e => updateField("description", e.target.value)}
-                            className="w-full text-[10px] font-bold bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-[#FFCC00] resize-none h-12"
+                            className="w-full text-[10px] font-bold bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-ttg-yellow resize-none h-12"
                             placeholder="Creature description..." />
                         </div>
 
@@ -678,21 +678,21 @@ export default function AdminTazoManagerPage() {
                           <div>
                             <label className="text-[8px] font-black uppercase text-zinc-400 tracking-wider mb-0.5 block">Rarity</label>
                             <select value={editData?.rarity || "common"} onChange={e => updateField("rarity", e.target.value)}
-                              className="w-full text-[10px] font-bold bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-[#FFCC00]">
+                              className="w-full text-[10px] font-bold bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-ttg-yellow">
                               {RARITIES.map(r => <option key={r} value={r}>{r}</option>)}
                             </select>
                           </div>
                           <div>
                             <label className="text-[8px] font-black uppercase text-zinc-400 tracking-wider mb-0.5 block">Finish</label>
                             <select value={editData?.finish || "normal"} onChange={e => updateField("finish", e.target.value)}
-                              className="w-full text-[10px] font-bold bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-[#FFCC00]">
+                              className="w-full text-[10px] font-bold bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-ttg-yellow">
                               {FINISHES.map(f => <option key={f} value={f}>{f.replace("_"," ")}</option>)}
                             </select>
                           </div>
                           <div>
                             <label className="text-[8px] font-black uppercase text-zinc-400 tracking-wider mb-0.5 block">Category</label>
                             <select value={editData?.category || "creature"} onChange={e => updateField("category", e.target.value)}
-                              className="w-full text-[10px] font-bold bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-[#FFCC00]">
+                              className="w-full text-[10px] font-bold bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-ttg-yellow">
                               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                             </select>
                           </div>
@@ -703,14 +703,14 @@ export default function AdminTazoManagerPage() {
                           <div>
                             <label className="text-[8px] font-black uppercase text-zinc-400 tracking-wider mb-0.5 block">Role</label>
                             <select value={editData?.role || "balanced"} onChange={e => updateField("role", e.target.value)}
-                              className="w-full text-[10px] font-bold bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-[#FFCC00]">
+                              className="w-full text-[10px] font-bold bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-ttg-yellow">
                               {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                             </select>
                           </div>
                           <div>
                             <label className="text-[8px] font-black uppercase text-zinc-400 tracking-wider mb-0.5 block">Combat</label>
                             <select value={editData?.combatType || ""} onChange={e => updateField("combatType", e.target.value)}
-                              className="w-full text-[10px] font-bold bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-[#FFCC00]">
+                              className="w-full text-[10px] font-bold bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-ttg-yellow">
                               <option value="">—</option>
                               {COMBAT_TYPES.map(c => <option key={c} value={c}>{c}</option>)}
                             </select>
@@ -722,8 +722,8 @@ export default function AdminTazoManagerPage() {
                           <label className="text-[8px] font-black uppercase text-zinc-400 tracking-wider mb-1 block">Stats</label>
                           <div className="grid grid-cols-3 gap-1">
                             {([
-                              ["ATK","attack","#E3350D"],["DEF","defense","#3B4CCA"],["RES","resistance","#22C55E"],
-                              ["WT","weight","#F59E0B"],["STB","stability","#A855F7"],["SPIN","spin","#EC4899"],
+                              ["ATK","attack",'var(--ttg-red)'],["DEF","defense",'var(--ttg-blue)'],["RES","resistance",'var(--ttg-success)'],
+                              ["WT","weight","#F59E0B"],["STB","stability",'var(--ttg-purple)'],["SPIN","spin","#EC4899"],
                               ["CTRL","control","#06B6D4"],["BNC","bounce","#F97316"],["PREC","precision","#8B5CF6"],
                             ] as const).map(([label, field, color]) => (
                               <div key={field} className="flex items-center gap-1 bg-zinc-50 px-1.5 py-1 border border-zinc-200">
@@ -742,12 +742,12 @@ export default function AdminTazoManagerPage() {
                           <div>
                             <label className="text-[8px] font-black uppercase text-zinc-400 tracking-wider mb-0.5 block">Skill</label>
                             <input type="text" value={editData?.skill || ""} onChange={e => updateField("skill", e.target.value)}
-                              className="w-full text-[10px] font-bold bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-[#FFCC00]" placeholder="Skill name" />
+                              className="w-full text-[10px] font-bold bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-ttg-yellow" placeholder="Skill name" />
                           </div>
                           <div>
                             <label className="text-[8px] font-black uppercase text-zinc-400 tracking-wider mb-0.5 block">Variant</label>
                             <input type="text" value={editData?.creatureVariant || "standard"} onChange={e => updateField("creatureVariant", e.target.value)}
-                              className="w-full text-[10px] font-bold bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-[#FFCC00]" />
+                              className="w-full text-[10px] font-bold bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-ttg-yellow" />
                           </div>
                         </div>
 
@@ -755,7 +755,7 @@ export default function AdminTazoManagerPage() {
                         <div>
                           <label className="text-[8px] font-black uppercase text-zinc-400 tracking-wider mb-0.5 block">Description</label>
                           <textarea value={editData?.skillDesc || ""} onChange={e => updateField("skillDesc", e.target.value)}
-                            className="w-full text-[10px] font-bold bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-[#FFCC00] resize-none h-12"
+                            className="w-full text-[10px] font-bold bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-ttg-yellow resize-none h-12"
                             placeholder="Skill description..." />
                         </div>
 
@@ -764,12 +764,12 @@ export default function AdminTazoManagerPage() {
                           <div>
                             <label className="text-[8px] font-black uppercase text-zinc-400 tracking-wider mb-0.5 block">Image URL</label>
                             <input type="text" value={editData?.imageUrl || ""} onChange={e => updateField("imageUrl", e.target.value)}
-                              className="w-full text-[9px] font-mono bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-[#FFCC00]" />
+                              className="w-full text-[9px] font-mono bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-ttg-yellow" />
                           </div>
                           <div>
                             <label className="text-[8px] font-black uppercase text-zinc-400 tracking-wider mb-0.5 block">Back Image</label>
                             <input type="text" value={editData?.backImageUrl || ""} onChange={e => updateField("backImageUrl", e.target.value)}
-                              className="w-full text-[9px] font-mono bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-[#FFCC00]" />
+                              className="w-full text-[9px] font-mono bg-zinc-50 border-2 border-zinc-200 px-2 py-1 outline-none focus:border-ttg-yellow" />
                           </div>
                         </div>
 
@@ -777,25 +777,25 @@ export default function AdminTazoManagerPage() {
                         <div className="flex gap-3">
                           <label className="flex items-center gap-1.5 text-[10px] font-bold text-zinc-600 cursor-pointer">
                             <input type="checkbox" checked={editData?.isOwned || false} onChange={e => updateField("isOwned", e.target.checked)}
-                              className="w-3.5 h-3.5 accent-[#FFCC00]" /> Owned
+                              className="w-3.5 h-3.5 accent-ttg-yellow" /> Owned
                           </label>
                           <label className="flex items-center gap-1.5 text-[10px] font-bold text-zinc-600 cursor-pointer">
                             <input type="checkbox" checked={editData?.stackable !== false} onChange={e => updateField("stackable", e.target.checked)}
-                              className="w-3.5 h-3.5 accent-[#FFCC00]" /> Stackable
+                              className="w-3.5 h-3.5 accent-ttg-yellow" /> Stackable
                           </label>
                         </div>
 
                         {/* Action buttons */}
                         <div className="flex gap-2 pt-1">
                           <button onClick={saveTazo} disabled={saving}
-                            className="flex-1 flex items-center justify-center gap-1.5 bg-[#22C55E] text-white text-[10px] font-black uppercase tracking-wider py-2 border-2 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a] hover:shadow-[1px_1px_0px_#1a1a1a] active:shadow-none transition-all disabled:opacity-50">
+                            className="flex-1 flex items-center justify-center gap-1.5 bg-ttg-success text-white text-[10px] font-black uppercase tracking-wider py-2 border-2 border-ttg-black shadow-[2px_2px_0px_var(--ttg-black)] hover:shadow-[1px_1px_0px_var(--ttg-black)] active:shadow-none transition-all disabled:opacity-50">
                             {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> :
                               saveStatus === "saved" ? <><Check className="w-3.5 h-3.5" /> Saved!</> :
                               saveStatus === "error" ? <><AlertTriangle className="w-3.5 h-3.5" /> Error</> :
                               <><Save className="w-3.5 h-3.5" /> Save</>}
                           </button>
                           <button onClick={cancelEdit}
-                            className="flex items-center gap-1 bg-zinc-200 text-[#1a1a1a] text-[10px] font-black uppercase tracking-wider px-3 py-2 border-2 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a] hover:shadow-[1px_1px_0px_#1a1a1a] active:shadow-none transition-all">
+                            className="flex items-center gap-1 bg-zinc-200 text-ttg-black text-[10px] font-black uppercase tracking-wider px-3 py-2 border-2 border-ttg-black shadow-[2px_2px_0px_var(--ttg-black)] hover:shadow-[1px_1px_0px_var(--ttg-black)] active:shadow-none transition-all">
                             <RotateCcw className="w-3.5 h-3.5" /> Cancel
                           </button>
                         </div>
@@ -813,7 +813,7 @@ export default function AdminTazoManagerPage() {
                   const p = start + i
                   if (p > totalPages) return null
                   return <button key={p} onClick={() => setPage(p)}
-                    className={`w-9 h-9 border-2 text-xs font-black ${p === page ? "bg-[#1a1a1a] text-white border-[#1a1a1a]" : "bg-white border-zinc-300 text-zinc-600 hover:border-[#FFCC00]"}`}>{p}</button>
+                    className={`w-9 h-9 border-2 text-xs font-black ${p === page ? "bg-ttg-black text-white border-ttg-black" : "bg-white border-zinc-300 text-zinc-600 hover:border-ttg-yellow"}`}>{p}</button>
                 })}
               </div>
             )}

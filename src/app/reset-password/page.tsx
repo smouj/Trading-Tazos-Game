@@ -16,10 +16,10 @@ function getPasswordStrength(pw: string): { score: number; label: string; color:
   if (/[0-9]/.test(pw)) score++
   if (/[^A-Za-z0-9]/.test(pw)) score++
 
-  if (score <= 1) return { score: 1, label: "Weak", color: "#E3350D" }
+  if (score <= 1) return { score: 1, label: "Weak", color: 'var(--ttg-red)' }
   if (score === 2) return { score: 2, label: "Fair", color: "#F59E0B" }
   if (score === 3) return { score: 3, label: "Good", color: "#3B82F6" }
-  return { score: 4, label: "Strong", color: "#22C55E" }
+  return { score: 4, label: "Strong", color: 'var(--ttg-success)' }
 }
 
 function ResetPasswordForm() {
@@ -78,16 +78,16 @@ function ResetPasswordForm() {
   if (!token) {
     return (
       <div className="space-y-5">
-        <div className="border-3 border-[#E3350D] bg-[#E3350D10] p-4 text-center">
-          <p className="text-sm font-bold text-[#E3350D] uppercase">
+        <div className="border-3 border-ttg-red bg-ttg-red/6 p-4 text-center">
+          <p className="text-sm font-bold text-ttg-red uppercase">
             ⚠️ No reset token provided
           </p>
-          <p className="text-xs text-[#1a1a1a]/50 mt-1">
+          <p className="text-xs text-ttg-black/50 mt-1">
             Please use the link from your password reset email.
           </p>
-          <p className="text-xs text-[#1a1a1a]/50">
+          <p className="text-xs text-ttg-black/50">
             Need a new one?{" "}
-            <a href="/forgot-password" className="underline font-bold hover:text-[#1a1a1a]">
+            <a href="/forgot-password" className="underline font-bold hover:text-ttg-black">
               Request again
             </a>
           </p>
@@ -99,10 +99,10 @@ function ResetPasswordForm() {
   if (status === "success") {
     return (
       <div className="space-y-5 text-center">
-        <div className="border-3 border-[#22C55E] bg-[#22C55E10] p-4">
-          <p className="text-sm font-bold text-[#22C55E]">✅ {message}</p>
+        <div className="border-3 border-ttg-success bg-ttg-success/6 p-4">
+          <p className="text-sm font-bold text-ttg-success">✅ {message}</p>
         </div>
-        <div className="w-6 h-6 border-2 border-[#3B4CCA] border-t-transparent rounded-full animate-spin mx-auto" />
+        <div className="w-6 h-6 border-2 border-ttg-blue border-t-transparent rounded-full animate-spin mx-auto" />
       </div>
     )
   }
@@ -112,11 +112,11 @@ function ResetPasswordForm() {
       {message && (
         <div className={`border-3 p-3 text-center ${
           status === "error"
-            ? "border-[#E3350D] bg-[#E3350D10]"
-            : "border-[#22C55E] bg-[#22C55E10]"
+            ? "border-ttg-red bg-ttg-red/6"
+            : "border-ttg-success bg-ttg-success/6"
         }`}>
           <p className={`text-sm font-bold ${
-            status === "error" ? "text-[#E3350D]" : "text-[#22C55E]"
+            status === "error" ? "text-ttg-red" : "text-ttg-success"
           }`}>
             {message}
           </p>
@@ -125,7 +125,7 @@ function ResetPasswordForm() {
 
       {/* Password */}
       <div>
-        <label htmlFor="password" className="block text-xs font-black text-[#1a1a1a] uppercase tracking-wider mb-1.5">
+        <label htmlFor="password" className="block text-xs font-black text-ttg-black uppercase tracking-wider mb-1.5">
           <Lock className="w-3.5 h-3.5 inline mr-1" />
           New Password
         </label>
@@ -138,10 +138,10 @@ function ResetPasswordForm() {
           minLength={10}
           autoComplete="new-password"
           placeholder="••••••••••"
-          className="w-full border-3 border-[#1a1a1a] px-4 py-3 text-sm font-bold text-[#1a1a1a] placeholder:text-[#1a1a1a]/30 shadow-[3px_3px_0px_#1a1a1a] focus:outline-none focus:border-[#3B4CCA] transition-colors"
-          style={{ background: "#fffef0" }}
+          className="w-full border-3 border-ttg-black px-4 py-3 text-sm font-bold text-ttg-black placeholder:text-ttg-black/30 shadow-[3px_3px_0px_var(--ttg-black)] focus:outline-none focus:border-ttg-blue transition-colors"
+          style={{ background: 'var(--ttg-cream)' }}
         />
-        <p className="mt-1 text-[10px] font-bold text-[#1a1a1a]/40 uppercase">
+        <p className="mt-1 text-[10px] font-bold text-ttg-black/40 uppercase">
           Must be at least 10 characters
         </p>
         {/* Strength bar */}
@@ -151,7 +151,7 @@ function ResetPasswordForm() {
               {[1, 2, 3, 4].map((level) => (
                 <div
                   key={level}
-                  className="h-1.5 flex-1 border border-[#1a1a1a] transition-colors"
+                  className="h-1.5 flex-1 border border-ttg-black transition-colors"
                   style={{
                     background: level <= strength.score ? strength.color : "#E5E7EB",
                   }}
@@ -167,7 +167,7 @@ function ResetPasswordForm() {
 
       {/* Confirm Password */}
       <div>
-        <label htmlFor="confirm" className="block text-xs font-black text-[#1a1a1a] uppercase tracking-wider mb-1.5">
+        <label htmlFor="confirm" className="block text-xs font-black text-ttg-black uppercase tracking-wider mb-1.5">
           <ShieldCheck className="w-3.5 h-3.5 inline mr-1" />
           Confirm Password
         </label>
@@ -179,13 +179,13 @@ function ResetPasswordForm() {
           required
           autoComplete="new-password"
           placeholder="••••••••••"
-          className={`w-full border-3 px-4 py-3 text-sm font-bold placeholder:text-[#1a1a1a]/30 placeholder:font-bold shadow-[3px_3px_0px_#1a1a1a] focus:outline-none transition-colors ${
-            passwordsMismatch ? "border-[#E3350D]" : "border-[#1a1a1a] focus:border-[#3B4CCA]"
+          className={`w-full border-3 px-4 py-3 text-sm font-bold placeholder:text-ttg-black/30 placeholder:font-bold shadow-[3px_3px_0px_var(--ttg-black)] focus:outline-none transition-colors ${
+            passwordsMismatch ? "border-ttg-red" : "border-ttg-black focus:border-ttg-blue"
           }`}
-          style={{ background: "#fffef0" }}
+          style={{ background: 'var(--ttg-cream)' }}
         />
         {passwordsMismatch && (
-          <p className="mt-1 text-[10px] font-bold text-[#E3350D]">
+          <p className="mt-1 text-[10px] font-bold text-ttg-red">
             Passwords do not match
           </p>
         )}
@@ -195,7 +195,7 @@ function ResetPasswordForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="w-full py-3.5 mag-btn bg-[#3B4CCA] text-white flex items-center justify-center gap-2 text-sm font-black uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-3.5 mag-btn bg-ttg-blue text-white flex items-center justify-center gap-2 text-sm font-black uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {status === "submitting" ? (
           <Disc3 className="w-4 h-4 animate-spin" />
@@ -216,15 +216,15 @@ export default function ResetPasswordPage() {
       <main className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md space-y-6">
           <div
-            className="space-y-5 border-3 border-[#1a1a1a] shadow-[6px_6px_0px_#1a1a1a] p-8"
+            className="space-y-5 border-3 border-ttg-black shadow-[6px_6px_0px_var(--ttg-black)] p-8"
             style={{ background: "white" }}
           >
             {/* Badge */}
             <div className="text-center space-y-1">
-              <span className="inline-block bg-[#FFCC00] text-[#1a1a1a] text-[10px] font-black px-3 py-1 border-2 border-[#1a1a1a] uppercase tracking-widest shadow-[2px_2px_0px_#1a1a1a]">
+              <span className="inline-block bg-ttg-yellow text-ttg-black text-[10px] font-black px-3 py-1 border-2 border-ttg-black uppercase tracking-widest shadow-[2px_2px_0px_var(--ttg-black)]">
                 Set New Password
               </span>
-              <p className="text-xs font-bold text-[#1a1a1a]/50">
+              <p className="text-xs font-bold text-ttg-black/50">
                 Choose a strong, unique password for your account
               </p>
             </div>
@@ -232,7 +232,7 @@ export default function ResetPasswordPage() {
             <Suspense
               fallback={
                 <div className="h-64 flex items-center justify-center">
-                  <div className="w-6 h-6 border-2 border-[#FFCC00] border-t-transparent rounded-full animate-spin" />
+                  <div className="w-6 h-6 border-2 border-ttg-yellow border-t-transparent rounded-full animate-spin" />
                 </div>
               }
             >
@@ -244,7 +244,7 @@ export default function ResetPasswordPage() {
           <div className="text-center">
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#1a1a1a]/50 hover:text-[#1a1a1a] transition-colors uppercase tracking-wider"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-ttg-black/50 hover:text-ttg-black transition-colors uppercase tracking-wider"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               Back to Home

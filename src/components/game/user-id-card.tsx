@@ -71,7 +71,7 @@ export default function UserIdCard({ user, variant = "full" }: UserIdCardProps) 
         style={{ boxShadow: "4px 4px 0px var(--ttg-black)" }}>
         <div className="flex items-center gap-4">
           {/* Avatar */}
-          <div className="relative w-16 h-16 rounded-full border-3 border-ttg-yellow bg-gradient-to-br from-[#FFE566] to-ttg-yellow overflow-hidden shrink-0"
+          <div className="relative w-16 h-16 rounded-full border-3 border-ttg-yellow bg-gradient-to-br from-ttg-yellow-hover to-ttg-yellow overflow-hidden shrink-0"
             style={{ boxShadow: "2px 2px 0px var(--ttg-black)" }}>
             {user.avatarUrl && !imgErrorCompact ? (
               <Image src={user.avatarUrl} alt="" fill className="object-cover" sizes="64px" unoptimized
@@ -96,7 +96,7 @@ export default function UserIdCard({ user, variant = "full" }: UserIdCardProps) 
             {/* XP Bar */}
             <div className="flex items-center gap-2">
               <div className="flex-1 h-2 bg-ttg-black/5 overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-ttg-yellow to-[#E3350D] transition-all duration-500"
+                <div className="h-full bg-gradient-to-r from-ttg-yellow to-ttg-red transition-all duration-500"
                   style={{ width: `${levelProgress}%` }} />
               </div>
               <span className="text-[10px] font-black text-ttg-black/30 tabular-nums whitespace-nowrap">
@@ -111,7 +111,7 @@ export default function UserIdCard({ user, variant = "full" }: UserIdCardProps) 
 
   // ── Full card (Pokémon trainer card style) ──
   return (
-    <div className="relative overflow-hidden border-3 border-ttg-black bg-gradient-to-br from-[#FFF9E6] via-white to-[#FFF9E6]"
+    <div className="relative overflow-hidden border-3 border-ttg-black bg-gradient-to-br from-ttg-cream via-white to-ttg-cream"
       style={{ boxShadow: "5px 5px 0px var(--ttg-black)" }}>
       
       {/* Magazine halftone overlay */}
@@ -119,14 +119,14 @@ export default function UserIdCard({ user, variant = "full" }: UserIdCardProps) 
         style={{ backgroundImage: "radial-gradient(circle, var(--ttg-black) 1px, transparent 1px)", backgroundSize: "5px 5px" }} />
 
       {/* Top accent bar */}
-      <div className="h-2 bg-gradient-to-r from-ttg-yellow via-[#E3350D] to-ttg-yellow" />
+      <div className="h-2 bg-gradient-to-r from-ttg-yellow via-ttg-red to-ttg-yellow" />
 
       {/* Header row — Avatar + Name + Level */}
       <div className="p-5 pb-0">
         <div className="flex items-start gap-4">
           {/* Avatar with gold border */}
           <div className="relative">
-            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-3 border-ttg-yellow bg-gradient-to-br from-[#FFE566] to-ttg-yellow overflow-hidden"
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-3 border-ttg-yellow bg-gradient-to-br from-ttg-yellow-hover to-ttg-yellow overflow-hidden"
               style={{ boxShadow: "3px 3px 0px var(--ttg-black)" }}>
               {user.avatarUrl && !imgError ? (
                 <Image src={user.avatarUrl} alt="" fill className="object-cover" sizes="96px" unoptimized
@@ -166,7 +166,7 @@ export default function UserIdCard({ user, variant = "full" }: UserIdCardProps) 
           </span>
         </div>
         <div className="relative h-3 bg-ttg-black/5 overflow-hidden border border-ttg-black/10">
-          <div className="absolute inset-0 bg-gradient-to-r from-ttg-yellow via-[#FFD700] to-[#E3350D] transition-all duration-700"
+          <div className="absolute inset-0 bg-gradient-to-r from-ttg-yellow via-ttg-yellow to-ttg-red transition-all duration-700"
             style={{ width: `${levelProgress}%` }} />
           {/* Animated shine */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"
@@ -209,7 +209,7 @@ export default function UserIdCard({ user, variant = "full" }: UserIdCardProps) 
       </div>
 
       {/* Bottom accent */}
-      <div className="h-1.5 bg-gradient-to-r from-ttg-black/5 via-[#FFCC00]/30 to-ttg-black/5" />
+      <div className="h-1.5 bg-gradient-to-r from-ttg-black/5 via-ttg-yellow/30 to-ttg-black/5" />
     </div>
   )
 }

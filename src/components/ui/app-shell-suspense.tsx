@@ -15,7 +15,7 @@ export function AppShellSuspense({ children }: { children: ReactNode }) {
             <Image src="/logo/logo-tg-yellow.png" alt="" width={64} height={64} className="relative animate-pulse" priority />
           </div>
           
-          <div className="w-8 h-8 rounded-full border-[3px] border-ttg-black/10 border-t-[#FFCC00] animate-spin" />
+          <div className="w-8 h-8 rounded-full border-[3px] border-ttg-black/10 border-t-ttg-yellow animate-spin" />
           
           <p className="text-xs font-bold text-ttg-black/25 uppercase tracking-[0.3em] animate-pulse">
             Loading game world

@@ -91,7 +91,7 @@ export function TGASlabLabel({
       </div>
 
       {/* Cert number */}
-      <div className="px-3 py-1.5 bg-[#fffef0] border-t border-ttg-black/10 flex items-center justify-between">
+      <div className="px-3 py-1.5 bg-ttg-cream border-t border-ttg-black/10 flex items-center justify-between">
         <span className="text-[7px] font-bold text-ttg-black/25 uppercase">
           CERT #
         </span>

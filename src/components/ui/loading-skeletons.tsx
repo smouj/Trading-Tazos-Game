@@ -21,7 +21,7 @@ export function TazoCardSkeleton() {
   return (
     <div className="border-2 border-ttg-black/10 bg-white overflow-hidden">
       {/* Image area */}
-      <div className="aspect-square bg-[#fafaf5] relative flex items-center justify-center">
+      <div className="aspect-square bg-ttg-paper relative flex items-center justify-center">
         <div className="w-2/3 h-2/3 rounded-full bg-ttg-black/[0.04]" />
       </div>
       {/* Text area */}
@@ -71,7 +71,7 @@ export function StatsPanelSkeleton() {
 export function ShopBagSkeleton() {
   return (
     <div className="border-2 border-ttg-black/10 bg-white overflow-hidden">
-      <div className="aspect-[4/5] bg-[#fafaf5] flex items-center justify-center">
+      <div className="aspect-[4/5] bg-ttg-paper flex items-center justify-center">
         <div className="w-1/2 h-2/3 bg-ttg-black/[0.04]" />
       </div>
       <div className="p-3 space-y-2">
@@ -153,7 +153,7 @@ export function ButtonSkeleton() {
 // ── Image Skeleton ──
 export function ImageSkeleton({ aspectRatio = "1/1", className }: { aspectRatio?: string; className?: string }) {
   return (
-    <div className={cn("bg-[#fafaf5] flex items-center justify-center overflow-hidden", className)} style={{ aspectRatio }}>
+    <div className={cn("bg-ttg-paper flex items-center justify-center overflow-hidden", className)} style={{ aspectRatio }}>
       <div className="w-1/3 h-1/3 rounded-full bg-ttg-black/[0.04]" />
     </div>
   )

@@ -44,7 +44,7 @@ export default class BattleErrorBoundary extends Component<Props, State> {
           </p>
           <button
             onClick={this.handleReset}
-            className="px-5 py-2.5 bg-ttg-yellow text-black text-xs font-black uppercase tracking-wider hover:bg-[#FFD940] transition-colors"
+            className="px-5 py-2.5 bg-ttg-yellow text-black text-xs font-black uppercase tracking-wider hover:bg-ttg-yellow-hover transition-colors"
           >
             Return to Lobby
           </button>

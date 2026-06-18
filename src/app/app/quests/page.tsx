@@ -35,9 +35,9 @@ const ICON_MAP: Record<string, React.FC<{ className?: string }>> = {
 function catText(c: string) { return { beginner: "text-green-600", daily: "text-blue-600", weekly: "text-purple-600", special: "text-amber-600" }[c] || "text-zinc-600" }
 
 const CATEGORY_COLORS: Record<string, string> = {
-  beginner: "#22C55E",
-  daily: "#3B4CCA",
-  weekly: "#A855F7",
+  beginner: 'var(--ttg-success)',
+  daily: 'var(--ttg-blue)',
+  weekly: 'var(--ttg-purple)',
   special: "#F59E0B",
 }
 
@@ -49,9 +49,9 @@ const CATEGORY_NAMES: Record<string, string> = {
 }
 
 const DIFFICULTY_BADGES: Record<string, { color: string; label: string }> = {
-  easy: { color: "#22C55E", label: "EASY" },
+  easy: { color: 'var(--ttg-success)', label: "EASY" },
   medium: { color: "#F59E0B", label: "MEDIUM" },
-  hard: { color: "#E3350D", label: "HARD" },
+  hard: { color: 'var(--ttg-red)', label: "HARD" },
 }
 
 export default function QuestsPage() {
@@ -119,9 +119,9 @@ export default function QuestsPage() {
     return (
       <div className="max-w-2xl mx-auto py-20 text-center space-y-6">
           <Target className="w-16 h-16 mx-auto text-zinc-400" />
-          <h1 className="text-2xl font-black uppercase tracking-wider text-[#1a1a1a]">QUESTS</h1>
+          <h1 className="text-2xl font-black uppercase tracking-wider text-ttg-black">QUESTS</h1>
           <p className="text-sm text-zinc-500">{t.auth_login} to track quests</p>
-          <Link href="/login" className="mag-btn inline-block bg-[#FFCC00] text-[#1a1a1a] font-black uppercase px-6 py-3 border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
+          <Link href="/login" className="mag-btn inline-block bg-ttg-yellow text-ttg-black font-black uppercase px-6 py-3 border-3 border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
             {t.auth_login}
           </Link>
         </div>
@@ -142,20 +142,20 @@ export default function QuestsPage() {
           }}
         >
           <div className="flex items-center gap-1.5">
-            <Target className="w-5 h-5 text-[#FFCC00]" />
+            <Target className="w-5 h-5 text-ttg-yellow" />
             <h1 className="text-sm sm:text-lg font-black text-white uppercase tracking-tight">QUESTS</h1>
           </div>
           <div className="w-px h-5 bg-white/15" />
-          <span className="text-sm font-black text-[#22C55E] tracking-tight">
+          <span className="text-sm font-black text-ttg-success tracking-tight">
             {completed}/{quests.length} COMPLETED
           </span>
           <div className="flex items-center gap-3 ml-auto">
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 border border-white/20 shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
-              <Crown className="w-4 h-4 text-[#FFCC00]" />
+              <Crown className="w-4 h-4 text-ttg-yellow" />
               <span className="font-black text-xs text-white">Lv.{userLevel}</span>
             </div>
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 border border-white/20 shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
-              <Coins className="w-4 h-4 text-[#FFCC00]" />
+              <Coins className="w-4 h-4 text-ttg-yellow" />
               <span className="font-black text-xs text-white">{credits}</span>
             </div>
           </div>
@@ -163,17 +163,17 @@ export default function QuestsPage() {
 
         {/* Level Up Celebration */}
         {levelUp && (
-          <div className="animate-mag-enter-fade-up p-4 border-3 border-[#FFCC00] bg-gradient-to-r from-[#FFCC00]/10 via-[#FFD700]/10 to-[#FFCC00]/10"
+          <div className="animate-mag-enter-fade-up p-4 border-3 border-ttg-yellow bg-gradient-to-r from-ttg-yellow/10 via-ttg-yellow/10 to-ttg-yellow/10"
             style={{ boxShadow: "3px 3px 0px #FFCC00" }}>
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-[#FFCC00] border-3 border-[#1a1a1a] flex items-center justify-center animate-bounce"
+              <div className="w-12 h-12 rounded-full bg-ttg-yellow border-3 border-ttg-black flex items-center justify-center animate-bounce"
                 style={{ boxShadow: "2px 2px 0px #1a1a1a" }}>
-                <TrendingUp className="w-6 h-6 text-[#1a1a1a]" />
+                <TrendingUp className="w-6 h-6 text-ttg-black" />
               </div>
               <div>
-                <p className="text-sm font-black text-[#1a1a1a] uppercase">🎉 LEVEL UP!</p>
-                <p className="text-xs font-bold text-[#1a1a1a]/50">
-                  You reached <span className="text-[#E3350D] font-black">Level {userLevel}</span> — {getTitleForLevel(userLevel)}
+                <p className="text-sm font-black text-ttg-black uppercase">🎉 LEVEL UP!</p>
+                <p className="text-xs font-bold text-ttg-black/50">
+                  You reached <span className="text-ttg-red font-black">Level {userLevel}</span> — {getTitleForLevel(userLevel)}
                 </p>
               </div>
             </div>
@@ -181,18 +181,18 @@ export default function QuestsPage() {
         )}
 
         {/* Progress bar */}
-        <div className="border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] p-4" style={{ background: "white" }}>
+        <div className="border-3 border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)] p-4" style={{ background: "white" }}>
           <div className="flex items-center justify-between mb-2">
-            <span className="font-black text-xs uppercase tracking-wider text-[#1a1a1a]">
+            <span className="font-black text-xs uppercase tracking-wider text-ttg-black">
               {completed}/{quests.length} QUESTS COMPLETED
             </span>
-            <span className="font-black text-xs text-[#E3350D]">
+            <span className="font-black text-xs text-ttg-red">
               {Math.round((completed / Math.max(quests.length, 1)) * 100)}%
             </span>
           </div>
-          <div className="w-full h-3 bg-zinc-200 border-2 border-[#1a1a1a] overflow-hidden">
+          <div className="w-full h-3 bg-zinc-200 border-2 border-ttg-black overflow-hidden">
             <div
-              className="h-full bg-[#FFCC00] transition-all duration-300"
+              className="h-full bg-ttg-yellow transition-all duration-300"
               style={{ width: `${Math.round((completed / Math.max(quests.length, 1)) * 100)}%` }}
             />
           </div>
@@ -206,8 +206,8 @@ export default function QuestsPage() {
               onClick={() => setCategory(cat)}
               className={`px-4 py-2 text-[10px] font-black uppercase tracking-wider border-2 transition-all ${
                 category === cat
-                  ? "bg-[#1a1a1a] text-white border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a]"
-                  : "bg-white text-[#1a1a1a] border-zinc-300 shadow-[2px_2px_0px_#1a1a1a] hover:border-[#FFCC00]"
+                  ? "bg-ttg-black text-white border-ttg-black shadow-[2px_2px_0px_var(--ttg-black)]"
+                  : "bg-white text-ttg-black border-zinc-300 shadow-[2px_2px_0px_var(--ttg-black)] hover:border-ttg-yellow"
               }`}
             >
               {CATEGORY_NAMES[cat] || "All"}
@@ -218,14 +218,14 @@ export default function QuestsPage() {
         {/* Quest cards */}
         {loading ? (
           <div className="text-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto text-[#FFCC00]" />
+            <Loader2 className="w-8 h-8 animate-spin mx-auto text-ttg-yellow" />
           </div>
         ) : (
           <div className="space-y-3">
             {filtered.map(q => {
               const uq = getUQ(q.id)
               const IconComp = ICON_MAP[q.icon] || Target
-              const catColor = CATEGORY_COLORS[q.category] || "#FFCC00"
+              const catColor = CATEGORY_COLORS[q.category] || 'var(--ttg-yellow)'
               const diffBadge = DIFFICULTY_BADGES[q.difficulty] || DIFFICULTY_BADGES.easy
               const progress = uq?.progress || 0
               const isComplete = uq?.completed || false
@@ -240,7 +240,7 @@ export default function QuestsPage() {
                 >
                   {/* Icon */}
                   <div
-                    className="w-12 h-12 shrink-0 flex items-center justify-center border-3 border-[#1a1a1a] shadow-[2px_2px_0px_#1a1a1a]"
+                    className="w-12 h-12 shrink-0 flex items-center justify-center border-3 border-ttg-black shadow-[2px_2px_0px_var(--ttg-black)]"
                     style={{ backgroundColor: catColor + "20" }}
                   >
                     <IconComp className={`w-6 h-6 ${catText(q.category)}`} />
@@ -249,7 +249,7 @@ export default function QuestsPage() {
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-black text-sm uppercase tracking-wider text-[#1a1a1a]">
+                      <h3 className="font-black text-sm uppercase tracking-wider text-ttg-black">
                         {q.title}
                       </h3>
                       <span
@@ -267,14 +267,14 @@ export default function QuestsPage() {
                     </div>
                     <p className="text-xs text-zinc-500 font-bold mt-1">{q.description}</p>
                     <div className="flex items-center gap-3 mt-2 text-[10px] font-black">
-                      <span className="flex items-center gap-1 text-[#F59E0B]">
+                      <span className="flex items-center gap-1 text-ttg-warning">
                         <Coins className="w-3.5 h-3.5" /> +{q.rewardCredits} CREDITS
                       </span>
-                      <span className="flex items-center gap-1 text-[#A855F7]">
+                      <span className="flex items-center gap-1 text-ttg-purple">
                         <Zap className="w-3.5 h-3.5" /> +{q.rewardXp || 50} XP
                       </span>
                       {q.rewardTazoId && (
-                        <span className="flex items-center gap-1 text-[#A855F7]">
+                        <span className="flex items-center gap-1 text-ttg-purple">
                           <Gift className="w-3.5 h-3.5" /> +1 Tazo
                         </span>
                       )}
@@ -287,11 +287,11 @@ export default function QuestsPage() {
                             className="h-full transition-all duration-300"
                             style={{
                               width: `${Math.min(100, Math.round((progress / q.target) * 100))}%`,
-                              backgroundColor: isComplete ? "#22C55E" : "#FFCC00",
+                              backgroundColor: isComplete ? 'var(--ttg-success)' : 'var(--ttg-yellow)',
                             }}
                           />
                         </div>
-                        <span className="text-[10px] font-black text-[#1a1a1a]">{progress}/{q.target}</span>
+                        <span className="text-[10px] font-black text-ttg-black">{progress}/{q.target}</span>
                       </div>
                     )}
                   </div>
@@ -299,14 +299,14 @@ export default function QuestsPage() {
                   {/* Action */}
                   <div className="shrink-0">
                     {isClaimed ? (
-                      <span className="flex items-center gap-1 text-[10px] font-black uppercase text-[#22C55E]">
+                      <span className="flex items-center gap-1 text-[10px] font-black uppercase text-ttg-success">
                         <Check className="w-4 h-4" /> Claimed
                       </span>
                     ) : isComplete ? (
                       <button
                         onClick={() => handleClaim(q.id)}
                         disabled={claiming === q.id}
-                        className="mag-btn px-5 py-2 font-black text-xs uppercase bg-[#FFCC00] text-[#1a1a1a] border-3 border-[#1a1a1a] shadow-[3px_3px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all disabled:opacity-50"
+                        className="mag-btn px-5 py-2 font-black text-xs uppercase bg-ttg-yellow text-ttg-black border-3 border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all disabled:opacity-50"
                       >
                         {claiming === q.id ? <Loader2 className="w-4 h-4 animate-spin" /> : "CLAIM"}
                       </button>

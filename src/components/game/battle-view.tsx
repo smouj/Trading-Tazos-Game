@@ -76,14 +76,14 @@ function IntroCinematic({ playerName, deckName, deckSize, playerHand, opponentHa
         {/* Player side */}
         <div style={{
           background: "rgba(0,0,0,0.7)",
-          border: "2px solid #29ADFF",
+          border: "2px solid var(--ttg-player)",
           padding: "12px 20px",
           textAlign: "center",
           minWidth: 160,
         }}>
           <div style={{
             width: 48, height: 48, borderRadius: "50%",
-            background: "linear-gradient(135deg, #29ADFF, #003388)",
+            background: "linear-gradient(135deg, var(--ttg-player), var(--ttg-blue-dark))",
             margin: "0 auto 8px",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
@@ -91,7 +91,7 @@ function IntroCinematic({ playerName, deckName, deckSize, playerHand, opponentHa
               {playerName?.slice(0, 2).toUpperCase() || "YOU"}
             </span>
           </div>
-          <p style={{ fontSize: 11, fontWeight: 900, color: "#29ADFF", textTransform: "uppercase", margin: 0, letterSpacing: "0.05em" }}>
+          <p style={{ fontSize: 11, fontWeight: 900, color: "var(--ttg-player)", textTransform: "uppercase", margin: 0, letterSpacing: "0.05em" }}>
             {playerName || "Player"}
           </p>
           <p style={{ fontSize: 8, fontWeight: 700, color: "rgba(255,255,255,0.4)", margin: "3px 0 0", textTransform: "uppercase" }}>
@@ -102,12 +102,12 @@ function IntroCinematic({ playerName, deckName, deckSize, playerHand, opponentHa
               <div key={i} style={{
                 width: 28, height: 28, borderRadius: "50%",
                 border: "1px solid rgba(255,255,255,0.2)",
-                overflow: "hidden", background: "#1a1a1a"
+                overflow: "hidden", background: "var(--ttg-black)"
               }}>
                 {t.imageUrl ? (
                   <img src={t.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", transform: "scale(1.14)" }} />
                 ) : (
-                  <span style={{ fontSize: 8, color: "#29ADFF", display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                  <span style={{ fontSize: 8, color: "var(--ttg-player)", display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
                     {t.name?.[0] || "?"}
                   </span>
                 )}
@@ -119,7 +119,7 @@ function IntroCinematic({ playerName, deckName, deckSize, playerHand, opponentHa
         {/* VS */}
         <div style={{ textAlign: "center" }}>
           <span style={{
-            fontSize: 36, fontWeight: 900, color: "#FFCC00",
+            fontSize: 36, fontWeight: 900, color: "var(--ttg-yellow)",
             textShadow: "0 0 20px rgba(255,204,0,0.5)",
             lineHeight: 1,
           }}>VS</span>
@@ -128,20 +128,20 @@ function IntroCinematic({ playerName, deckName, deckSize, playerHand, opponentHa
         {/* AI side */}
         <div style={{
           background: "rgba(0,0,0,0.7)",
-          border: "2px solid #FF004D",
+          border: "2px solid var(--ttg-opponent)",
           padding: "12px 20px",
           textAlign: "center",
           minWidth: 160,
         }}>
           <div style={{
             width: 48, height: 48, borderRadius: "50%",
-            background: "linear-gradient(135deg, #FF004D, #880000)",
+            background: "linear-gradient(135deg, var(--ttg-opponent), var(--ttg-red-dark))",
             margin: "0 auto 8px",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
             <Swords style={{ width: 24, height: 24, color: "#fff" }} />
           </div>
-          <p style={{ fontSize: 11, fontWeight: 900, color: "#FF004D", textTransform: "uppercase", margin: 0, letterSpacing: "0.05em" }}>
+          <p style={{ fontSize: 11, fontWeight: 900, color: "var(--ttg-opponent)", textTransform: "uppercase", margin: 0, letterSpacing: "0.05em" }}>
             Arena AI
           </p>
           <p style={{ fontSize: 8, fontWeight: 700, color: "rgba(255,255,255,0.4)", margin: "3px 0 0", textTransform: "uppercase" }}>
@@ -152,12 +152,12 @@ function IntroCinematic({ playerName, deckName, deckSize, playerHand, opponentHa
               <div key={i} style={{
                 width: 28, height: 28, borderRadius: "50%",
                 border: "1px solid rgba(255,255,255,0.2)",
-                overflow: "hidden", background: "#1a1a1a"
+                overflow: "hidden", background: "var(--ttg-black)"
               }}>
                 {t.imageUrl ? (
                   <img src={t.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", transform: "scale(1.14)" }} />
                 ) : (
-                  <span style={{ fontSize: 8, color: "#FF004D", display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                  <span style={{ fontSize: 8, color: "var(--ttg-opponent)", display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
                     {t.name?.[0] || "?"}
                   </span>
                 )}
@@ -187,18 +187,18 @@ function IntroCinematic({ playerName, deckName, deckSize, playerHand, opponentHa
 // ── PhaseBadge: Magazine editorial phase indicator ──
 function PhaseBadge({ phase, bettingPhase, chargePct, tazoName }: { phase: string; bettingPhase?: string; chargePct?: number; tazoName?: string }) {
   const config: Record<string, { icon?: React.ReactNode; text: string; color: string; pulse?: boolean }> = {
-    round_start: { text: "Select a tazo", color: "#FFCC00" },
-    betting: { text: "Betting", color: "#FFD700" },
-    player_aim: { icon: <Crosshair className="w-3 h-3 inline" />, text: "Aim", color: "#29ADFF" },
-    player_charge: { icon: <Zap className="w-3 h-3 inline" />, text: chargePct != null ? `Charge ${chargePct}%` : "Charge", color: "#FF8800", pulse: true },
-    player_tilt: { text: "Tilt & release", color: "#FF004D" },
-    slamming: { icon: <Zap className="w-3 h-3 inline" />, text: "Slam!", color: "#FFCC00", pulse: true },
-    impact: { text: "Impact!", color: "#FFCC00", pulse: true },
-    resolve_impact: { text: "Resolving…", color: "#22C55E" },
-    opponent_aim: { text: tazoName ? `AI aims ${tazoName}…` : "AI aims…", color: "#FF004D" },
-    opponent_slam: { text: tazoName ? `${tazoName} slams!` : "AI slams!", color: "#FF004D", pulse: true },
+    round_start: { text: "Select a tazo", color: "var(--ttg-yellow)" },
+    betting: { text: "Betting", color: "var(--ttg-yellow)" },
+    player_aim: { icon: <Crosshair className="w-3 h-3 inline" />, text: "Aim", color: "var(--ttg-player)" },
+    player_charge: { icon: <Zap className="w-3 h-3 inline" />, text: chargePct != null ? `Charge ${chargePct}%` : "Charge", color: "var(--ttg-dracobell)", pulse: true },
+    player_tilt: { text: "Tilt & release", color: "var(--ttg-opponent)" },
+    slamming: { icon: <Zap className="w-3 h-3 inline" />, text: "Slam!", color: "var(--ttg-yellow)", pulse: true },
+    impact: { text: "Impact!", color: "var(--ttg-yellow)", pulse: true },
+    resolve_impact: { text: "Resolving…", color: "var(--ttg-success)" },
+    opponent_aim: { text: tazoName ? `AI aims ${tazoName}…` : "AI aims…", color: "var(--ttg-opponent)" },
+    opponent_slam: { text: tazoName ? `${tazoName} slams!` : "AI slams!", color: "var(--ttg-opponent)", pulse: true },
     turn_transition: { text: "Next round", color: "#888" },
-    coin_flip: { text: "🪙 Coin Flip", color: "#FFCC00", pulse: true },
+    coin_flip: { text: "🪙 Coin Flip", color: "var(--ttg-yellow)", pulse: true },
   }
 
   const c = config[phase]
@@ -207,7 +207,7 @@ function PhaseBadge({ phase, bettingPhase, chargePct, tazoName }: { phase: strin
       const revealed = bettingPhase === "revealed"
       return (
         <span className={`text-[8px] font-black tracking-[0.2em] uppercase ${
-          revealed ? "text-[#FFCC00]" : "text-[#22C55E]"}`}>
+          revealed ? "text-ttg-yellow" : "text-ttg-success"}`}>
           {revealed ? "• Stakes revealed" : "• Stakes locked"}
         </span>
       )
@@ -229,36 +229,36 @@ function PhaseBadge({ phase, bettingPhase, chargePct, tazoName }: { phase: strin
 function BettingReveal({ playerTazo, opponentTazo }: { playerTazo: TazoCard; opponentTazo: TazoCard }) {
   return (
     <div className="absolute inset-0 z-30 pointer-events-none flex items-center justify-center">
-      <div className="flex items-center gap-4 sm:gap-6 bg-black/80 backdrop-blur-xl  border border-[#FFCC00]/20 px-6 py-5 shadow-[0_12px_48px_rgba(255,204,0,0.2)]">
+      <div className="flex items-center gap-4 sm:gap-6 bg-black/80 backdrop-blur-xl  border border-ttg-yellow/20 px-6 py-5 shadow-[0_12px_48px_rgba(255,204,0,0.2)]">
         {/* Player tazo */}
         <div className="flex flex-col items-center gap-2 animate-[fadeInLeft_0.5s_ease-out]">
-          <div className="relative w-14 h-14 sm:w-16 sm:h-16 border-2 border-[#29ADFF]/40 overflow-hidden bg-[#29ADFF]/5 flex items-center justify-center">
+          <div className="relative w-14 h-14 sm:w-16 sm:h-16 border-2 border-ttg-player/40 overflow-hidden bg-ttg-player/5 flex items-center justify-center">
             {playerTazo.imageUrl ? (
               <Image src={playerTazo.imageUrl} alt={playerTazo.name} fill className="object-contain" sizes="200px" />
             ) : (
-              <span className="text-[#29ADFF] text-2xl font-black">{playerTazo.name[0]}</span>
+              <span className="text-ttg-player text-2xl font-black">{playerTazo.name[0]}</span>
             )}
           </div>
-          <span className="text-[8px] font-black text-[#29ADFF] uppercase tracking-widest">Your stake</span>
+          <span className="text-[8px] font-black text-ttg-player uppercase tracking-widest">Your stake</span>
           <span className="text-[10px] font-black text-white max-w-[80px] text-center leading-tight">{playerTazo.name}</span>
         </div>
         
         {/* VS divider */}
         <div className="flex flex-col items-center gap-1">
-          <div className="text-[#FFCC00] text-2xl font-black animate-pulse" style={{ textShadow: "0 0 20px #FFCC00" }}>⚡</div>
-          <span className="text-[7px] font-black text-[#FFCC00]/50 uppercase tracking-[0.3em]">VS</span>
+          <div className="text-ttg-yellow text-2xl font-black animate-pulse" style={{ textShadow: "0 0 20px var(--ttg-yellow)" }}>⚡</div>
+          <span className="text-[7px] font-black text-ttg-yellow/50 uppercase tracking-[0.3em]">VS</span>
         </div>
 
         {/* Opponent tazo */}
         <div className="flex flex-col items-center gap-2 animate-[fadeInRight_0.5s_ease-out]">
-          <div className="relative w-14 h-14 sm:w-16 sm:h-16 border-2 border-[#FF004D]/40 overflow-hidden bg-[#FF004D]/5 flex items-center justify-center">
+          <div className="relative w-14 h-14 sm:w-16 sm:h-16 border-2 border-ttg-opponent/40 overflow-hidden bg-ttg-opponent/5 flex items-center justify-center">
             {opponentTazo.imageUrl ? (
               <Image src={opponentTazo.imageUrl} alt={opponentTazo.name} fill className="object-contain" sizes="200px" />
             ) : (
-              <span className="text-[#FF004D] text-2xl font-black">{opponentTazo.name[0]}</span>
+              <span className="text-ttg-opponent text-2xl font-black">{opponentTazo.name[0]}</span>
             )}
           </div>
-          <span className="text-[8px] font-black text-[#FF004D] uppercase tracking-widest">AI stake</span>
+          <span className="text-[8px] font-black text-ttg-opponent uppercase tracking-widest">AI stake</span>
           <span className="text-[10px] font-black text-white max-w-[80px] text-center leading-tight">{opponentTazo.name}</span>
         </div>
       </div>
@@ -284,17 +284,17 @@ function CoinFlipOverlay({ show, winner }: { show: boolean; winner: "player" | "
 
   return (
     <div className="absolute inset-0 z-30 pointer-events-none flex items-center justify-center">
-      <div className="bg-black/80 backdrop-blur-xl  border border-[#FFCC00]/20 px-8 py-6 shadow-[0_0_80px_rgba(255,204,0,0.2)] flex flex-col items-center gap-4">
+      <div className="bg-black/80 backdrop-blur-xl  border border-ttg-yellow/20 px-8 py-6 shadow-[0_0_80px_rgba(255,204,0,0.2)] flex flex-col items-center gap-4">
         {/* Coin */}
         <div className={`w-20 h-20 rounded-full flex items-center justify-center border-[3px] transition-all duration-500 ${
           animPhase === "flipping" 
             ? "animate-[spin3d_1.2s_linear]" 
-            : isPlayerFirst ? "border-[#29ADFF] shadow-[0_0_30px_#29ADFF60]" : "border-[#FF004D] shadow-[0_0_30px_#FF004D60]"
+            : isPlayerFirst ? "border-ttg-player shadow-[0_0_30px_var(--ttg-player)60]" : "border-ttg-opponent shadow-[0_0_30px_var(--ttg-opponent)60]"
         }`}
           style={{
             background: animPhase === "reveal"
-              ? isPlayerFirst ? "linear-gradient(135deg, #29ADFF, #003388)" : "linear-gradient(135deg, #FF004D, #880000)"
-              : "linear-gradient(135deg, #FFD700, #B8860B)",
+              ? isPlayerFirst ? "linear-gradient(135deg, var(--ttg-player), var(--ttg-blue-dark))" : "linear-gradient(135deg, var(--ttg-opponent), var(--ttg-red-dark))"
+              : "linear-gradient(135deg, var(--ttg-yellow), var(--ttg-yellow-darker))",
             transform: animPhase === "reveal" ? "rotateY(0deg)" : undefined,
           }}
         >
@@ -310,8 +310,8 @@ function CoinFlipOverlay({ show, winner }: { show: boolean; winner: "player" | "
         {/* Result text */}
         <div className={`text-center transition-all duration-300 ${animPhase === "reveal" ? "scale-100 opacity-100" : "scale-50 opacity-0"}`}>
           <div className="text-[14px] font-black tracking-widest" style={{
-            color: animPhase === "flipping" ? "#FFCC00" : isPlayerFirst ? "#29ADFF" : "#FF004D",
-            textShadow: `0 0 20px ${isPlayerFirst ? "#29ADFF" : "#FF004D"}`,
+            color: animPhase === "flipping" ? "var(--ttg-yellow)" : isPlayerFirst ? "var(--ttg-player)" : "var(--ttg-opponent)",
+            textShadow: `0 0 20px ${isPlayerFirst ? "var(--ttg-player)" : "var(--ttg-opponent)"}`,
           }}>
             {animPhase === "flipping" ? "Flipping..." : `${isPlayerFirst ? "⭐ YOU" : "⚔️ AI"} SLAMS FIRST!`}
           </div>
@@ -764,9 +764,9 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
                 engine.resolveImpact(aiImpact, "opponent")
                 engine.setImpactMsg(aiImpact.description)
                 engine.setShowImpact(true)
-                if (aiScoring.opponentDelta > 0) { spawnPopup("+" + aiScoring.opponentDelta, "#FF004D", "right"); playSfx("score_pop", 0.3) }
-                if (aiScoring.playerDelta > 0) { spawnPopup("+" + aiScoring.playerDelta, "#29ADFF", "left"); playSfx("score_pop", 0.3) }
-                if (aiScoring.playerLostTazos > 0) { spawnPopup("-" + aiScoring.playerLostTazos + " tazo", "#FF004D", "left"); playSfx("damage_taken", 0.35) }
+                if (aiScoring.opponentDelta > 0) { spawnPopup("+" + aiScoring.opponentDelta, "var(--ttg-opponent)", "right"); playSfx("score_pop", 0.3) }
+                if (aiScoring.playerDelta > 0) { spawnPopup("+" + aiScoring.playerDelta, "var(--ttg-player)", "left"); playSfx("score_pop", 0.3) }
+                if (aiScoring.playerLostTazos > 0) { spawnPopup("-" + aiScoring.playerLostTazos + " tazo", "var(--ttg-opponent)", "left"); playSfx("damage_taken", 0.35) }
                 setTimeout(() => {
                   if (!engine.ctx) return
                   engine.setShowImpact(false)
@@ -859,9 +859,9 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
                 engine.setImpactMsg(aiImpact.description)
                 engine.setShowImpact(true)
                 
-                if (aiScoring.opponentDelta > 0) { spawnPopup(`+${aiScoring.opponentDelta}`, "#FF004D", "right"); playSfx("score_pop", 0.3) }
-                if (aiScoring.playerDelta > 0) { spawnPopup(`+${aiScoring.playerDelta}`, "#29ADFF", "left"); playSfx("score_pop", 0.3) }
-                if (aiScoring.playerLostTazos > 0) { spawnPopup(`-${aiScoring.playerLostTazos} tazo`, "#FF004D", "left"); playSfx("damage_taken", 0.35) }
+                if (aiScoring.opponentDelta > 0) { spawnPopup(`+${aiScoring.opponentDelta}`, "var(--ttg-opponent)", "right"); playSfx("score_pop", 0.3) }
+                if (aiScoring.playerDelta > 0) { spawnPopup(`+${aiScoring.playerDelta}`, "var(--ttg-player)", "left"); playSfx("score_pop", 0.3) }
+                if (aiScoring.playerLostTazos > 0) { spawnPopup(`-${aiScoring.playerLostTazos} tazo`, "var(--ttg-opponent)", "left"); playSfx("damage_taken", 0.35) }
                 
                 setTimeout(() => {
                   if (!engine.ctx) return
@@ -1006,10 +1006,10 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
               )
       engine.setShowImpact(true)
 
-      if (playerDelta > 0) { spawnPopup(`+${playerDelta}`, "#29ADFF", "left"); playSfx("score_pop", 0.3) }
-      if (opponentDelta > 0) { spawnPopup(`+${opponentDelta}`, "#FF004D", "right"); playSfx("score_pop", 0.3) }
-      if (playerLostTazos > 0) { spawnPopup(`-${playerLostTazos} tazo`, "#FF004D", "left"); playSfx("damage_taken", 0.35) }
-      if (opponentLostTazos > 0) { spawnPopup(`-${opponentLostTazos} tazo`, "#29ADFF", "right"); playSfx("damage_taken", 0.35) }
+      if (playerDelta > 0) { spawnPopup(`+${playerDelta}`, "var(--ttg-player)", "left"); playSfx("score_pop", 0.3) }
+      if (opponentDelta > 0) { spawnPopup(`+${opponentDelta}`, "var(--ttg-opponent)", "right"); playSfx("score_pop", 0.3) }
+      if (playerLostTazos > 0) { spawnPopup(`-${playerLostTazos} tazo`, "var(--ttg-opponent)", "left"); playSfx("damage_taken", 0.35) }
+      if (opponentLostTazos > 0) { spawnPopup(`-${opponentLostTazos} tazo`, "var(--ttg-player)", "right"); playSfx("damage_taken", 0.35) }
 
       // Check if match ended
       const newPR = Math.max(0, currentCtx.playerRemaining - playerLostTazos)
@@ -1079,9 +1079,9 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
                 engine.setImpactMsg(aiImpact.description)
                 engine.setShowImpact(true)
 
-            if (aiScoring.opponentDelta > 0) { spawnPopup(`+${aiScoring.opponentDelta}`, "#FF004D", "right"); playSfx("score_pop", 0.3) }
-            if (aiScoring.playerDelta > 0) { spawnPopup(`+${aiScoring.playerDelta}`, "#29ADFF", "left"); playSfx("score_pop", 0.3) }
-            if (aiScoring.playerLostTazos > 0) { spawnPopup(`-${aiScoring.playerLostTazos} tazo`, "#FF004D", "left"); playSfx("damage_taken", 0.35) }
+            if (aiScoring.opponentDelta > 0) { spawnPopup(`+${aiScoring.opponentDelta}`, "var(--ttg-opponent)", "right"); playSfx("score_pop", 0.3) }
+            if (aiScoring.playerDelta > 0) { spawnPopup(`+${aiScoring.playerDelta}`, "var(--ttg-player)", "left"); playSfx("score_pop", 0.3) }
+            if (aiScoring.playerLostTazos > 0) { spawnPopup(`-${aiScoring.playerLostTazos} tazo`, "var(--ttg-opponent)", "left"); playSfx("damage_taken", 0.35) }
 
             const ctx2 = latestCtx
             const finalPR = Math.max(0, (ctx2?.playerRemaining ?? newPR) - aiScoring.playerLostTazos)
@@ -1178,9 +1178,9 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
         engine.setImpactMsg(impact.description || "")
         engine.setShowImpact(true)
 
-        if (scoring.opponentDelta > 0) { spawnPopup(`+${scoring.opponentDelta}`, "#FF004D", "right"); playSfx("score_pop", 0.3) }
-        if (scoring.playerDelta > 0) { spawnPopup(`+${scoring.playerDelta}`, "#29ADFF", "left"); playSfx("score_pop", 0.3) }
-        if (scoring.playerLostTazos > 0) { spawnPopup(`-${scoring.playerLostTazos} tazo`, "#FF004D", "left"); playSfx("damage_taken", 0.35) }
+        if (scoring.opponentDelta > 0) { spawnPopup(`+${scoring.opponentDelta}`, "var(--ttg-opponent)", "right"); playSfx("score_pop", 0.3) }
+        if (scoring.playerDelta > 0) { spawnPopup(`+${scoring.playerDelta}`, "var(--ttg-player)", "left"); playSfx("score_pop", 0.3) }
+        if (scoring.playerLostTazos > 0) { spawnPopup(`-${scoring.playerLostTazos} tazo`, "var(--ttg-opponent)", "left"); playSfx("damage_taken", 0.35) }
 
         setTimeout(() => {
           engine.setShowImpact(false)
@@ -1311,8 +1311,8 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
               )
       engine.setShowImpact(true)
 
-      if (scoring.playerDelta > 0) { spawnPopup(`+${scoring.playerDelta}`, "#29ADFF", "left"); playSfx("score_pop", 0.3) }
-      if (scoring.opponentDelta > 0) { spawnPopup(`+${scoring.opponentDelta}`, "#FF004D", "right"); playSfx("score_pop", 0.3) }
+      if (scoring.playerDelta > 0) { spawnPopup(`+${scoring.playerDelta}`, "var(--ttg-player)", "left"); playSfx("score_pop", 0.3) }
+      if (scoring.opponentDelta > 0) { spawnPopup(`+${scoring.opponentDelta}`, "var(--ttg-opponent)", "right"); playSfx("score_pop", 0.3) }
 
       const newPS = engine.ctx!.player.score + scoring.playerDelta
       const newOS = engine.ctx!.opponent.score + scoring.opponentDelta
@@ -1341,7 +1341,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
   if (loading) return (
     <div className="absolute inset-0 flex items-center justify-center">
       <div className="flex flex-col items-center gap-3">
-        <Disc3 className="w-12 h-12 animate-spin text-[#FFCC00]" />
+        <Disc3 className="w-12 h-12 animate-spin text-ttg-yellow" />
         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Loading Arena</span>
       </div>
     </div>
@@ -1382,7 +1382,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
         <button onClick={back}
           className="px-5 py-2 text-[10px] font-black uppercase tracking-[0.15em] transition-all"
           style={{
-            background: "white", color: "#1a1a1a",
+            background: "white", color: "var(--ttg-black)",
             border: "1px solid rgba(0,0,0,0.08)",
             boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
           }}>
@@ -1401,7 +1401,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
   return (
     <BattleErrorBoundary>
     <WebGLGuard>
-    <div ref={containerRef} className={`w-full h-full ${isFullscreen ? "fixed inset-0 z-[9999]" : "absolute inset-0"}`} style={isFullscreen ? { background: "#0a0a0a" } : undefined}>
+    <div ref={containerRef} className={`w-full h-full ${isFullscreen ? "fixed inset-0 z-[9999]" : "absolute inset-0"}`} style={isFullscreen ? { background: "var(--ttg-arena-bg)" } : undefined}>
       {/* Tutorial */}
       {showTutorial && <BattleTutorial onClose={() => setShowTutorial(false)} />}
       
@@ -1521,16 +1521,16 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
               <div className="animate-[popUp_0.35s_ease-out] text-center">
                 <div className={[
                   "text-4xl sm:text-5xl font-black tracking-tight",
-                  engine.ui.impactMsg === "PERFECT" ? "text-[#22C55E]" :
-                  engine.ui.impactMsg === "GOOD" ? "text-[#FFCC00]" :
-                  engine.ui.impactMsg === "OVERCHARGE" ? "text-[#FF004D]" :
+                  engine.ui.impactMsg === "PERFECT" ? "text-ttg-success" :
+                  engine.ui.impactMsg === "GOOD" ? "text-ttg-yellow" :
+                  engine.ui.impactMsg === "OVERCHARGE" ? "text-ttg-opponent" :
                   engine.ui.impactMsg === "WEAK" ? "text-gray-400" :
-                  engine.ui.impactMsg === "CENTER HIT" ? "text-[#29ADFF]" :
-                  engine.ui.impactMsg === "EDGE HIT" ? "text-[#FF8800]" :
-                  engine.ui.impactMsg === "RIM HIT" ? "text-[#FFCC00]/70" :
-                  engine.ui.impactMsg === "DOUBLE FLIP!" ? "text-[#FFCC00]" :
-                  engine.ui.impactMsg === "CAPTURED!" ? "text-[#22C55E]" :
-                  engine.ui.impactMsg === "SECURED!" ? "text-[#29ADFF]" :
+                  engine.ui.impactMsg === "CENTER HIT" ? "text-ttg-player" :
+                  engine.ui.impactMsg === "EDGE HIT" ? "text-ttg-dracobell" :
+                  engine.ui.impactMsg === "RIM HIT" ? "text-ttg-yellow/70" :
+                  engine.ui.impactMsg === "DOUBLE FLIP!" ? "text-ttg-yellow" :
+                  engine.ui.impactMsg === "CAPTURED!" ? "text-ttg-success" :
+                  engine.ui.impactMsg === "SECURED!" ? "text-ttg-player" :
                   "text-white"
                 ].join(" ")}
                 style={{ textShadow: engine.ui.impactMsg === "PERFECT" ? "0 0 40px rgba(34,197,94,0.8)" : engine.ui.impactMsg === "DOUBLE FLIP!" ? "0 0 40px rgba(255,204,0,0.8)" : engine.ui.impactMsg === "CAPTURED!" ? "0 0 30px rgba(34,197,94,0.6)" : "0 0 20px rgba(0,0,0,0.5)" }}>
@@ -1553,7 +1553,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
                 const px = Math.cos(angle) * dist
                 const py = Math.sin(angle) * dist
                 const size = 3 + Math.random() * 6
-                const color = ["#FFCC00", "#FF8800", "#FFAA00", "#FFDD44", "#FFF", "#FFD700"][Math.floor(Math.random() * 6)]
+                const color = ["var(--ttg-yellow)", "var(--ttg-dracobell)", "var(--ttg-warning)", "var(--ttg-yellow-hover)", "#FFF", "var(--ttg-yellow)"][Math.floor(Math.random() * 6)]
                 return (
                   <div key={i} className="absolute rounded-full"
                     style={{
@@ -1585,8 +1585,8 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
           {roundBanner !== null && (
             <div className="absolute top-[45%] left-1/2 -translate-x-1/2 pointer-events-none z-30">
               <div className="animate-[popUp_0.3s_ease-out]" key={roundBanner}>
-                <div className="text-[10px] font-black text-[#FFCC00]/40 uppercase tracking-[0.3em] text-center mb-1">Round</div>
-                <div className="text-5xl font-black text-[#FFCC00] text-center" style={{ textShadow: "0 0 30px #FFCC0060" }}>
+                <div className="text-[10px] font-black text-ttg-yellow/40 uppercase tracking-[0.3em] text-center mb-1">Round</div>
+                <div className="text-5xl font-black text-ttg-yellow text-center" style={{ textShadow: "0 0 30px var(--ttg-yellow)60" }}>
                   {roundBanner}
                 </div>
               </div>

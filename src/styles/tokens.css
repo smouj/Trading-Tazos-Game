@@ -1,0 +1,179 @@
+/* ═══════════════════════════════════════════════════════════════
+   Trading Tazos Game — Design Tokens v1
+   
+   Centralized design tokens for the Magazine theme.
+   All components MUST reference these tokens instead of
+   hardcoded hex values or inline styles.
+   
+   Imported by globals.css → available everywhere.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════
+   BRAND PALETTE
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  /* ── TTG Yellow (primary brand) ── */
+  --ttg-yellow:              #FFCC00;
+  --ttg-yellow-hover:        #FFE566;
+  --ttg-yellow-dark:         #E6B800;
+  --ttg-yellow-darker:       #B8860B;
+  --ttg-yellow-dim:           rgba(255, 204, 0, 0.15);
+
+  /* ── TTG Red (accent, CTAs) ── */
+  --ttg-red:                 #E3350D;
+  --ttg-red-hover:           #FF4D2E;
+  --ttg-red-dark:            #c9302c;
+
+  /* ── TTG Blue (accent, trust) ── */
+  --ttg-blue:                #3B4CCA;
+  --ttg-blue-dark:           #2a3aa0;
+
+  /* ── TTG Black (ink, borders) ── */
+  --ttg-black:               #1a1a1a;
+  --ttg-black-dim:            rgba(26, 26, 26, 0.08);
+
+  /* ── Magazine Surfaces ── */
+  --ttg-cream:               #FFF9E6;
+  --ttg-cream-dark:          #FFF3CC;
+  --ttg-cream-light:         #fffef0;
+  --ttg-paper:               #fafaf5;
+  --ttg-ink:                 #6b5c00;
+
+  /* ── Arena Dark (battle mode) ── */
+  --ttg-arena-bg:            #0a0a0a;
+  --ttg-arena-surface:       #2a2a4e;
+  --ttg-arena-border:        #3a3a5e;
+  --ttg-arena-ink:           #c0b060;
+
+  /* ═══════════════════════════════════════════════════════════════
+     SERIES COLORS
+     ═══════════════════════════════════════════════════════════════ */
+  --ttg-minimon:             #FFCB05;
+  --ttg-minimon-dark:        #FF8C00;
+  --ttg-minimon-glow:        0 0 12px rgba(255, 203, 5, 0.4);
+
+  --ttg-cybermon:            #00A1E9;
+  --ttg-cybermon-alt:        #00B4D8;
+  --ttg-cybermon-dark:       #0057B7;
+  --ttg-cybermon-glow:       0 0 12px rgba(0, 161, 233, 0.4);
+
+  --ttg-dracobell:           #FF6B00;
+  --ttg-dracobell-dark:      #CC4400;
+  --ttg-dracobell-glow:      0 0 12px rgba(255, 107, 0, 0.4);
+
+  /* ═══════════════════════════════════════════════════════════════
+     BATTLE COLORS
+     ═══════════════════════════════════════════════════════════════ */
+  --ttg-player:              #29ADFF;
+  --ttg-player-dim:           rgba(41, 173, 255, 0.15);
+  --ttg-player-glow:         0 0 16px rgba(41, 173, 255, 0.5);
+
+  --ttg-opponent:            #FF004D;
+  --ttg-opponent-dim:         rgba(255, 0, 77, 0.15);
+  --ttg-opponent-glow:       0 0 16px rgba(255, 0, 77, 0.5);
+
+  /* ═══════════════════════════════════════════════════════════════
+     FEEDBACK COLORS  
+     ═══════════════════════════════════════════════════════════════ */
+  --ttg-success:             #22C55E;
+  --ttg-success-glow:        0 0 20px rgba(34, 197, 94, 0.7);
+  --ttg-warning:             #F59E0B;
+  --ttg-purple:              #A855F7;
+
+  /* ═══════════════════════════════════════════════════════════════
+     SOCIAL COLORS
+     ═══════════════════════════════════════════════════════════════ */
+  --ttg-twitter:             #26A5E4;
+  --ttg-instagram:           #E4405F;
+  --ttg-discord:             #5865F2;
+  --ttg-reddit:              #FF4500;
+
+  /* ═══════════════════════════════════════════════════════════════
+     RARITY COLORS (6 tiers)
+     ═══════════════════════════════════════════════════════════════ */
+  --ttg-rarity-common:       #9CA3AF;
+  --ttg-rarity-uncommon:     #22C55E;
+  --ttg-rarity-rare:         #3B82F6;
+  --ttg-rarity-ultra:        #A855F7;
+  --ttg-rarity-legendary:    #FFCC00;
+  --ttg-rarity-holo3d:       #FF6B9D;
+
+  /* ═══════════════════════════════════════════════════════════════
+     MAGAZINE BORDERS & SHADOWS
+     ═══════════════════════════════════════════════════════════════ */
+  --ttg-border-width:        3px;
+  --ttg-border:              3px solid var(--ttg-black);
+  --ttg-border-light:        2px solid var(--ttg-black);
+
+  --ttg-shadow:              4px 4px 0 var(--ttg-black);
+  --ttg-shadow-sm:           2px 2px 0 var(--ttg-black);
+  --ttg-shadow-hover:        6px 6px 0 var(--ttg-black);
+  --ttg-shadow-yellow:       4px 4px 0 var(--ttg-yellow-dark);
+
+  --ttg-shadow-glow-yellow:  0 0 20px rgba(255, 204, 0, 0.3);
+  --ttg-shadow-glow-red:     0 0 20px rgba(227, 53, 13, 0.3);
+
+  /* ═══════════════════════════════════════════════════════════════
+     TYPOGRAPHY
+     ═══════════════════════════════════════════════════════════════ */
+  --ttg-font-display:        var(--font-geist-sans, system-ui, sans-serif);
+  --ttg-font-body:           var(--font-geist-sans, system-ui, sans-serif);
+  --ttg-font-mono:           var(--font-geist-mono, monospace);
+
+  --ttg-tracking-tight:      -0.02em;
+  --ttg-tracking-wide:       0.12em;
+  --ttg-tracking-wider:      0.2em;
+
+  /* ═══════════════════════════════════════════════════════════════
+     SPACING & LAYOUT
+     ═══════════════════════════════════════════════════════════════ */
+  --ttg-header-height:       78px;
+  --ttg-content-max:         1200px;
+
+  /* ═══════════════════════════════════════════════════════════════
+     ANIMATION
+     ═══════════════════════════════════════════════════════════════ */
+  --ttg-transition-fast:     150ms ease;
+  --ttg-transition-normal:   250ms ease;
+  --ttg-transition-slow:     400ms ease;
+  --ttg-transition-bounce:   300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DARK THEME (Battle Mode)
+   ═══════════════════════════════════════════════════════════════ */
+.dark {
+  --ttg-yellow-hover:        #FFD633;
+  --ttg-yellow-dark:         #CCA300;
+
+  --ttg-black:               #ffffff;
+  --ttg-cream:               #1a1a1a;
+  --ttg-cream-dark:          #0a0a0a;
+  --ttg-cream-light:         #2a2a2a;
+
+  --ttg-border:              3px solid var(--ttg-yellow);
+  --ttg-shadow:              4px 4px 0 var(--ttg-yellow-dark);
+  --ttg-shadow-hover:        6px 6px 0 var(--ttg-yellow-dark);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BACKWARD COMPATIBILITY ALIASES
+   Maps old variable names to new --ttg-* tokens.
+   Existing components keep working, new code uses --ttg-*.
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  --mag-yellow:              var(--ttg-yellow);
+  --mag-red:                 var(--ttg-red);
+  --mag-blue:                var(--ttg-blue);
+  --mag-black:               var(--ttg-black);
+  --mag-white:               var(--ttg-cream-light);
+  --mag-cream:               var(--ttg-cream);
+  --mag-orange:              var(--ttg-dracobell);
+  --mag-cyan:                var(--ttg-cybermon);
+  --mag-green:               var(--ttg-success);
+  --mag-purple:              var(--ttg-purple);
+
+  --color-minimon:           var(--ttg-minimon);
+  --color-cybermon:          var(--ttg-cybermon);
+  --color-dracobell:         var(--ttg-dracobell);
+}

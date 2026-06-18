@@ -1,3 +1,4 @@
+@import "../styles/tokens.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -43,6 +44,29 @@
   --radius-xl: calc(var(--radius) + 4px);
   --color-minimon: #FFCB05;
   --color-cybermon: #00A1E9;
+  --color-ttg-yellow: var(--ttg-yellow);
+  --color-ttg-yellow-hover: var(--ttg-yellow-hover);
+  --color-ttg-yellow-dark: var(--ttg-yellow-dark);
+  --color-ttg-red: var(--ttg-red);
+  --color-ttg-red-dark: var(--ttg-red-dark);
+  --color-ttg-blue: var(--ttg-blue);
+  --color-ttg-blue-dark: var(--ttg-blue-dark);
+  --color-ttg-black: var(--ttg-black);
+  --color-ttg-cream: var(--ttg-cream);
+  --color-ttg-cream-dark: var(--ttg-cream-dark);
+  --color-ttg-minimon: var(--ttg-minimon);
+  --color-ttg-cybermon: var(--ttg-cybermon);
+  --color-ttg-dracobell: var(--ttg-dracobell);
+  --color-ttg-player: var(--ttg-player);
+  --color-ttg-opponent: var(--ttg-opponent);
+  --color-ttg-success: var(--ttg-success);
+  --color-ttg-warning: var(--ttg-warning);
+  --color-ttg-purple: var(--ttg-purple);
+  --color-ttg-rarity-common: var(--ttg-rarity-common);
+  --color-ttg-rarity-uncommon: var(--ttg-rarity-uncommon);
+  --color-ttg-rarity-rare: var(--ttg-rarity-rare);
+  --color-ttg-rarity-ultra: var(--ttg-rarity-ultra);
+  --color-ttg-rarity-legendary: var(--ttg-rarity-legendary);
   --color-dracobell: #FF6B00;
 }
 

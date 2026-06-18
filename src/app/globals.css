@@ -41,49 +41,52 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  /* ── Series & brand colors (concrete RGB for Tailwind v4 build-time resolution) ── */
-  --color-minimon: 255 203 5;
-  --color-cybermon: 0 161 233;
-  --color-dracobell: 255 107 0;
+}
+
+/* ── TTG Color Tokens (non-inline: Tailwind wraps RGB channels in rgb()) ── */
+@theme {
+  --color-minimon: #ffcb05;
+  --color-cybermon: #00a1e9;
+  --color-dracobell: #ff6b00;
   /* ── TTG Brand Palette ── */
-  --color-ttg-yellow: 255 204 0;
-  --color-ttg-yellow-hover: 255 229 102;
-  --color-ttg-yellow-dark: 230 184 0;
-  --color-ttg-red: 227 53 13;
-  --color-ttg-red-dark: 201 48 44;
-  --color-ttg-blue: 59 76 202;
-  --color-ttg-blue-dark: 42 58 160;
-  --color-ttg-black: 26 26 26;
-  --color-ttg-cream: 255 249 230;
-  --color-ttg-cream-dark: 255 243 204;
+  --color-ttg-yellow: #ffcc00;
+  --color-ttg-yellow-hover: #ffe566;
+  --color-ttg-yellow-dark: #e6b800;
+  --color-ttg-red: #e3350d;
+  --color-ttg-red-dark: #c9302c;
+  --color-ttg-blue: #3b4cca;
+  --color-ttg-blue-dark: #2a3aa0;
+  --color-ttg-black: #1a1a1a;
+  --color-ttg-cream: #fff9e6;
+  --color-ttg-cream-dark: #fff3cc;
   /* ── Series ── */
-  --color-ttg-minimon: 255 203 5;
-  --color-ttg-cybermon: 0 161 233;
-  --color-ttg-dracobell: 255 107 0;
+  --color-ttg-minimon: #ffcb05;
+  --color-ttg-cybermon: #00a1e9;
+  --color-ttg-dracobell: #ff6b00;
   /* ── Battle ── */
-  --color-ttg-player: 41 173 255;
-  --color-ttg-opponent: 255 0 77;
+  --color-ttg-player: #29adff;
+  --color-ttg-opponent: #ff004d;
   /* ── Feedback ── */
-  --color-ttg-success: 34 197 94;
-  --color-ttg-warning: 245 158 11;
-  --color-ttg-purple: 168 85 247;
+  --color-ttg-success: #22c55e;
+  --color-ttg-warning: #f59e0b;
+  --color-ttg-purple: #a855f7;
   /* ── Rarity tiers ── */
-  --color-ttg-rarity-common: 156 163 175;
-  --color-ttg-rarity-uncommon: 34 197 94;
-  --color-ttg-rarity-rare: 59 130 246;
-  --color-ttg-rarity-ultra: 168 85 247;
-  --color-ttg-rarity-legendary: 255 204 0;
+  --color-ttg-rarity-common: #9ca3af;
+  --color-ttg-rarity-uncommon: #22c55e;
+  --color-ttg-rarity-rare: #3b82f6;
+  --color-ttg-rarity-ultra: #a855f7;
+  --color-ttg-rarity-legendary: #ffcc00;
   /* ── Surfaces ── */
-  --color-ttg-cream-light: 255 254 240;
-  --color-ttg-paper: 250 250 245;
+  --color-ttg-cream-light: #fffef0;
+  --color-ttg-paper: #fafaf5;
   /* ── Arena ── */
-  --color-ttg-arena-bg: 10 10 10;
-  --color-ttg-arena-ink: 192 176 96;
+  --color-ttg-arena-bg: #0a0a0a;
+  --color-ttg-arena-ink: #c0b060;
   /* ── Social ── */
-  --color-ttg-twitter: 38 165 228;
-  --color-ttg-instagram: 228 64 95;
-  --color-ttg-discord: 88 101 242;
-  --color-ttg-reddit: 255 69 0;
+  --color-ttg-twitter: #26a5e4;
+  --color-ttg-instagram: #e4405f;
+  --color-ttg-discord: #5865f2;
+  --color-ttg-reddit: #ff4500;
 }
 
 :root {

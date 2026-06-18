@@ -627,7 +627,7 @@
   );
   background-size: 200% 100%;
   animation: mag-skeleton-shimmer 1.5s ease-in-out infinite;
-  border: 2px solid #1a1a1a;
+  border: 2px solid var(--ttg-black);
 }
 
 .mag-skeleton-text {
@@ -993,7 +993,7 @@
     bottom: -4px;
     right: 2px;
     font-size: 11px;
-    color: #1a1a1a;
+    color: var(--ttg-black);
     opacity: 0.25;
     z-index: 5;
     pointer-events: none;
@@ -1321,15 +1321,15 @@
   left: 8px;
   z-index: 10000;
   background: var(--ttg-yellow);
-  color: #1a1a1a;
+  color: var(--ttg-black);
   padding: 12px 24px;
   font-family: var(--font-geist-sans);
   font-weight: 900;
   font-size: 14px;
   text-transform: uppercase;
   text-decoration: none;
-  border: 3px solid #1a1a1a;
-  box-shadow: 4px 4px 0 #1a1a1a;
+  border: 3px solid var(--ttg-black);
+  box-shadow: 4px 4px 0 var(--ttg-black);
   transition: top 0.2s;
 }
 .skip-to-content:focus {

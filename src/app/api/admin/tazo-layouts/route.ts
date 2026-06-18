@@ -7,15 +7,25 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "dev@tradingtazosgame.com";
 
 const LAYOUTS_FILE = path.join(process.cwd(), "prisma", "tazo-layouts.json");
 
+/** Allowed franchise values — blocks prototype pollution via user input */
+const ALLOWED_FRANCHISES = new Set(["minimon", "cybermon", "dracobell"]);
+/** Slug pattern: alphanumeric + hyphens/underscores, 2-64 chars */
+const SLUG_RE = /^[a-zA-Z0-9][a-zA-Z0-9_-]{1,63}$/;
+/** Safe key names for object property access — prevents proto/c'tor injection */
+const SAFE_PROP_KEYS = new Set([
+  "defaults", "overrides", "backDefaults", "backOverrides", "lastModified",
+  ...ALLOWED_FRANCHISES,
+]);
+
 interface LayoutElement {
   x: number;
   y: number;
   scale: number;
-  visible?: boolean;    // show/hide this element
-  opacity?: number;     // 0-1 opacity override
-  rotation?: number;    // degrees rotation
-  color?: string;       // custom CSS color override
-  customText?: string;  // override auto-text (name, number, collection)
+  visible?: boolean;
+  opacity?: number;
+  rotation?: number;
+  color?: string;
+  customText?: string;
 }
 
 interface LayoutConfig {
@@ -27,27 +37,34 @@ interface LayoutConfig {
   creature: LayoutElement;
 }
 
-// Back side elements — different set than front
 interface BackLayoutConfig {
-  centerIcon: LayoutElement;   // franchise logo/icon at center
-  topLabel: LayoutElement;     // "OFFICIAL TAZO" or edition label
-  bottomLabel: LayoutElement;  // franchise name or year
-  cornerBadge: LayoutElement;  // limited edition marker
-  numberBadge: LayoutElement;  // optional number on back
+  centerIcon: LayoutElement;
+  topLabel: LayoutElement;
+  bottomLabel: LayoutElement;
+  cornerBadge: LayoutElement;
+  numberBadge: LayoutElement;
 }
 
 interface LayoutStore {
-  defaults: Record<string, LayoutConfig>;         // front franchise → layout
-  overrides: Record<string, LayoutConfig>;         // front tazo-slug → layout
-  backDefaults: Record<string, BackLayoutConfig>;  // back franchise → layout
-  backOverrides: Record<string, BackLayoutConfig>; // back tazo-slug → layout
-  lastModified: number; // unix timestamp of last layout change
+  defaults: Record<string, LayoutConfig>;
+  overrides: Record<string, LayoutConfig>;
+  backDefaults: Record<string, BackLayoutConfig>;
+  backOverrides: Record<string, BackLayoutConfig>;
+  lastModified: number;
 }
 
 function readStore(): LayoutStore {
   try {
     if (fs.existsSync(LAYOUTS_FILE)) {
-      return JSON.parse(fs.readFileSync(LAYOUTS_FILE, "utf-8"));
+      const raw = JSON.parse(fs.readFileSync(LAYOUTS_FILE, "utf-8"));
+      // Sanitize: only copy whitelisted top-level keys
+      const safe: LayoutStore = { defaults: {}, overrides: {}, backDefaults: {}, backOverrides: {}, lastModified: 0 };
+      for (const key of Object.keys(raw)) {
+        if (SAFE_PROP_KEYS.has(key)) {
+          (safe as any)[key] = raw[key];
+        }
+      }
+      return safe;
     }
   } catch {}
   return { defaults: {}, overrides: {}, backDefaults: {}, backOverrides: {}, lastModified: 0 };
@@ -58,15 +75,42 @@ function writeStore(store: LayoutStore) {
   fs.writeFileSync(LAYOUTS_FILE, JSON.stringify(store, null, 2));
 }
 
+function requireAdmin(req: NextRequest) {
+  return getAuthUser(req).then((user) => {
+    if (user?.email !== ADMIN_EMAIL) {
+      throw new Error("Forbidden");
+    }
+    return user;
+  });
+}
+
+function validateFranchise(franchise: string | null): string | null {
+  if (!franchise) return null;
+  if (!ALLOWED_FRANCHISES.has(franchise)) {
+    throw new Error(`Invalid franchise: ${franchise}`);
+  }
+  return franchise;
+}
+
+function validateSlug(slug: string | null): string | null {
+  if (!slug) return null;
+  if (!SLUG_RE.test(slug)) {
+    throw new Error(`Invalid slug format: ${slug}`);
+  }
+  return slug;
+}
+
 // GET /api/admin/tazo-layouts?franchise=minimon&slug=boltling&type=back
 export async function GET(req: NextRequest) {
-  const user = await getAuthUser(req);
-  if (user?.email !== ADMIN_EMAIL) {
+  try {
+    await requireAdmin(req);
+  } catch {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
-  const franchise = req.nextUrl.searchParams.get("franchise");
-  const slug = req.nextUrl.searchParams.get("slug");
-  const side = req.nextUrl.searchParams.get("side") || "front"; // "front" | "back"
+
+  const franchise = validateFranchise(req.nextUrl.searchParams.get("franchise"));
+  const slug = validateSlug(req.nextUrl.searchParams.get("slug"));
+  const side = req.nextUrl.searchParams.get("side") === "back" ? "back" : "front";
   const store = readStore();
 
   if (side === "back") {
@@ -77,7 +121,6 @@ export async function GET(req: NextRequest) {
       cornerBadge: { x: 280, y: -280, scale: 1.0 },
       numberBadge: { x: -280, y: 280, scale: 1.0 },
     };
-
     if (slug && store.backOverrides[slug]) {
       return NextResponse.json({ layout: store.backOverrides[slug], source: "override", side: "back" });
     }
@@ -91,12 +134,10 @@ export async function GET(req: NextRequest) {
   if (slug && store.overrides[slug]) {
     return NextResponse.json({ layout: store.overrides[slug], source: "override", side: "front" });
   }
-
   if (franchise && store.defaults[franchise]) {
     return NextResponse.json({ layout: store.defaults[franchise], source: "default", side: "front" });
   }
 
-  // Return hardcoded defaults (matches DEFAULT_LAYOUT in tazo-visual-editor.tsx)
   const defaults: LayoutConfig = {
     collection: { x: 0, y: -300, scale: 1.0 },
     badge: { x: 290, y: 0, scale: 1.0 },
@@ -105,15 +146,21 @@ export async function GET(req: NextRequest) {
     rarity: { x: 0, y: -250, scale: 1.0 },
     creature: { x: 0, y: 0, scale: 1.0 },
   };
-
   return NextResponse.json({ layout: defaults, source: "hardcoded", side: "front" });
 }
 
 // POST /api/admin/tazo-layouts
-// Body: { franchise, slug?, layout, side: "front"|"back" }
 export async function POST(req: NextRequest) {
+  try {
+    await requireAdmin(req);
+  } catch {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const body = await req.json();
-  const { franchise, slug, layout, side = "front" } = body;
+  const { layout, side = "front" } = body;
+  const franchise = validateFranchise(body.franchise);
+  const slug = validateSlug(body.slug);
 
   if (!layout) {
     return NextResponse.json({ error: "layout required" }, { status: 400 });

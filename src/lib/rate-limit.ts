@@ -40,6 +40,7 @@ function getBucket(store: string, key: string): { count: number; remaining: numb
   return { count: bucket.count, remaining, resetAt: bucket.resetAt };
 }
 
+// Trusted when behind nginx/Caddy reverse proxy (not direct client access)
 function getClientIp(headers: Headers): string {
   return headers.get("x-forwarded-for")?.split(",")[0]?.trim()
     || headers.get("x-real-ip")

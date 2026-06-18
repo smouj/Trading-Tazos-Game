@@ -64,9 +64,10 @@ export async function PUT(request: NextRequest) {
     const { id, ...fields } = body
     if (!id) return NextResponse.json({ error: "id required" }, { status: 400 })
 
+    const allowedFields = new Set(["name", "frontUrl", "backUrl", "franchise", "cost", "bonusChance", "rareBoost", "color", "bgColor", "tagline", "sortOrder", "isActive"])
     const updateData: any = {}
     for (const [k, v] of Object.entries(fields)) {
-      if (v !== undefined) updateData[k] = v
+      if (v !== undefined && allowedFields.has(k)) updateData[k] = v
     }
 
     const model = await db.bagModel.update({ where: { id }, data: updateData })

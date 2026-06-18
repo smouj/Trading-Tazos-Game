@@ -705,6 +705,7 @@ export default function BagShopPage() {
             key={`${bagId}-${bulkIndex}`}
             bag={{ id: bagId!, bagType: selectedBag.type, preview: { franchise: { slug: selectedBag.franchise } } }}
             bagColor={selectedBag.color}
+            autoOpen={true}
             onOpen={() => { openNextBulkBag() }}
           />
         </WebGLGuard>

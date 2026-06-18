@@ -101,11 +101,12 @@ function ParticleBurst({ color, active }: { color: string; active: boolean }) {
 // ══════════════════════════════════════════════════════════
 export interface BagData { id: string; bagType?: string; preview?: { franchise?: { slug?: string } } | null }
 
-export default function BagOpener3D({ bag, frontUrl: propFrontUrl, backUrl: propBackUrl, bagColor: propBagColor, onOpen }: {
+export default function BagOpener3D({ bag, frontUrl: propFrontUrl, backUrl: propBackUrl, bagColor: propBagColor, autoOpen = false, onOpen }: {
   bag: BagData | null
   frontUrl?: string
   backUrl?: string
   bagColor?: string
+  autoOpen?: boolean
   onOpen: () => void
 }) {
   const { frontUrl: variantFront, backUrl: variantBack, franchise } = useMemo(() => {
@@ -138,6 +139,18 @@ export default function BagOpener3D({ bag, frontUrl: propFrontUrl, backUrl: prop
     window.addEventListener("resize", update)
     return () => window.removeEventListener("resize", update)
   }, [])
+
+  // ═══ Auto-open for bulk: skip drag-to-tear, go straight to animation ═══
+  useEffect(() => {
+    if (autoOpen && stage === "idle") {
+      const t = setTimeout(() => {
+        setTearProgress(1)
+        playSFX('bag_open', { volume: 0.55 })
+        setStage("opening")
+      }, 300) // brief delay so bag renders first
+      return () => clearTimeout(t)
+    }
+  }, [autoOpen, stage])
 
   const franchiseColor = useMemo(() => {
     const c: Record<string, string> = { minimon: "var(--ttg-yellow)", cybermon: "var(--ttg-rarity-rare)", dracobell: "var(--ttg-dracobell)" }
@@ -231,8 +244,8 @@ export default function BagOpener3D({ bag, frontUrl: propFrontUrl, backUrl: prop
       {/* Particle burst */}
       <ParticleBurst color={franchiseColor} active={particlesActive} />
 
-      {/* Seal area glow indicator — shows where to drag, fades when interacting */}
-      {stage === 'idle' && (
+      {/* Seal area glow indicator — only for manual mode */}
+      {!autoOpen && stage === 'idle' && (
         <div className="absolute top-[18%] left-[15%] right-[15%] z-15 pointer-events-none">
           <div className="h-0.5 rounded-full animate-pulse"
             style={{
@@ -285,7 +298,7 @@ export default function BagOpener3D({ bag, frontUrl: propFrontUrl, backUrl: prop
 
       {/* ═══ UI OVERLAY ═══ */}
       <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-3 z-10 px-4">
-        {stage === "idle" && (
+        {!autoOpen && stage === "idle" && (
           <div className="flex flex-col items-center gap-3">
             <div
               className="px-6 py-2 font-black text-[10px] sm:text-xs uppercase tracking-[0.1em] border-[3px] cursor-pointer active:scale-95 transition-transform"
@@ -307,7 +320,7 @@ export default function BagOpener3D({ bag, frontUrl: propFrontUrl, backUrl: prop
             </button>
           </div>
         )}
-        {stage === "tearing" && (
+        {!autoOpen && stage === "tearing" && (
           <div className="flex items-center gap-2.5 w-full max-w-[280px]">
             <div className="flex-1">
               <div className="h-2.5 bg-ttg-black/8 border border-ttg-black/8 overflow-hidden rounded-full">
@@ -326,7 +339,9 @@ export default function BagOpener3D({ bag, frontUrl: propFrontUrl, backUrl: prop
           <div className="flex flex-col items-center gap-2">
             <div className="px-5 py-2.5 border-[3px] border-ttg-black shadow-[3px_3px_0px_var(--ttg-black)] animate-pulse"
               style={{ backgroundColor: `${franchiseColor}f0` }}>
-              <span className="font-black text-[11px] text-ttg-black uppercase tracking-[0.15em]">Opening…</span>
+              <span className="font-black text-[11px] text-ttg-black uppercase tracking-[0.15em]">
+                {autoOpen ? "✨ Opening…" : "Opening…"}
+              </span>
             </div>
             {/* Particle burst rings — dramatic opening pulse */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">

@@ -1,4 +1,4 @@
-# TTG Heartbeat — v0.10.0 ✅ ONLINE — 2026-06-18 11:30 CEST
+# TTG Heartbeat — v0.10.0 ✅ ONLINE — 2026-06-18 16:48 CEST
 # 🔒 Security: CVE-2026-12143 (form-data CRLF injection) fixed → 4.0.6
 # 🔒 Security: CVE-2026-53550 (js-yaml quadratic DoS) fixed → 4.2.0 (overrides)
 # 🎨 DESIGN SYSTEM: tokens.css v1.0 — 60+ --ttg-* variables, channel variants, Tailwind @theme
@@ -40,3 +40,8 @@
 # 📊 Analytics: Google Search Console only
 # 🔍 DB corruption history: 26 "malformed" errors (Jun 16), resolved. Integrity OK now.
 # 🔒 npm audit: 0 CVEs (0 low, 0 moderate, 0 high, 0 critical)
+# 🎨 Auth pages unified: all 5 pages share halftone + stripe + MagazineHeader/Footer
+# 📚 Collections lore: hero banners, origin stories, wiki links, zero brand refs
+# 🔧 Admin polish: tube→deck rename, API aliases, Shop Bag canonical, --ttg-* tokens
+# 🚀 Deployed: 240a592 → VPS, PM2 restarted, 30/30 smoke ✅
+# 🌐 All platforms synced: WSL, VPS, GitHub, npm

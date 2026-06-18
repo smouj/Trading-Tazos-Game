@@ -26,6 +26,8 @@ const fr: Dictionary = {
   battle_start: "Commencer le Combat",
   battle_loading: "Chargement de la collection...",
   battle_rematch: "Revanche",
+  battle_entering_arena: "Entru00e9e dans lu2019Aru00e8ne…",
+  battle_battle_loading: "Chargement du combat",
   battle_next_turn: "Tour Suivant",
   battle_resolve_turn: "Resoudre le Tour",
   battle_rival_thinking: "Le rival reflechit...",

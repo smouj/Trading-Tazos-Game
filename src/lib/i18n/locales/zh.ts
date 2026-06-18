@@ -26,6 +26,8 @@ const zh: Dictionary = {
   battle_start: "开始对战",
   battle_loading: "加载收藏中...",
   battle_rematch: "再战",
+  battle_entering_arena: "u6B63u5728u8FDBu5165u7ADEu6280u573A…",
+  battle_battle_loading: "u6218u6597u52A0u8F7Du4E2D",
   battle_next_turn: "下一回合",
   battle_resolve_turn: "结算回合",
   battle_rival_thinking: "对手正在思考...",

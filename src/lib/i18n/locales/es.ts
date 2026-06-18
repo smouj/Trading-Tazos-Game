@@ -26,6 +26,8 @@ const es: Dictionary = {
   battle_start: "¡A Batallar!",
   battle_loading: "Cargando coleccion...",
   battle_rematch: "Revancha",
+  battle_entering_arena: "Entrando en la Arena…",
+  battle_battle_loading: "Cargando batalla",
   battle_next_turn: "Siguiente Turno",
   battle_resolve_turn: "Resolver Turno",
   battle_rival_thinking: "El rival esta pensando...",

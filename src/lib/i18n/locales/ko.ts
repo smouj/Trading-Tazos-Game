@@ -26,6 +26,8 @@ const ko: Dictionary = {
   battle_start: "배틀 시작",
   battle_loading: "컬렉션 로딩 중...",
   battle_rematch: "재대결",
+  battle_entering_arena: "uC544uB808uB098 uC785uC7A5 uC911…",
+  battle_battle_loading: "uBC30uD2C0 uB85CuB529 uC911",
   battle_next_turn: "다음 턴",
   battle_resolve_turn: "턴 해결",
   battle_rival_thinking: "상대가 생각 중...",

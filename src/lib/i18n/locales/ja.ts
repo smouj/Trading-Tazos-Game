@@ -26,6 +26,8 @@ const ja: Dictionary = {
   battle_start: "バトル開始",
   battle_loading: "コレクション読み込み中...",
   battle_rematch: "再戦",
+  battle_entering_arena: "u30A2u30EAu30FCu30CAu306Bu5165u5834u4E2D…",
+  battle_battle_loading: "u30D0u30C8u30EBu8AADu307Fu8FBCu307Fu4E2D",
   battle_next_turn: "次のターン",
   battle_resolve_turn: "ターンを解決",
   battle_rival_thinking: "相手が考えています...",

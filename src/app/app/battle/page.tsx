@@ -20,9 +20,10 @@ import {
   ChevronRight, Layers, Loader2, AlertTriangle, CheckCircle,
 } from "lucide-react"
 
-const BattleView = dynamic(() => import("@/components/game/battle-view"), {
-  ssr: false,
-  loading: () => (
+// BattleView loading overlay — dark arena entrance with i18n
+function BattleLoadingOverlay() {
+  const { t } = useI18n()
+  return (
     <div
       style={{
         position: "fixed", inset: 0, zIndex: 9999,
@@ -39,11 +40,16 @@ const BattleView = dynamic(() => import("@/components/game/battle-view"), {
         <div style={{ position: "absolute", inset: -6, borderRadius: "50%", border: "2px solid rgba(255,204,0,0.06)", animation: "ping 1.5s ease-out infinite" }} />
       </div>
       <div style={{ position: "relative", zIndex: 1, textAlign: "center" }}>
-        <p style={{ fontSize: 12, fontWeight: 900, color: "rgba(255,255,255,0.7)", textTransform: "uppercase", letterSpacing: "0.25em", margin: 0 }}>Entering Arena…</p>
-        <p style={{ fontSize: 8, fontWeight: 700, color: "rgba(255,204,0,0.25)", textTransform: "uppercase", letterSpacing: "0.4em", marginTop: 8 }}>Battle loading</p>
+        <p style={{ fontSize: 12, fontWeight: 900, color: "rgba(255,255,255,0.7)", textTransform: "uppercase", letterSpacing: "0.25em", margin: 0 }}>{t.battle_entering_arena}</p>
+        <p style={{ fontSize: 8, fontWeight: 700, color: "rgba(255,204,0,0.25)", textTransform: "uppercase", letterSpacing: "0.4em", marginTop: 8 }}>{t.battle_battle_loading}</p>
       </div>
     </div>
-  ),
+  )
+}
+
+const BattleView = dynamic(() => import("@/components/game/battle-view"), {
+  ssr: false,
+  loading: BattleLoadingOverlay,
 })
 
 // ── Mode definitions ──

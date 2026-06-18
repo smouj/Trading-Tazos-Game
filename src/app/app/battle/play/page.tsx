@@ -13,10 +13,12 @@
 // ============================================================
 
 import dynamic from "next/dynamic"
+import { useI18n } from "@/lib/i18n"
 
-const BattleView = dynamic(() => import("@/components/game/battle-view"), {
-  ssr: false,
-  loading: () => (
+// BattleView loading overlay — dark arena entrance with i18n
+function BattlePlayLoadingOverlay() {
+  const { t } = useI18n()
+  return (
     <div
       style={{
         position: "fixed",
@@ -26,7 +28,7 @@ const BattleView = dynamic(() => import("@/components/game/battle-view"), {
         alignItems: "center",
         justifyContent: "center",
         gap: "2rem",
-        background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)",
+        background: "linear-gradient(135deg, #0a0a0a 0%, var(--ttg-black) 100%)",
       }}
     >
       {/* Scanlines */}
@@ -87,7 +89,7 @@ const BattleView = dynamic(() => import("@/components/game/battle-view"), {
             margin: 0,
           }}
         >
-          Entering Arena…
+          {t.battle_entering_arena}
         </p>
         <p
           style={{
@@ -99,11 +101,16 @@ const BattleView = dynamic(() => import("@/components/game/battle-view"), {
             marginTop: 8,
           }}
         >
-          Battle loading
+          {t.battle_battle_loading}
         </p>
       </div>
     </div>
-  ),
+  )
+}
+
+const BattleView = dynamic(() => import("@/components/game/battle-view"), {
+  ssr: false,
+  loading: BattlePlayLoadingOverlay,
 })
 
 export default function BattlePlayPage() {

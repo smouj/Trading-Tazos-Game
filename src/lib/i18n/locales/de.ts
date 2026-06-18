@@ -26,6 +26,8 @@ const de: Dictionary = {
   battle_start: "Kampf starten",
   battle_loading: "Sammlung wird geladen...",
   battle_rematch: "Revanche",
+  battle_entering_arena: "Arena wird betreten…",
+  battle_battle_loading: "Kampf wird geladen",
   battle_next_turn: "Nächster Zug",
   battle_resolve_turn: "Zug auswerten",
   battle_rival_thinking: "Rivale denkt nach...",

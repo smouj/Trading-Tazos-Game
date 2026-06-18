@@ -48,6 +48,8 @@ export interface Dictionary {
   battle_start: string
   battle_loading: string
   battle_rematch: string
+  battle_entering_arena: string
+  battle_battle_loading: string
   battle_next_turn: string
   battle_resolve_turn: string
   battle_rival_thinking: string

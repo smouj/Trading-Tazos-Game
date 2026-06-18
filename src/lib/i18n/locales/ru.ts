@@ -26,6 +26,8 @@ const ru: Dictionary = {
   battle_start: "Начать Битву",
   battle_loading: "Загрузка коллекции...",
   battle_rematch: "Реванш",
+  battle_entering_arena: "u0412u0445u043Eu0434 u043Du0430 u0410u0440u0435u043Du0443…",
+  battle_battle_loading: "u0417u0430u0433u0440u0443u0437u043Au0430 u0431u0438u0442u0432u044B",
   battle_next_turn: "Следующий Ход",
   battle_resolve_turn: "Завершить Ход",
   battle_rival_thinking: "Соперник думает...",

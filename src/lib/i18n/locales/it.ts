@@ -26,6 +26,8 @@ const it: Dictionary = {
   battle_start: "Inizia Battaglia",
   battle_loading: "Caricamento collezione...",
   battle_rematch: "Rivincita",
+  battle_entering_arena: "Ingresso nellu2019Arena…",
+  battle_battle_loading: "Caricamento battaglia",
   battle_next_turn: "Turno Successivo",
   battle_resolve_turn: "Risolvi Turno",
   battle_rival_thinking: "Il rivale sta pensando...",

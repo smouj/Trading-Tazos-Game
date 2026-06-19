@@ -601,7 +601,7 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
 
           {/* Description — magazine deck */}
           <p className="relative text-[11px] sm:text-sm font-bold text-ttg-black/55 leading-relaxed max-w-[320px] text-center md:text-left">
-            Rip open digital bags, discover 3 original series, build your deck of 5, and slam tazos in a physics-driven 3D battle arena.
+            Rip open digital bags, discover 3 original series, build a 20-tazo deck, draw 5 for your starting hand, and slam tazos in a physics-driven 3D battle arena. Draw 1 tazo each turn.
           </p>
 
           {/* CTA Button */}
@@ -741,7 +741,7 @@ function HowItWorksHome() {
       <div className="grid sm:grid-cols-3 gap-3 sm:gap-4">
         {[
           { step: "1", icon: PackageOpen, title: "Open Bags", desc: "Get random tazos from 3 different series. Start with 30 welcome bags + 100 CREDITS and earn more by winning battles.", color: "var(--ttg-dracobell)" },
-          { step: "2", icon: Layers, title: "Build Your Deck", desc: "Choose 5 tazos with 9 combat stats each. Balance attack, defense, and speed for the best results.", color: "var(--ttg-blue)" },
+          { step: "2", icon: Layers, title: "Build Your Deck", desc: "Build a 20-tazo deck. Pick your starting 5 from it. Each tazo has 9 combat stats — balance attack, defense, and speed to dominate the arena.", color: "var(--ttg-blue)" },
           { step: "3", icon: Swords, title: "Enter the Arena", desc: "Bet one tazo at center, then slam from above. Flip opponent discs to capture them — eliminate their entire deck to win!", color: "var(--ttg-red)" },
         ].map(({ step, icon: Icon, title, desc, color }) => (
           <div key={step} className="border-3 border-ttg-black bg-white p-4 sm:p-5 text-center hover:-translate-y-1 hover:shadow-[5px_5px_0px_var(--ttg-black)] transition-all"
@@ -1049,7 +1049,7 @@ function CollectionsContent({ onNavigate }: { onNavigate: (page: PageId) => void
   return (
     <div className="w-full max-w-4xl mx-auto space-y-5">
       <p className="text-xs font-bold text-ttg-black/50 uppercase tracking-wider">
-        3 original series · 139+ Season 1 tazos · lore-safe TTG canon
+        3 original series · 139 Season 1 tazos · lore-safe TTG canon
       </p>
       <div className="grid md:grid-cols-3 gap-4">
         {COLLECTION_DATA.map(c => {
@@ -1509,7 +1509,7 @@ function ShopContent() {
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: "repeating-linear-gradient(45deg, var(--ttg-black) 0px, var(--ttg-black) 2px, transparent 2px, transparent 12px)" }} />
         <div className="relative z-10 space-y-3">
           <h3 className="text-lg sm:text-2xl font-black text-ttg-black uppercase tracking-tight">Ready to Start Collecting?</h3>
-          <p className="text-sm text-ttg-black/50 font-bold max-w-md mx-auto">Sign up free and get starter CREDITS + 30 welcome bags to open. Collect, trade, and battle with 139+ tazos across 3 series.</p>
+          <p className="text-sm text-ttg-black/50 font-bold max-w-md mx-auto">Sign up free and get starter CREDITS + 30 welcome bags to open. Collect, trade, and battle with 139 tazos across 3 series.</p>
           <div className="flex items-center justify-center gap-3 pt-2">
             <a href="/register" className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 text-xs sm:text-sm font-black uppercase tracking-wider bg-ttg-red text-white border-3 border-ttg-black shadow-[4px_4px_0px_var(--ttg-black)] hover:shadow-[2px_2px_0px_var(--ttg-black)] hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all">
               Sign Up Free <ArrowRight className="w-4 h-4" />

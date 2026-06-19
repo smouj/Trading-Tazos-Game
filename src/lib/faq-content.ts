@@ -15,7 +15,7 @@ export interface FaqEntry {
 export const FAQ_ENTRIES: FaqEntry[] = [
   {
     q: "What is Trading Tazos Game?",
-    a: `A browser-based skill game where you collect and battle with digital tazos. Open bags to discover ${SITE_CONFIG.totalTazos} unique tazos across 3 series (Minimon, Dracobell, Cybermon). Build decks of 5, then enter the 3D arena where you aim, charge, and slam your tazos to flip opponent discs and capture them for points.`,
+    a: `A browser-based skill game where you collect and battle with digital tazos. Open bags to discover ${SITE_CONFIG.totalTazos} unique tazos across 3 series (Minimon, Dracobell, Cybermon). Build a 20-tazo deck (draw 5 for your starting hand, 1 each turn), then enter the 3D arena where you aim, charge, and slam your tazos to flip opponent discs and capture them for points.`,
   },
   {
     q: "Is it free to play?",
@@ -43,7 +43,7 @@ export const FAQ_ENTRIES: FaqEntry[] = [
   },
   {
     q: "How do I get started?",
-    a: "Create a free account, open your welcome bags, build a deck of 5, and enter the Battle Arena.",
+    a: "Create a free account, open your welcome bags, build a 20-tazo deck (draw 5 to start, 1 per turn), and enter the Battle Arena.",
   },
   {
     q: "Is Trading Tazos Game affiliated with any real brand?",

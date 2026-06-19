@@ -43,7 +43,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   return {
     title: `Collect, Trade & Battle ${SITE_CONFIG.totalTazos} Tazos — Free Online Game`,
     description:
-      `Trading Tazos Game is a free browser-based skill game where you collect ${SITE_CONFIG.totalTazos} tazos across Minimon, Dracobell & Cybermon collections. Build decks of 5 and battle in a physics-driven 3D arena.` +
+      `Trading Tazos Game is a free browser-based skill game where you collect ${SITE_CONFIG.totalTazos} tazos across Minimon, Dracobell & Cybermon collections. Build a 20-tazo deck (draw 5 to start, 1 per turn) and battle in a physics-driven 3D arena.` +
       (SITE_CONFIG.disclaimer ? ` ${SITE_CONFIG.disclaimer}` : ""),
     robots: { index: true, follow: true },
     alternates: getLanguageAlternates(),

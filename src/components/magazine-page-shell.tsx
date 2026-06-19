@@ -42,7 +42,7 @@ function GameHUD({ credits, tazoCount }: { credits?: number; tazoCount?: number 
   const { user } = useAuth()
   if (!user) return null
   return (
-    <div className="sticky bottom-0 z-40 bg-ttg-yellow border-t-[3px] border-ttg-black">
+    <div className="sticky bottom-0 z-40 bg-ttg-yellow border-t-[3px] border-ttg-black" data-ttg-hide-on-battle>
       <div className="max-w-7xl mx-auto px-4 py-1.5 flex items-center justify-between text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-ttg-black">
         <div className="flex items-center gap-3 sm:gap-4">
           <span style={{ color: "var(--ttg-black)", opacity: 0.5 }}>{user.displayName || user.name}</span>

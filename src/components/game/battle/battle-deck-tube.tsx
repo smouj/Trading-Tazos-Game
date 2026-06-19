@@ -221,64 +221,13 @@ export default function BattleDeckTube({
         />
       </mesh>
 
-      {/* ── Count label floating above ── */}
-      <CountLabel
-        count={remainingCount}
-        total={totalCount}
-        color={color}
-        isPlayer={isPlayer}
-        isDrawing={isDrawing}
-      />
+      {/* Count removed — HUD shows remaining/total */}
 
-      {/* ── Light pillar from tube top (when drawing) ── */}
-      {isDrawing && (
-        <pointLight
-          position={[0, TUBE_HEIGHT / 2 + 0.1, 0]}
-          intensity={0.8}
-          color="#FFCC00"
-          distance={4}
-        />
-      )}
+      {/* Light pillar removed — too distracting */}
+
     </group>
   )
 }
 
-// ── Floating count text above tube ──
-function CountLabel({ count, total, color, isPlayer, isDrawing }: {
-  count: number; total: number; color: string
-  isPlayer: boolean; isDrawing: boolean
-}) {
-  const labelRef = useRef<THREE.Group>(null!)
+// CountLabel removed — HUD handles all game-state text
 
-  useFrame(() => {
-    if (labelRef.current) {
-      labelRef.current.position.y = TUBE_HEIGHT / 2 + 0.6 + Math.sin(Date.now() * 0.002) * 0.05
-    }
-  })
-
-  // Canvas texture for the count
-  const tex = useMemo(() => {
-    const c = document.createElement("canvas")
-    c.width = 256; c.height = 64
-    const ctx = c.getContext("2d")!
-    ctx.fillStyle = isDrawing ? "#FFCC00" : color
-    ctx.font = "bold 28px monospace"
-    ctx.textAlign = "center"
-    ctx.textBaseline = "middle"
-    const text = `${count}/${total}`
-    ctx.fillText(text, 128, 32)
-    const t = new THREE.CanvasTexture(c)
-    t.colorSpace = THREE.SRGBColorSpace
-    t.minFilter = THREE.LinearFilter
-    return t
-  }, [count, total, color, isDrawing])
-
-  return (
-    <group ref={labelRef} position={[0, TUBE_HEIGHT / 2 + 0.6, 0]}>
-      <mesh rotation={[0, 0, 0]}>
-        <planeGeometry args={[1.2, 0.3]} />
-        <meshBasicMaterial map={tex} transparent depthWrite={false} side={THREE.DoubleSide} />
-      </mesh>
-    </group>
-  )
-}

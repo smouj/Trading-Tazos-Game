@@ -36,7 +36,7 @@
       "purpose": "any"
     },
     {
-      "src": "/pwa-512.webp",
+      "src": "/pwa-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -70,9 +70,19 @@
   ],
   "related_applications": [
     {
+      "platform": "windows",
+      "url": "https://github.com/smouj/Trading-Tazos-Game/releases/download/v0.10.1/trading-tazos-game-0.10.1-win-x64.exe",
+      "id": "com.tradingtazosgame.ttg.windows"
+    },
+    {
       "platform": "linux",
-      "url": "https://github.com/smouj/Trading-Tazos-Game/releases/download/v0.7.2/trading-tazos-game-0.7.2-linux-x86_64.AppImage",
+      "url": "https://github.com/smouj/Trading-Tazos-Game/releases/download/v0.10.1/trading-tazos-game-0.10.1-linux-x86_64.AppImage",
       "id": "com.tradingtazosgame.ttg.linux"
+    },
+    {
+      "platform": "mac",
+      "url": "https://github.com/smouj/Trading-Tazos-Game/releases/download/v0.10.1/trading-tazos-game-0.10.1-mac-x64.dmg",
+      "id": "com.tradingtazosgame.ttg.mac"
     }
   ]
 }

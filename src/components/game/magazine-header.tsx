@@ -82,7 +82,7 @@ export default function MagazineHeader({
               <a
                 key={page}
                 href={page === "home" ? "/" : `/?page=${page}`}
-                className="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider transition-colors no-underline text-white/50 hover:text-ttg-yellow"
+                className="px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-colors no-underline text-white/50 hover:text-ttg-yellow"
               >
                 {label}
               </a>
@@ -97,7 +97,7 @@ export default function MagazineHeader({
               {user.email === "dev@tradingtazosgame.com" && (
                 <a
                   href="/admin"
-                  className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-black uppercase tracking-wider transition-colors no-underline border-2"
+                  className="inline-flex items-center gap-1 px-2 py-1.5 text-[10px] font-black uppercase tracking-wider transition-colors no-underline border-2"
                   style={{ color: "var(--ttg-red)", borderColor: "color-mix(in srgb, var(--ttg-red) 20%, transparent)" }}
                 >
                   <Shield className="w-3 h-3" /> Admin
@@ -106,7 +106,7 @@ export default function MagazineHeader({
               {!isApp && (
                 <a
                   href="/app"
-                  className="px-3 py-1 text-[10px] font-black text-ttg-black bg-ttg-yellow uppercase tracking-wider border-2 border-white/20 hover:bg-ttg-yellow-hover transition-colors no-underline"
+                  className="px-3 py-1.5 text-[10px] font-black text-ttg-black bg-ttg-yellow uppercase tracking-wider border-2 border-white/20 hover:bg-ttg-yellow-hover transition-colors no-underline"
                 >
                   Dashboard
                 </a>
@@ -121,7 +121,7 @@ export default function MagazineHeader({
                   logout()
                   window.location.href = "/"
                 }}
-                className="px-3 py-1 text-[10px] font-black text-white/40 uppercase tracking-wider border-2 border-white/10 hover:border-ttg-red hover:text-ttg-red transition-colors bg-transparent cursor-pointer"
+                className="px-3 py-1.5 text-[10px] font-black text-white/40 uppercase tracking-wider border-2 border-white/10 hover:border-ttg-red hover:text-ttg-red transition-colors bg-transparent cursor-pointer"
               >
                 Log Out
               </button>
@@ -129,7 +129,7 @@ export default function MagazineHeader({
           ) : mounted ? (
             <a
               href="/login"
-              className="px-3 py-1 text-[10px] font-black text-white uppercase tracking-wider border-2 border-white/30 hover:border-ttg-yellow hover:text-ttg-yellow transition-colors no-underline"
+              className="px-3 py-1.5 text-[10px] font-black text-white uppercase tracking-wider border-2 border-white/30 hover:border-ttg-yellow hover:text-ttg-yellow transition-colors no-underline"
             >
               Sign In
             </a>
@@ -144,7 +144,7 @@ export default function MagazineHeader({
             <a
               key={page}
               href={page === "home" ? "/" : `/?page=${page}`}
-              className="px-2 py-0.5 text-[9px] font-black uppercase tracking-wider whitespace-nowrap transition-colors no-underline text-white/40 hover:text-ttg-yellow"
+              className="px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wider whitespace-nowrap transition-colors no-underline text-white/40 hover:text-ttg-yellow"
             >
               {label}
             </a>

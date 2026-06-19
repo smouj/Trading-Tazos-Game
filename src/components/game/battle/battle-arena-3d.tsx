@@ -140,7 +140,7 @@ function Reticle({
   gamePhase: string
 }) {
   if (!visible) return null
-  const isCharging = gamePhase === "player_charge" || gamePhase === "player_tilt"
+  const isCharging = gamePhase === "charge"
   return (
     <group position={position}>
       {/* Impact ghost — grows as player charges */}
@@ -487,7 +487,7 @@ function ArenaCamera({ gamePhase }: { gamePhase: string }) {
     // Auto-lerp only when user hasn't manually moved the camera
     if (!userInteractedRef.current) {
       // Cinematic intro orbit (~8s full rotation, gentle vertical wave)
-      if (gamePhase === "intro") {
+      if (gamePhase === "match_intro") {
         introTimeRef.current += delta
         const angle = introTimeRef.current * 0.8
         const radius = 8
@@ -501,21 +501,21 @@ function ArenaCamera({ gamePhase }: { gamePhase: string }) {
         targetRef.current.lerp(target, 0.03)
         camera.position.lerp(pos, 0.03)
         camera.lookAt(targetRef.current)
-      } else if (gamePhase === "player_aim" || gamePhase === "placing_stakes") {
+      } else if (gamePhase === "aim" || gamePhase === "stake_player" || gamePhase === "stake_reveal") {
         // Bird's-eye for aiming — see the full circle
         const target = new THREE.Vector3(0, 0, 0)
         const pos = new THREE.Vector3(0, 14, 1)
         targetRef.current.lerp(target, 0.06)
         camera.position.lerp(pos, 0.05)
         camera.lookAt(targetRef.current)
-      } else if (gamePhase === "player_charge" || gamePhase === "player_tilt") {
+      } else if (gamePhase === "charge") {
         // Angled view showing height + tilt
         const target = new THREE.Vector3(0, 2, 0)
         const pos = new THREE.Vector3(7, 8, 7)
         targetRef.current.lerp(target, 0.06)
         camera.position.lerp(pos, 0.05)
         camera.lookAt(targetRef.current)
-      } else if (gamePhase === "slamming" || gamePhase === "impact" || gamePhase === "resolve_impact") {
+      } else if (gamePhase === "throw" || gamePhase === "physics_resolve") {
         // Low cinematic angle — tight on the action
         const target = new THREE.Vector3(0, 0.2, 0)
         const pos = new THREE.Vector3(4, 3, 5)
@@ -533,7 +533,7 @@ function ArenaCamera({ gamePhase }: { gamePhase: string }) {
     }
 
     // Screen shake — applied AFTER lerp for dramatic impact during slam
-    if (gamePhase === "impact" || gamePhase === "slamming") {
+    if (gamePhase === "physics_resolve" || gamePhase === "throw") {
       const sh = shakeRef.current
       if (sh.intensity < 0.1) {
         sh.intensity = 1.2
@@ -585,6 +585,10 @@ interface SceneProps {
   playerDeckTotal?: number
   playerDeckFranchise?: string
   playerDeckImages?: string[]
+  opponentDeckCount?: number
+  opponentDeckTotal?: number
+  opponentDeckFranchise?: string
+  opponentDeckImages?: string[]
   isDrawing?: boolean
   drawTrigger?: number
 }
@@ -595,6 +599,9 @@ function Scene({
   playerDeckCount = 0, playerDeckTotal = 0,
   playerDeckFranchise = "minimon",
   playerDeckImages = [],
+  opponentDeckCount = 0, opponentDeckTotal = 0,
+  opponentDeckFranchise = "minimon",
+  opponentDeckImages = [],
   isDrawing = false, drawTrigger = 0,
 }: SceneProps) {
   const [impactCount, setImpactCount] = useState(0)
@@ -602,7 +609,7 @@ function Scene({
   
   // Trigger spark on impact
   useEffect(() => {
-    if (gamePhase === "impact" && prevPhase.current !== "impact") {
+    if (gamePhase === "physics_resolve" && prevPhase.current !== "impact") {
       setImpactCount(c => c + 1)
     }
     prevPhase.current = gamePhase
@@ -637,6 +644,20 @@ function Scene({
           isDrawing={isDrawing}
           drawTrigger={drawTrigger}
           tazoImageUrls={playerDeckImages}
+        />
+      )}
+
+      {/* ── Opponent Deck Tube ── */}
+      {opponentDeckTotal > 0 && (
+        <BattleDeckTube
+          position={[-config.radius * 1.05, 0, -config.radius * 0.3]}
+          franchise={opponentDeckFranchise}
+          remainingCount={opponentDeckCount}
+          totalCount={opponentDeckTotal}
+          isPlayer={false}
+          isDrawing={isDrawing}
+          drawTrigger={drawTrigger}
+          tazoImageUrls={opponentDeckImages}
         />
       )}
       {/* Player/opponent direction markers */}
@@ -695,6 +716,10 @@ interface Props {
   playerDeckTotal?: number
   playerDeckFranchise?: string
   playerDeckImages?: string[]
+  opponentDeckCount?: number
+  opponentDeckTotal?: number
+  opponentDeckFranchise?: string
+  opponentDeckImages?: string[]
   isDrawing?: boolean
   drawTrigger?: number
 }

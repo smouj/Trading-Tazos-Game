@@ -38,6 +38,9 @@ import BattleResultPanel from "./battle/battle-result-panel"
 import BattleHand from "./battle/battle-hand"
 import BattleTutorial, { isTutorialDone } from "./battle/battle-tutorial"
 import BattleSideStack from "./battle/battle-side-stack"
+import CaptureOverlay from "./battle/capture-overlay"
+import SelectPhase from "./battle/select-phase"
+import RoundWonOverlay from "./battle/round-won-overlay"
 import { Disc3, RotateCcw, Crosshair, ArrowDown, Maximize, Minimize, Lock, Zap, Swords } from "lucide-react"
 
 
@@ -410,6 +413,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
   const [airborne, setAirborne] = useState<AirborneTazo | null>(null)
   const [bettingPhase, setBettingPhase] = useState<"idle" | "betting" | "bet_locked" | "revealed">("idle")
   const [selectedBetId, setSelectedBetId] = useState<string | null>(null)
+  const [selectedLauncherId, setSelectedLauncherId] = useState<string | null>(null)
   const [playerHand, setPlayerHand] = useState<TazoCard[]>([])
   const [opponentHand, setOpponentHand] = useState<TazoCard[]>([])
   const [opponentBetId, setOpponentBetId] = useState<string | null>(null)
@@ -427,6 +431,8 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
   const playerWentFirstRef = useRef(false)
   const [showTutorial, setShowTutorial] = useState(false)
   const [introCountdown, setIntroCountdown] = useState<number | null>(null)
+  const [showCaptureOverlay, setShowCaptureOverlay] = useState(false)
+  const [showRoundOverlay, setShowRoundOverlay] = useState(false)
   const [introCinematicPhase, setIntroCinematicPhase] = useState<"players" | "decks" | "countdown" | null>(null)
   const [roundBanner, setRoundBanner] = useState<number | null>(null)
   const [scoreFlash, setScoreFlash] = useState<"player" | "opponent" | null>(null)
@@ -486,6 +492,16 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
     }
   }, [cfg])
 
+  // ── Capture overlay on capture_check phase ──
+  useEffect(() => {
+    if (phase === "capture_check" && ctx?.lastImpact) {
+      setShowCaptureOverlay(true)
+      playSfx(ctx.lastImpact.opponentCaptured ? "tazo_secure" : "damage_taken", 0.3)
+      const t = setTimeout(() => setShowCaptureOverlay(false), 1800)
+      return () => clearTimeout(t)
+    }
+  }, [phase, ctx?.lastImpact])
+
   useEffect(() => {
     if (phase === "match_end" && result) {
       if (result.winner === "player") playSfx("victory_fanfare", 0.5)
@@ -516,6 +532,16 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
       }
     }
   }, [phase, result])
+
+  // ── Round overlay when entering new round ──
+  useEffect(() => {
+    if (phase === "round_start" && round > 1) {
+      setShowRoundOverlay(true)
+      playSfx("ui_click", 0.2)
+      const t = setTimeout(() => setShowRoundOverlay(false), 2200)
+      return () => clearTimeout(t)
+    }
+  }, [phase, round])
 
   // ── Round banner when entering betting ──
   useEffect(() => {
@@ -1469,6 +1495,10 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
         playerDeckTotal={deckTotalCount}
         playerDeckFranchise={deckFranchise}
         playerDeckImages={deckImages}
+        opponentDeckCount={opponentRemaining}
+        opponentDeckTotal={ctx?.opponent?.deck?.length || cfg?.opponentDeck?.length || 0}
+        opponentDeckFranchise={opponentHand[0]?.franchise || "minimon"}
+        opponentDeckImages={opponentHand.slice(0, 5).map(t => t.imageUrl || "").filter(Boolean)}
         isDrawing={isDrawing}
         drawTrigger={drawTrigger}
       >
@@ -1579,6 +1609,27 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
             </div>
           )}
 
+          {/* ── Capture Overlay (capture_check phase) ── */}
+          {showCaptureOverlay && ctx?.lastImpact && (
+            <CaptureOverlay
+              impact={ctx.lastImpact}
+              thrower={ctx.currentThrower || "player"}
+              playerTazo={ctx.playerBetTazo}
+              opponentTazo={ctx.opponentBetTazo}
+            />
+          )}
+
+          {/* ── Round Won Overlay ── */}
+          {showRoundOverlay && (
+            <RoundWonOverlay
+              roundNumber={round}
+              playerScore={pScore}
+              opponentScore={oScore}
+              playerRemaining={playerRemaining}
+              opponentRemaining={opponentRemaining}
+            />
+          )}
+
           {/* Impact particles */}
           {(phase === "physics_resolve" || engine.ui.showImpact) && (
             <div className="absolute top-1/2 left-1/2 pointer-events-none" style={{ transform: "translate(-50%, -50%)" }}>
@@ -1641,6 +1692,25 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
             stakeZ={playerStakeZ}
             onPlace={(x, z) => handlePlaceStake(x, z)}
             onBack={back}
+          />
+        )}
+
+        {/* ── Select Phase (select_tazo) ── */}
+        {(phase === "select_tazo" || phase === "stake_player") && playerHand.length > 0 && (
+          <SelectPhase
+            hand={playerHand}
+            phase={phase === "stake_player" ? "stake" : "select"}
+            selectedId={phase === "stake_player" ? selectedBetId : selectedLauncherId}
+            betId={phase === "select_tazo" ? ctx?.playerBetTazo?.id : undefined}
+            onSelect={(tazo) => {
+              if (phase === "stake_player") {
+                setSelectedBetId(tazo.id)
+                // Don't transition here - handled by handleBet
+              } else {
+                setSelectedLauncherId(tazo.id)
+                engine.selectTazo(tazo)
+              }
+            }}
           />
         )}
 

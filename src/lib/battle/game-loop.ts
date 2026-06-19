@@ -183,23 +183,26 @@ export type TiltDirection = "flat" | "forward" | "backward" | "left" | "right"
 // ────────────────────────────────────────
 
 export type GameState =
-  | "lobby"              // Mode select, deck setup
-  | "intro"              // Camera flyover, opponent reveal
-  | "round_start"        // Round begins, draw 5 from deck
-  | "betting"            // Both players secretly select tazo to bet
-  | "stakes_reveal"      // Reveal both staked tazos at center
-  | "coin_flip"          // Random flip to determine who slams first
-  | "player_aim"         // Player positions reticle over circle
-  | "player_charge"      // Player holds to charge vertical force
-  | "player_tilt"        // Player adjusts tilt & spin
-  | "slamming"           // Tazo falls — gravity animation
-  | "impact"             // Contact! Physics resolves
-  | "resolve_impact"     // Show result: flip / wobble / miss
-  | "opponent_aim"       // AI aims
-  | "opponent_slam"      // AI slams
-  | "turn_transition"    // Pass turn to next player
-  | "round_end"          // Draw new hand, next round
-  | "match_end"          // Final results
+  | "lobby"                // Mode select, deck setup
+  | "validate_webgl"       // WebGL support check
+  | "loading"              // 3D resources loading
+  | "match_intro"          // VS cinematic + camera flyover
+  | "draw_initial_hand"    // Deal 5 starting cards each
+  | "stake_player"         // Player picks tazo + positions stake
+  | "stake_ai"             // AI selects bet (thinking animation)
+  | "stake_reveal"         // Both stakes revealed face-up
+  | "round_start"          // Round begins
+  | "turn_start"           // Turn starts — determine thrower
+  | "draw"                 // Draw 1 card from deck
+  | "select_tazo"          // Pick launcher tazo from hand
+  | "aim"                  // Position reticle over circle
+  | "charge"               // Charge vertical force (power bar)
+  | "throw"                // Slam — fall animation + camera track
+  | "physics_resolve"      // Collision + flip resolution
+  | "capture_check"        // Show capture/ring-out result overlay
+  | "score_update"         // Update scores + pop animation
+  | "turn_end"             // Switch thrower or advance round
+  | "match_end"            // Final results
   | "paused"
 
 // ────────────────────────────────────────
@@ -366,6 +369,7 @@ export function createMatch(config: MatchConfig) {
     airborneTazo: null as AirborneTazo | null,
     roundHistory: [] as RoundResult[],
     turnNumber: 0,
+    roundTurns: 0,
   }
 }
 
@@ -940,6 +944,33 @@ export function coinFlip(): "player" | "opponent" {
 // ────────────────────────────────────────
 // Draw hand from deck
 // ────────────────────────────────────────
+
+// ────────────────────────────────────────
+// Draw 1 card from deck (per-turn mechanic)
+// ────────────────────────────────────────
+
+export function drawOne(
+  deck: TazoCard[],
+  currentHand: TazoCard[],
+  remainingCount: number
+): { hand: TazoCard[]; remaining: number; drawn: TazoCard | null } {
+  // Rebuild deck pool from remaining + hand (tracked separately)
+  if (remainingCount <= 0) {
+    // No cards left in deck — can't draw
+    return { hand: currentHand, remaining: 0, drawn: null }
+  }
+  // The "deck" param is the full original deck — we use remainingCount
+  // to know where we are. In practice, deck cards are contiguous.
+  // Build the actual remaining pile: start from the end backwards
+  const fullDeck = [...deck]
+  // Shuffle the full deck to simulate random order
+  fullDeck.sort(() => Math.random() - 0.5)
+  // Take the top card (from the remaining portion)
+  const drawn = fullDeck[0]
+  const newRemaining = remainingCount - 1
+  const newHand = [...currentHand, drawn]
+  return { hand: newHand, remaining: newRemaining, drawn }
+}
 
 export function drawHand(deck: TazoCard[], count: number = 5): { hand: TazoCard[]; remaining: TazoCard[] } {
   // If deck doesn't have enough cards for a full hand, recycle used cards

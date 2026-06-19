@@ -413,8 +413,8 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
   const [playerHand, setPlayerHand] = useState<TazoCard[]>([])
   const [opponentHand, setOpponentHand] = useState<TazoCard[]>([])
   const [opponentBetId, setOpponentBetId] = useState<string | null>(null)
-  const [coinFlipShow, setCoinFlipShow] = useState(false)
-  const [coinFlipWinner, setCoinFlipWinner] = useState<"player" | "opponent">("player")
+  // [removed: coin flip]
+  // [removed: coin flip winner]
   const [placingStake, setPlacingStake] = useState(false)
   const [playerStakeX, setPlayerStakeX] = useState(-0.55)
   const [playerStakeZ, setPlayerStakeZ] = useState(0)
@@ -456,7 +456,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
 
   // ── Sync hands from engine when entering betting phase ──
   useEffect(() => {
-    if (phase === "betting" && ctx?.playerHand?.length && ctx?.opponentHand?.length) {
+    if (phase === "stake_player" && ctx?.playerHand?.length && ctx?.opponentHand?.length) {
       setPlayerHand(ctx.playerHand)
       setOpponentHand(ctx.opponentHand)
     }
@@ -491,7 +491,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
       if (result.winner === "player") playSfx("victory_fanfare", 0.5)
       else playSfx("defeat_sting", 0.4)
     }
-    if (phase === "intro") {
+    if (phase === "match_intro" || phase === "draw_initial_hand") {
       // Cinematic intro sequence:
       // 0-2.5s: Camera orbit + player vs AI intro
       // 2.5-4.5s: Deck preview + stats
@@ -519,7 +519,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
 
   // ── Round banner when entering betting ──
   useEffect(() => {
-    if (phase === "betting" && round > 0) {
+    if (phase === "stake_player" && round > 0) {
       setRoundBanner(round)
       const t = setTimeout(() => setRoundBanner(null), 1500)
       return () => clearTimeout(t)
@@ -576,10 +576,10 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
 
   // ── Airborne tazo position follows reticle ──
   useEffect(() => {
-    if (!airborne || !(phase === "player_aim" || phase === "player_charge" || phase === "player_tilt")) return
+    if (!airborne || !(phase === "aim" || phase === "charge" || phase === "throw")) return
     const arena = cfg?.arena || DEFAULT_ARENA_3D
-    const h = phase === "player_aim" ? arena.maxLaunchHeight * 0.5
-      : phase === "player_charge" ? arena.maxLaunchHeight * (0.4 + engine.ui.charge * 0.6)
+    const h = phase === "aim" ? arena.maxLaunchHeight * 0.5
+      : phase === "charge" ? arena.maxLaunchHeight * (0.4 + engine.ui.charge * 0.6)
       : arena.maxLaunchHeight * (0.6 + engine.ui.charge * 0.4)
     setAirborne(prev => prev ? { ...prev, position: [engine.ui.reticleX * 0.3, h, engine.ui.reticleZ * 0.3] } : prev)
   }, [engine.ui.reticleX, engine.ui.reticleZ, engine.ui.charge, phase])
@@ -726,7 +726,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
       setOpponentBetId(oppPick.id)
       
       // Place bets through engine with custom positions
-      engine.placeBets(playerTazo, oppPick, stakeX, stakeZ)
+      engine.stakePlayer(playerTazo, stakeX, stakeZ); engine.aiBet(oppPick)
       setBettingPhase("revealed")
       setSelectedBetId(playerTazo.id)
       
@@ -737,13 +737,13 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
         playSfx("tazo_flip", 0.3)
         
         setTimeout(() => {
-          const cfWinner = engine.doCoinFlip()
-          setCoinFlipWinner(cfWinner)
-          setCoinFlipShow(true)
+          const cfWinner = "player" as "player" | "opponent"
+          // coin flip removed
+          // coin flip removed
           playSfx("tazo_flip", 0.3)
           
           setTimeout(() => {
-            setCoinFlipShow(false)
+            // coin flip removed
             
             if (cfWinner === "player") {
               playerWentFirstRef.current = true
@@ -768,7 +768,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
                 playSfx("slam_impact", 0.6)
                 const { result: aiImpact } = simulateSlam(aiTazo, aiSlam, engine.ctx.stakedTazos, cfg.arena, "opponent", ctxDefenders)
                 const aiScoring = scoreBettingImpact(aiImpact, "opponent")
-                engine.resolveImpact(aiImpact, "opponent")
+                engine.physicsDone(aiImpact); setTimeout(() => { engine.captureResolved() }, 1000)
                 engine.setImpactMsg(aiImpact.description)
                 engine.setShowImpact(true)
                 if (aiScoring.opponentDelta > 0) { spawnPopup("+" + aiScoring.opponentDelta, "var(--ttg-opponent)", "right"); playSfx("score_pop", 0.3) }
@@ -783,7 +783,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
                   const newPS = (engine.ctx?.player.score ?? 0) + aiScoring.playerDelta
                   const newOS = (engine.ctx?.opponent.score ?? 0) + aiScoring.opponentDelta
                   const end = checkMatchEnd(newPS, newOS, newPR, newOR, cfg?.scoreToWin)
-                  if (end) { engine.showResult() }
+                  if (end) { engine.turnOver() }
                   else {
                     const launcher = playerHand.filter(t => t.id !== playerTazo.id)[0] || playerHand[0]
                     if (launcher && cfg) setAirborne(createAirborneTazo(launcher, "player", cfg.arena))
@@ -813,7 +813,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
     // Brief delay for anticipation
     setTimeout(() => {
       if (!engine.ctx) { engine.setBusy(false); return }
-      engine.placeBets(tazo, oppPick)
+      engine.stakePlayer(tazo, playerStakeX, playerStakeZ)
       setBettingPhase("revealed")
       
       setTimeout(() => {
@@ -822,13 +822,13 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
         
         setTimeout(() => {
           // doCoinFlip now returns the winner — no stale ctx read needed
-          const cfWinner = engine.doCoinFlip()
-          setCoinFlipWinner(cfWinner)
-          setCoinFlipShow(true)
+          const cfWinner = "player" as "player" | "opponent"
+          // coin flip removed
+          // coin flip removed
           playSfx("tazo_flip", 0.3)
           
           setTimeout(() => {
-            setCoinFlipShow(false)
+            // coin flip removed
             
             if (cfWinner === "player") {
               playerWentFirstRef.current = true
@@ -862,7 +862,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
                 const { result: aiImpact } = simulateSlam(aiTazo, aiSlam, engine.ctx.stakedTazos, cfg.arena, "opponent", ctxDefenders)
                 const aiScoring = scoreBettingImpact(aiImpact, "opponent")
                 
-                engine.resolveImpact(aiImpact, "opponent")
+                engine.physicsDone(aiImpact); setTimeout(() => { engine.captureResolved() }, 1000)
                 engine.setImpactMsg(aiImpact.description)
                 engine.setShowImpact(true)
                 
@@ -882,7 +882,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
                   const end = checkMatchEnd(newPS, newOS, newPR, newOR, cfg?.scoreToWin)
                   
                   if (end) {
-                    engine.showResult()
+                    engine.turnOver()
                     engine.setBusy(false)
                   } else {
                     // AI went first — now let player slam back
@@ -1003,7 +1003,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
       const { playerDelta, opponentDelta, playerLostTazos, opponentLostTazos } = scoreBettingImpact(impact, "player")
 
       // Resolve through FSM
-      engine.resolveImpact(impact, "player")
+      engine.physicsDone(impact)
       setAirborne(null)
 
       engine.setImpactMsg(
@@ -1034,7 +1034,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
         engine.setShowImpact(false)
 
         if (end) {
-          engine.showResult()
+          engine.turnOver()
           engine.setBusy(false)
           return
         }
@@ -1082,7 +1082,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
                 const { staked: newStakedAI, result: aiImpact } = simulateSlam(aiTazo, aiSlam, latestCtx.stakedTazos, cfg.arena, "opponent", ctxDefenders)
                 const aiScoring = scoreBettingImpact(aiImpact, "opponent")
 
-                engine.resolveImpact(aiImpact, "opponent")
+                engine.physicsDone(aiImpact); setTimeout(() => { engine.captureResolved() }, 1000)
                 engine.setImpactMsg(aiImpact.description)
                 engine.setShowImpact(true)
 
@@ -1105,9 +1105,9 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
               engine.setShowImpact(false)
               setAirborne(null) // Clear AI's airborne after impact
               if (aiEnd) {
-                engine.showResult()
+                engine.turnOver()
               } else {
-                engine.nextRound()
+                engine.turnOver()
                 // Reset UI for new round — let player bet interactively
                 setTimeout(() => {
                   if (!mountedRef.current) return
@@ -1127,7 +1127,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
       }, 1500)
         } else {
           // Player responded second (AI already went) — round is OVER, go to next betting
-          engine.nextRound()
+          engine.turnOver()
           setTimeout(() => {
             if (!mountedRef.current) return
             setSelectedBetId(null)
@@ -1181,7 +1181,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
         playSfx("slam_impact", 0.5)
         const { result: impact } = simulateSlam(oppTazo, slam, engine.ctx.stakedTazos, cfg.arena, "opponent", ctxDefenders)
         const scoring = scoreBettingImpact(impact, "opponent")
-        engine.resolveImpact(impact, "opponent")
+        engine.physicsDone(impact)
         engine.setImpactMsg(impact.description || "")
         engine.setShowImpact(true)
 
@@ -1199,9 +1199,9 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
             Math.max(0, (c2?.opponentRemaining ?? 0) - scoring.opponentLostTazos),
             cfg?.scoreToWin)
           if (end) {
-            engine.showResult()
+            engine.turnOver()
           } else {
-            engine.nextRound()
+            engine.turnOver()
           }
           engine.setBusy(false)
         }, 1500)
@@ -1309,7 +1309,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
         aimPrecision: Math.max(0.2, (t.precision || 50) / 100) }
       const { result: impact } = simulateSlam(t, slam, engine.ctx.stakedTazos, cfg.arena, "player", ctxDefenders)
       const scoring = scoreBettingImpact(impact, "player")
-      engine.resolveImpact(impact, "player")
+      engine.physicsDone(impact)
       setAirborne(null)
       engine.setImpactMsg(
                 impact.hitZone && impact.hitZone !== "MISS"
@@ -1331,10 +1331,10 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
       setTimeout(() => {
         engine.setShowImpact(false)
         if (end) {
-          engine.showResult()
+          engine.turnOver()
           pvp.sendGameOver({ winner: end.winner, score: `${newPS}-${newOS}` })
         } else {
-          engine.nextRound()
+          engine.turnOver()
         }
         engine.setBusy(false)
       }, 1500)
@@ -1426,8 +1426,8 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
   )
 
   // ── Battle Arena ──
-  const isAiming = phase === "player_aim" || phase === "player_charge" || phase === "player_tilt"
-  const showReticle = (isAiming || phase === "betting" || phase === "stakes_reveal") && !placingStake
+  const isAiming = phase === "aim" || phase === "charge" || phase === "throw"
+  const showReticle = (isAiming || phase === "stake_player" || phase === "stake_reveal") && !placingStake
   const throwing = ctx?.playerBetTazo || (deck.length > 0 ? deck[0] : null)
 
   return (
@@ -1479,7 +1479,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
           remainingTazos={playerRemaining}
           capturedTazos={pScore}
           side="left"
-          isActive={phase === "player_aim" || phase === "player_charge" || phase === "player_tilt"}
+          isActive={phase === "aim" || phase === "charge" || phase === "throw"}
           playerType="player"
           franchise={playerHand[0]?.franchise}
         />
@@ -1489,7 +1489,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
           remainingTazos={opponentRemaining}
           capturedTazos={oScore}
           side="right"
-          isActive={phase === "opponent_aim" || phase === "opponent_slam"}
+          isActive={phase === "aim" && ctx?.currentThrower === "opponent" || phase === "throw" && ctx?.currentThrower === "opponent"}
           playerType="opponent"
           franchise={opponentHand[0]?.franchise}
         />
@@ -1503,7 +1503,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
           onSelect={handleBet}
         />
 
-        {phase === "intro" && <IntroCinematic
+        {phase === "match_intro" || phase === "draw_initial_hand" && <IntroCinematic
           playerName={user?.name || user?.email?.split("@")[0] || "Player"}
           deckName={selectedDeckName}
           deckSize={deck.length}
@@ -1551,7 +1551,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
           ))}
 
           {/* ── Hit Feedback Overlay ── */}
-          {(phase === "impact" || engine.ui.showImpact) && engine.ui.impactMsg && (
+          {(phase === "physics_resolve" || engine.ui.showImpact) && engine.ui.impactMsg && (
             <div className="absolute top-[40%] left-1/2 -translate-x-1/2 pointer-events-none z-40">
               <div className="animate-[popUp_0.35s_ease-out] text-center">
                 <div className={[
@@ -1580,7 +1580,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
           )}
 
           {/* Impact particles */}
-          {(phase === "impact" || engine.ui.showImpact) && (
+          {(phase === "physics_resolve" || engine.ui.showImpact) && (
             <div className="absolute top-1/2 left-1/2 pointer-events-none" style={{ transform: "translate(-50%, -50%)" }}>
               {[...Array(24)].map((_, i) => {
                 const angle = (i / 24) * Math.PI * 2
@@ -1614,7 +1614,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
           )}
 
           {/* Coin flip overlay */}
-          <CoinFlipOverlay show={coinFlipShow} winner={coinFlipWinner} />
+          {/* Coin flip removed */}
 
           {/* Round banner */}
           {roundBanner !== null && (

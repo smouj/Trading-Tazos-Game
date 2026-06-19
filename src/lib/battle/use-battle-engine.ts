@@ -1,27 +1,29 @@
 // ============================================================
-// useBattleEngine — Reactive hook wrapping the Battle FSM.
+// useBattleEngine v5 — Reactive hook for 20-phase Battle FSM
 //
 // Manages:
-//   - Single BattleContext (replaces 15+ useState calls)
-//   - applyTransition() for all state changes
-//   - Async helpers for AI slam + new round setup
-//   - Phase-aware helpers (canAim, canCharge, canRelease, etc.)
+//   - Single BattleContext (FSM state)
+//   - applyTransition() for all phase changes
+//   - Async AI helpers with human-like timing
+//   - Input setters (aim, charge, throw)
 // ============================================================
 "use client"
 
 import { useState, useCallback, useRef, useEffect } from "react"
-import type { TazoCard, MatchConfig, SlamParams, StakedTazo, AirborneTazo, ImpactResult } from "./game-loop"
+import type { TazoCard, MatchConfig, SlamParams, ImpactResult } from "./game-loop"
 import {
-  DEFAULT_ARENA_3D, createAirborneTazo, placeStakedTazos,
-  simulateSlam, generateAISlam, scoreBettingImpact, checkMatchEnd,
-  drawHand, coinFlip,
+  DEFAULT_ARENA_3D, createAirborneTazo, simulateSlam,
+  generateAISlam, scoreBettingImpact, checkMatchEnd,
 } from "./game-loop"
 import {
-  createBattleContext, applyTransition,
-  applyScoring, buildMatchResult,
-  autoSelectOpponentBet,
+  createBattleContext, applyTransition, applyScoring,
+  buildMatchResult, autoSelectOpponentBet,
   type BattleContext, type BattleEvent,
 } from "./state-machine"
+import {
+  getAITiming, selectAIBet, selectAILauncher,
+  simulateAISlam, type AITiming,
+} from "./ai-player"
 import { persistBattleResult, type BattlePersistenceResult } from "./battle-integration"
 
 export type SlamPhase = "aim" | "charge" | "tilt"
@@ -46,22 +48,33 @@ export interface BattleEngine {
   ctx: BattleContext | null
   ui: BattleUIState
 
-  // Actions
+  // FSM events
+  send: (event: BattleEvent) => boolean
+  // Match lifecycle
   startMatch: (config: MatchConfig) => void
+  webglReady: () => void
+  webglFailed: () => void
+  resourcesLoaded: () => void
   introDone: () => void
-  startBetting: () => void
-  placeBets: (playerTazo: TazoCard, opponentTazo: TazoCard, playerStakeX?: number, playerStakeZ?: number) => void
+  initialHandsDrawn: () => void
+  // Betting
+  stakePlayer: (tazo: TazoCard, x?: number, z?: number) => void
+  aiBet: (tazo: TazoCard) => void
   revealStakes: () => void
-  doCoinFlip: () => "player" | "opponent"
+  roundStarted: () => void
+  turnStarted: () => void
+  cardDrawn: () => void
+  // Slam
+  selectTazo: (tazo: TazoCard) => void
   lockAim: (x: number, z: number) => void
   lockCharge: (level: number) => void
   releaseSlam: () => void
-  resolveImpact: (result: ImpactResult, thrower: "player" | "opponent") => void
-  showResult: () => void
-  nextRound: () => void
+  physicsDone: (result: ImpactResult) => void
+  captureResolved: () => void
+  scoreUpdated: () => void
+  turnOver: () => void
+  // End
   forfeit: (who: "player" | "opponent") => void
-  send: (event: any) => boolean
-
   // Input setters
   setReticleX: (x: number) => void
   setReticleZ: (z: number) => void
@@ -73,32 +86,20 @@ export interface BattleEngine {
   setImpactMsg: (msg: string) => void
   setShowImpact: (v: boolean) => void
   setBusy: (v: boolean) => void
-
-  // Persistence
+  // AI
+  aiChooseBet: () => TazoCard | null
+  aiChooseLauncher: () => TazoCard | null
+  aiTiming: () => AITiming
+  aiSimulateSlam: () => { impact: ImpactResult; launcher: TazoCard; params: SlamParams } | null
+  // Persistence + Reset
   saveBattle: (token: string) => Promise<BattlePersistenceResult | null>
-
-  // Reset
   resetToLobby: () => void
-
-  // AI helpers
-  aiBetTazo: () => TazoCard | null
-  aiSlamParams: () => SlamParams | null
-  startAIAim: () => void
-  doAISlamSequence: (onDone: () => void) => void
 }
 
 const initialUI: Omit<BattleUIState, "ctx"> = {
-  slamPhase: "aim",
-  impactMsg: "",
-  showImpact: false,
-  busy: false,
-  throwing: null,
-  reticleX: 0,
-  reticleZ: 0,
-  charge: 0,
-  tiltDeg: 0,
-  tiltIntensity: 0,
-  spinIntensity: 0,
+  slamPhase: "aim", impactMsg: "", showImpact: false, busy: false,
+  throwing: null, reticleX: 0, reticleZ: 0, charge: 0,
+  tiltDeg: 0, tiltIntensity: 0, spinIntensity: 0,
 }
 
 export function useBattleEngine(): BattleEngine {
@@ -112,7 +113,7 @@ export function useBattleEngine(): BattleEngine {
   useEffect(() => { uiRef.current = uiState }, [uiState])
 
   // ── Send event through FSM ──
-  const send = useCallback((event: BattleEvent) => {
+  const send = useCallback((event: BattleEvent): boolean => {
     if (!ctxRef.current) return false
     const next = applyTransition(ctxRef.current, event)
     if (!next) return false
@@ -136,91 +137,101 @@ export function useBattleEngine(): BattleEngine {
   const startMatch = useCallback((config: MatchConfig) => {
     modeRef.current = config.mode
     const newCtx = createBattleContext(config)
-    setCtx(newCtx)
+    // Immediately transition to validate_webgl
+    const next = applyTransition(newCtx, { type: "START_MATCH" } as BattleEvent)
+    setCtx(next || newCtx)
     setUIState({ ...initialUI })
-    // Automatically transition to intro
-    setTimeout(() => {
-      const c = newCtx
-      const next = applyTransition({ ...c, state: "lobby" }, { type: "START_MATCH", config } as BattleEvent)
-      if (next) setCtx(next)
-    }, 0)
   }, [])
 
-  const introDone = useCallback(() => {
-    send({ type: "INTRO_DONE" })
+  const webglReady = useCallback(() => send({ type: "WEBGL_READY" }), [send])
+  const webglFailed = useCallback(() => send({ type: "WEBGL_FAILED" }), [send])
+  const resourcesLoaded = useCallback(() => send({ type: "RESOURCES_LOADED" }), [send])
+  const introDone = useCallback(() => send({ type: "INTRO_DONE" }), [send])
+  const initialHandsDrawn = useCallback(() => send({ type: "INITIAL_HANDS_DRAWN" }), [send])
+
+  // ── Betting flow ──
+  const stakePlayer = useCallback((tazo: TazoCard, x?: number, z?: number) => {
+    send({ type: "PLAYER_STAKED", tazo, x, z })
   }, [send])
 
-  const startBetting = useCallback(() => {
-    send({ type: "HANDS_DRAWN" })
+  const aiBet = useCallback((tazo: TazoCard) => {
+    send({ type: "AI_STAKED", tazo })
   }, [send])
 
-  const placeBets = useCallback((playerTazo: TazoCard, opponentTazo: TazoCard, playerStakeX?: number, playerStakeZ?: number) => {
-    send({ type: "BETS_PLACED", playerTazo, opponentTazo, playerStakeX, playerStakeZ })
-  }, [send])
+  const revealStakes = useCallback(() => send({ type: "STAKES_REVEALED" }), [send])
+  const roundStarted = useCallback(() => send({ type: "ROUND_STARTED" }), [send])
+  const turnStarted = useCallback(() => send({ type: "TURN_STARTED" }), [send])
+  const cardDrawn = useCallback(() => send({ type: "CARD_DRAWN" }), [send])
 
-  const revealStakes = useCallback(() => {
-    send({ type: "STAKES_REVEALED" })
-  }, [send])
-
-  const doCoinFlip = useCallback((): "player" | "opponent" => {
-    // Use the winner already determined by STAKES_REVEALED transition
-    const winner = ctxRef.current?.coinWinner || coinFlip()
-    send({ type: "COIN_DECIDED", winner })
-    return winner
+  // ── Slam flow ──
+  const selectTazo = useCallback((tazo: TazoCard) => {
+    setUIState(s => ({ ...s, throwing: tazo }))
+    send({ type: "TAZO_SELECTED", tazo })
   }, [send])
 
   const lockAim = useCallback((targetX: number, targetZ: number) => {
-    // Set the throwing tazo from context for slam params
-    const c = ctxRef.current
-    if (c?.playerBetTazo) {
-      setUIState(s => ({ ...s, throwing: c.playerBetTazo! }))
-    }
     send({ type: "AIM_LOCKED", targetX, targetZ })
   }, [send])
 
   const lockCharge = useCallback((chg: number) => {
-    send({ type: "CHARGE_LOCKED", charge: chg })
+    send({ type: "CHARGE_COMPLETE", charge: chg })
   }, [send])
 
-  const setTimingAccuracy = useCallback((charge: number) => {
-    if (charge >= 0.68 && charge <= 0.76) return 0.95  // PERFECT
-    if (charge >= 0.60 && charge <= 0.82) return 0.80  // GOOD
-    if (charge <= 0.30) return 0.40                     // WEAK
-    if (charge > 0.82) return 0.55                      // OVERCHARGE
-    return 0.70                                          // OK
-  }, [])
-
-  const releaseSlam = useCallback((chargeQuality?: number) => {
-    const charge = uiRef.current.charge
-    const timingAcc = chargeQuality ?? 0.7
-    send({ type: "SLAM_RELEASED", params: {
-      tazoId: uiRef.current.throwing?.id || "",
-      impactX: uiRef.current.reticleX,
-      impactZ: uiRef.current.reticleZ,
-      verticalForce: charge,
-      timingAccuracy: timingAcc,
-      tilt: "flat",
-      tiltIntensity: uiRef.current.tiltIntensity,
-      spinIntensity: uiRef.current.spinIntensity,
-      aimPrecision: 0.7,
-    }})
+  const releaseSlam = useCallback(() => {
+    const u = uiRef.current
+    send({
+      type: "SLAM_RELEASED",
+      params: {
+        tazoId: u.throwing?.id || "",
+        impactX: u.reticleX,
+        impactZ: u.reticleZ,
+        verticalForce: u.charge,
+        timingAccuracy: 0.7,
+        tilt: "flat",
+        tiltIntensity: u.tiltIntensity,
+        spinIntensity: u.spinIntensity,
+        aimPrecision: 0.7,
+      },
+    })
   }, [send])
 
-  const resolveImpact = useCallback((impact: ImpactResult, thrower: "player" | "opponent") => {
-    send({ type: "IMPACT_RESOLVED", result: impact })
+  const physicsDone = useCallback((result: ImpactResult) => {
+    send({ type: "PHYSICS_DONE", result })
   }, [send])
 
-  const showResult = useCallback(() => {
-    send({ type: "RESULT_SHOWN" })
-  }, [send])
-
-  const nextRound = useCallback(() => {
-    send({ type: "HAND_DRAWN" })
-  }, [send])
+  const captureResolved = useCallback(() => send({ type: "CAPTURE_RESOLVED" }), [send])
+  const scoreUpdated = useCallback(() => send({ type: "SCORE_UPDATED" }), [send])
+  const turnOver = useCallback(() => send({ type: "TURN_OVER" }), [send])
 
   const forfeit = useCallback((who: "player" | "opponent") => {
     send({ type: "FORFEIT", who })
   }, [send])
+
+  // ── AI helpers ──
+  const aiChooseBet = useCallback((): TazoCard | null => {
+    const c = ctxRef.current
+    if (!c) return null
+    return selectAIBet(c)
+  }, [])
+
+  const aiChooseLauncher = useCallback((): TazoCard | null => {
+    const c = ctxRef.current
+    if (!c) return null
+    return selectAILauncher(c)
+  }, [])
+
+  const aiTiming = useCallback((): AITiming => {
+    const c = ctxRef.current
+    return getAITiming(c?.config.aiDifficulty || "skilled")
+  }, [])
+
+  const aiSimulateSlam = useCallback(() => {
+    const c = ctxRef.current
+    if (!c) return null
+    const result = simulateAISlam(c)
+    if (!result) return null
+    return { impact: result.impact, launcher: result.launcher, params: result.params }
+  }, [])
 
   // ── Persistence ──
   const saveBattle = useCallback(async (token: string) => {
@@ -229,108 +240,24 @@ export function useBattleEngine(): BattleEngine {
     return await persistBattleResult(c, token, modeRef.current)
   }, [])
 
-  // ── Reset ──
   const resetToLobby = useCallback(() => {
     setCtx(null)
     setUIState({ ...initialUI })
   }, [])
 
-  // ── AI helpers ──
-  const aiBetTazo = useCallback((): TazoCard | null => {
-    const c = ctxRef.current
-    if (!c) return null
-    return autoSelectOpponentBet(c)
-  }, [])
-
-  const aiSlamParams = useCallback((): SlamParams | null => {
-    const c = ctxRef.current
-    if (!c || !c.opponentBetTazo) return null
-    return generateAISlam(
-      c.opponentBetTazo,
-      c.stakedTazos,
-      c.config.arena,
-      c.config.aiDifficulty
-    )
-  }, [])
-
-  const startAIAim = useCallback(() => {
-    const c = ctxRef.current
-    if (!c) return
-    send({ type: "COIN_DECIDED", winner: "opponent" })
-  }, [send])
-
-  const doAISlamSequence = useCallback((onDone: () => void) => {
-    const c = ctxRef.current
-    if (!c?.opponentBetTazo) { onDone(); return }
-
-    const aiTazo = c.opponentBetTazo
-    setUIState(s => ({ ...s, throwing: aiTazo }))
-
-    // Create airborne tazo for AI
-    const aiAirborne = createAirborneTazo(aiTazo, "opponent", c.config.arena)
-    aiAirborne.state = "aiming"
-
-    const slam = generateAISlam(
-      aiTazo, c.stakedTazos, c.config.arena, c.config.aiDifficulty
-    )
-
-    // Simulate AI delay
-    setTimeout(() => {
-      const c2 = ctxRef.current
-      if (!c2) { onDone(); return }
-
-      const updatedAirborne: AirborneTazo = {
-        ...aiAirborne,
-        state: "charging",
-        position: [
-          slam.impactX * 0.3,
-          c2.config.arena.maxLaunchHeight * (0.2 + slam.verticalForce * 0.8),
-          slam.impactZ * 0.3,
-        ],
-        charge: slam.verticalForce,
-        targetX: slam.impactX,
-        targetZ: slam.impactZ,
-      }
-
-      // Brief charge, then launch
-      setTimeout(() => {
-        const c3 = ctxRef.current
-        if (!c3) { onDone(); return }
-
-        // Impact after gravity
-        const fallHeight = c3.config.arena.maxLaunchHeight * (0.2 + slam.verticalForce * 0.8)
-        const fallTime = Math.sqrt(2 * fallHeight / c3.config.arena.gravity) * 1000
-
-        setTimeout(() => {
-          const c4 = ctxRef.current
-          if (!c4) { onDone(); return }
-
-          const defendersMap = new Map<string, TazoCard>()
-          for (const dt of [...c4.config.playerDeck, ...c4.config.opponentDeck]) { defendersMap.set(dt.id, dt) }
-          const { result: impact } = simulateSlam(aiTazo, slam, c4.stakedTazos, c4.config.arena, "opponent", defendersMap)
-          const scoring = scoreBettingImpact(impact, "opponent")
-          const scored = applyScoring(c4, impact, "opponent")
-
-          setCtx({
-            ...scored,
-            lastImpact: impact,
-          })
-
-          onDone()
-        }, fallTime * 0.8)
-      }, 800)
-    }, 600)
-  }, [])
-
   return {
     ctx: ctx ? { ...ctx } : null,
     ui: { ctx: ctx ? { ...ctx } : null, ...uiState },
-    startMatch, introDone, startBetting, placeBets, revealStakes, doCoinFlip,
-    lockAim, lockCharge, releaseSlam, resolveImpact, showResult, nextRound, forfeit,
     send,
+    startMatch, webglReady, webglFailed, resourcesLoaded, introDone,
+    initialHandsDrawn,
+    stakePlayer, aiBet, revealStakes, roundStarted, turnStarted, cardDrawn,
+    selectTazo, lockAim, lockCharge, releaseSlam, physicsDone,
+    captureResolved, scoreUpdated, turnOver,
+    forfeit,
     setReticleX, setReticleZ, setCharge, setTiltDeg, setTiltIntensity, setSpinIntensity,
     setSlamPhase, setImpactMsg, setShowImpact, setBusy,
+    aiChooseBet, aiChooseLauncher, aiTiming, aiSimulateSlam,
     saveBattle, resetToLobby,
-    aiBetTazo, aiSlamParams, startAIAim, doAISlamSequence,
   }
 }

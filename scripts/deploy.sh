@@ -58,6 +58,11 @@ ssh "$VPS" << 'ENDSSH'
 set -euo pipefail
 cd /home/smouj/apps/ttg/Trading-Tazos-Game
 
+# ── Clean dev files from standalone (saves ~270MB) ──
+rm -rf .next/standalone/scripts 2>/dev/null || true
+rm -f .next/standalone/package.json .next/standalone/package-lock.json 2>/dev/null || true
+echo "  → Stripped dev bloat from standalone"
+
 # Ensure directories exist (MUST be first — cp/mkdir order matters with set -e)
 mkdir -p .next/standalone/.next/static
 mkdir -p .next/standalone/prisma

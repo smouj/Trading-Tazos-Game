@@ -41,15 +41,15 @@ const TUBE_TEXTURES: Record<string, string> = {
 export { TUBE_TEXTURES }
 
 export const TUBE_TEXTURE_OPTIONS = [
-  { slug: "minimon", name: "Minimon", textureUrl: TUBE_TEXTURES.minimon, color: "var(--ttg-yellow)" },
+  { slug: "minimon", name: "Minimon", textureUrl: TUBE_TEXTURES.minimon, color: "#FFCB05" },
   { slug: "cybermon", name: "Cybermon", textureUrl: TUBE_TEXTURES.cybermon, color: "#00B4D8" },
-  { slug: "dracobell", name: "Dracobell", textureUrl: TUBE_TEXTURES.dracobell, color: "var(--ttg-dracobell)" },
+  { slug: "dracobell", name: "Dracobell", textureUrl: TUBE_TEXTURES.dracobell, color: "#FF6B00" },
 ]
 
 const FRANCHISE_COLORS: Record<string, string> = {
-  minimon: "var(--ttg-yellow)",
+  minimon: "#FFCB05",
   cybermon: "#00B4D8",
-  dracobell: "var(--ttg-red)",
+  dracobell: "#FF6B00",
 }
 
 function getTubeTexture(tazos: TubeTazo[]): string {
@@ -66,7 +66,7 @@ function getFranchiseColor(tazos: TubeTazo[]): string {
     const slug = t.franchiseSlug || t.franchise || ""
     if (slug && FRANCHISE_COLORS[slug]) return FRANCHISE_COLORS[slug]
   }
-  return "var(--ttg-yellow)"
+  return "#FFCB05"
 }
 
 function TubeLoadingFallback() {
@@ -77,7 +77,7 @@ function TubeLoadingFallback() {
 }
 
 export default function BattleTubePreview({
-  name, color = "var(--ttg-red)", textureUrl, count = 0, maxCount = 20,
+  name, color = "#FF6B00", textureUrl, count = 0, maxCount = 20,
   tazos = [],
   size = "md", showLabel = true,
   className = "",

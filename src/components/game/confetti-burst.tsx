@@ -15,10 +15,23 @@ interface Particle {
   shape: "square" | "circle" | "star"
 }
 
-const COLORS = [
-  "var(--ttg-yellow)", "var(--ttg-red)", "var(--ttg-blue)", "var(--ttg-success)", "var(--ttg-warning)",
-  "var(--ttg-purple)", "#EC4899", "#00A4EF", "var(--ttg-black)",
-]
+function resolveCssColor(varName: string, fallback: string): string {
+  if (typeof document === "undefined") return fallback
+  return getComputedStyle(document.documentElement).getPropertyValue(varName.replace("var(", "").replace(")", "")).trim() || fallback
+}
+
+function getConfettiColors(): string[] {
+  return [
+    resolveCssColor("var(--ttg-yellow)", "#FFCB05"),
+    resolveCssColor("var(--ttg-red)", "#EF4444"),
+    resolveCssColor("var(--ttg-blue)", "#3B82F6"),
+    resolveCssColor("var(--ttg-success)", "#22C55E"),
+    resolveCssColor("var(--ttg-warning)", "#F59E0B"),
+    resolveCssColor("var(--ttg-purple)", "#A855F7"),
+    "#EC4899", "#00A4EF",
+    resolveCssColor("var(--ttg-black)", "#111111"),
+  ]
+}
 
 function randomBetween(min: number, max: number) {
   return Math.random() * (max - min) + min
@@ -40,6 +53,7 @@ export default function ConfettiBurst({ active = false }: { active?: boolean }) 
     const cy = h * 0.35
     const count = 80
 
+    const colors = getConfettiColors()
     const particles: Particle[] = []
     for (let i = 0; i < count; i++) {
       const angle = randomBetween(0, Math.PI * 2)
@@ -50,7 +64,7 @@ export default function ConfettiBurst({ active = false }: { active?: boolean }) 
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed - randomBetween(2, 6),
         size: randomBetween(3, 8),
-        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        color: colors[Math.floor(Math.random() * colors.length)],
         rotation: randomBetween(0, 360),
         rotationSpeed: randomBetween(-8, 8),
         opacity: 1,

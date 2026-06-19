@@ -23,12 +23,18 @@ import {
 // BattleView loading overlay — dark arena entrance with i18n
 function BattleLoadingOverlay() {
   const { t } = useI18n()
+  // Lock body bg to solid dark to prevent shell flash-through
+  useEffect(() => {
+    const prev = document.body.style.background
+    document.body.style.background = "#0a0a0a"
+    return () => { document.body.style.background = prev }
+  }, [])
   return (
     <div
       style={{
         position: "fixed", inset: 0, zIndex: 9999,
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "2rem",
-        background: "linear-gradient(135deg, #0a0a0a 0%, var(--ttg-black) 100%)",
+        background: "#0a0a0a",
       }}
     >
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none",
@@ -148,6 +154,13 @@ function CreateQuickDeckButton({ onCreated }: { onCreated: (deckId: string) => v
 function LaunchOverlay({ fading }: { fading: boolean }) {
   const [opacity, setOpacity] = useState(fading ? 1 : 1)
   
+  // Lock body background to solid dark to prevent shell flash-through
+  useEffect(() => {
+    const prev = document.body.style.background
+    document.body.style.background = "#0a0a0a"
+    return () => { document.body.style.background = prev }
+  }, [])
+
   useEffect(() => {
     if (fading) {
       // Fade out over 600ms after a brief hold
@@ -159,12 +172,12 @@ function LaunchOverlay({ fading }: { fading: boolean }) {
   return (
     <div style={{
       position: "fixed", inset: 0, zIndex: 10000,
-      background: "linear-gradient(135deg, #0a0a0a 0%, var(--ttg-black) 100%)",
+      background: "#0a0a0a",
       opacity, transition: "opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
       pointerEvents: opacity < 0.1 ? "none" : "auto",
     }}>
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none", backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px)" }} />
-      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", opacity: 0.08, backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(255,204,0,0.3) 8px, rgba(255,204,0,0.3) 10px)" }} />
+      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", opacity: 0.04, backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(255,204,0,0.3) 8px, rgba(255,204,0,0.3) 10px)" }} />
       <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "2rem" }}>
         <div style={{ width: 72, height: 72, borderRadius: "50%", border: "3px solid rgba(255,204,0,0.12)", borderTopColor: 'var(--ttg-yellow)', animation: "spin 0.8s linear infinite", boxShadow: "0 0 32px rgba(255,204,0,0.15)" }} />
         <p style={{ fontSize: 14, fontWeight: 900, color: "rgba(255,255,255,0.8)", textTransform: "uppercase", letterSpacing: "0.25em" }}>

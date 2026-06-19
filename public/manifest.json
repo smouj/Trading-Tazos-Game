@@ -84,5 +84,6 @@
       "url": "https://github.com/smouj/Trading-Tazos-Game/releases/download/v0.10.1/trading-tazos-game-0.10.1-mac-x64.dmg",
       "id": "com.tradingtazosgame.ttg.mac"
     }
-  ]
+  ],
+  "version": "0.10.1"
 }

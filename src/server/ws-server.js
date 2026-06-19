@@ -123,6 +123,7 @@ function log(msg) {
 const wss = new ws_1.WebSocketServer({ port: PORT });
 wss.on("listening", () => {
     log(`Multiplayer server listening on port ${PORT}`);
+    if (typeof process.send === "function") process.send("ready");
 });
 wss.on("connection", (ws, req) => {
     // Auth via query param

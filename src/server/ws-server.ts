@@ -172,6 +172,7 @@ const wss = new WebSocketServer({ port: PORT })
 
 wss.on("listening", () => {
   log(`Multiplayer server listening on port ${PORT}`)
+  if (typeof process.send === "function") process.send("ready");
 })
 
 wss.on("connection", (ws, req) => {

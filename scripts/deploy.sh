@@ -14,14 +14,11 @@ git push origin main 2>/dev/null || true
 ssh "$VPS" "cd $VPS_APP && git fetch origin && git reset --hard origin/main" 2>&1 || true
 
 
-# 1. Build (must already be done)
-if [ ! -d ".next" ]; then
-  echo "❌ .next/ not found — run 'npm run build' first"
-  exit 1
-fi
-
-
-# Sync public root files (manifest.json, favicons, PWA assets)
+# 1. Build on VPS (WSL OOMs — VPS has the muscle for production builds)
+echo "→ Building on VPS (clean build)..."
+ssh "$VPS" "cd $VPS_APP && rm -rf .next && npx next build" 2>&1
+echo "→ Build complete"
+# ── Public files sync (manifest.json, favicons, PWA assets) ──
 echo "→ Syncing public root files..."
 rsync -avz public/ "$VPS:$VPS_APP/public/" --include="manifest.json" --include="favicon*" --include="apple*" --include="pwa*" --include="robots.txt" --include="favicon.ico" --include="favicon.png" --include="favicon-192.png" --include="apple-touch-icon.png" --include="series-*.png" --include="logo/***" --exclude="*" 2>/dev/null || true
 
@@ -45,9 +42,7 @@ ENDSSH
 echo "→ Backing up VPS live layouts before sync..."
 ssh "$VPS" 'if [ -f /home/smouj/apps/ttg/Trading-Tazos-Game/.next/standalone/prisma/tazo-layouts.json ]; then cp /home/smouj/apps/ttg/Trading-Tazos-Game/.next/standalone/prisma/tazo-layouts.json /tmp/tazo-layouts-live.json 2>/dev/null && echo "  → Live layouts backed up"; else echo "  → No live layouts to back up"; fi' || true
 
-# 2. Sync .next/ to VPS (must happen AFTER backup)
-echo "→ Syncing .next/ to VPS..."
-rsync -avz --delete .next/ "$VPS:$VPS_APP/.next/"
+# 2. .next/ already built on VPS — no sync needed
 
 # Note: prisma/dev.db (seed DB) is NOT synced to VPS anymore — the live DB
 # at data/dev.db is the single source of truth. Schema changes via prisma db push.

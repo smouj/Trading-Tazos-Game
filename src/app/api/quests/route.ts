@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getAuthUser } from "@/lib/auth"
 import { db as prisma, isoNow } from "@/lib/db"
 import { getLevelInfo } from "@/lib/leveling"
+import { refreshUserProgress } from "@/lib/progression"
 
 // ─── GET: List quests ───────────────────────────────────────
 export async function GET(req: NextRequest) {
@@ -104,6 +105,9 @@ export async function POST(req: NextRequest) {
       })
     }
   })
+
+  // Refresh progress to trigger any newly completed quests/achievements
+  await refreshUserProgress(user.id)
 
   const updatedUser = await prisma.user.findUnique({
     where: { id: user.id },

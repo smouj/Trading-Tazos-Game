@@ -2,11 +2,10 @@
 // Trading Tazos Game — Admin API
 // ============================================================
 import { NextRequest, NextResponse } from "next/server"
-import { PrismaClient } from "@prisma/client"
+import { db } from "@/lib/db"
 import { getAuthUser } from "@/lib/auth"
 import { SITE_CONFIG } from "@/lib/site-config"
 
-const prisma = new PrismaClient()
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "dev@tradingtazosgame.com"
 
 async function isAdmin(req: NextRequest) {
@@ -25,16 +24,16 @@ export async function GET(req: NextRequest) {
 
   if (section === "overview") {
     const [userCount, tazoCount, franchiseCount, bagCount, deckCount, questCount] = await Promise.all([
-      prisma.user.count(),
-      prisma.tazo.count(),
-      prisma.franchise.count(),
-      prisma.bagPurchase.count(),
-      prisma.deck.count(),
-      prisma.quest.count(),
+      db.user.count(),
+      db.tazo.count(),
+      db.franchise.count(),
+      db.bagPurchase.count(),
+      db.deck.count(),
+      db.quest.count(),
     ])
 
     // Count tazos with art
-    const tazosWithArt = await prisma.tazo.count({ where: { imageUrl: { not: null } } })
+    const tazosWithArt = await db.tazo.count({ where: { imageUrl: { not: null } } })
 
     return NextResponse.json({
       users: userCount,
@@ -50,7 +49,7 @@ export async function GET(req: NextRequest) {
   }
 
   if (section === "users") {
-    const users = await prisma.user.findMany({
+    const users = await db.user.findMany({
       orderBy: { createdAt: "desc" },
       take: 50,
       select: {
@@ -75,29 +74,34 @@ export async function GET(req: NextRequest) {
     if (search) where.name = { contains: search }
 
     const [tazos, total] = await Promise.all([
-      prisma.tazo.findMany({
+      db.tazo.findMany({
         where,
         include: { franchise: { select: { name: true, slug: true } } },
         orderBy: [{ franchiseId: "asc" }, { number: "asc" }],
         skip: (page - 1) * limit,
         take: limit,
       }),
-      prisma.tazo.count({ where }),
+      db.tazo.count({ where }),
     ])
     return NextResponse.json({ tazos, total, page, limit, pages: Math.ceil(total / limit) })
   }
 
   if (section === "db-stats") {
-    const stats: Record<string, number> = {}
-    const tables = ["User", "Tazo", "Franchise", "BagPurchase", "Deck", "Quest", "UserQuest", "Achievement", "UserAchievement"]
-    for (const table of tables) {
-      stats[table] = await (prisma as any)[table.charAt(0).toLowerCase() + table.slice(1)].count()
-    }
-    return NextResponse.json({ stats })
+    const [userCount, tazoCount, franchiseCount, bagCount, deckCount, questCount, userQuestCount, achievementCount, userAchievementCount] = await Promise.all([
+      db.user.count(), db.tazo.count(), db.franchise.count(), db.bagPurchase.count(),
+      db.deck.count(), db.quest.count(), db.userQuest.count(), db.achievement.count(), db.userAchievement.count(),
+    ])
+    return NextResponse.json({
+      stats: {
+        User: userCount, Tazo: tazoCount, Franchise: franchiseCount, BagPurchase: bagCount,
+        Deck: deckCount, Quest: questCount, UserQuest: userQuestCount,
+        Achievement: achievementCount, UserAchievement: userAchievementCount,
+      },
+    })
   }
 
   if (section === "franchises") {
-    const franchises = await prisma.franchise.findMany({
+    const franchises = await db.franchise.findMany({
       orderBy: { name: "asc" },
       select: { id: true, name: true, slug: true },
     })
@@ -134,7 +138,7 @@ export async function PATCH(req: NextRequest) {
       }
     }
 
-    const tazo = await prisma.tazo.update({
+    const tazo = await db.tazo.update({
       where: { id },
       data: updateData,
       include: { franchise: { select: { name: true, slug: true } } },
@@ -158,7 +162,7 @@ export async function DELETE(req: NextRequest) {
     if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 })
 
     // Pre-check: count how many users own this tazo
-    const ownershipCount = await prisma.userTazo.count({ where: { tazoId: id } })
+    const ownershipCount = await db.userTazo.count({ where: { tazoId: id } })
     if (ownershipCount > 0) {
       return NextResponse.json({
         error: `Cannot delete — owned by ${ownershipCount} user${ownershipCount > 1 ? 's' : ''}`,
@@ -167,7 +171,7 @@ export async function DELETE(req: NextRequest) {
       }, { status: 409 })
     }
 
-    const tazo = await prisma.tazo.delete({ where: { id } })
+    const tazo = await db.tazo.delete({ where: { id } })
     return NextResponse.json({ success: true, tazo })
   } catch (err: any) {
     console.error("DELETE /api/admin tazo error:", err.message)

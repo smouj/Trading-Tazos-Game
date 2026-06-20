@@ -241,28 +241,29 @@ export async function POST(request: NextRequest) {
         include: { franchise: { select: { name: true, slug: true, color: true } } },
       })
       if (bonusTazo) {
-        const bFinish = randomFinish(bonusTazo.rarity || "common")
-        const bTgaGrade = generateTGAGrade(bonusTazo.rarity || "common", bFinish)
+        const bt = bonusTazo // narrow type for callback
+        const bFinish = randomFinish(bt.rarity || "common")
+        const bTgaGrade = generateTGAGrade(bt.rarity || "common", bFinish)
         await db.$transaction(async (tx) => {
           const bUserTazo = await tx.userTazo.upsert({
-            where: { userId_tazoId: { userId: user.id, tazoId: bonusTazo!.id } },
-            create: { userId: user.id, tazoId: bonusTazo!.id, quantity: 1, obtainedFrom },
+            where: { userId_tazoId: { userId: user.id, tazoId: bt.id } },
+            create: { userId: user.id, tazoId: bt.id, quantity: 1, obtainedFrom },
             update: { quantity: { increment: 1 } },
           })
           await tx.tazoInstance.create({
             data: {
-              userTazoId: bUserTazo.id, userId: user.id, tazoId: bonusTazo!.id,
-              attack: randomizeStat(bonusTazo!.attack),
-              defense: randomizeStat(bonusTazo!.defense),
-              resistance: randomizeStat(bonusTazo!.resistance),
-              weight: randomizeStat(bonusTazo!.weight),
-              stability: randomizeStat(bonusTazo!.stability),
-              spin: randomizeStat(bonusTazo!.spin),
-              control: randomizeStat(bonusTazo!.control),
-              bounce: randomizeStat(bonusTazo!.bounce),
-              precision: randomizeStat(bonusTazo!.precision),
+              userTazoId: bUserTazo.id, userId: user.id, tazoId: bt.id,
+              attack: randomizeStat(bt.attack),
+              defense: randomizeStat(bt.defense),
+              resistance: randomizeStat(bt.resistance),
+              weight: randomizeStat(bt.weight),
+              stability: randomizeStat(bt.stability),
+              spin: randomizeStat(bt.spin),
+              control: randomizeStat(bt.control),
+              bounce: randomizeStat(bt.bounce),
+              precision: randomizeStat(bt.precision),
               finish: bFinish,
-              creatureVariant: bonusTazo!.creatureVariant || "standard",
+              creatureVariant: bt.creatureVariant || "standard",
               isNew: true,
               tgaTier: bTgaGrade.tier, tgaGrade: bTgaGrade.grade,
               tgaSurface: bTgaGrade.surface, tgaBorders: bTgaGrade.borders,

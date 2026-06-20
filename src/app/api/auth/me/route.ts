@@ -13,7 +13,13 @@ export async function GET(request: NextRequest) {
     // Fetch fresh user data with counts
     const fullUser = await db.user.findUnique({
       where: { id: user.id },
-      include: {
+      select: {
+        id: true, email: true, name: true, displayName: true,
+        avatarUrl: true, bio: true, credits: true, createdAt: true,
+        level: true, xp: true, xpToNext: true,
+        totalBattles: true, totalWins: true, totalLosses: true,
+        totalTazosOwned: true, totalBagsOpened: true, totalQuestsDone: true,
+        joinDate: true,
         _count: {
           select: { userTazos: true, decks: true },
         },
@@ -48,16 +54,16 @@ export async function GET(request: NextRequest) {
         deckCount: fullUser._count.decks,
         createdAt: fullUser.createdAt,
         // Level / XP system
-        level: (fullUser as any).level ?? 1,
-        xp: (fullUser as any).xp ?? 0,
-        xpToNext: (fullUser as any).xpToNext ?? 100,
-        totalBattles: (fullUser as any).totalBattles ?? 0,
-        totalWins: (fullUser as any).totalWins ?? 0,
-        totalLosses: (fullUser as any).totalLosses ?? 0,
-        totalTazosOwned: (fullUser as any).totalTazosOwned ?? 0,
-        totalBagsOpened: (fullUser as any).totalBagsOpened ?? 0,
-        totalQuestsDone: (fullUser as any).totalQuestsDone ?? 0,
-        joinDate: (fullUser as any).joinDate ?? fullUser.createdAt,
+        level: fullUser.level ?? 1,
+        xp: fullUser.xp ?? 0,
+        xpToNext: fullUser.xpToNext ?? 100,
+        totalBattles: fullUser.totalBattles ?? 0,
+        totalWins: fullUser.totalWins ?? 0,
+        totalLosses: fullUser.totalLosses ?? 0,
+        totalTazosOwned: fullUser.totalTazosOwned ?? 0,
+        totalBagsOpened: fullUser.totalBagsOpened ?? 0,
+        totalQuestsDone: fullUser.totalQuestsDone ?? 0,
+        joinDate: fullUser.joinDate ?? fullUser.createdAt,
       },
     })
 

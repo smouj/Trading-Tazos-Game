@@ -21,14 +21,13 @@ export async function POST(request: NextRequest) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
   const result = await claimDailyBonus(user.id, 25)
-  const updated = await db.user.findUnique({ where: { id: user.id }, select: { credits: true } })
 
   if (result.alreadyClaimed) {
     return NextResponse.json({
       error: "Daily bonus already claimed",
       claimed: false,
       claimable: false,
-      credits: updated?.credits ?? 0,
+      credits: result.credits,
     }, { status: 400 })
   }
 
@@ -36,6 +35,6 @@ export async function POST(request: NextRequest) {
     claimed: true,
     claimable: false,
     amount: result.amount,
-    credits: updated?.credits ?? 0,
+    credits: result.credits,
   })
 }

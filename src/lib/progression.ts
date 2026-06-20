@@ -33,18 +33,16 @@ async function getUserMetrics(userId: string, since?: Date): Promise<ProgressMet
   let loginDays = 0
   try {
     if (since) {
-      const loginRows = await db.$queryRawUnsafe<Array<{ cnt: number }>>(
-        `SELECT COUNT(DISTINCT DATE(createdAt / 1000, 'unixepoch')) as cnt
-         FROM CreditTransaction WHERE userId = ? AND createdAt >= ?`,
-        userId, since.getTime()
-      )
+      const loginRows = await db.$queryRaw<Array<{ cnt: number }>>`
+        SELECT COUNT(DISTINCT DATE(createdAt / 1000, 'unixepoch')) as cnt
+         FROM CreditTransaction WHERE userId = ${userId} AND createdAt >= ${since.getTime()}
+      `
       loginDays = loginRows[0]?.cnt ?? 0
     } else {
-      const loginRows = await db.$queryRawUnsafe<Array<{ cnt: number }>>(
-        `SELECT COUNT(DISTINCT DATE(createdAt / 1000, 'unixepoch')) as cnt
-         FROM CreditTransaction WHERE userId = ?`,
-        userId
-      )
+      const loginRows = await db.$queryRaw<Array<{ cnt: number }>>`
+        SELECT COUNT(DISTINCT DATE(createdAt / 1000, 'unixepoch')) as cnt
+         FROM CreditTransaction WHERE userId = ${userId}
+      `
       loginDays = loginRows[0]?.cnt ?? 0
     }
   } catch { /* fallback */ }
@@ -133,13 +131,14 @@ export async function claimDailyBonus(userId: string, amount = 25) {
     await tx.creditTransaction.create({
       data: { userId, amount, source: "daily", reference: today.toISOString().slice(0, 10) },
     })
-    return { claimed: true, amount }
+    const updated = await tx.user.findUnique({ where: { id: userId }, select: { credits: true } })
+    return { claimed: true, amount, credits: updated?.credits ?? 0 }
   })
 
   if (!result) {
-    return { claimed: false, amount: 0, alreadyClaimed: true }
+    return { claimed: false, amount: 0, alreadyClaimed: true, credits: 0 }
   }
 
   await refreshUserProgress(userId)
-  return { claimed: true, amount, alreadyClaimed: false }
+  return { claimed: true, amount, alreadyClaimed: false, credits: result.credits }
 }

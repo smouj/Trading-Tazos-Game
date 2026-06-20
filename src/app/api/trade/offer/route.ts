@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/trade/offer — create a new trade offer
+// POST /api/trade/offer — create a new trade offer (atomic check-then-act)
 export async function POST(request: NextRequest) {
   try {
     const authUser = await getAuthUser(request)
@@ -60,31 +60,39 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Cannot offer and request the same tazo' }, { status: 400 })
     }
 
-    // Verify the offered tazo belongs to the user
-    const ut = await db.userTazo.findUnique({ where: { id: offeredUserTazoId } })
-    if (!ut || ut.userId !== authUser.id) {
-      return NextResponse.json({ error: 'Tazo not found in your collection' }, { status: 404 })
-    }
-    if (ut.quantity < 1) {
-      return NextResponse.json({ error: 'No copies available' }, { status: 400 })
-    }
-
-    // Verify the requested tazo exists
-    const rt = await db.tazo.findUnique({ where: { id: requestedTazoId } })
-    if (!rt) {
+    // Verify existence first (lightweight reads outside transaction)
+    const requestedTazo = await db.tazo.findUnique({ where: { id: requestedTazoId } })
+    if (!requestedTazo) {
       return NextResponse.json({ error: 'Requested tazo not found' }, { status: 404 })
     }
 
-    const offer = await db.tradeOffer.create({
-      data: {
-        offererId: authUser.id,
-        offeredUserTazoId,
-        requestedTazoId,
-        status: 'pending',
-      },
+    // Wrap check + create in transaction to prevent TOCTOU race
+    const result = await db.$transaction(async (tx) => {
+      // Verify the offered tazo still belongs to the user (inside tx)
+      const ut = await tx.userTazo.findUnique({ where: { id: offeredUserTazoId } })
+      if (!ut || ut.userId !== authUser.id) {
+        return { ok: false, error: 'Tazo not found in your collection' }
+      }
+      if (ut.quantity < 1) {
+        return { ok: false, error: 'No copies available' }
+      }
+
+      const created = await tx.tradeOffer.create({
+        data: {
+          offererId: authUser.id,
+          offeredUserTazoId,
+          requestedTazoId,
+          status: 'pending',
+        },
+      })
+      return { ok: true, offer: created }
     })
 
-    return NextResponse.json({ offer })
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: 400 })
+    }
+
+    return NextResponse.json({ offer: result.offer })
   } catch (error) {
     console.error('Trade offer create error:', error)
     return NextResponse.json({ error: 'Failed to create offer' }, { status: 500 })

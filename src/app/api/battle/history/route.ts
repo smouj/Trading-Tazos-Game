@@ -32,59 +32,64 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'winner and victoryType required' }, { status: 400 })
     }
 
-    const record = await db.battleRecord.create({
-      data: {
-        userId: authUser.id,
-        winner,
-        victoryType,
-        opponentName: opponentName || null,
-        score: score || '0-0',
-        turns: turns || 0,
-        rounds: rounds || 0,
-        playerTazos: playerTazos ? JSON.stringify(playerTazos) : '[]',
-        opponentTazos: opponentTazos ? JSON.stringify(opponentTazos) : '[]',
-        battleLog: finalBattleLog,
-      },
-    })
-
-    // ── Record created; update cached user stats ──
-    await db.user.update({
-      where: { id: authUser.id },
-      data: {
-        totalBattles: { increment: 1 },
-        ...(winner === 'player' ? { totalWins: { increment: 1 } } : winner === 'opponent' ? { totalLosses: { increment: 1 } } : {}),
-        // Award XP (clamped to prevent inflating beyond level cap)
-        ...(typeof xpEarned === 'number' && xpEarned > 0 ? { xp: { increment: Math.min(xpEarned, 500) } } : {}),
-      },
-    })
-
-    // Award credits for win (capped daily)
-    let creditsEarned = 0
-    if (winner === 'player') {
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      const winCount = await db.creditTransaction.count({
-        where: { userId: authUser.id, source: 'battle_win', createdAt: { gte: today } },
+    // ── All DB mutations wrapped in $transaction to prevent race conditions ──
+    const txResult = await db.$transaction(async (tx) => {
+      const record = await tx.battleRecord.create({
+        data: {
+          userId: authUser.id,
+          winner,
+          victoryType,
+          opponentName: opponentName || null,
+          score: score || '0-0',
+          turns: turns || 0,
+          rounds: rounds || 0,
+          playerTazos: playerTazos ? JSON.stringify(playerTazos) : '[]',
+          opponentTazos: opponentTazos ? JSON.stringify(opponentTazos) : '[]',
+          battleLog: finalBattleLog,
+        },
       })
-      const BATTLE_WIN_CREDITS = 10
-      const BATTLE_WIN_DAILY_CAP = 10
-      if (winCount < BATTLE_WIN_DAILY_CAP) {
-        await db.user.update({ where: { id: authUser.id }, data: { credits: { increment: BATTLE_WIN_CREDITS } } })
-        await db.creditTransaction.create({
-          data: { userId: authUser.id, amount: BATTLE_WIN_CREDITS, source: 'battle_win', reference: `battle_${Date.now()}` },
+
+      // Update cached user stats
+      await tx.user.update({
+        where: { id: authUser.id },
+        data: {
+          totalBattles: { increment: 1 },
+          ...(winner === 'player' ? { totalWins: { increment: 1 } } : winner === 'opponent' ? { totalLosses: { increment: 1 } } : {}),
+          // Award XP (clamped to prevent inflating beyond level cap)
+          ...(typeof xpEarned === 'number' && xpEarned > 0 ? { xp: { increment: Math.min(xpEarned, 500) } } : {}),
+        },
+      })
+
+      // Award credits for win (capped daily) — re-checked inside transaction
+      let creditsEarned = 0
+      if (winner === 'player') {
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        const winCount = await tx.creditTransaction.count({
+          where: { userId: authUser.id, source: 'battle_win', createdAt: { gte: today } },
         })
-        creditsEarned = BATTLE_WIN_CREDITS
+        const BATTLE_WIN_CREDITS = 10
+        const BATTLE_WIN_DAILY_CAP = 10
+        if (winCount < BATTLE_WIN_DAILY_CAP) {
+          await tx.user.update({ where: { id: authUser.id }, data: { credits: { increment: BATTLE_WIN_CREDITS } } })
+          await tx.creditTransaction.create({
+            data: { userId: authUser.id, amount: BATTLE_WIN_CREDITS, source: 'battle_win', reference: `battle_${Date.now()}` },
+          })
+          creditsEarned = BATTLE_WIN_CREDITS
+        }
+      } else {
+        // Loss consolation
+        await tx.user.update({ where: { id: authUser.id }, data: { credits: { increment: 2 } } })
+        await tx.creditTransaction.create({
+          data: { userId: authUser.id, amount: 2, source: 'battle_loss', reference: `battle_${Date.now()}` },
+        })
+        creditsEarned = 2
       }
-    } else {
-      // Loss consolation
-      await db.user.update({ where: { id: authUser.id }, data: { credits: { increment: 2 } } })
-      await db.creditTransaction.create({
-        data: { userId: authUser.id, amount: 2, source: 'battle_loss', reference: `battle_${Date.now()}` },
-      })
-      creditsEarned = 2
-    }
 
-    return NextResponse.json({ success: true, id: record.id, creditsEarned }, { status: 201 })
+      return { id: record.id, creditsEarned }
+    })
+
+    return NextResponse.json({ success: true, id: txResult.id, creditsEarned: txResult.creditsEarned }, { status: 201 })
   } catch (error) {
     console.error('Error saving battle result:', error)
     return NextResponse.json({ error: 'Failed to save battle result' }, { status: 500 })

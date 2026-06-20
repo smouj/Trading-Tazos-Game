@@ -16,12 +16,16 @@ export async function GET(req: NextRequest) {
   try {
     // Single player stats
     if (userId) {
-      let rating = await db.rankedRating.findUnique({ where: { userId } })
-      if (!rating) {
-        rating = await db.rankedRating.create({
-          data: { userId, elo: getInitialElo() },
-        })
-      }
+      // Use upsert via transaction to prevent race between findUnique + create
+      const rating = await db.$transaction(async (tx) => {
+        let r = await tx.rankedRating.findUnique({ where: { userId } })
+        if (!r) {
+          r = await tx.rankedRating.create({
+            data: { userId, elo: getInitialElo() },
+          })
+        }
+        return r
+      })
       return NextResponse.json({
         ...rating,
         rank: getRank(rating.elo),
@@ -55,7 +59,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST — report a ranked match
+// POST — report a ranked match (atomic transaction)
 export async function POST(req: NextRequest) {
   const auth = await getAuthUser(req)
   if (!auth?.id) {
@@ -70,85 +74,90 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing scores" }, { status: 400 })
     }
 
-    // Get or create player rating
-    let playerRating = await db.rankedRating.findUnique({
-      where: { userId: auth.id },
-    })
-    if (!playerRating) {
-      playerRating = await db.rankedRating.create({
-        data: { userId: auth.id, elo: getInitialElo() },
+    // Wrap all rating reads/writes in a transaction to prevent upsert races
+    const result = await db.$transaction(async (tx) => {
+      // Get or create player rating (atomic within tx)
+      let playerRating = await tx.rankedRating.findUnique({
+        where: { userId: auth.id },
       })
-    }
+      if (!playerRating) {
+        playerRating = await tx.rankedRating.create({
+          data: { userId: auth.id, elo: getInitialElo() },
+        })
+      }
 
-    // Get or create opponent rating
-    let opponentRating = opponentUserId
-      ? await db.rankedRating.findUnique({ where: { userId: opponentUserId } })
-      : null
-    if (opponentUserId && !opponentRating) {
-      opponentRating = await db.rankedRating.create({
-        data: { userId: opponentUserId, elo: getInitialElo() },
+      // Get or create opponent rating (atomic within tx)
+      let opponentRating = opponentUserId
+        ? await tx.rankedRating.findUnique({ where: { userId: opponentUserId } })
+        : null
+      if (opponentUserId && !opponentRating) {
+        opponentRating = await tx.rankedRating.create({
+          data: { userId: opponentUserId, elo: getInitialElo() },
+        })
+      }
+
+      const oppElo = opponentRating?.elo ?? getInitialElo()
+
+      // Calculate Elo changes
+      const playerDelta = calcEloChange({
+        playerRating: playerRating.elo,
+        opponentRating: oppElo,
+        playerScore,
+        opponentScore,
       })
-    }
 
-    const oppElo = opponentRating?.elo ?? getInitialElo()
+      const opponentDelta = calcEloChange({
+        playerRating: oppElo,
+        opponentRating: playerRating.elo,
+        playerScore: opponentScore,
+        opponentScore: playerScore,
+      })
 
-    // Calculate Elo changes
-    const playerDelta = calcEloChange({
-      playerRating: playerRating.elo,
-      opponentRating: oppElo,
-      playerScore,
-      opponentScore,
-    })
+      const playerWon = playerScore > opponentScore
+      const isDraw = playerScore === opponentScore
 
-    const opponentDelta = calcEloChange({
-      playerRating: oppElo,
-      opponentRating: playerRating.elo,
-      playerScore: opponentScore,
-      opponentScore: playerScore,
-    })
-
-    const playerWon = playerScore > opponentScore
-    const isDraw = playerScore === opponentScore
-
-    // Update player
-    await db.rankedRating.update({
-      where: { userId: auth.id },
-      data: {
-        elo: Math.max(0, playerRating.elo + playerDelta),
-        wins: playerWon ? playerRating.wins + 1 : playerRating.wins,
-        losses: !playerWon && !isDraw ? playerRating.losses + 1 : playerRating.losses,
-        draws: isDraw ? playerRating.draws + 1 : playerRating.draws,
-        streak: playerWon
-          ? Math.max(0, playerRating.streak) + 1
-          : isDraw ? 0
-          : Math.min(0, playerRating.streak) - 1,
-      },
-    })
-
-    // Update opponent if real
-    if (opponentUserId && opponentRating) {
-      await db.rankedRating.update({
-        where: { userId: opponentUserId },
+      // Update player
+      const updatedPlayer = await tx.rankedRating.update({
+        where: { userId: auth.id },
         data: {
-          elo: Math.max(0, opponentRating.elo + opponentDelta),
-          wins: !playerWon && !isDraw ? opponentRating.wins + 1 : opponentRating.wins,
-          losses: playerWon ? opponentRating.losses + 1 : opponentRating.losses,
-          draws: isDraw ? opponentRating.draws + 1 : opponentRating.draws,
-          streak: !playerWon && !isDraw
-            ? Math.max(0, opponentRating.streak) + 1
+          elo: Math.max(0, playerRating.elo + playerDelta),
+          wins: playerWon ? playerRating.wins + 1 : playerRating.wins,
+          losses: !playerWon && !isDraw ? playerRating.losses + 1 : playerRating.losses,
+          draws: isDraw ? playerRating.draws + 1 : playerRating.draws,
+          streak: playerWon
+            ? Math.max(0, playerRating.streak) + 1
             : isDraw ? 0
-            : Math.min(0, opponentRating.streak) - 1,
+            : Math.min(0, playerRating.streak) - 1,
         },
       })
-    }
 
-    const newRating = playerRating.elo + playerDelta
+      // Update opponent if real
+      if (opponentUserId && opponentRating) {
+        await tx.rankedRating.update({
+          where: { userId: opponentUserId },
+          data: {
+            elo: Math.max(0, opponentRating.elo + opponentDelta),
+            wins: !playerWon && !isDraw ? opponentRating.wins + 1 : opponentRating.wins,
+            losses: playerWon ? opponentRating.losses + 1 : opponentRating.losses,
+            draws: isDraw ? opponentRating.draws + 1 : opponentRating.draws,
+            streak: !playerWon && !isDraw
+              ? Math.max(0, opponentRating.streak) + 1
+              : isDraw ? 0
+              : Math.min(0, opponentRating.streak) - 1,
+          },
+        })
+      }
+
+      return {
+        eloChange: playerDelta,
+        newElo: updatedPlayer.elo,
+        rank: getRank(updatedPlayer.elo),
+      }
+    })
 
     return NextResponse.json({
       success: true,
-      eloChange: playerDelta,
-      newElo: newRating,
-      rank: getRank(newRating),
+      ...result,
     })
   } catch (error) {
     console.error("Ranked POST error:", error)

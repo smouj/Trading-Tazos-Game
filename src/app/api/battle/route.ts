@@ -421,10 +421,12 @@ export async function POST(request: NextRequest) {
     const rawById = new Map(rawTazos.map((t) => [t.id, t]))
 
     const playerTazos = playerTazoIds
-      .map((id) => rawById.get(id)!)
+      .map((id) => rawById.get(id))
+      .filter((t): t is NonNullable<typeof t> => t != null)
       .map(createBattleTazo)
     const opponentTazos = opponentTazoIds
-      .map((id) => rawById.get(id)!)
+      .map((id) => rawById.get(id))
+      .filter((t): t is NonNullable<typeof t> => t != null)
       .map(createBattleTazo)
     let winner: 'player' | 'opponent' | 'draw' = 'draw'
 

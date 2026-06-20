@@ -32,12 +32,21 @@ async function getUserMetrics(userId: string, since?: Date): Promise<ProgressMet
   // Count login days: distinct dates with any activity in this period
   let loginDays = 0
   try {
-    const loginRows = await db.$queryRawUnsafe<Array<{ cnt: number }>>(
-      `SELECT COUNT(DISTINCT DATE(createdAt / 1000, 'unixepoch')) as cnt
-       FROM CreditTransaction WHERE userId = ?${since ? ` AND createdAt >= ${since.getTime()}` : ""}`,
-      userId
-    )
-    loginDays = loginRows[0]?.cnt ?? 0
+    if (since) {
+      const loginRows = await db.$queryRawUnsafe<Array<{ cnt: number }>>(
+        `SELECT COUNT(DISTINCT DATE(createdAt / 1000, 'unixepoch')) as cnt
+         FROM CreditTransaction WHERE userId = ? AND createdAt >= ?`,
+        userId, since.getTime()
+      )
+      loginDays = loginRows[0]?.cnt ?? 0
+    } else {
+      const loginRows = await db.$queryRawUnsafe<Array<{ cnt: number }>>(
+        `SELECT COUNT(DISTINCT DATE(createdAt / 1000, 'unixepoch')) as cnt
+         FROM CreditTransaction WHERE userId = ?`,
+        userId
+      )
+      loginDays = loginRows[0]?.cnt ?? 0
+    }
   } catch { /* fallback */ }
 
   return {

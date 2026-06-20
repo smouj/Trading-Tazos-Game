@@ -1,4 +1,5 @@
 import { db } from '@/lib/db'
+import { getAuthUser } from '@/lib/auth'
 import { NextRequest, NextResponse } from 'next/server'
 import sharp from 'sharp'
 import path from 'path'
@@ -6,6 +7,12 @@ import { randomUUID } from 'crypto'
 
 export async function POST(request: NextRequest) {
   try {
+    // Auth check: only authenticated users can scan tazos
+    const authUser = await getAuthUser(request).catch(() => null)
+    if (!authUser) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const body = await request.json()
     const { imageUrl, region, tazoData } = body as {
       imageUrl: string
@@ -18,6 +25,29 @@ export async function POST(request: NextRequest) {
         { error: 'imageUrl, region, and tazoData are required' },
         { status: 400 }
       )
+    }
+
+    // Validate that franchiseId and collectionId reference existing records
+    const franchiseId = tazoData.franchiseId as string | undefined
+    const collectionId = tazoData.collectionId as string | undefined
+
+    if (!franchiseId || !collectionId) {
+      return NextResponse.json(
+        { error: 'franchiseId and collectionId are required' },
+        { status: 400 }
+      )
+    }
+
+    const [franchise, collection] = await Promise.all([
+      db.franchise.findUnique({ where: { id: franchiseId } }),
+      db.collection.findUnique({ where: { id: collectionId } }),
+    ])
+
+    if (!franchise) {
+      return NextResponse.json({ error: 'Invalid franchiseId' }, { status: 400 })
+    }
+    if (!collection) {
+      return NextResponse.json({ error: 'Invalid collectionId' }, { status: 400 })
     }
 
     const sourcePath = path.join(
@@ -80,8 +110,8 @@ export async function POST(request: NextRequest) {
         slug:
           (tazoData.slug as string) ||
           `tazo-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-        franchiseId: (tazoData.franchiseId as string) || '',
-        collectionId: (tazoData.collectionId as string) || '',
+        franchiseId,
+        collectionId,
         number: (tazoData.number as string) || undefined,
         condition: (tazoData.condition as string) || 'good',
         physicalType: (tazoData.physicalType as string) || 'cardboard',

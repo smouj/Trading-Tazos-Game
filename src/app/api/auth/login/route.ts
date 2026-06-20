@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     // Auto-migrate legacy bcrypt hashes to scrypt (non-blocking, fire-and-forget)
     const newHash = await migratePasswordIfNeeded(password, user.passwordHash)
     if (newHash) {
-      db.user.update({ where: { id: user.id }, data: { passwordHash: newHash } })
+      db.user.update({ where: { id: user.id }, data: { passwordHash: newHash } }).catch(() => {/* non-critical */})
         
     }
 

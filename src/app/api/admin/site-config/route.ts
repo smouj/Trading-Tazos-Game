@@ -19,6 +19,11 @@ const CONFIG_DEFAULTS: Record<string, any> = {
   registrations_open: true,
 };
 
+/** Safe JSON parse — returns null on corruption instead of throwing */
+function safeJsonParse(raw: string): any {
+  try { return JSON.parse(raw) } catch { return null }
+}
+
 // GET — fetch all config or a single key
 export async function GET(req: NextRequest) {
   const user = await getAuthUser(req);
@@ -35,7 +40,7 @@ export async function GET(req: NextRequest) {
       const defaultValue = CONFIG_DEFAULTS[key as keyof typeof CONFIG_DEFAULTS];
       return NextResponse.json({
         key,
-        value: config ? JSON.parse(config.value) : (defaultValue !== undefined ? defaultValue : null),
+        value: config ? safeJsonParse(config.value) : (defaultValue !== undefined ? defaultValue : null),
         updatedAt: config?.updatedAt || null,
         updatedBy: config?.updatedBy || null,
       });
@@ -54,7 +59,7 @@ export async function GET(req: NextRequest) {
     for (const cfg of dbConfigs) {
       configMap[cfg.key] = {
         key: cfg.key,
-        value: JSON.parse(cfg.value),
+        value: safeJsonParse(cfg.value),
         updatedAt: cfg.updatedAt,
         updatedBy: cfg.updatedBy,
         isDefault: false,
@@ -95,7 +100,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ success: true, key: config.key, value: JSON.parse(config.value) });
+    return NextResponse.json({ success: true, key: config.key, value: safeJsonParse(config.value) });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message || "Save failed" }, { status: 500 });
   }

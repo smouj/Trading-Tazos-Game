@@ -375,47 +375,8 @@ async function fetchUserDecks(userId: string) {
   }))
 }
 
-// Replace the old mapTazo helper and deck section below (keep POST + DELETE as-is)
+// POST /api/collection removed — tazo addition only through bag opening (buy→open flow)
 // Delete old mapTazo/deck code from here down
-const _PRESERVE_POST_DELETE_BELOW = true
-
-/** POST /api/collection — Add tazo(s) to user's collection */
-export async function POST(request: NextRequest) {
-  try {
-    const user = await getAuthUser(request)
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-    const { tazoId, quantity = 1 } = await request.json()
-    if (!tazoId) {
-      return NextResponse.json({ error: "tazoId is required" }, { status: 400 })
-    }
-
-    // Verify tazo exists
-    const tazo = await db.tazo.findUnique({ where: { id: tazoId } })
-    if (!tazo) {
-      return NextResponse.json({ error: "Tazo not found" }, { status: 404 })
-    }
-
-    // Upsert: add to existing or create new
-    const userTazo = await db.userTazo.upsert({
-      where: { userId_tazoId: { userId: user.id, tazoId } },
-      update: { quantity: { increment: quantity } },
-      create: { userId: user.id, tazoId, quantity },
-      include: { tazo: true },
-    })
-
-    return NextResponse.json({
-      id: userTazo.id,
-      quantity: userTazo.quantity,
-      tazoName: userTazo.tazo.name || userTazo.tazo.displayName || "Unknown",
-    })
-  } catch (error) {
-    if (error instanceof Response) throw error
-    console.error("Collection POST error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
-  }
-}
-
 /** DELETE /api/collection — Remove tazo from collection */
 export async function DELETE(request: NextRequest) {
   try {

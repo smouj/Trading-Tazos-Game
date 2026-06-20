@@ -12,13 +12,17 @@ function adminOnly(user: any) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const user = await getAuthUser(request)
+    adminOnly(user)
+
     const models = await db.tubeModel.findMany({
       orderBy: { sortOrder: "asc" },
     })
     return NextResponse.json({ models })
-  } catch {
+  } catch (e: any) {
+    if (e instanceof Response) throw e
     return NextResponse.json({ error: "Failed to fetch" }, { status: 500 })
   }
 }

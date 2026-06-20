@@ -314,7 +314,9 @@ wss.on("connection", (ws, req) => {
 
   ws.on("error", (err) => {
     log(`⚠️ WS error for ${player.name}: ${err.message}`)
-    ws.close()
+    clearInterval(pingInterval)
+    cleanupPlayer(player)
+    try { ws.close() } catch {}
   })
 
   // Welcome

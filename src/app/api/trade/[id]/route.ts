@@ -22,12 +22,7 @@ export async function POST(
       return NextResponse.json({ error: 'Cannot buy your own listing' }, { status: 400 })
     }
 
-    const buyer = await db.user.findUnique({ where: { id: authUser.id } })
-    if (!buyer || buyer.credits < listing.price) {
-      return NextResponse.json({ error: 'Not enough credits' }, { status: 402 })
-    }
-
-    // Load the listed UserTazo to get the tazoId
+    // Load the listed UserTazo to get the tazoId (outside txn — read-only)
     const ut = await db.userTazo.findUnique({
       where: { id: listing.userTazoId },
       include: { tazo: true },
@@ -35,12 +30,18 @@ export async function POST(
     if (!ut) return NextResponse.json({ error: 'Listed tazo no longer exists' }, { status: 410 })
     const seller = await db.user.findUnique({ where: { id: listing.sellerId } })
 
-    // Atomic transaction: transfer credits, tazo ownership, mark sold, logs
+    // Atomic transaction: re-check status, verify credits, transfer, mark sold, logs
     await db.$transaction(async (tx) => {
       // Re-check listing status inside transaction (prevents race condition)
       const freshListing = await tx.tradeListing.findUnique({ where: { id } })
       if (!freshListing || freshListing.status !== 'active') {
         throw new Error('Listing no longer available')
+      }
+
+      // Verify buyer has enough credits inside transaction (prevents race condition)
+      const freshBuyer = await tx.user.findUnique({ where: { id: authUser.id } })
+      if (!freshBuyer || freshBuyer.credits < freshListing.price) {
+        throw new Error('NOT_ENOUGH_CREDITS')
       }
 
       // Transfer credits
@@ -70,16 +71,19 @@ export async function POST(
     })
 
     const tazoName = ut.tazo.displayName || ut.tazo.name || ut.tazo.slug
-    sendTransactionalEmailSoon({
-      template: 'tradeConfirmation',
-      to: buyer.email,
-      variables: {
-        name: buyer.displayName || buyer.name,
-        tradeType: 'Marketplace purchase',
-        tazoName,
-        credits: listing.price,
-      },
-    })
+    const buyer = await db.user.findUnique({ where: { id: authUser.id } })
+    if (buyer) {
+      sendTransactionalEmailSoon({
+        template: 'tradeConfirmation',
+        to: buyer.email,
+        variables: {
+          name: buyer.displayName || buyer.name,
+          tradeType: 'Marketplace purchase',
+          tazoName,
+          credits: listing.price,
+        },
+      })
+    }
     if (seller) {
       sendTransactionalEmailSoon({
         template: 'tradeConfirmation',
@@ -95,6 +99,10 @@ export async function POST(
 
     return NextResponse.json({ message: 'Purchase successful!', listingId: id })
   } catch (error) {
+    const msg = error instanceof Error ? error.message : ''
+    if (msg === 'NOT_ENOUGH_CREDITS') {
+      return NextResponse.json({ error: 'Not enough credits' }, { status: 402 })
+    }
     console.error('Trade buy error:', error)
     return NextResponse.json({ error: 'Failed to complete purchase' }, { status: 500 })
   }

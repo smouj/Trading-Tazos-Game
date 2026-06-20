@@ -132,28 +132,41 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'userTazoId and price (>=1) required' }, { status: 400 })
     }
 
-    const ut = await db.userTazo.findUnique({ where: { id: userTazoId } })
-    if (!ut || ut.userId !== authUser.id) {
-      return NextResponse.json({ error: 'Tazo not found in your collection' }, { status: 404 })
-    }
-    if (ut.quantity < 1) {
-      return NextResponse.json({ error: 'No copies to sell' }, { status: 400 })
-    }
+    // Atomic transaction: verify ownership + check no existing active listing + decrement
+    const [listing] = await db.$transaction(async (tx) => {
+      const ut = await tx.userTazo.findUnique({ where: { id: userTazoId } })
+      if (!ut || ut.userId !== authUser.id) {
+        throw new Error('NOT_FOUND')
+      }
+      if (ut.quantity < 1) {
+        throw new Error('NO_COPIES')
+      }
 
-    const existing = await db.tradeListing.findFirst({
-      where: { userTazoId, status: 'active', sellerId: authUser.id },
+      const existing = await tx.tradeListing.findFirst({
+        where: { userTazoId, status: 'active', sellerId: authUser.id },
+      })
+      if (existing) throw new Error('ALREADY_LISTED')
+
+      return Promise.all([
+        tx.tradeListing.create({
+          data: { sellerId: authUser.id, userTazoId, price, status: 'active' },
+        }),
+        tx.userTazo.update({ where: { id: userTazoId }, data: { quantity: { decrement: 1 } } }),
+      ])
     })
-    if (existing) return NextResponse.json({ error: 'Already listed' }, { status: 409 })
-
-    const [listing] = await db.$transaction([
-      db.tradeListing.create({
-        data: { sellerId: authUser.id, userTazoId, price, status: 'active' },
-      }),
-      db.userTazo.update({ where: { id: userTazoId }, data: { quantity: { decrement: 1 } } }),
-    ])
 
     return NextResponse.json({ listing, message: 'Tazo listed for sale!' }, { status: 201 })
   } catch (error) {
+    const msg = error instanceof Error ? error.message : ''
+    if (msg === 'NOT_FOUND') {
+      return NextResponse.json({ error: 'Tazo not found in your collection' }, { status: 404 })
+    }
+    if (msg === 'NO_COPIES') {
+      return NextResponse.json({ error: 'No copies to sell' }, { status: 400 })
+    }
+    if (msg === 'ALREADY_LISTED') {
+      return NextResponse.json({ error: 'Already listed' }, { status: 409 })
+    }
     console.error('Trade create error:', error)
     return NextResponse.json({ error: 'Failed to create listing' }, { status: 500 })
   }

@@ -25,18 +25,7 @@ export async function POST(
       db.tazo.findUnique({ where: { id: offer.requestedTazoId } }),
     ])
 
-    // Verify acceptor has the requested tazo
-    const requestedId = offer.requestedTazoId
-    const [acceptorUT] = await db.$queryRawUnsafe<Array<{ id: string }>>(
-      `SELECT ut.id FROM UserTazo ut WHERE ut.userId = ? AND ut.tazoId = ? LIMIT 1`,
-      authUser.id, requestedId
-    )
-
-    if (!acceptorUT) {
-      return NextResponse.json({ error: "You don't have the requested tazo" }, { status: 400 })
-    }
-
-    // Atomic transaction: re-check status + swap + mark accepted
+    // Atomic transaction: re-check status + verify ownership + swap + mark accepted
     await db.$transaction(async (tx) => {
       // Re-check offer status inside transaction (prevents race condition)
       const freshOffer = await tx.tradeOffer.findUnique({ where: { id } })
@@ -44,15 +33,38 @@ export async function POST(
         throw new Error('Offer no longer available')
       }
 
-      // Swap: transfer offered tazo to acceptor, transfer accepted tazo to offerer
-      await tx.$executeRawUnsafe(
-        `UPDATE UserTazo SET userId = ? WHERE id = ?`,
-        authUser.id, offer.offeredUserTazoId
+      // Verify acceptor still has the requested tazo (inside transaction)
+      const requestedId = freshOffer.requestedTazoId
+      const [acceptorUT] = await tx.$queryRawUnsafe<Array<{ id: string }>>(
+        `SELECT ut.id FROM UserTazo ut WHERE ut.userId = ? AND ut.tazoId = ? LIMIT 1`,
+        authUser.id, requestedId
       )
-      await tx.$executeRawUnsafe(
-        `UPDATE UserTazo SET userId = ? WHERE id = ?`,
-        offer.offererId, acceptorUT.id
+      if (!acceptorUT) {
+        throw new Error('NOT_HAVE_REQUESTED')
+      }
+
+      // Swap: transfer offered tazo to acceptor, ensuring offerer still owns it
+      const offererRowsAffected = await tx.$executeRawUnsafe(
+        `UPDATE UserTazo SET userId = ? WHERE id = ? AND userId = ?`,
+        authUser.id, freshOffer.offeredUserTazoId, freshOffer.offererId
       )
+      if (offererRowsAffected !== 1) {
+        throw new Error('OFFERER_NO_LONGER_OWNS')
+      }
+
+      // Transfer acceptor's tazo to offerer, ensuring acceptor still owns it
+      const acceptorRowsAffected = await tx.$executeRawUnsafe(
+        `UPDATE UserTazo SET userId = ? WHERE id = ? AND userId = ?`,
+        freshOffer.offererId, acceptorUT.id, authUser.id
+      )
+      if (acceptorRowsAffected !== 1) {
+        // Rollback first transfer by reversing it
+        await tx.$executeRawUnsafe(
+          `UPDATE UserTazo SET userId = ? WHERE id = ? AND userId = ?`,
+          freshOffer.offererId, freshOffer.offeredUserTazoId, authUser.id
+        )
+        throw new Error('ACCEPTOR_NO_LONGER_OWNS')
+      }
 
       // Mark offer as accepted
       await tx.tradeOffer.update({
@@ -91,6 +103,16 @@ export async function POST(
 
     return NextResponse.json({ success: true, message: 'Trade accepted!' })
   } catch (error) {
+    const msg = error instanceof Error ? error.message : ''
+    if (msg === 'NOT_HAVE_REQUESTED') {
+      return NextResponse.json({ error: "You don't have the requested tazo" }, { status: 400 })
+    }
+    if (msg === 'OFFERER_NO_LONGER_OWNS') {
+      return NextResponse.json({ error: 'The offered tazo is no longer available' }, { status: 410 })
+    }
+    if (msg === 'ACCEPTOR_NO_LONGER_OWNS') {
+      return NextResponse.json({ error: 'Your tazo is no longer available' }, { status: 410 })
+    }
     console.error('Trade offer accept error:', error)
     return NextResponse.json({ error: 'Failed to accept offer' }, { status: 500 })
   }

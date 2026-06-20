@@ -165,137 +165,76 @@ export default function BattleHUD(props: BattleHUDProps) {
     )
   }
 
+  // ── Compact magazine header: single-row, full-width, minimal vertical footprint ──
   return (
     <div
       className="w-full select-none"
       style={{
-        background: "radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(180deg, var(--ttg-cream) 0%, var(--ttg-cream-dark) 100%)",
-        backgroundSize: "8px 8px, 100% 100%",
-        borderTop: "4px solid var(--ttg-black)",
-        borderBottom: "4px solid var(--ttg-black)",
-        boxShadow: "0 -4px 0 var(--ttg-yellow), 0 4px 0 var(--ttg-yellow)",
+        background: "linear-gradient(180deg, rgba(30,30,30,0.97) 0%, rgba(22,22,22,0.97) 100%)",
+        borderBottom: "2px solid rgba(255,204,0,0.2)",
+        boxShadow: "0 2px 12px rgba(0,0,0,0.4)",
       }}
     >
-      {/* ═══ TOP STRIP — Round + Phase Banner ═══ */}
-      {!isIntro && (
-        <div
-          className="flex items-center justify-center px-3 py-1.5 relative"
-          style={{
-            background: "repeating-linear-gradient(-30deg, transparent, transparent 3px, rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 6px), linear-gradient(180deg, rgba(0,0,0,0.03) 0%, transparent 100%)",
-            borderBottom: "2px solid var(--ttg-black)",
-          }}
-        >
-          {/* Round badge */}
-          <div className="absolute left-3 flex items-center gap-2">
-            <div className="px-2 py-1 border-2 border-ttg-black"
-              style={{ background: "var(--ttg-black)", boxShadow: "2px 2px 0 rgba(0,0,0,0.2)" }}>
-              <span className="text-[9px] font-black text-ttg-yellow uppercase tracking-[0.2em]">R{round}</span>
-            </div>
-            {isPlayerTurn && (
-              <div className="w-2 h-2 rounded-full bg-ttg-red animate-pulse"
-                style={{ boxShadow: "0 0 6px var(--ttg-red)" }} />
-            )}
+      <div className="flex items-center gap-2 px-3 py-1.5 max-w-7xl mx-auto">
+        {/* ── Left: Player score + tazo count ── */}
+        <div className="flex items-center gap-2 shrink-0" style={{ minWidth: 100 }}>
+          <div className="flex items-center gap-1.5">
+            <Trophy className="w-3.5 h-3.5" style={{ color: BATTLE_COLORS.red }} />
+            <span className="text-xs font-black text-white tabular-nums" style={{ minWidth: 20 }}>{playerScore}</span>
           </div>
-
-          {/* Phase sticker */}
-          <div
-            className="px-4 py-1.5 border-3 border-ttg-black relative"
-            style={{
-              background: phaseInfo.bg,
-              boxShadow: "3px 3px 0 var(--ttg-black)",
-              transform: "rotate(-0.5deg)",
-            }}
-          >
-            <span className="text-[11px] font-black uppercase tracking-[0.25em]"
-              style={{ color: phaseInfo.color }}>
-              {phaseInfo.emoji} {phaseInfo.text}
-            </span>
-          </div>
-
-          {/* Turn indicator */}
-          <div className="absolute right-3">
-            <div className="flex items-center gap-1">
-              <span className="text-[8px] font-black uppercase tracking-[0.15em]"
-                style={{ color: "var(--ttg-black)", opacity: 0.4 }}>
-                {isPlayerTurn ? "YOUR TURN" : isOpponentTurn ? "OPPONENT" : ""}
-              </span>
-              <Swords className="w-3 h-3" style={{ color: "var(--ttg-black)", opacity: 0.3 }} />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ═══ MAIN PANELS — Player vs Opponent ═══ */}
-      <div className="flex items-stretch">
-        {/* PLAYER (left) */}
-        <div className="flex-1 px-3 py-2.5" style={{ borderRight: "1px solid rgba(26,26,26,0.08)" }}>
-          <div className="flex items-center gap-2 mb-2">
-            <div
-              className="px-2 py-0.5 border-2 border-ttg-black"
-              style={{
-                background: "linear-gradient(180deg, var(--ttg-red) 0%, var(--ttg-red-dark) 100%)",
-                boxShadow: "2px 2px 0 rgba(0,0,0,0.3)",
-              }}
-            >
-              <span className="text-[10px] font-black text-white uppercase tracking-[0.15em]">{playerName}</span>
-            </div>
-          </div>
-          <ScoreBar score={playerScore} label={playerName} color={BATTLE_COLORS.red} side="left" />
-          <div className="flex items-center justify-between mt-2">
-            <TazoChips remaining={pRemaining} color={BATTLE_COLORS.red} />
-            <div className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-[0.15em]"
-              style={{ color: "var(--ttg-black)", opacity: 0.25 }}>
-              <Disc3 className="w-2.5 h-2.5" /> DECK
-            </div>
-          </div>
+          <Disc3 className="w-3 h-3" style={{ color: "rgba(255,255,255,0.15)" }} />
+          <span className="text-[10px] font-bold tabular-nums" style={{ color: "rgba(255,255,255,0.35)" }}>{pRemaining}</span>
         </div>
 
-        {/* VS DIVIDER */}
-        <div className="flex flex-col items-center justify-center px-2 shrink-0 relative">
-          <div
-            className="absolute inset-0 opacity-10"
-            style={{ backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, var(--ttg-black) 2px, var(--ttg-black) 4px)" }}
-          />
-          <div
-            className="relative z-10 w-8 h-8 border-3 border-ttg-black flex items-center justify-center"
-            style={{ background: "var(--ttg-yellow)", boxShadow: "2px 2px 0 var(--ttg-black)" }}
-          >
-            <span className="text-[14px] font-black text-ttg-black leading-none">VS</span>
-          </div>
+        {/* ── Center: Phase sticker ── */}
+        <div className="flex-1 flex items-center justify-center gap-2">
+          {!isIntro && (
+            <span className="text-[9px] font-black tabular-nums px-1.5 py-0.5 rounded-sm"
+              style={{ background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.2)" }}>R{round}</span>
+          )}
+          <span className="text-[9px] font-black uppercase tracking-[0.15em]"
+            style={{ color: phaseInfo.color }}>
+            {phaseInfo.emoji} {phaseInfo.text}
+          </span>
+          {isPlayerTurn && (
+            <div className="w-1.5 h-1.5 rounded-full animate-pulse"
+              style={{ background: BATTLE_COLORS.red, boxShadow: `0 0 6px ${BATTLE_COLORS.red}` }} />
+          )}
+          {isOpponentTurn && (
+            <div className="w-1.5 h-1.5 rounded-full animate-pulse"
+              style={{ background: BATTLE_COLORS.blue, boxShadow: `0 0 6px ${BATTLE_COLORS.blue}` }} />
+          )}
         </div>
 
-        {/* OPPONENT (right) */}
-        <div className="flex-1 px-3 py-2.5" style={{ borderLeft: "1px solid rgba(26,26,26,0.08)" }}>
-          <div className="flex items-center gap-2 mb-2 justify-end">
-            <div
-              className="px-2 py-0.5 border-2 border-ttg-black"
-              style={{
-                background: "linear-gradient(180deg, var(--ttg-blue) 0%, var(--ttg-blue-dark) 100%)",
-                boxShadow: "2px 2px 0 rgba(0,0,0,0.3)",
-              }}
-            >
-              <span className="text-[10px] font-black text-white uppercase tracking-[0.15em]">{opponentName}</span>
-            </div>
-          </div>
-          <ScoreBar score={opponentScore} label={opponentName} color={BATTLE_COLORS.blue} side="right" />
-          <div className="flex items-center justify-between mt-2 flex-row-reverse">
-            <TazoChips remaining={oRemaining} color={BATTLE_COLORS.blue} />
-            <div className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-[0.15em] flex-row-reverse"
-              style={{ color: "var(--ttg-black)", opacity: 0.25 }}>
-              <Disc3 className="w-2.5 h-2.5" /> DECK
-            </div>
+        {/* ── Right: Opponent score + tazo count ── */}
+        <div className="flex items-center gap-2 shrink-0 justify-end" style={{ minWidth: 100 }}>
+          <span className="text-[10px] font-bold tabular-nums" style={{ color: "rgba(255,255,255,0.35)" }}>{oRemaining}</span>
+          <Disc3 className="w-3 h-3" style={{ color: "rgba(255,255,255,0.15)" }} />
+          <div className="flex items-center gap-1.5">
+            <Trophy className="w-3.5 h-3.5" style={{ color: BATTLE_COLORS.blue }} />
+            <span className="text-xs font-black text-white tabular-nums" style={{ minWidth: 20 }}>{opponentScore}</span>
           </div>
         </div>
       </div>
 
-      {/* ═══ BOTTOM ACCENT STRIPE ═══ */}
-      <div
-        className="h-1.5"
-        style={{
-          background: "repeating-linear-gradient(90deg, var(--ttg-yellow) 0px, var(--ttg-yellow) 4px, var(--ttg-black) 4px, var(--ttg-black) 8px)",
-          borderTop: "2px solid var(--ttg-black)",
-        }}
-      />
+      {/* ═══ Score bars (thin) ═══ */}
+      <div className="flex gap-px px-3 pb-1.5 max-w-7xl mx-auto">
+        <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+          <div className="h-full rounded-full transition-all duration-500 ease-out"
+            style={{
+              width: `${Math.min(100, (playerScore / 10) * 100)}%`,
+              background: `linear-gradient(90deg, ${BATTLE_COLORS.red}, ${BATTLE_COLORS.red}cc)`,
+            }} />
+        </div>
+        <div className="w-4" />{/* spacer */}
+        <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+          <div className="h-full rounded-full ml-auto transition-all duration-500 ease-out"
+            style={{
+              width: `${Math.min(100, (opponentScore / 10) * 100)}%`,
+              background: `linear-gradient(90deg, ${BATTLE_COLORS.blue}cc, ${BATTLE_COLORS.blue})`,
+            }} />
+        </div>
+      </div>
     </div>
   )
 }

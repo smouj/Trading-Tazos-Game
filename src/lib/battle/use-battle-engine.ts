@@ -116,10 +116,14 @@ export function useBattleEngine(): BattleEngine {
   useEffect(() => { uiRef.current = uiState }, [uiState])
 
   // ── Send event through FSM ──
+  // CRITICAL: ctxRef MUST be updated synchronously here, not via useEffect.
+  // Multiple send() calls in the same synchronous block (e.g., stakePlayer+aiBet)
+  // would see stale ctx if the ref only updated in effects.
   const send = useCallback((event: BattleEvent): boolean => {
     if (!ctxRef.current) return false
     const next = applyTransition(ctxRef.current, event)
     if (!next) return false
+    ctxRef.current = next  // ← sync update for chain calls
     setCtx(next)
     return true
   }, [])

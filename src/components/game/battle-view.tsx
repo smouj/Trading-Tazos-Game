@@ -1427,10 +1427,9 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
           introCinematicPhase={introCinematicPhase}
         />}
 
-        {/* ── HUD overlay — Magazine Editorial Style ── */}
+        {/* ── HUD overlay — Compact header, full-width ── */}
         <div className="absolute top-0 left-0 right-0 z-20 pointer-events-none">
-          
-          <div className="max-w-2xl mx-auto px-1.5 sm:px-3 mt-1 pointer-events-auto">
+          <div className="pointer-events-auto">
             <BattleHUD
               playerName={user?.name || user?.email?.split("@")[0] || "You"}
               opponentName={cfg?.mode === "practice" ? `AI ${cfg?.aiDifficulty || "Skilled"}` : "Rival"}

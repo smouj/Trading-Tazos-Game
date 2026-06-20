@@ -78,6 +78,8 @@ export interface BattleContext {
   opponentBetTazo: TazoCard | null
   playerRemaining: number
   opponentRemaining: number
+  playerRemainingDeck: TazoCard[]
+  opponentRemainingDeck: TazoCard[]
   matchResult: MatchResult | null
   // Phase-local state
   chargeLevel: number
@@ -118,6 +120,8 @@ export function createBattleContext(config: MatchConfig): BattleContext {
     opponentBetTazo: null,
     playerRemaining: config.playerDeck.length,
     opponentRemaining: config.opponentDeck.length,
+    playerRemainingDeck: [],
+    opponentRemainingDeck: [],
     matchResult: null,
     chargeLevel: 0,
     aimPosition: { x: 0, z: 0 },
@@ -162,19 +166,18 @@ export const BATTLE_TRANSITIONS: StateTransition[] = [
     event: "INTRO_DONE",
     action(ctx) {
       // Draw 5 starting hand for both players
-      const r = () => Math.random() // RNG can be injected via ctx.rng in future
-      const { hand: pHand, remaining: pRem } = (() => {
-        const shuffled = [...ctx.player.deck].sort(() => r() - 0.5)
-        return { hand: shuffled.slice(0, 5), remaining: shuffled.slice(5) }
-      })()
-      const { hand: oHand, remaining: oRem } = (() => {
-        const shuffled = [...ctx.opponent.deck].sort(() => r() - 0.5)
-        return { hand: shuffled.slice(0, 5), remaining: shuffled.slice(5) }
-      })()
+      const rn = () => Math.random()
+      const pShuffled = [...ctx.player.deck].sort(() => rn() - 0.5)
+      const oShuffled = [...ctx.opponent.deck].sort(() => rn() - 0.5)
+      const pHand = pShuffled.slice(0, 5)
+      const pRemDeck = pShuffled.slice(5)
+      const oHand = oShuffled.slice(0, 5)
+      const oRemDeck = oShuffled.slice(5)
       return {
         ...ctx, state: "draw_initial_hand",
         playerHand: pHand, opponentHand: oHand,
-        playerRemaining: pRem.length, opponentRemaining: oRem.length,
+        playerRemainingDeck: pRemDeck, opponentRemainingDeck: oRemDeck,
+        playerRemaining: pRemDeck.length, opponentRemaining: oRemDeck.length,
         currentRound: 1,
       }
     },
@@ -236,14 +239,14 @@ export const BATTLE_TRANSITIONS: StateTransition[] = [
       return throwerDeck > 0 || throwerHand.length > 0
     },
     action(ctx) {
-      // Draw 1 card for current thrower from their deck
+      // Draw 1 card for current thrower from remaining deck
       const thrower = ctx.currentThrower || "player"
       if (thrower === "player") {
-        const result = drawOne(ctx.player.deck, ctx.playerHand, ctx.playerRemaining)
-        return { ...ctx, state: "draw", playerHand: result.hand, playerRemaining: result.remaining }
+        const result = drawOne(ctx.playerRemainingDeck, ctx.playerHand)
+        return { ...ctx, state: "draw", playerHand: result.hand, playerRemainingDeck: result.remainingDeck, playerRemaining: result.remainingDeck.length }
       } else {
-        const result = drawOne(ctx.opponent.deck, ctx.opponentHand, ctx.opponentRemaining)
-        return { ...ctx, state: "draw", opponentHand: result.hand, opponentRemaining: result.remaining }
+        const result = drawOne(ctx.opponentRemainingDeck, ctx.opponentHand)
+        return { ...ctx, state: "draw", opponentHand: result.hand, opponentRemainingDeck: result.remainingDeck, opponentRemaining: result.remainingDeck.length }
       }
     },
   },
@@ -416,16 +419,17 @@ export const BATTLE_TRANSITIONS: StateTransition[] = [
       return ctx.roundTurns >= 1
     },
     action(ctx) {
-      // Draw 1 replacement card for each player
-      const pDraw = drawOne(ctx.player.deck, ctx.playerHand, ctx.playerRemaining)
-      const oDraw = drawOne(ctx.opponent.deck, ctx.opponentHand, ctx.opponentRemaining)
+      // Draw 1 replacement card for each player at end of round
+      const pDraw = drawOne(ctx.playerRemainingDeck, ctx.playerHand)
+      const oDraw = drawOne(ctx.opponentRemainingDeck, ctx.opponentHand)
       return {
         ...ctx, state: "round_start",
         currentThrower: "player", roundTurns: 0,
-        playerHand: pDraw.hand, playerRemaining: pDraw.remaining,
-        opponentHand: oDraw.hand, opponentRemaining: oDraw.remaining,
-        playerBetTazo: null, opponentBetTazo: null,
-        stakedTazos: [], airborneTazo: null, currentRound: ctx.currentRound + 1,
+        playerHand: pDraw.hand, playerRemainingDeck: pDraw.remainingDeck, playerRemaining: pDraw.remainingDeck.length,
+        opponentHand: oDraw.hand, opponentRemainingDeck: oDraw.remainingDeck, opponentRemaining: oDraw.remainingDeck.length,
+        // BET TAZOS PERSIST — don't clear them between rounds
+        playerBetTazo: ctx.playerBetTazo, opponentBetTazo: ctx.opponentBetTazo,
+        stakedTazos: ctx.stakedTazos, airborneTazo: null, currentRound: ctx.currentRound + 1,
         roundHistory: [
           ...ctx.roundHistory,
           { roundNumber: ctx.currentRound, throwerId: ctx.currentThrower || "player",

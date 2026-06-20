@@ -954,25 +954,24 @@ export function coinFlip(): "player" | "opponent" {
 // ────────────────────────────────────────
 
 export function drawOne(
-  deck: TazoCard[],
+  remainingDeck: TazoCard[],
   currentHand: TazoCard[],
-  remainingCount: number,
   rng?: RNG
-): { hand: TazoCard[]; remaining: number; drawn: TazoCard | null } {
-  // Rebuild deck pool from remaining + hand (tracked separately)
-  if (remainingCount <= 0) {
-    // No cards left in deck — can't draw
-    return { hand: currentHand, remaining: 0, drawn: null }
+): { hand: TazoCard[]; remainingDeck: TazoCard[]; drawn: TazoCard | null } {
+  if (remainingDeck.length === 0) {
+    return { hand: currentHand, remainingDeck: [], drawn: null }
   }
-  const fullDeck = [...deck]
-  // Shuffle using RNG if provided, else Math.random
+  // Shuffle remaining deck using RNG if provided
+  const shuffled = [...remainingDeck]
   const rand = rng ? rng.random : () => Math.random()
-  fullDeck.sort(() => rand() - 0.5)
-  // Take the top card (from the remaining portion)
-  const drawn = fullDeck[0]
-  const newRemaining = remainingCount - 1
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  const drawn = shuffled[0]
+  const newRemainingDeck = shuffled.slice(1)
   const newHand = [...currentHand, drawn]
-  return { hand: newHand, remaining: newRemaining, drawn }
+  return { hand: newHand, remainingDeck: newRemainingDeck, drawn }
 }
 
 export function drawHand(deck: TazoCard[], count: number = 5): { hand: TazoCard[]; remaining: TazoCard[] } {

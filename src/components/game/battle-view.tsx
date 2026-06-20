@@ -610,6 +610,106 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
     setAirborne(prev => prev ? { ...prev, position: [engine.ui.reticleX * 0.3, h, engine.ui.reticleZ * 0.3] } : prev)
   }, [engine.ui.reticleX, engine.ui.reticleZ, engine.ui.charge, phase])
 
+  // ── AI Turn Automation ──
+  const aiTurnRunning = useRef(false)
+  const runAITurn = useCallback(() => {
+    const c = engine.ctx
+    if (!c || !cfg || c.currentThrower !== "opponent") return
+    aiTurnRunning.current = true
+    
+    const aiLauncher = c.opponentHand.length > 0 
+      ? c.opponentHand[Math.floor(Math.random() * c.opponentHand.length)]
+      : null
+    if (!aiLauncher) {
+      engine.turnOver()
+      aiTurnRunning.current = false
+      return
+    }
+    
+    const ab = createAirborneTazo(aiLauncher, "opponent", cfg.arena)
+    setAirborne(ab)
+    engine.selectTazo(aiLauncher)
+    
+    // AI aim (random target in arena)
+    const timing = engine.aiTiming()
+    const aimX = (Math.random() - 0.5) * cfg.arena.radius * 0.5
+    const aimZ = (Math.random() - 0.5) * cfg.arena.radius * 0.5
+    
+    setTimeout(() => {
+      const cc = engine.ctx
+      if (!cc || !cfg) { aiTurnRunning.current = false; return }
+      engine.lockAim(aimX, aimZ)
+      
+      const chargeLevel = 0.5 + Math.random() * 0.5
+      setTimeout(() => {
+        engine.lockCharge(chargeLevel)
+        engine.releaseSlam()
+        
+        const ccc = engine.ctx
+        if (!ccc || !cfg) { aiTurnRunning.current = false; return }
+        
+        const aiSlamParams = generateAISlam(aiLauncher, ccc.stakedTazos, cfg.arena, cfg.aiDifficulty, ccc.opponent.score - ccc.player.score)
+        playSfx("slam_impact", 0.6)
+        const { result: aiImpact } = simulateSlam(aiLauncher, aiSlamParams, ccc.stakedTazos, cfg.arena, "opponent", ctxDefenders)
+        const aiScoring = scoreBettingImpact(aiImpact, "opponent")
+        
+        engine.physicsDone(aiImpact)
+        engine.setShowImpact(true)
+        
+        if (aiScoring.opponentDelta > 0) { spawnPopup("+" + aiScoring.opponentDelta, "var(--ttg-opponent)", "right"); playSfx("score_pop", 0.3) }
+        if (aiScoring.playerDelta > 0) { spawnPopup("+" + aiScoring.playerDelta, "var(--ttg-player)", "left"); playSfx("score_pop", 0.3) }
+        
+        setAirborne(null)
+        engine.setShowImpact(false)
+        
+        setTimeout(() => {
+          engine.captureResolved()
+          setTimeout(() => {
+            engine.scoreUpdated()
+            setTimeout(() => {
+              engine.turnOver()
+              aiTurnRunning.current = false
+            }, 800)
+          }, 600)
+        }, 1000)
+      }, timing.aim)
+    }, timing.think)
+  }, [engine, cfg, ctxDefenders, spawnPopup])
+
+  // ── AI Turn Trigger ──
+  useEffect(() => {
+    if (phase === "select_tazo" && ctx?.currentThrower === "opponent" && !aiTurnRunning.current) {
+      const t = setTimeout(() => runAITurn(), 500)
+      return () => clearTimeout(t)
+    }
+  }, [phase, ctx?.currentThrower, runAITurn])
+
+  // ── Round Loop: auto-dispatch TURN_STARTED ──
+  useEffect(() => {
+    if (phase === "turn_start") {
+      const delay = ctx?.currentThrower === "opponent" ? 300 : 100
+      const t = setTimeout(() => engine.turnStarted(), delay)
+      return () => clearTimeout(t)
+    }
+  }, [phase, ctx?.currentThrower, engine])
+
+
+  // ── Auto-dispatch INITIAL_HANDS_DRAWN when entering draw_initial_hand ──
+  useEffect(() => {
+    if (phase === "draw_initial_hand" && introCinematicPhase === null) {
+      const t = setTimeout(() => engine.initialHandsDrawn(), 300)
+      return () => clearTimeout(t)
+    }
+  }, [phase, introCinematicPhase, engine])
+
+  // ── Auto-dispatch CARD_DRAWN when entering draw phase ──
+  useEffect(() => {
+    if (phase === "draw") {
+      const t = setTimeout(() => engine.cardDrawn(), isDrawing ? 800 : 200)
+      return () => clearTimeout(t)
+    }
+  }, [phase, engine, isDrawing])
+
   // ── Fullscreen ── (requests on document.documentElement for true browser fullscreen)
   const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
@@ -688,7 +788,11 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
     setPlayerStakeZ(0)
 
     // ── Sequence: intro → draw → placement (placement handles betting internally) ──
-    setTimeout(() => engine.introDone(), 6800)
+    setTimeout(() => {
+      engine.introDone()
+      // After intro → draw_initial_hand, dispatch INITIAL_HANDS_DRAWN → stake_player
+      setTimeout(() => engine.initialHandsDrawn(), 600)
+    }, 6800)
 
     // Draw animation from tube to hand (after intro)
     setTimeout(() => {
@@ -743,87 +847,32 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
   const handlePlaceStake = useCallback((stakeX: number, stakeZ: number) => {
     setPlayerStakeX(stakeX)
     setPlayerStakeZ(stakeZ)
+    if (!ctx || playerHand.length === 0 || opponentHand.length === 0) return
     engine.setBusy(true)
     
-    // Update staked tazo positions in the FSM
-    if (ctx && playerHand.length > 0) {
-      const playerTazo = playerHand[0]
-      const oppPick = opponentHand[Math.floor(Math.random() * opponentHand.length)]
-      setOpponentBetId(oppPick.id)
-      
-      // Place bets through engine with custom positions
-      engine.stakePlayer(playerTazo, stakeX, stakeZ); engine.aiBet(oppPick)
-      setBettingPhase("revealed")
-      setSelectedBetId(playerTazo.id)
-      
-      // Brief delay for placement confirmation, then reveal
+    const playerTazo = playerHand[0]
+    const oppPick = opponentHand[Math.floor(Math.random() * opponentHand.length)]
+    setOpponentBetId(oppPick.id)
+    setSelectedBetId(playerTazo.id)
+    setBettingPhase("revealed")
+    
+    // Dispatch FSM events: stake player → stake AI → reveal stakes
+    engine.stakePlayer(playerTazo, stakeX, stakeZ)
+    engine.aiBet(oppPick)
+    
+    setTimeout(() => {
+      setPlacingStake(false)
+      engine.revealStakes()
+      playSfx("tazo_flip", 0.3)
+      // Player always goes first (no coin flip)
       setTimeout(() => {
-        setPlacingStake(false)
-        engine.revealStakes()
-        playSfx("tazo_flip", 0.3)
-        
-        setTimeout(() => {
-          const cfWinner = "player" as "player" | "opponent"
-          // coin flip removed
-          // coin flip removed
-          playSfx("tazo_flip", 0.3)
-          
-          setTimeout(() => {
-            // coin flip removed
-            
-            if (cfWinner === "player") {
-              playerWentFirstRef.current = true
-              const launcher = playerHand.filter(t => t.id !== playerTazo.id)[0] || playerHand[0]
-              if (launcher && cfg) {
-                const ab = createAirborneTazo(launcher, "player", cfg.arena)
-                setAirborne(ab)
-              }
-            } else {
-              // AI goes first — handled in same pattern as handleBet
-              playerWentFirstRef.current = false
-              const latestCtx = engine.ctx
-              if (!latestCtx || !cfg) return
-              const aiTazo = latestCtx.opponentBetTazo
-              if (!aiTazo) { engine.setBusy(false); return }
-              const ab = createAirborneTazo(aiTazo, "opponent", cfg.arena)
-              setAirborne(ab)
-              
-              const aiSlam = generateAISlam(aiTazo, latestCtx.stakedTazos, cfg.arena, cfg.aiDifficulty, latestCtx.opponent.score - latestCtx.player.score)
-              setTimeout(() => {
-                if (!engine.ctx || !cfg) return
-                playSfx("slam_impact", 0.6)
-                const { result: aiImpact } = simulateSlam(aiTazo, aiSlam, engine.ctx.stakedTazos, cfg.arena, "opponent", ctxDefenders)
-                const aiScoring = scoreBettingImpact(aiImpact, "opponent")
-                engine.physicsDone(aiImpact); setTimeout(() => { engine.captureResolved() }, 1000)
-                engine.setImpactMsg(aiImpact.description)
-                engine.setShowImpact(true)
-                if (aiScoring.opponentDelta > 0) { spawnPopup("+" + aiScoring.opponentDelta, "var(--ttg-opponent)", "right"); playSfx("score_pop", 0.3) }
-                if (aiScoring.playerDelta > 0) { spawnPopup("+" + aiScoring.playerDelta, "var(--ttg-player)", "left"); playSfx("score_pop", 0.3) }
-                if (aiScoring.playerLostTazos > 0) { spawnPopup("-" + aiScoring.playerLostTazos + " tazo", "var(--ttg-opponent)", "left"); playSfx("damage_taken", 0.35) }
-                setTimeout(() => {
-                  if (!engine.ctx) return
-                  engine.setShowImpact(false)
-                  setAirborne(null)
-                  const newPR = Math.max(0, (engine.ctx?.playerRemaining ?? latestCtx.playerRemaining) - aiScoring.playerLostTazos)
-                  const newOR = Math.max(0, (engine.ctx?.opponentRemaining ?? latestCtx.opponentRemaining) - aiScoring.opponentLostTazos)
-                  const newPS = (engine.ctx?.player.score ?? 0) + aiScoring.playerDelta
-                  const newOS = (engine.ctx?.opponent.score ?? 0) + aiScoring.opponentDelta
-                  const end = checkMatchEnd(newPS, newOS, newPR, newOR, cfg?.scoreToWin)
-                  if (end) { engine.turnOver() }
-                  else {
-                    const launcher = playerHand.filter(t => t.id !== playerTazo.id)[0] || playerHand[0]
-                    if (launcher && cfg) setAirborne(createAirborneTazo(launcher, "player", cfg.arena))
-                  }
-                  engine.setBusy(false)
-                }, 1500)
-              }, 1200)
-            }
-            engine.setBusy(false)
-          }, 2000)
-        }, 1000)
-      }, 800)
-    }
-  }, [ctx, playerHand, opponentHand, cfg, engine])
+        playerWentFirstRef.current = true
+        engine.roundStarted()
+        setTimeout(() => engine.turnStarted(), 600)
+        engine.setBusy(false)
+      }, 1200)
+    }, 1000)
+  }, [ctx, playerHand, opponentHand, engine])
   const handleBet = useCallback((tazo: TazoCard) => {
     if (placingStake) return
     if (bettingPhase !== "betting" || !cfg || engine.ui.busy) return
@@ -1682,7 +1731,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
 
         {/* ── Slam Controls ── */}
         {/* ── Placement Phase (manual stake positioning) ── */}
-        {placingStake && playerHand.length > 0 && (
+        {placingStake && phase === "stake_player" && playerHand.length > 0 && (
           <PlacementPhase
             tazoName={playerHand[0].name}
             tazoFranchise={playerHand[0].franchise}

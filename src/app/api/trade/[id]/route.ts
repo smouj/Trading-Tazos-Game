@@ -118,17 +118,30 @@ export async function DELETE(
     if (!authUser) return NextResponse.json({ error: 'Login required' }, { status: 401 })
 
     const { id } = await params
-    const listing = await db.tradeListing.findUnique({ where: { id } })
-    if (!listing || listing.status !== 'active') return NextResponse.json({ error: 'Not found' }, { status: 404 })
-    if (listing.sellerId !== authUser.id) return NextResponse.json({ error: 'Not your listing' }, { status: 403 })
 
-    await db.$transaction([
-      db.tradeListing.update({ where: { id }, data: { status: 'cancelled' } }),
-      db.userTazo.update({ where: { id: listing.userTazoId }, data: { quantity: { increment: 1 } } }),
-    ])
+    // Atomic transaction: re-check status inside txn to prevent race condition
+    // where listing is sold between the findUnique and the cancel (counterfeit bug)
+    await db.$transaction(async (tx) => {
+      const listing = await tx.tradeListing.findUnique({ where: { id } })
+      if (!listing || listing.status !== 'active') {
+        throw new Error('LISTING_UNAVAILABLE')
+      }
+      if (listing.sellerId !== authUser.id) {
+        throw new Error('NOT_OWNER')
+      }
+      await tx.tradeListing.update({ where: { id }, data: { status: 'cancelled' } })
+      await tx.userTazo.update({ where: { id: listing.userTazoId }, data: { quantity: { increment: 1 } } })
+    })
 
     return NextResponse.json({ message: 'Listing cancelled, tazo returned' })
   } catch (error) {
+    const msg = error instanceof Error ? error.message : ''
+    if (msg === 'LISTING_UNAVAILABLE') {
+      return NextResponse.json({ error: 'Listing no longer available' }, { status: 410 })
+    }
+    if (msg === 'NOT_OWNER') {
+      return NextResponse.json({ error: 'Not your listing' }, { status: 403 })
+    }
     console.error('Trade cancel error:', error)
     return NextResponse.json({ error: 'Failed to cancel' }, { status: 500 })
   }

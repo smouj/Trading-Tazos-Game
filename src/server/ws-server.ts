@@ -175,6 +175,10 @@ wss.on("listening", () => {
   if (typeof process.send === "function") process.send("ready");
 })
 
+wss.on("error", (err) => {
+  log(`⚠️ WSS server error: ${err.message}`)
+})
+
 wss.on("connection", (ws, req) => {
   // Auth via query param
   const url = new URL(req.url || "/", `http://${req.headers.host}`)

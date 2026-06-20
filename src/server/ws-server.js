@@ -272,10 +272,13 @@ const statusServer = (0, http_1.createServer)((_req, res) => {
 });
 statusServer.listen(PORT + 1);
 log(`Status HTTP on port ${PORT + 1}`);
-// Graceful shutdown
+// Graceful shutdown — wait for both servers to release ports
 process.on("SIGTERM", () => {
     log("Shutting down...");
-    wss.close();
-    statusServer.close();
-    process.exit(0);
+    let closed = 0;
+    const done = () => { closed++; if (closed >= 2) process.exit(0); };
+    wss.close(() => { log("WS server closed"); done(); });
+    statusServer.close(() => { log("Status server closed"); done(); });
+    // Force exit after 3s if ports aren't released
+    setTimeout(() => { log("Force exit"); process.exit(0); }, 3000);
 });

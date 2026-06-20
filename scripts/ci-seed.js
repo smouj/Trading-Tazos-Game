@@ -1,4 +1,4 @@
-// Minimal CI seed — seeds DB for smoke tests
+// CI seed — seeds DB for smoke tests
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -6,15 +6,38 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("🌱 Seeding CI database...");
 
-  for (const name of ["Minimon", "Cybermon", "Dracobell"]) {
-    await prisma.series.upsert({
-      where: { name },
+  // 1. Franchises
+  const franchises = [
+    { name: "Minimon", slug: "minimon", color: "#22c55e" },
+    { name: "Cybermon", slug: "cybermon", color: "#3b82f6" },
+    { name: "Dracobell", slug: "dracobell", color: "#f97316" },
+  ];
+  for (const f of franchises) {
+    await prisma.franchise.upsert({
+      where: { slug: f.slug },
       update: {},
-      create: { name, slug: name.toLowerCase(), order: 1 },
+      create: f,
     });
   }
+  console.log(`  ✅ ${franchises.length} franchises`);
 
-  const user = await prisma.user.upsert({
+  // 2. Collections (needed for tazo creation)
+  const minimon = await prisma.franchise.findUnique({ where: { slug: "minimon" } });
+  const collection = await prisma.collection.upsert({
+    where: { slug: "minimon-series-1" },
+    update: {},
+    create: {
+      name: "Minimon Series 1",
+      slug: "minimon-series-1",
+      franchiseId: minimon.id,
+      year: 2024,
+      totalTazos: 50,
+    },
+  });
+  console.log(`  ✅ Collection: ${collection.slug}`);
+
+  // 3. Demo user
+  const demo = await prisma.user.upsert({
     where: { email: "demo@tradingtazosgame.com" },
     update: {},
     create: {
@@ -24,9 +47,12 @@ async function main() {
       displayName: "DemoTrainer",
       passwordHash: "$2a$10$placeholderplaceholderplacehol",
       credits: 1000,
+      emailVerified: true,
     },
   });
+  console.log(`  ✅ Demo user`);
 
+  // 4. Test tazos
   const existing = await prisma.tazo.count();
   if (existing === 0) {
     const names = ["Pikachu", "Charizard", "Bulbasaur", "Squirtle", "Eevee"];
@@ -35,17 +61,19 @@ async function main() {
         data: {
           name,
           slug: name.toLowerCase(),
-          seriesName: "Minimon",
+          franchiseId: minimon.id,
+          collectionId: collection.id,
           rarity: "common",
           attack: 50 + Math.floor(Math.random() * 20),
           defense: 40 + Math.floor(Math.random() * 15),
           publishStatus: "published",
-          tazoType: "minimon",
         },
       });
     }
+    console.log(`  ✅ ${names.length} test tazos`);
   }
 
+  // 5. Link tazos to demo user
   const tazos = await prisma.tazo.findMany({ take: 3 });
   for (const t of tazos) {
     const utId = "ci_ut_" + t.id;
@@ -54,13 +82,13 @@ async function main() {
       update: {},
       create: {
         id: utId,
-        userId: "demo_user_001",
+        userId: demo.id,
         tazoId: t.id,
-        condition: "good",
         quantity: 1,
       },
     });
   }
+  console.log(`  ✅ ${tazos.length} user tazos`);
 
   console.log("✅ CI seed complete");
 }

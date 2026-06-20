@@ -10,6 +10,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@ttg/game-core': path.resolve(__dirname, './packages/game-core/src'),
+      '@ttg/game-physics': path.resolve(__dirname, './packages/game-physics'),
     },
   },
 })

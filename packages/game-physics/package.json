@@ -1,8 +1,13 @@
 {
   "name": "@ttg/game-physics",
-  "version": "0.1.0",
+  "version": "0.11.0",
   "private": true,
   "description": "TTG battle physics engine — slam simulation, collisions, flips, impact scoring",
   "main": "./index.ts",
-  "types": "./index.ts"
+  "types": "./index.ts",
+  "files": ["src", "index.ts"],
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  }
 }

@@ -26,6 +26,12 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@ttg/game-core": [
+        "./packages/game-core/src"
+      ],
+      "@ttg/game-physics": [
+        "./packages/game-physics"
       ]
     }
   },

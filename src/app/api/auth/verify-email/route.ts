@@ -9,30 +9,33 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Verification token is required' }, { status: 400 })
     }
 
-    // Find user with valid, non-expired verification token
-    const user = await db.user.findFirst({
-      where: {
-        emailVerifyToken: token,
-        emailVerifyExpires: { gt: new Date() },
-      },
+    // Atomic: find + update in one transaction prevents token reuse
+    const updated = await db.$transaction(async (tx) => {
+      const user = await tx.user.findFirst({
+        where: {
+          emailVerifyToken: token,
+          emailVerifyExpires: { gt: new Date() },
+        },
+      })
+
+      if (!user) return null
+
+      return tx.user.update({
+        where: { id: user.id },
+        data: {
+          emailVerified: true,
+          emailVerifyToken: null,
+          emailVerifyExpires: null,
+        },
+      })
     })
 
-    if (!user) {
+    if (!updated) {
       return NextResponse.json(
         { error: 'Invalid or expired verification token. Please request a new verification email.' },
         { status: 400 }
       )
     }
-
-    // Mark email as verified and clear token
-    await db.user.update({
-      where: { id: user.id },
-      data: {
-        emailVerified: true,
-        emailVerifyToken: null,
-        emailVerifyExpires: null,
-      },
-    })
 
     return NextResponse.json({
       success: true,

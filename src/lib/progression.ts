@@ -101,21 +101,25 @@ export async function refreshUserProgress(userId: string) {
 
 export async function claimDailyBonus(userId: string, amount = 25) {
   const today = startOfToday()
-  const existing = await db.creditTransaction.findFirst({
-    where: { userId, source: "daily", createdAt: { gte: today } },
-  })
 
-  if (existing) {
-    return { claimed: false, amount: 0, alreadyClaimed: true }
-  }
+  const result = await db.$transaction(async (tx) => {
+    // Check inside transaction to prevent race conditions
+    const existing = await tx.creditTransaction.findFirst({
+      where: { userId, source: "daily", createdAt: { gte: today } },
+    })
+    if (existing) return null
 
-  await db.$transaction(async (tx) => {
     await tx.user.update({ where: { id: userId }, data: { credits: { increment: amount } } })
     await tx.creditTransaction.create({
       data: { userId, amount, source: "daily", reference: today.toISOString().slice(0, 10) },
     })
+    return { claimed: true, amount }
   })
-  await refreshUserProgress(userId)
 
+  if (!result) {
+    return { claimed: false, amount: 0, alreadyClaimed: true }
+  }
+
+  await refreshUserProgress(userId)
   return { claimed: true, amount, alreadyClaimed: false }
 }

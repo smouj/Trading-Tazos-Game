@@ -28,31 +28,45 @@ export async function POST(req: NextRequest) {
   }
 
   if (!isStripeConfigured()) {
-    // ── Dev mode: grant credits directly ──
-    const updated = await prisma.user.update({
-      where: { id: authUser.id },
-      data: { credits: { increment: pkg.credits } },
-    })
-
-    await prisma.purchase.create({
-      data: {
+    // ── Dev mode: grant credits directly (atomic) ──
+    // Rate limit: 1 purchase per 10 seconds in dev mode
+    const recentPurchase = await prisma.purchase.findFirst({
+      where: {
         userId: authUser.id,
-        packageId: `credit-${pkg.id}`,
-        amount: pkg.credits,
-        priceCents: 0,
-        currency: "EUR",
         status: "completed",
+        createdAt: { gte: new Date(Date.now() - 10000) },
       },
     })
+    if (recentPurchase) {
+      return NextResponse.json({
+        error: "Please wait before purchasing again",
+      }, { status: 429 })
+    }
 
-    await prisma.creditTransaction.create({
-      data: {
-        userId: authUser.id,
-        amount: pkg.credits,
-        source: "purchase",
-        reference: `dev-${pkg.id}`,
-      },
-    })
+    const [updated] = await prisma.$transaction([
+      prisma.user.update({
+        where: { id: authUser.id },
+        data: { credits: { increment: pkg.credits } },
+      }),
+      prisma.purchase.create({
+        data: {
+          userId: authUser.id,
+          packageId: `credit-${pkg.id}`,
+          amount: pkg.credits,
+          priceCents: 0,
+          currency: "EUR",
+          status: "completed",
+        },
+      }),
+      prisma.creditTransaction.create({
+        data: {
+          userId: authUser.id,
+          amount: pkg.credits,
+          source: "purchase",
+          reference: `dev-${pkg.id}`,
+        },
+      }),
+    ])
 
     return NextResponse.json({
       success: true,

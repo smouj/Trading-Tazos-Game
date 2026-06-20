@@ -469,11 +469,11 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
   // ── Score popups ──
   const [scorePopups, setScorePopups] = useState<Array<{ id: number; text: string; color: string; side: "left" | "right" }>>([])
   const popupId = useRef(0)
-  const spawnPopup = (text: string, color: string, side: "left" | "right") => {
+  const spawnPopup = useCallback((text: string, color: string, side: "left" | "right") => {
     const id = ++popupId.current
     setScorePopups(prev => [...prev, { id, text, color, side }])
     setTimeout(() => setScorePopups(prev => prev.filter(p => p.id !== id)), 1800)
-  }
+  }, [])
 
   // ── SFX ──
   useEffect(() => {
@@ -634,13 +634,15 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
     const aimX = (Math.random() - 0.5) * cfg.arena.radius * 0.5
     const aimZ = (Math.random() - 0.5) * cfg.arena.radius * 0.5
     
-    setTimeout(() => {
+    const aiTimeout1 = setTimeout(() => {
+      if (!mountedRef.current) { aiTurnRunning.current = false; return }
       const cc = engine.ctx
       if (!cc || !cfg) { aiTurnRunning.current = false; return }
       engine.lockAim(aimX, aimZ)
       
       const chargeLevel = 0.5 + Math.random() * 0.5
-      setTimeout(() => {
+      const aiTimeout2 = setTimeout(() => {
+        if (!mountedRef.current) { aiTurnRunning.current = false; return }
         engine.lockCharge(chargeLevel)
         engine.releaseSlam()
         
@@ -662,10 +664,13 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
         engine.setShowImpact(false)
         
         setTimeout(() => {
+          if (!mountedRef.current) { aiTurnRunning.current = false; return }
           engine.captureResolved()
           setTimeout(() => {
+            if (!mountedRef.current) { aiTurnRunning.current = false; return }
             engine.scoreUpdated()
             setTimeout(() => {
+              if (!mountedRef.current) { aiTurnRunning.current = false; return }
               engine.turnOver()
               aiTurnRunning.current = false
             }, 800)
@@ -863,7 +868,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
     if (!ctx || playerHand.length === 0 || opponentHand.length === 0) return
     engine.setBusy(true)
     
-    const playerTazo = playerHand[0]
+    const playerTazo = playerHand.find(t => t.id === selectedBetId) || playerHand[0]
     const oppPick = opponentHand[Math.floor(Math.random() * opponentHand.length)]
     setOpponentBetId(oppPick.id)
     setSelectedBetId(playerTazo.id)
@@ -1372,12 +1377,12 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
           remainingTazos={opponentRemaining}
           capturedTazos={oScore}
           side="right"
-          isActive={phase === "aim" && ctx?.currentThrower === "opponent" || phase === "throw" && ctx?.currentThrower === "opponent"}
+          isActive={(phase === "aim" || phase === "throw") && ctx?.currentThrower === "opponent"}
           playerType="opponent"
           franchise={opponentHand[0]?.franchise}
         />
 
-        {phase === "match_intro" || phase === "draw_initial_hand" && <IntroCinematic
+        {(phase === "match_intro" || phase === "draw_initial_hand") && <IntroCinematic
           playerName={user?.name || user?.email?.split("@")[0] || "Player"}
           deckName={selectedDeckName}
           deckSize={deck.length}
@@ -1501,12 +1506,17 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
           )}
 
           {/* Betting reveal overlay */}
-          {bettingPhase === "revealed" && selectedBetId && opponentBetId && (
-            <BettingReveal
-              playerTazo={playerHand.find(t => t.id === selectedBetId)!}
-              opponentTazo={opponentHand.find(t => t.id === opponentBetId)!}
-            />
-          )}
+          {bettingPhase === "revealed" && selectedBetId && opponentBetId && (() => {
+            const pt = playerHand.find(t => t.id === selectedBetId)
+            const ot = opponentHand.find(t => t.id === opponentBetId)
+            if (!pt || !ot) return null
+            return (
+              <BettingReveal
+                playerTazo={pt}
+                opponentTazo={ot}
+              />
+            )
+          })()}
 
           {/* Coin flip overlay */}
           {/* Coin flip removed */}

@@ -36,25 +36,34 @@ export async function POST(
       return NextResponse.json({ error: "You don't have the requested tazo" }, { status: 400 })
     }
 
-    // Atomic swap: transfer offered tazo to acceptor, transfer accepted tazo to offerer
-    await db.$executeRawUnsafe(
-      `UPDATE UserTazo SET userId = ? WHERE id = ?`,
-      authUser.id, offer.offeredUserTazoId
-    )
-    await db.$executeRawUnsafe(
-      `UPDATE UserTazo SET userId = ? WHERE id = ?`,
-      offer.offererId, acceptorUT.id
-    )
+    // Atomic transaction: re-check status + swap + mark accepted
+    await db.$transaction(async (tx) => {
+      // Re-check offer status inside transaction (prevents race condition)
+      const freshOffer = await tx.tradeOffer.findUnique({ where: { id } })
+      if (!freshOffer || freshOffer.status !== 'pending') {
+        throw new Error('Offer no longer available')
+      }
 
-    // Mark offer as accepted
-    await db.tradeOffer.update({
-      where: { id },
-      data: {
-        status: 'accepted',
-        acceptorId: authUser.id,
-        acceptedUserTazoId: acceptorUT.id,
-        resolvedAt: new Date(),
-      },
+      // Swap: transfer offered tazo to acceptor, transfer accepted tazo to offerer
+      await tx.$executeRawUnsafe(
+        `UPDATE UserTazo SET userId = ? WHERE id = ?`,
+        authUser.id, offer.offeredUserTazoId
+      )
+      await tx.$executeRawUnsafe(
+        `UPDATE UserTazo SET userId = ? WHERE id = ?`,
+        offer.offererId, acceptorUT.id
+      )
+
+      // Mark offer as accepted
+      await tx.tradeOffer.update({
+        where: { id },
+        data: {
+          status: 'accepted',
+          acceptorId: authUser.id,
+          acceptedUserTazoId: acceptorUT.id,
+          resolvedAt: new Date(),
+        },
+      })
     })
 
     const offeredName = offeredUserTazo?.tazo.displayName || offeredUserTazo?.tazo.name || offeredUserTazo?.tazo.slug || 'Offered tazo'

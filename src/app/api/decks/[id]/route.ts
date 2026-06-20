@@ -55,11 +55,13 @@ export async function PATCH(
         )
       }
 
-      // Replace all deck tazos
-      await db.deckTazo.deleteMany({ where: { deckId: id } })
-      await db.deckTazo.createMany({
-        data: body.tazoIds.map((tazoId: string) => ({ deckId: id, tazoId })),
-      })
+      // Replace all deck tazos (atomic)
+      await db.$transaction([
+        db.deckTazo.deleteMany({ where: { deckId: id } }),
+        db.deckTazo.createMany({
+          data: body.tazoIds.map((tazoId: string) => ({ deckId: id, tazoId })),
+        }),
+      ])
     }
 
     // Update settings (color, textureUrl, tubeSlug)

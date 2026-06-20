@@ -75,6 +75,7 @@ export async function persistBattleResult(
           rounds: ctx.roundHistory.length,
           finalScore: matchResult.summary,
         }),
+        idempotencyKey: `${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
       }),
     })
 

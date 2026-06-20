@@ -11,7 +11,21 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { winner, victoryType, score, turns, rounds, playerTazos, opponentTazos, opponentName, battleLog } = body
+    const { winner, victoryType, score, turns, rounds, playerTazos, opponentTazos, opponentName, battleLog, idempotencyKey } = body
+
+    // Idempotency: if key provided, store it in battleLog for dedup
+    const finalBattleLog = battleLog 
+      ? JSON.stringify({ ...(typeof battleLog === 'string' ? JSON.parse(battleLog) : battleLog), idempotencyKey: idempotencyKey || undefined })
+      : (idempotencyKey ? JSON.stringify({ idempotencyKey }) : null)
+
+    if (idempotencyKey) {
+      const existing = await db.battleRecord.findFirst({
+        where: { userId: authUser.id, battleLog: { contains: `"idempotencyKey":"${idempotencyKey}"` } },
+      })
+      if (existing) {
+        return NextResponse.json({ success: true, id: existing.id, deduplicated: true }, { status: 200 })
+      }
+    }
 
     // Validate required fields
     if (!winner || !victoryType) {
@@ -29,7 +43,7 @@ export async function POST(request: NextRequest) {
         rounds: rounds || 0,
         playerTazos: playerTazos ? JSON.stringify(playerTazos) : '[]',
         opponentTazos: opponentTazos ? JSON.stringify(opponentTazos) : '[]',
-        battleLog: battleLog ? JSON.stringify(battleLog) : null,
+        battleLog: finalBattleLog,
       },
     })
 

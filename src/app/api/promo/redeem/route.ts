@@ -55,60 +55,46 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Apply the reward
-  switch (promo.type) {
-    case "credits": {
-      await prisma.$transaction([
-        prisma.user.update({ where: { id: user.id }, data: { credits: { increment: promo.value } } }),
-        prisma.promotionCode.update({ where: { id: promo.id }, data: { usedCount: { increment: 1 } } }),
-        prisma.promoRedemption.create({
-          data: { userId: user.id, promoCodeId: promo.id, rewardType: promo.type, rewardValue: promo.value },
-        }),
-        prisma.creditTransaction.create({
-          data: { userId: user.id, amount: promo.value, source: "promo_code", reference: rawCode },
-        }),
-      ])
-      return NextResponse.json({
-        success: true,
-        message: `Success! ${promo.value} credits have been added to your account.`,
-        creditsAwarded: promo.value,
+  // Apply the reward atomically (re-check conditions inside tx)
+  let awarded = false
+  try {
+    await prisma.$transaction(async (tx) => {
+      // Double-check limit inside transaction
+      if (promo.maxUses > 0) {
+        const current = await tx.promotionCode.findUnique({
+          where: { id: promo.id },
+          select: { usedCount: true, isActive: true },
+        })
+        if (!current || !current.isActive || current.usedCount >= promo.maxUses) return
+      }
+      // Double-check user hasn't already redeemed (race condition between different requests)
+      const alreadyRedeemed = await tx.promoRedemption.findUnique({
+        where: { userId_promoCodeId: { userId: user.id, promoCodeId: promo.id } },
       })
-    }
-    case "bag": {
-      // Grant a specific bag to the user
-      // For now bags are purchased; grant the credits equivalent instead
-      await prisma.$transaction([
-        prisma.user.update({ where: { id: user.id }, data: { credits: { increment: promo.value } } }),
-        prisma.promotionCode.update({ where: { id: promo.id }, data: { usedCount: { increment: 1 } } }),
-        prisma.promoRedemption.create({
-          data: { userId: user.id, promoCodeId: promo.id, rewardType: promo.type, rewardValue: promo.value },
-        }),
-        prisma.creditTransaction.create({
-          data: { userId: user.id, amount: promo.value, source: "promo_code", reference: rawCode },
-        }),      ])
-      return NextResponse.json({
-        success: true,
-        message: `Success! Code redeemed — ${promo.value} credits added to your account.`,
-        creditsAwarded: promo.value,
+      if (alreadyRedeemed) return
+
+      await tx.user.update({ where: { id: user.id }, data: { credits: { increment: promo.value } } })
+      await tx.promotionCode.update({ where: { id: promo.id }, data: { usedCount: { increment: 1 } } })
+      await tx.promoRedemption.create({
+        data: { userId: user.id, promoCodeId: promo.id, rewardType: promo.type, rewardValue: promo.value },
       })
-    }
-    default: {
-      // Generic reward — credits
-      await prisma.$transaction([
-        prisma.user.update({ where: { id: user.id }, data: { credits: { increment: promo.value } } }),
-        prisma.promotionCode.update({ where: { id: promo.id }, data: { usedCount: { increment: 1 } } }),
-        prisma.promoRedemption.create({
-          data: { userId: user.id, promoCodeId: promo.id, rewardType: promo.type, rewardValue: promo.value },
-        }),
-        prisma.creditTransaction.create({
-          data: { userId: user.id, amount: promo.value, source: "promo_code", reference: rawCode },
-        }),
-      ])
-      return NextResponse.json({
-        success: true,
-        message: `Success! ${promo.value} credits have been added to your account.`,
-        creditsAwarded: promo.value,
+      await tx.creditTransaction.create({
+        data: { userId: user.id, amount: promo.value, source: "promo_code", reference: rawCode },
       })
-    }
+      awarded = true
+    })
+  } catch (txError) {
+    console.error('Promo redeem transaction error:', txError)
+    return NextResponse.json({ error: 'This code has reached its usage limit.' }, { status: 410 })
   }
+
+  if (!awarded) {
+    return NextResponse.json({ error: 'This code has reached its usage limit.' }, { status: 410 })
+  }
+
+  return NextResponse.json({
+    success: true,
+    message: `Success! ${promo.value} credits have been added to your account.`,
+    creditsAwarded: promo.value,
+  })
 }

@@ -49,16 +49,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid bag type" }, { status: 400 })
     }
 
-    // Check credits
-    const currentUser = await db.user.findUnique({ where: { id: user.id } })
     const totalCost = bagConfig.cost * qty
-    if (!currentUser || currentUser.credits < totalCost) {
-      return NextResponse.json({
-        error: "Not enough credits",
-        required: totalCost,
-        available: currentUser?.credits ?? 0,
-      }, { status: 402 })
-    }
 
     // Determine tazo inside (weighted random by rarity)
     const tazoWhere = {
@@ -114,48 +105,62 @@ export async function POST(request: NextRequest) {
       return p[0].id
     }
 
-    // Deduct credits (bulk)
-    await db.user.update({
-      where: { id: user.id },
-      data: { credits: { decrement: totalCost } },
-    })
-
-    // Create credit transaction
-    await db.creditTransaction.create({
-      data: {
-        userId: user.id,
-        amount: -totalCost,
-        source: "bag_purchase",
-        reference: `${bagType}${qty > 1 ? ` x${qty}` : ""}`,
-      },
-    })
-
-    // Create bag purchases (bulk)
+    // Atomic transaction: check credits + deduct + create purchases
     const purchaseIds: string[] = []
-    for (let i = 0; i < qty; i++) {
-      const selectedId = pickTazo(pool, totalWeight)
-      let bonusTazoId: string | null = null
-      if (Math.random() < normalizeBonusChance(bagConfig.bonusChance)) {
-        bonusTazoId = pickTazo(pool, totalWeight)
-      }
-      const purchase = await db.bagPurchase.create({
+    const updated = await db.$transaction(async (tx) => {
+      // Double-check credits inside transaction
+      const currentUser = await tx.user.findUnique({ where: { id: user.id } })
+      if (!currentUser || currentUser.credits < totalCost) return null
+
+      // Deduct credits
+      await tx.user.update({
+        where: { id: user.id },
+        data: { credits: { decrement: totalCost } },
+      })
+
+      // Create credit transaction
+      await tx.creditTransaction.create({
         data: {
           userId: user.id,
-          bagType,
-          cost: bagConfig.cost,
-          tazoId: selectedId,
-          bonusTazo: bonusTazoId,
-          opened: false,
+          amount: -totalCost,
+          source: "bag_purchase",
+          reference: `${bagType}${qty > 1 ? ` x${qty}` : ""}`,
         },
       })
-      purchaseIds.push(purchase.id)
-    }
 
-    // Get updated credits
-    const updated = await db.user.findUnique({
-      where: { id: user.id },
-      select: { credits: true },
+      // Create bag purchases (bulk)
+      for (let i = 0; i < qty; i++) {
+        const selectedId = pickTazo(pool, totalWeight)
+        let bonusTazoId: string | null = null
+        if (Math.random() < normalizeBonusChance(bagConfig.bonusChance)) {
+          bonusTazoId = pickTazo(pool, totalWeight)
+        }
+        const purchase = await tx.bagPurchase.create({
+          data: {
+            userId: user.id,
+            bagType,
+            cost: bagConfig.cost,
+            tazoId: selectedId,
+            bonusTazo: bonusTazoId,
+            opened: false,
+          },
+        })
+        purchaseIds.push(purchase.id)
+      }
+
+      // Get updated credits
+      return tx.user.findUnique({
+        where: { id: user.id },
+        select: { credits: true },
+      })
     })
+
+    if (!updated) {
+      return NextResponse.json({
+        error: "Not enough credits",
+        required: totalCost,
+      }, { status: 402 })
+    }
 
     return NextResponse.json({
       bagIds: purchaseIds,

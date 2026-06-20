@@ -49,32 +49,32 @@ export async function POST(req: NextRequest) {
           return NextResponse.json({ received: true, alreadyProcessed: true })
         }
 
-        await prisma.user.update({
-          where: { id: userId },
-          data: { credits: { increment: credits } },
-        })
-
-        await prisma.purchase.create({
-          data: {
-            userId,
-            packageId: `credit-${packageId}`,
-            amount: credits,
-            priceCents: session.amount_total || 0,
-            currency: (session.currency || "eur").toUpperCase(),
-            stripeSessionId: session.id,
-            stripePaymentId: session.payment_intent,
-            status: "completed",
-          },
-        })
-
-        await prisma.creditTransaction.create({
-          data: {
-            userId,
-            amount: credits,
-            source: "purchase",
-            reference: session.id,
-          },
-        })
+        await prisma.$transaction([
+          prisma.user.update({
+            where: { id: userId },
+            data: { credits: { increment: credits } },
+          }),
+          prisma.purchase.create({
+            data: {
+              userId,
+              packageId: `credit-${packageId}`,
+              amount: credits,
+              priceCents: session.amount_total || 0,
+              currency: (session.currency || "eur").toUpperCase(),
+              stripeSessionId: session.id,
+              stripePaymentId: session.payment_intent,
+              status: "completed",
+            },
+          }),
+          prisma.creditTransaction.create({
+            data: {
+              userId,
+              amount: credits,
+              source: "purchase",
+              reference: session.id,
+            },
+          }),
+        ])
 
         console.log(`[stripe-webhook] ✅ +${credits} credits to user ${userId}`)
         break
@@ -99,22 +99,24 @@ export async function POST(req: NextRequest) {
             where: { stripePaymentId: charge.payment_intent as string },
           })
           if (purchase && purchase.status !== "refunded") {
-            await prisma.user.update({
-              where: { id: purchase.userId },
-              data: { credits: { decrement: purchase.amount } },
-            })
-            await prisma.purchase.update({
-              where: { id: purchase.id },
-              data: { status: "refunded", refundedAt: new Date() },
-            })
-            await prisma.creditTransaction.create({
-              data: {
-                userId: purchase.userId,
-                amount: -purchase.amount,
-                source: "refund",
-                reference: charge.id as string,
-              },
-            })
+            await prisma.$transaction([
+              prisma.user.update({
+                where: { id: purchase.userId },
+                data: { credits: { decrement: purchase.amount } },
+              }),
+              prisma.purchase.update({
+                where: { id: purchase.id },
+                data: { status: "refunded", refundedAt: new Date() },
+              }),
+              prisma.creditTransaction.create({
+                data: {
+                  userId: purchase.userId,
+                  amount: -purchase.amount,
+                  source: "refund",
+                  reference: charge.id as string,
+                },
+              }),
+            ])
             console.log(`[stripe-webhook] 🔙 Refunded ${purchase.amount} credits`)
           }
         }

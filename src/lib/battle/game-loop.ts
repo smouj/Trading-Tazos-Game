@@ -788,14 +788,12 @@ export function scoreBettingImpact(
   }
 
   // Bad landing: launcher stays but no effect
-  // Double flip: capture both
+  // Double flip: bonus point for flipping both
   if (impact.doubleFlip) {
     if (thrower === "player") {
       playerDelta += 1  // Bonus for flipping both
-      opponentLostTazos += 1
     } else {
       opponentDelta += 1
-      playerLostTazos += 1
     }
   }
 

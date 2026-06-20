@@ -35,30 +35,39 @@ export async function POST(
     if (!ut) return NextResponse.json({ error: 'Listed tazo no longer exists' }, { status: 410 })
     const seller = await db.user.findUnique({ where: { id: listing.sellerId } })
 
-    // Transfer credits
-    await db.user.update({ where: { id: authUser.id }, data: { credits: { decrement: listing.price } } })
-    await db.user.update({ where: { id: listing.sellerId }, data: { credits: { increment: listing.price } } })
+    // Atomic transaction: transfer credits, tazo ownership, mark sold, logs
+    await db.$transaction(async (tx) => {
+      // Re-check listing status inside transaction (prevents race condition)
+      const freshListing = await tx.tradeListing.findUnique({ where: { id } })
+      if (!freshListing || freshListing.status !== 'active') {
+        throw new Error('Listing no longer available')
+      }
 
-    // Transfer tazo ownership
-    const existing = await db.userTazo.findUnique({
-      where: { userId_tazoId: { userId: authUser.id, tazoId: ut.tazoId } },
-    })
-    if (existing) {
-      await db.userTazo.update({ where: { id: existing.id }, data: { quantity: { increment: 1 } } })
-    } else {
-      await db.userTazo.create({
-        data: { userId: authUser.id, tazoId: ut.tazoId, quantity: 1, obtainedFrom: 'marketplace' },
+      // Transfer credits
+      await tx.user.update({ where: { id: authUser.id }, data: { credits: { decrement: listing.price } } })
+      await tx.user.update({ where: { id: listing.sellerId }, data: { credits: { increment: listing.price } } })
+
+      // Transfer tazo ownership
+      const existing = await tx.userTazo.findUnique({
+        where: { userId_tazoId: { userId: authUser.id, tazoId: ut.tazoId } },
       })
-    }
+      if (existing) {
+        await tx.userTazo.update({ where: { id: existing.id }, data: { quantity: { increment: 1 } } })
+      } else {
+        await tx.userTazo.create({
+          data: { userId: authUser.id, tazoId: ut.tazoId, quantity: 1, obtainedFrom: 'marketplace' },
+        })
+      }
 
-    // Mark sold
-    await db.tradeListing.update({
-      where: { id }, data: { status: 'sold', buyerId: authUser.id, soldAt: new Date() },
+      // Mark sold
+      await tx.tradeListing.update({
+        where: { id }, data: { status: 'sold', buyerId: authUser.id, soldAt: new Date() },
+      })
+
+      // Transaction logs
+      await tx.creditTransaction.create({ data: { userId: authUser.id, amount: -listing.price, source: 'marketplace_buy', reference: id } })
+      await tx.creditTransaction.create({ data: { userId: listing.sellerId, amount: listing.price, source: 'marketplace_sell', reference: id } })
     })
-
-    // Transaction logs
-    await db.creditTransaction.create({ data: { userId: authUser.id, amount: -listing.price, source: 'marketplace_buy', reference: id } })
-    await db.creditTransaction.create({ data: { userId: listing.sellerId, amount: listing.price, source: 'marketplace_sell', reference: id } })
 
     const tazoName = ut.tazo.displayName || ut.tazo.name || ut.tazo.slug
     sendTransactionalEmailSoon({
@@ -105,8 +114,10 @@ export async function DELETE(
     if (!listing || listing.status !== 'active') return NextResponse.json({ error: 'Not found' }, { status: 404 })
     if (listing.sellerId !== authUser.id) return NextResponse.json({ error: 'Not your listing' }, { status: 403 })
 
-    await db.tradeListing.update({ where: { id }, data: { status: 'cancelled' } })
-    await db.userTazo.update({ where: { id: listing.userTazoId }, data: { quantity: { increment: 1 } } })
+    await db.$transaction([
+      db.tradeListing.update({ where: { id }, data: { status: 'cancelled' } }),
+      db.userTazo.update({ where: { id: listing.userTazoId }, data: { quantity: { increment: 1 } } }),
+    ])
 
     return NextResponse.json({ message: 'Listing cancelled, tazo returned' })
   } catch (error) {

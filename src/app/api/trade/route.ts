@@ -145,11 +145,12 @@ export async function POST(request: NextRequest) {
     })
     if (existing) return NextResponse.json({ error: 'Already listed' }, { status: 409 })
 
-    const listing = await db.tradeListing.create({
-      data: { sellerId: authUser.id, userTazoId, price, status: 'active' },
-    })
-
-    await db.userTazo.update({ where: { id: userTazoId }, data: { quantity: { decrement: 1 } } })
+    const [listing] = await db.$transaction([
+      db.tradeListing.create({
+        data: { sellerId: authUser.id, userTazoId, price, status: 'active' },
+      }),
+      db.userTazo.update({ where: { id: userTazoId }, data: { quantity: { decrement: 1 } } }),
+    ])
 
     return NextResponse.json({ listing, message: 'Tazo listed for sale!' }, { status: 201 })
   } catch (error) {

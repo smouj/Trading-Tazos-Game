@@ -262,30 +262,42 @@ wss.on("connection", (ws, req) => {
         // Validate slam parameters before relay
         const validation = validateSlam(msg.payload || {})
         if (validation.warnings.length > 0) {
-          log(`⚠️ Suspicious slam from ${player.name}: ${validation.warnings.join(", ")}`)
+          log(`⚠️ Rejected suspicious slam from ${player.name}: ${validation.warnings.join(", ")}`)
+          broadcast(ws, { type: "turn_error", payload: { message: "Invalid turn data", warnings: validation.warnings } })
+          break
         }
         // Find player's room and relay to opponent
+        let foundRoom = false
         for (const [id, room] of rooms) {
           const idx = room.players.indexOf(player)
           if (idx >= 0) {
             room.gameState = "playing"
             const opponent = room.players[1 - idx]
             broadcast(opponent.ws, { type: "turn_received", payload: msg.payload })
+            foundRoom = true
             break
           }
+        }
+        if (!foundRoom) {
+          broadcast(ws, { type: "turn_error", payload: { message: "Not in a game" } })
         }
         break
       }
 
       case "turn_result": {
         // Relay turn result to opponent
+        let foundRoom = false
         for (const [, room] of rooms) {
           const idx = room.players.indexOf(player)
           if (idx >= 0) {
             const opponent = room.players[1 - idx]
             broadcast(opponent.ws, { type: "turn_result", payload: msg.payload })
+            foundRoom = true
             break
           }
+        }
+        if (!foundRoom) {
+          broadcast(ws, { type: "turn_error", payload: { message: "Not in a game" } })
         }
         break
       }

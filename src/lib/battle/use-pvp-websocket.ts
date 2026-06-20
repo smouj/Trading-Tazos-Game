@@ -17,13 +17,14 @@ export interface WsRoomWaiting { type: "room_waiting"; payload: { roomId: string
 export interface WsRoomError { type: "room_error"; payload: { message: string } }
 export interface WsTurnReceived { type: "turn_received"; payload: TurnAction }
 export interface WsTurnResult { type: "turn_result"; payload: TurnResultPayload }
+export interface WsTurnError { type: "turn_error"; payload: { message: string; warnings?: string[] } }
 export interface WsGameOver { type: "game_over"; payload: any }
 export interface WsOpponentDisconnected { type: "opponent_disconnected"; payload: { message: string } }
 
 export type WsIncoming =
   | WsConnected | WsQueueStatus | WsQueueLeft | WsMatchFound
   | WsRoomWaiting | WsRoomError | WsTurnReceived | WsTurnResult
-  | WsGameOver | WsOpponentDisconnected
+  | WsTurnError | WsGameOver | WsOpponentDisconnected
 
 export interface TurnAction {
   phase: string
@@ -152,6 +153,9 @@ export function usePvPWebSocket(token: string | null): PvPWebSocket {
               break
             case "turn_result":
               next.lastOpponentResult = msg.payload
+              break
+            case "turn_error":
+              next.error = msg.payload.message
               break
             case "game_over":
               next.status = "finished"

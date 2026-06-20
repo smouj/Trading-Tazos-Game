@@ -36,8 +36,12 @@ function listTextures(): { name: string; url: string; franchise: string; size: n
   return results
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const user = await getAuthUser(request)
+    if (user?.email !== "dev@tradingtazosgame.com") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+    }
     const textures = listTextures()
     return NextResponse.json({ textures })
   } catch {

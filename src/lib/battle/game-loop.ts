@@ -196,7 +196,9 @@ export type GameState =
   | "capture_check"        // Show capture/ring-out result overlay
   | "score_update"         // Update scores + pop animation
   | "turn_end"             // Switch thrower or advance round
+  | "rewards"              // Post-match rewards screen
   | "match_end"            // Final results
+  | "mode_select"          // Choose game mode
   | "paused"
 
 // ────────────────────────────────────────

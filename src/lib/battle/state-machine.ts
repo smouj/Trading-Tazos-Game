@@ -50,6 +50,8 @@ export type BattleEvent =
   | { type: "SCORE_UPDATED" }
   | { type: "TURN_OVER" }
   | { type: "MATCH_COMPLETE"; winner: "player" | "opponent" }
+  | { type: "SELECT_MODE"; mode: PlayMode; deckId?: string }
+  | { type: "REWARDS_SHOWN" }
   | { type: "PAUSE" }
   | { type: "RESUME" }
   | { type: "FORFEIT"; who: "player" | "opponent" }
@@ -339,7 +341,7 @@ export const BATTLE_TRANSITIONS: StateTransition[] = [
 
   // ─── SCORE_UPDATE → MATCH_END / TURN_END ──
   {
-    from: "score_update", to: "match_end",
+    from: "score_update", to: "rewards",
     event: "SCORE_UPDATED",
     guard(ctx) {
       return checkMatchEnd(

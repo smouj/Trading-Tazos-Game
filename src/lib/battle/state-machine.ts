@@ -162,12 +162,13 @@ export const BATTLE_TRANSITIONS: StateTransition[] = [
     event: "INTRO_DONE",
     action(ctx) {
       // Draw 5 starting hand for both players
+      const r = () => Math.random() // RNG can be injected via ctx.rng in future
       const { hand: pHand, remaining: pRem } = (() => {
-        const shuffled = [...ctx.player.deck].sort(() => Math.random() - 0.5)
+        const shuffled = [...ctx.player.deck].sort(() => r() - 0.5)
         return { hand: shuffled.slice(0, 5), remaining: shuffled.slice(5) }
       })()
       const { hand: oHand, remaining: oRem } = (() => {
-        const shuffled = [...ctx.opponent.deck].sort(() => Math.random() - 0.5)
+        const shuffled = [...ctx.opponent.deck].sort(() => r() - 0.5)
         return { hand: shuffled.slice(0, 5), remaining: shuffled.slice(5) }
       })()
       return {
@@ -374,7 +375,7 @@ export const BATTLE_TRANSITIONS: StateTransition[] = [
         roundHistory: [
           ...ctx.roundHistory,
           { roundNumber: ctx.currentRound, throwerId: ctx.currentThrower || "player",
-            throwerWonCoinFlip: true, impact: ctx.lastImpact!,
+            impact: ctx.lastImpact!,
             playerScore: ctx.player.score, opponentScore: ctx.opponent.score,
             playerTazosLeft: ctx.playerRemaining, opponentTazosLeft: ctx.opponentRemaining }
         ]
@@ -428,7 +429,7 @@ export const BATTLE_TRANSITIONS: StateTransition[] = [
         roundHistory: [
           ...ctx.roundHistory,
           { roundNumber: ctx.currentRound, throwerId: ctx.currentThrower || "player",
-            throwerWonCoinFlip: true, impact: ctx.lastImpact!,
+            impact: ctx.lastImpact!,
             playerScore: ctx.player.score, opponentScore: ctx.opponent.score,
             playerTazosLeft: ctx.playerRemaining, opponentTazosLeft: ctx.opponentRemaining }
         ]
@@ -520,7 +521,8 @@ export function autoSelectOpponentBet(ctx: BattleContext): TazoCard | null {
     sorted.sort((a, b) => (b.attack + b.defense) - (a.attack + a.defense))
     return sorted[0]
   }
-  return ctx.opponentHand[Math.floor(Math.random() * ctx.opponentHand.length)]
+  const r = Math.random()
+  return ctx.opponentHand[Math.floor(r * ctx.opponentHand.length)]
 }
 
 export function applyScoring(

@@ -10,6 +10,8 @@
 "use client"
 
 import { useState, useCallback, useRef, useEffect } from "react"
+import { ReplayRecorder } from "./replay"
+import { createRNG } from "./rng"
 import type { TazoCard, MatchConfig, SlamParams, ImpactResult } from "./game-loop"
 import {
   DEFAULT_ARENA_3D, createAirborneTazo, simulateSlam,
@@ -94,6 +96,10 @@ export interface BattleEngine {
   // Persistence + Reset
   saveBattle: (token: string) => Promise<BattlePersistenceResult | null>
   resetToLobby: () => void
+  // Replay
+  startReplayRecording: (seed?: number) => void
+  stopReplayRecording: () => string | null
+  recorderRef: React.MutableRefObject<import("./replay").ReplayRecorder | null>
 }
 
 const initialUI: Omit<BattleUIState, "ctx"> = {
@@ -245,10 +251,30 @@ export function useBattleEngine(): BattleEngine {
     setUIState({ ...initialUI })
   }, [])
 
+  // ── Replay recording ──
+  const recorderRef = useRef<ReplayRecorder | null>(null)
+  const startReplayRecording = useCallback((seed?: number) => {
+    const s = seed ?? Math.floor(Math.random() * 0x7fffffff)
+    recorderRef.current = new ReplayRecorder(s)
+    recorderRef.current.start()
+  }, [])
+  const stopReplayRecording = useCallback((): string | null => {
+    if (!recorderRef.current) return null
+    const data = recorderRef.current.export()
+    recorderRef.current = null
+    return JSON.stringify(data)
+  }, [])
+
+  const sendWithRecord = useCallback((event: BattleEvent, payload?: Record<string, unknown>) => {
+    const ok = send(event)
+    if (ok) recorderRef.current?.record(event, payload)
+    return ok
+  }, [send])
+
   return {
     ctx: ctx ? { ...ctx } : null,
     ui: { ctx: ctx ? { ...ctx } : null, ...uiState },
-    send,
+    send: sendWithRecord,
     startMatch, webglReady, webglFailed, resourcesLoaded, introDone,
     initialHandsDrawn,
     stakePlayer, aiBet, revealStakes, roundStarted, turnStarted, cardDrawn,
@@ -259,5 +285,7 @@ export function useBattleEngine(): BattleEngine {
     setSlamPhase, setImpactMsg, setShowImpact, setBusy,
     aiChooseBet, aiChooseLauncher, aiTiming, aiSimulateSlam,
     saveBattle, resetToLobby,
+    startReplayRecording, stopReplayRecording,
+    recorderRef,
   }
 }

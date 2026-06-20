@@ -1,18 +1,20 @@
+import { createRNG, type RNG } from "./rng"
 // ============================================================
 import { getWearStatPenalty } from "./wear-system"
-// Trading Tazos Game — Battle Game Loop v4
-// Betting Slam — high-stakes elimination mechanic.
+// Trading Tazos Game — Battle Game Loop v5
+// Betting Slam — high-stakes elimination + TKO mechanic.
 //
-// CORRECT MECHANIC (tazo betting):
-//   1. Each player draws 5 random tazos from their deck of 20.
-//   2. Both stake 1 tazo face-down at center as a BET.
-//   3. Coin flip determines who slams first.
-//   4. Slammer picks a launcher tazo from their hand.
-//   5. Launcher falls from above, tries to flip opponent's staked tazo.
-//   6. FLIP → capture rival's tazo (+1 to score), keep yours.
-//   7. MISS → your thrown tazo becomes staked (lost from hand).
-//   8. When a player's hand runs out, draw 5 more from deck.
-//   9. Win when opponent has NO tazos remaining (elimination).
+// OFFICIAL RULES (see rules.ts):
+//   1. Each player builds a 20-tazo deck.
+//   2. Each draws 5 tazos as starting hand.
+//   3. Both stake 1 tazo face-down at arena center as a BET.
+//   4. Player always slams first (alternating turns).
+//   5. Slammer picks a launcher tazo from their hand.
+//   6. Launcher falls from above, tries to flip opponent's staked tazo.
+//   7. FLIP → capture rival's tazo (+1 to score).
+//   8. MISS → opponent's tazo stays (safe in ring).
+//   9. Draw 1 card from deck per turn.
+//  10. First to 5 captured tazos wins (TKO).
 // ============================================================
 
 // ────────────────────────────────────────
@@ -296,7 +298,7 @@ export interface ImpactResult {
 export interface RoundResult {
   roundNumber: number
   throwerId: "player" | "opponent"
-  throwerWonCoinFlip: boolean
+  throwerWonCoinFlip?: boolean
   impact: ImpactResult
   playerScore: number
   opponentScore: number
@@ -324,6 +326,7 @@ export interface MatchConfig {
   aiDifficulty: AIDifficulty
   arena: Arena3DConfig
   scoreToWin: number     // Default 5
+  rngSeed?: number        // Optional: seed for deterministic replay
   playerDeck: TazoCard[]
   opponentDeck: TazoCard[]
 }
@@ -333,6 +336,7 @@ export interface MatchConfig {
 // ────────────────────────────────────────
 
 export function createMatch(config: MatchConfig) {
+  const rng = config.rngSeed !== undefined ? createRNG(config.rngSeed) : createRNG()
   const playerDeck = config.playerDeck
   const opponentDeck = config.opponentDeck
 
@@ -952,19 +956,18 @@ export function coinFlip(): "player" | "opponent" {
 export function drawOne(
   deck: TazoCard[],
   currentHand: TazoCard[],
-  remainingCount: number
+  remainingCount: number,
+  rng?: RNG
 ): { hand: TazoCard[]; remaining: number; drawn: TazoCard | null } {
   // Rebuild deck pool from remaining + hand (tracked separately)
   if (remainingCount <= 0) {
     // No cards left in deck — can't draw
     return { hand: currentHand, remaining: 0, drawn: null }
   }
-  // The "deck" param is the full original deck — we use remainingCount
-  // to know where we are. In practice, deck cards are contiguous.
-  // Build the actual remaining pile: start from the end backwards
   const fullDeck = [...deck]
-  // Shuffle the full deck to simulate random order
-  fullDeck.sort(() => Math.random() - 0.5)
+  // Shuffle using RNG if provided, else Math.random
+  const rand = rng ? rng.random : () => Math.random()
+  fullDeck.sort(() => rand() - 0.5)
   // Take the top card (from the remaining portion)
   const drawn = fullDeck[0]
   const newRemaining = remainingCount - 1

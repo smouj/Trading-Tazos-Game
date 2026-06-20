@@ -78,19 +78,20 @@ const PAGE_LABELS: Record<PageId, string> = {
 function MagazineSplash({ onFinish }: { onFinish: () => void }) {
   const [phase, setPhase] = useState<"cover" | "flip" | "done">("cover")
   const [progress, setProgress] = useState(0)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase("flip"), 1200)
     const t2 = setTimeout(() => {
-      const i = setInterval(() => {
+      intervalRef.current = setInterval(() => {
         setProgress(p => {
-          if (p >= 100) { clearInterval(i); return 100 }
+          if (p >= 100) { if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null } return 100 }
           return Math.min(100, p + Math.random() * 18 + 8)
         })
       }, 80)
     }, 1300)
     const t3 = setTimeout(() => onFinish(), 3400)
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null } }
   }, [onFinish])
 
   const [showSkip, setShowSkip] = useState(false)

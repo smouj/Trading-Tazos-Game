@@ -15,7 +15,7 @@
 [![Status](https://img.shields.io/badge/status-Live-brightgreen)](https://tradingtazosgame.com)
 [![PWA](https://img.shields.io/badge/PWA-Ready-5A0FC8?logo=pwa)](https://tradingtazosgame.com/manifest.json)
 [![i18n](https://img.shields.io/badge/i18n-10_languages-8B5CF6)](./src/lib/i18n/locales/)
-[![Version](https://img.shields.io/badge/version-v0.10.1-FFCC00)](#changelog)
+[![Version](https://img.shields.io/badge/version-v0.11.0-FFCC00)](#changelog)
 [![Design](https://img.shields.io/badge/design-Magazine_Game-FFCC00)]()
 
 </br>
@@ -333,9 +333,9 @@ Native desktop installers available on the [Releases page](https://github.com/sm
 
 | Platform | Format | Version |
 |----------|--------|---------|
-| Linux | AppImage · .deb | v0.10.1 |
-| Windows | .exe (NSIS) | v0.10.1 |
-| macOS | .dmg · .zip | v0.10.1 |
+| Linux | AppImage · .deb | v0.11.0 |
+| Windows | .exe (NSIS) | v0.11.0 |
+| macOS | .dmg · .zip | v0.11.0 |
 
 ---
 
@@ -402,7 +402,17 @@ tradingtazosgame.com
 
 ## 🏷️ Changelog
 
-### v0.10.1 — Bag UX Polish + Data Accuracy + i18n (Jun 2026)
+### v0.11.0 — Multi-Arena + AI Strategy + Staked Pipeline Fix + Monorepo (Jun 2026)
+- **3 new arenas**: Lava Pit, Crystal Cave, Zero-G Chamber with distinct physics
+- **4 AI strategy profiles**: aggressive, balanced, defensive, chaotic
+- **Critical staked pipeline fix**: staked tazos now update after every slam
+- **packages/game-core**: Pure game rules engine — zero React/Next deps
+- **packages/game-physics**: Extracted physics engine with collision/flip simulation
+- **State machine v6**: mode_select + rewards states
+- **69 tests** (3 test files, 0 TS errors)
+- **Copy fix**: "Choose 5 tazos" → "Choose 20 tazos"
+- **CLI synced**: trading-tazos-game-cli now shares canonical constants
+
 - **Bag opening fixes**: Overflow hidden → scrollable reveal stats, 0.35s tazo animation (was 0.7s), NaN safety on all stats
 - **Canvas fixes**: 13 CSS var → hex for Canvas 2D API (addColorStop/strokeStyle runtime errors)
 - **Data accuracy**: 150→139 honest counts across 4 files (SEO, metadata, launcher, site-config)

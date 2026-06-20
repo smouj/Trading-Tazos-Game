@@ -164,6 +164,7 @@ export async function POST(request: NextRequest) {
           console.error(`[bags/open] Bulk open failed for bag ${id}:`, e instanceof Error ? e.message : String(e))
         }
       }
+      await refreshUserProgress(user.id)
       return NextResponse.json({ success: true, results, totalOpened: results.length })
     }
 

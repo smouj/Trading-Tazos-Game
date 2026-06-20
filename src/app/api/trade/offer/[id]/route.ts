@@ -33,37 +33,62 @@ export async function POST(
         throw new Error('Offer no longer available')
       }
 
-      // Verify acceptor still has the requested tazo (inside transaction)
-      const requestedId = freshOffer.requestedTazoId
-      const [acceptorUT] = await tx.$queryRawUnsafe<Array<{ id: string }>>(
-        `SELECT ut.id FROM UserTazo ut WHERE ut.userId = ? AND ut.tazoId = ? LIMIT 1`,
-        authUser.id, requestedId
-      )
+      // ── Verify both parties still own their tazos (typed queries) ──
+      const [offeredUT, acceptorUT] = await Promise.all([
+        tx.userTazo.findUnique({ where: { id: freshOffer.offeredUserTazoId } }),
+        tx.userTazo.findUnique({
+          where: { userId_tazoId: { userId: authUser.id, tazoId: freshOffer.requestedTazoId } },
+        }),
+      ])
+
+      if (!offeredUT || offeredUT.userId !== freshOffer.offererId) {
+        throw new Error('OFFERER_NO_LONGER_OWNS')
+      }
       if (!acceptorUT) {
         throw new Error('NOT_HAVE_REQUESTED')
       }
 
-      // Swap: transfer offered tazo to acceptor, ensuring offerer still owns it
-      const offererRowsAffected = await tx.$executeRawUnsafe(
-        `UPDATE UserTazo SET userId = ? WHERE id = ? AND userId = ?`,
-        authUser.id, freshOffer.offeredUserTazoId, freshOffer.offererId
-      )
-      if (offererRowsAffected !== 1) {
-        throw new Error('OFFERER_NO_LONGER_OWNS')
+      const offeredTazoId = offeredUT.tazoId
+      const acceptorTazoId = acceptorUT.tazoId
+
+      // ── Transfer offered tazo to acceptor (merge if acceptor already owns) ──
+      const acceptorExisting = await tx.userTazo.findUnique({
+        where: { userId_tazoId: { userId: authUser.id, tazoId: offeredTazoId } },
+      })
+
+      if (acceptorExisting) {
+        // Acceptor already has copies — merge: increment quantity, delete source
+        await tx.userTazo.update({
+          where: { id: acceptorExisting.id },
+          data: { quantity: { increment: offeredUT.quantity } },
+        })
+        await tx.userTazo.delete({ where: { id: offeredUT.id } })
+      } else {
+        // Transfer ownership by updating userId
+        await tx.userTazo.update({
+          where: { id: offeredUT.id },
+          data: { userId: authUser.id },
+        })
       }
 
-      // Transfer acceptor's tazo to offerer, ensuring acceptor still owns it
-      const acceptorRowsAffected = await tx.$executeRawUnsafe(
-        `UPDATE UserTazo SET userId = ? WHERE id = ? AND userId = ?`,
-        freshOffer.offererId, acceptorUT.id, authUser.id
-      )
-      if (acceptorRowsAffected !== 1) {
-        // Rollback first transfer by reversing it
-        await tx.$executeRawUnsafe(
-          `UPDATE UserTazo SET userId = ? WHERE id = ? AND userId = ?`,
-          freshOffer.offererId, freshOffer.offeredUserTazoId, authUser.id
-        )
-        throw new Error('ACCEPTOR_NO_LONGER_OWNS')
+      // ── Transfer acceptor's tazo to offerer (merge if offerer already owns) ──
+      const offererExisting = await tx.userTazo.findUnique({
+        where: { userId_tazoId: { userId: freshOffer.offererId, tazoId: acceptorTazoId } },
+      })
+
+      if (offererExisting) {
+        // Offerer already has copies — merge: increment quantity, delete source
+        await tx.userTazo.update({
+          where: { id: offererExisting.id },
+          data: { quantity: { increment: acceptorUT.quantity } },
+        })
+        await tx.userTazo.delete({ where: { id: acceptorUT.id } })
+      } else {
+        // Transfer ownership by updating userId
+        await tx.userTazo.update({
+          where: { id: acceptorUT.id },
+          data: { userId: freshOffer.offererId },
+        })
       }
 
       // Mark offer as accepted
@@ -129,16 +154,21 @@ export async function DELETE(
 
     const { id } = await params
 
-    const offer = await db.tradeOffer.findUnique({ where: { id } })
-    if (!offer) return NextResponse.json({ error: 'Offer not found' }, { status: 404 })
-    if (offer.status !== 'pending') return NextResponse.json({ error: 'Offer is no longer available' }, { status: 400 })
+    // Atomic transaction: re-check status to prevent race with accept
+    let newStatus = ''
+    await db.$transaction(async (tx) => {
+      const fresh = await tx.tradeOffer.findUnique({ where: { id } })
+      if (!fresh || fresh.status !== 'pending') {
+        throw new Error('Offer no longer available')
+      }
 
-    // Only the offerer can cancel; anyone else can decline
-    const newStatus = offer.offererId === authUser.id ? 'cancelled' : 'declined'
+      // Only the offerer can cancel; anyone else can decline
+      newStatus = fresh.offererId === authUser.id ? 'cancelled' : 'declined'
 
-    await db.tradeOffer.update({
-      where: { id },
-      data: { status: newStatus, resolvedAt: new Date() },
+      await tx.tradeOffer.update({
+        where: { id },
+        data: { status: newStatus, resolvedAt: new Date() },
+      })
     })
 
     return NextResponse.json({ success: true, message: `Offer ${newStatus}` })

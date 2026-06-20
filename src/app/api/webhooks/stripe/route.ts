@@ -41,20 +41,24 @@ export async function POST(req: NextRequest) {
           return NextResponse.json({ error: "Invalid metadata" }, { status: 400 })
         }
 
-        const existing = await prisma.purchase.findFirst({
-          where: { stripeSessionId: session.id },
-        })
-        if (existing) {
-          console.log(`[stripe-webhook] Session ${session.id} already processed`)
-          return NextResponse.json({ received: true, alreadyProcessed: true })
-        }
+        // Idempotency check INSIDE transaction to prevent concurrent double-spend.
+        // Stripe may deliver the same event multiple times simultaneously;
+        // checking outside the transaction creates a race condition.
+        let alreadyProcessed = false
+        await prisma.$transaction(async (tx) => {
+          const existing = await tx.purchase.findFirst({
+            where: { stripeSessionId: session.id },
+          })
+          if (existing) {
+            alreadyProcessed = true
+            return
+          }
 
-        await prisma.$transaction([
-          prisma.user.update({
+          await tx.user.update({
             where: { id: userId },
             data: { credits: { increment: credits } },
-          }),
-          prisma.purchase.create({
+          })
+          await tx.purchase.create({
             data: {
               userId,
               packageId: `credit-${packageId}`,
@@ -65,16 +69,21 @@ export async function POST(req: NextRequest) {
               stripePaymentId: session.payment_intent,
               status: "completed",
             },
-          }),
-          prisma.creditTransaction.create({
+          })
+          await tx.creditTransaction.create({
             data: {
               userId,
               amount: credits,
               source: "purchase",
               reference: session.id,
             },
-          }),
-        ])
+          })
+        })
+
+        if (alreadyProcessed) {
+          console.log(`[stripe-webhook] Session ${session.id} already processed`)
+          return NextResponse.json({ received: true, alreadyProcessed: true })
+        }
 
         console.log(`[stripe-webhook] ✅ +${credits} credits to user ${userId}`)
         break
@@ -95,30 +104,31 @@ export async function POST(req: NextRequest) {
       case "charge.refunded": {
         const charge = event.data.object
         if (charge.payment_intent) {
-          const purchase = await prisma.purchase.findFirst({
-            where: { stripePaymentId: charge.payment_intent as string },
-          })
-          if (purchase && purchase.status !== "refunded") {
-            await prisma.$transaction([
-              prisma.user.update({
-                where: { id: purchase.userId },
-                data: { credits: { decrement: purchase.amount } },
-              }),
-              prisma.purchase.update({
-                where: { id: purchase.id },
-                data: { status: "refunded", refundedAt: new Date() },
-              }),
-              prisma.creditTransaction.create({
-                data: {
-                  userId: purchase.userId,
-                  amount: -purchase.amount,
-                  source: "refund",
-                  reference: charge.id as string,
-                },
-              }),
-            ])
+          // Move idempotency check inside transaction to prevent double-refund
+          await prisma.$transaction(async (tx) => {
+            const purchase = await tx.purchase.findFirst({
+              where: { stripePaymentId: charge.payment_intent as string },
+            })
+            if (!purchase || purchase.status === "refunded") return
+
+            await tx.user.update({
+              where: { id: purchase.userId },
+              data: { credits: { decrement: purchase.amount } },
+            })
+            await tx.purchase.update({
+              where: { id: purchase.id },
+              data: { status: "refunded", refundedAt: new Date() },
+            })
+            await tx.creditTransaction.create({
+              data: {
+                userId: purchase.userId,
+                amount: -purchase.amount,
+                source: "refund",
+                reference: charge.id as string,
+              },
+            })
             console.log(`[stripe-webhook] 🔙 Refunded ${purchase.amount} credits`)
-          }
+          })
         }
         break
       }

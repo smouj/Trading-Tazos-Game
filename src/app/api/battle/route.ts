@@ -514,11 +514,12 @@ export async function POST(request: NextRequest) {
             } catch { /* wear tracking non-critical */ }
           }
 
-          // ── Trigger quest progression ──
-          await refreshUserProgress(authUser.id)
           const u = await tx.user.findUnique({ where: { id: authUser.id }, select: { credits: true } })
           return { creditsEarned, credits: u?.credits ?? null }
         })
+
+        // Trigger quest progression AFTER transaction commit (so it sees the new data)
+        await refreshUserProgress(authUser.id)
 
         return NextResponse.json({
           winner, victoryType: 'physics_arena', rounds: physicsResult.totalTurns,
@@ -723,6 +724,8 @@ export async function POST(request: NextRequest) {
             ...(winner === 'player' ? { totalWins: { increment: 1 } } : winner === 'opponent' ? { totalLosses: { increment: 1 } } : {}),
           },
         })
+
+        // Trigger quest progression AFTER transaction commit (so it sees the new data)
         await refreshUserProgress(authUser.id)
       }
 

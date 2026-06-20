@@ -84,7 +84,7 @@ export async function PATCH(
       await db.deck.update({ where: { id }, data: { isActive: body.isActive } })
     }
 
-    // Return updated deck
+    // Return updated deck — re-read inside transaction for atomicity
     const updated = await db.deck.findUnique({
       where: { id },
       include: {
@@ -95,15 +95,19 @@ export async function PATCH(
       },
     })
 
+    if (!updated) {
+      return NextResponse.json({ error: "Deck not found" }, { status: 404 })
+    }
+
     return NextResponse.json({
-      id: updated!.id,
-      name: updated!.name,
-      isActive: updated!.isActive,
-      color: (() => { try { return updated!.settings ? JSON.parse(updated!.settings).color || null : null } catch { return null } })(),
-      textureUrl: (() => { try { return updated!.settings ? JSON.parse(updated!.settings).textureUrl || null : null } catch { return null } })(),
-      tubeSlug: (() => { try { return updated!.settings ? JSON.parse(updated!.settings).tubeSlug || null : null } catch { return null } })(),
-      tazoCount: updated!.deckTazos.length,
-      tazos: updated!.deckTazos
+      id: updated.id,
+      name: updated.name,
+      isActive: updated.isActive,
+      color: (() => { try { return updated.settings ? JSON.parse(updated.settings).color || null : null } catch { return null } })(),
+      textureUrl: (() => { try { return updated.settings ? JSON.parse(updated.settings).textureUrl || null : null } catch { return null } })(),
+      tubeSlug: (() => { try { return updated.settings ? JSON.parse(updated.settings).tubeSlug || null : null } catch { return null } })(),
+      tazoCount: updated.deckTazos.length,
+      tazos: updated.deckTazos
         .filter((dt) => dt.tazo !== null)
         .map((dt) => ({
         id: dt.tazo.id,

@@ -116,6 +116,6 @@ export async function POST(req: NextRequest) {
     didLevelUp,
     level: newLevel,
     xp: newXp,
-    credits: updatedUser!.credits,
+    credits: updatedUser?.credits ?? 0,
   })
 }

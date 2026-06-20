@@ -1240,8 +1240,8 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
       if (scoring.playerDelta > 0) { spawnPopup(`+${scoring.playerDelta}`, "var(--ttg-player)", "left"); playSfx("score_pop", 0.3) }
       if (scoring.opponentDelta > 0) { spawnPopup(`+${scoring.opponentDelta}`, "var(--ttg-opponent)", "right"); playSfx("score_pop", 0.3) }
 
-      const newPS = engine.ctx!.player.score + scoring.playerDelta
-      const newOS = engine.ctx!.opponent.score + scoring.opponentDelta
+      const newPS = (engine.ctx?.player?.score ?? 0) + scoring.playerDelta
+      const newOS = (engine.ctx?.opponent?.score ?? 0) + scoring.opponentDelta
       const end = checkMatchEnd(newPS, newOS,
         Math.max(0, (engine.ctx?.playerRemaining ?? 0) - scoring.playerLostTazos),
         Math.max(0, (engine.ctx?.opponentRemaining ?? 0) - scoring.opponentLostTazos),

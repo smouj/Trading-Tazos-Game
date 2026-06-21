@@ -30,25 +30,23 @@ export async function POST(req: NextRequest) {
   if (!isStripeConfigured()) {
     // ── Dev mode: grant credits directly (atomic) ──
     // Rate limit: 1 purchase per 10 seconds in dev mode
-    const recentPurchase = await prisma.purchase.findFirst({
-      where: {
-        userId: authUser.id,
-        status: "completed",
-        createdAt: { gte: new Date(Date.now() - 10000) },
-      },
-    })
-    if (recentPurchase) {
-      return NextResponse.json({
-        error: "Please wait before purchasing again",
-      }, { status: 429 })
-    }
+    const txResult = await prisma.$transaction(async (tx) => {
+      const recentPurchase = await tx.purchase.findFirst({
+        where: {
+          userId: authUser.id,
+          status: "completed",
+          createdAt: { gte: new Date(Date.now() - 10000) },
+        },
+      })
+      if (recentPurchase) {
+        return { rateLimited: true as const, credits: 0 }
+      }
 
-    const [updated] = await prisma.$transaction([
-      prisma.user.update({
+      const updated = await tx.user.update({
         where: { id: authUser.id },
         data: { credits: { increment: pkg.credits } },
-      }),
-      prisma.purchase.create({
+      })
+      await tx.purchase.create({
         data: {
           userId: authUser.id,
           packageId: `credit-${pkg.id}`,
@@ -57,21 +55,29 @@ export async function POST(req: NextRequest) {
           currency: "EUR",
           status: "completed",
         },
-      }),
-      prisma.creditTransaction.create({
+      })
+      await tx.creditTransaction.create({
         data: {
           userId: authUser.id,
           amount: pkg.credits,
           source: "purchase",
           reference: `dev-${pkg.id}`,
         },
-      }),
-    ])
+      })
+
+      return { rateLimited: false as const, credits: updated.credits }
+    })
+
+    if (txResult.rateLimited) {
+      return NextResponse.json({
+        error: "Please wait before purchasing again",
+      }, { status: 429 })
+    }
 
     return NextResponse.json({
       success: true,
       dev: true,
-      credits: updated.credits,
+      credits: txResult.credits,
       message: `+${pkg.credits} credits (dev mode — Stripe not configured)`,
     })
   }

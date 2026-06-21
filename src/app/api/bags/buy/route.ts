@@ -18,7 +18,7 @@ function modelType(name: string): string {
 }
 
 function normalizeBonusChance(value: number): number {
-  return value > 1 ? value / 100 : value
+  return Math.max(0, Math.min(1, value / 100))
 }
 
 export async function POST(request: NextRequest) {

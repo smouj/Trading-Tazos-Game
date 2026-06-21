@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/trade/offer — create a new trade offer (atomic check-then-act)
+// POST /api/trade/offer — create a new trade offer (atomic reserve + create)
 export async function POST(request: NextRequest) {
   try {
     const authUser = await getAuthUser(request)
@@ -66,7 +66,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Requested tazo not found' }, { status: 404 })
     }
 
-    // Wrap check + create in transaction to prevent TOCTOU race
+    // Reserve one copy while the offer is pending so it cannot be sold or
+    // promised through multiple overlapping trade offers.
     const result = await db.$transaction(async (tx) => {
       // Verify the offered tazo still belongs to the user (inside tx)
       const ut = await tx.userTazo.findUnique({ where: { id: offeredUserTazoId } })
@@ -78,6 +79,14 @@ export async function POST(request: NextRequest) {
       }
       if (ut.tazoId === requestedTazoId) {
         return { ok: false, error: 'Cannot offer and request the same tazo' }
+      }
+
+      const reserve = await tx.userTazo.updateMany({
+        where: { id: offeredUserTazoId, userId: authUser.id, quantity: { gte: 1 } },
+        data: { quantity: { decrement: 1 } },
+      })
+      if (reserve.count !== 1) {
+        return { ok: false, error: 'No copies available' }
       }
 
       const created = await tx.tradeOffer.create({

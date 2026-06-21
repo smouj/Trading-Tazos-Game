@@ -55,9 +55,6 @@ export async function POST(
       if (!offeredUT || offeredUT.userId !== freshOffer.offererId) {
         throw new Error('OFFERER_NO_LONGER_OWNS')
       }
-      if (offeredUT.quantity < 1) {
-        throw new Error('OFFERER_NO_LONGER_OWNS')
-      }
       if (!acceptorUT) {
         throw new Error('NOT_HAVE_REQUESTED')
       }
@@ -70,19 +67,22 @@ export async function POST(
       const moveOneTazo = async (
         sourceUT: { id: string; userId: string; tazoId: string; quantity: number },
         targetUserTazoId: string,
-        targetUserId: string
+        targetUserId: string,
+        consumeSourceQuantity = true
       ) => {
-        const reserved = await tx.userTazo.updateMany({
-          where: {
-            id: sourceUT.id,
-            userId: sourceUT.userId,
-            tazoId: sourceUT.tazoId,
-            quantity: { gte: 1 },
-          },
-          data: { quantity: { decrement: 1 } },
-        })
-        if (reserved.count !== 1) {
-          throw new Error(sourceUT.userId === freshOffer.offererId ? 'OFFERER_NO_LONGER_OWNS' : 'ACCEPTOR_NO_LONGER_OWNS')
+        if (consumeSourceQuantity) {
+          const reserved = await tx.userTazo.updateMany({
+            where: {
+              id: sourceUT.id,
+              userId: sourceUT.userId,
+              tazoId: sourceUT.tazoId,
+              quantity: { gte: 1 },
+            },
+            data: { quantity: { decrement: 1 } },
+          })
+          if (reserved.count !== 1) {
+            throw new Error(sourceUT.userId === freshOffer.offererId ? 'OFFERER_NO_LONGER_OWNS' : 'ACCEPTOR_NO_LONGER_OWNS')
+          }
         }
 
         const instance = await tx.tazoInstance.findFirst({
@@ -100,7 +100,7 @@ export async function POST(
           })
         }
 
-        if (sourceUT.quantity > 1) {
+        if (sourceUT.quantity > (consumeSourceQuantity ? 1 : 0)) {
           return
         }
 
@@ -129,9 +129,9 @@ export async function POST(
           where: { id: acceptorExisting.id },
           data: { quantity: { increment: 1 } },
         })
-        await moveOneTazo(offeredUT, acceptorExisting.id, authUser.id)
+        await moveOneTazo(offeredUT, acceptorExisting.id, authUser.id, false)
       } else {
-        // Acceptor has none: create a one-copy stack and remove one offered copy.
+        // Acceptor has none: create a one-copy stack and move the reserved offered copy.
         const created = await tx.userTazo.create({
           data: {
             userId: authUser.id,
@@ -140,7 +140,7 @@ export async function POST(
             obtainedFrom: 'trade',
           },
         })
-        await moveOneTazo(offeredUT, created.id, authUser.id)
+        await moveOneTazo(offeredUT, created.id, authUser.id, false)
       }
 
       // ── Transfer acceptor's tazo to offerer (merge if offerer already owns) ──
@@ -246,6 +246,11 @@ export async function DELETE(
       if (claim.count !== 1) {
         throw new Error('Offer no longer available')
       }
+
+      await tx.userTazo.update({
+        where: { id: fresh.offeredUserTazoId },
+        data: { quantity: { increment: 1 } },
+      })
     })
 
     return NextResponse.json({ success: true, message: 'Offer cancelled' })
@@ -253,6 +258,9 @@ export async function DELETE(
     const msg = error instanceof Error ? error.message : ''
     if (msg === 'NOT_OWNER') {
       return NextResponse.json({ error: 'Not your offer' }, { status: 403 })
+    }
+    if (msg === 'Offer no longer available') {
+      return NextResponse.json({ error: 'Offer no longer available' }, { status: 410 })
     }
     console.error('Trade offer decline error:', error)
     return NextResponse.json({ error: 'Failed to resolve offer' }, { status: 500 })

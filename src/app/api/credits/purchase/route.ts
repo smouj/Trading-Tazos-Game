@@ -27,6 +27,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid package" }, { status: 400 })
   }
 
+  if (!isStripeConfigured() && process.env.NODE_ENV === "production") {
+    console.error("[purchase] STRIPE_SECRET_KEY is not configured in production")
+    return NextResponse.json(
+      { error: "Payment service unavailable. Please try again later." },
+      { status: 503 }
+    )
+  }
+
   if (!isStripeConfigured()) {
     // ── Dev mode: grant credits directly (atomic) ──
     // Rate limit: 1 purchase per 10 seconds in dev mode

@@ -76,6 +76,9 @@ export async function POST(request: NextRequest) {
       if (ut.quantity < 1) {
         return { ok: false, error: 'No copies available' }
       }
+      if (ut.tazoId === requestedTazoId) {
+        return { ok: false, error: 'Cannot offer and request the same tazo' }
+      }
 
       const created = await tx.tradeOffer.create({
         data: {

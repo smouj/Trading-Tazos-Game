@@ -44,8 +44,14 @@ export async function POST(
       if (!offeredUT || offeredUT.userId !== freshOffer.offererId) {
         throw new Error('OFFERER_NO_LONGER_OWNS')
       }
+      if (offeredUT.quantity < 1) {
+        throw new Error('OFFERER_NO_LONGER_OWNS')
+      }
       if (!acceptorUT) {
         throw new Error('NOT_HAVE_REQUESTED')
+      }
+      if (acceptorUT.quantity < 1) {
+        throw new Error('ACCEPTOR_NO_LONGER_OWNS')
       }
 
       const offeredTazoId = offeredUT.tazoId
@@ -57,18 +63,37 @@ export async function POST(
       })
 
       if (acceptorExisting) {
-        // Acceptor already has copies — merge: increment quantity, delete source
+        // Acceptor already has copies: move one copy from the offerer stack.
         await tx.userTazo.update({
           where: { id: acceptorExisting.id },
-          data: { quantity: { increment: offeredUT.quantity } },
+          data: { quantity: { increment: 1 } },
         })
-        await tx.userTazo.delete({ where: { id: offeredUT.id } })
+        if (offeredUT.quantity === 1) {
+          await tx.userTazo.delete({ where: { id: offeredUT.id } })
+        } else {
+          await tx.userTazo.update({
+            where: { id: offeredUT.id },
+            data: { quantity: { decrement: 1 } },
+          })
+        }
       } else {
-        // Transfer ownership by updating userId
-        await tx.userTazo.update({
-          where: { id: offeredUT.id },
-          data: { userId: authUser.id },
+        // Acceptor has none: create a one-copy stack and remove one offered copy.
+        await tx.userTazo.create({
+          data: {
+            userId: authUser.id,
+            tazoId: offeredTazoId,
+            quantity: 1,
+            obtainedFrom: 'trade',
+          },
         })
+        if (offeredUT.quantity === 1) {
+          await tx.userTazo.delete({ where: { id: offeredUT.id } })
+        } else {
+          await tx.userTazo.update({
+            where: { id: offeredUT.id },
+            data: { quantity: { decrement: 1 } },
+          })
+        }
       }
 
       // ── Transfer acceptor's tazo to offerer (merge if offerer already owns) ──
@@ -77,18 +102,37 @@ export async function POST(
       })
 
       if (offererExisting) {
-        // Offerer already has copies — merge: increment quantity, delete source
+        // Offerer already has copies: move one copy from the acceptor stack.
         await tx.userTazo.update({
           where: { id: offererExisting.id },
-          data: { quantity: { increment: acceptorUT.quantity } },
+          data: { quantity: { increment: 1 } },
         })
-        await tx.userTazo.delete({ where: { id: acceptorUT.id } })
+        if (acceptorUT.quantity === 1) {
+          await tx.userTazo.delete({ where: { id: acceptorUT.id } })
+        } else {
+          await tx.userTazo.update({
+            where: { id: acceptorUT.id },
+            data: { quantity: { decrement: 1 } },
+          })
+        }
       } else {
-        // Transfer ownership by updating userId
-        await tx.userTazo.update({
-          where: { id: acceptorUT.id },
-          data: { userId: freshOffer.offererId },
+        // Offerer has none: create a one-copy stack and remove one accepted copy.
+        await tx.userTazo.create({
+          data: {
+            userId: freshOffer.offererId,
+            tazoId: acceptorTazoId,
+            quantity: 1,
+            obtainedFrom: 'trade',
+          },
         })
+        if (acceptorUT.quantity === 1) {
+          await tx.userTazo.delete({ where: { id: acceptorUT.id } })
+        } else {
+          await tx.userTazo.update({
+            where: { id: acceptorUT.id },
+            data: { quantity: { decrement: 1 } },
+          })
+        }
       }
 
       // Mark offer as accepted

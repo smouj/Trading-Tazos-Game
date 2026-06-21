@@ -83,9 +83,11 @@ export async function POST(request: NextRequest) {
           const tgaGrade = generateTGAGrade(tazo.rarity || "common", finish)
 
           const [instance] = await db.$transaction(async (tx) => {
-            // Re-check not already opened
-            const fresh = await tx.bagPurchase.findUnique({ where: { id } })
-            if (!fresh || fresh.opened) throw new Error("Bag already opened")
+            const claim = await tx.bagPurchase.updateMany({
+              where: { id, userId: user.id, opened: false, tazoId: tazo.id },
+              data: { opened: true },
+            })
+            if (claim.count !== 1) throw new Error("Bag already opened")
 
             const userTazo = await tx.userTazo.upsert({
               where: { userId_tazoId: { userId: user.id, tazoId: tazo.id } },
@@ -109,7 +111,6 @@ export async function POST(request: NextRequest) {
             })
 
             await tx.tazo.update({ where: { id: tazo.id }, data: { isOwned: true } })
-            await tx.bagPurchase.update({ where: { id }, data: { opened: true } })
 
             return [inst]
           })
@@ -202,10 +203,12 @@ export async function POST(request: NextRequest) {
     const finish = randomFinish(tazo.rarity || "common")
     const tgaGrade = generateTGAGrade(tazo.rarity || "common", finish)
 
-    const [userTazo, instance] = await db.$transaction(async (tx) => {
-      // Re-check not already opened inside tx (prevents race condition)
-      const fresh = await tx.bagPurchase.findUnique({ where: { id: singleId } })
-      if (!fresh || fresh.opened) throw new Error("Bag already opened")
+    const [, instance] = await db.$transaction(async (tx) => {
+      const claim = await tx.bagPurchase.updateMany({
+        where: { id: singleId, userId: user.id, opened: false, tazoId: tazo.id },
+        data: { opened: true },
+      })
+      if (claim.count !== 1) throw new Error("Bag already opened")
 
       const ut = await tx.userTazo.upsert({
         where: { userId_tazoId: { userId: user.id, tazoId: tazo.id } },
@@ -229,7 +232,6 @@ export async function POST(request: NextRequest) {
       })
 
       await tx.tazo.update({ where: { id: tazo.id }, data: { isOwned: true } })
-      await tx.bagPurchase.update({ where: { id: singleId }, data: { opened: true } })
 
       return [ut, inst]
     })

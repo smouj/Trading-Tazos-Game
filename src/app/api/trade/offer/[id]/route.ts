@@ -32,6 +32,17 @@ export async function POST(
       if (!freshOffer || freshOffer.status !== 'pending') {
         throw new Error('Offer no longer available')
       }
+      const claim = await tx.tradeOffer.updateMany({
+        where: { id, status: 'pending' },
+        data: {
+          status: 'accepted',
+          acceptorId: authUser.id,
+          resolvedAt: new Date(),
+        },
+      })
+      if (claim.count !== 1) {
+        throw new Error('Offer no longer available')
+      }
 
       // ── Verify both parties still own their tazos (typed queries) ──
       const [offeredUT, acceptorUT] = await Promise.all([
@@ -157,14 +168,10 @@ export async function POST(
         await moveOneTazo(acceptorUT, created.id, freshOffer.offererId)
       }
 
-      // Mark offer as accepted
       await tx.tradeOffer.update({
         where: { id },
         data: {
-          status: 'accepted',
-          acceptorId: authUser.id,
           acceptedUserTazoId: acceptorUT.id,
-          resolvedAt: new Date(),
         },
       })
     })
@@ -232,10 +239,13 @@ export async function DELETE(
         throw new Error('NOT_OWNER')
       }
 
-      await tx.tradeOffer.update({
-        where: { id },
+      const claim = await tx.tradeOffer.updateMany({
+        where: { id, offererId: authUser.id, status: 'pending' },
         data: { status: 'cancelled', resolvedAt: new Date() },
       })
+      if (claim.count !== 1) {
+        throw new Error('Offer no longer available')
+      }
     })
 
     return NextResponse.json({ success: true, message: 'Offer cancelled' })

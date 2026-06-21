@@ -48,8 +48,19 @@ export async function POST(request: NextRequest) {
     if (!bagConfig) {
       return NextResponse.json({ error: "Invalid bag type" }, { status: 400 })
     }
+    if (
+      !Number.isSafeInteger(bagConfig.cost) ||
+      bagConfig.cost < 1 ||
+      !Number.isFinite(bagConfig.rareBoost) ||
+      bagConfig.rareBoost < 1
+    ) {
+      return NextResponse.json({ error: "Bag is temporarily unavailable" }, { status: 503 })
+    }
 
     const totalCost = bagConfig.cost * qty
+    if (!Number.isSafeInteger(totalCost) || totalCost < 1) {
+      return NextResponse.json({ error: "Bag is temporarily unavailable" }, { status: 503 })
+    }
 
     // Determine tazo inside (weighted random by rarity)
     const tazoWhere = {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getAuthUser } from "@/lib/auth"
+import { withAsyncLock } from "@/lib/async-lock"
 import { prisma } from "@/lib/prisma"
 import { MAX_REWARDED_ADS_PER_DAY, REWARDED_AD_CREDITS, REWARDED_AD_COOLDOWN_SECONDS } from "@/lib/monetization"
 
@@ -15,6 +16,10 @@ export async function POST(req: NextRequest) {
   }
 
   const userId = authUser.id
+  return withAsyncLock(`credits:rewarded-ad:${userId}`, () => claimRewardedAd(userId))
+}
+
+async function claimRewardedAd(userId: string) {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 

@@ -1,4 +1,5 @@
 import { db } from "@/lib/db"
+import { withAsyncLock } from "@/lib/async-lock"
 
 type ProgressMetric = Record<string, number>
 
@@ -118,27 +119,29 @@ export async function refreshUserProgress(userId: string) {
 }
 
 export async function claimDailyBonus(userId: string, amount = 25) {
-  const today = startOfToday()
+  return withAsyncLock(`credits:daily:${userId}`, async () => {
+    const today = startOfToday()
 
-  const result = await db.$transaction(async (tx) => {
-    // Check inside transaction to prevent race conditions
-    const existing = await tx.creditTransaction.findFirst({
-      where: { userId, source: "daily", createdAt: { gte: today } },
-    })
-    if (existing) return null
+    const result = await db.$transaction(async (tx) => {
+      // Check inside transaction to prevent race conditions
+      const existing = await tx.creditTransaction.findFirst({
+        where: { userId, source: "daily", createdAt: { gte: today } },
+      })
+      if (existing) return null
 
-    await tx.user.update({ where: { id: userId }, data: { credits: { increment: amount } } })
-    await tx.creditTransaction.create({
-      data: { userId, amount, source: "daily", reference: today.toISOString().slice(0, 10) },
+      await tx.user.update({ where: { id: userId }, data: { credits: { increment: amount } } })
+      await tx.creditTransaction.create({
+        data: { userId, amount, source: "daily", reference: today.toISOString().slice(0, 10) },
+      })
+      const updated = await tx.user.findUnique({ where: { id: userId }, select: { credits: true } })
+      return { claimed: true, amount, credits: updated?.credits ?? 0 }
     })
-    const updated = await tx.user.findUnique({ where: { id: userId }, select: { credits: true } })
-    return { claimed: true, amount, credits: updated?.credits ?? 0 }
+
+    if (!result) {
+      return { claimed: false, amount: 0, alreadyClaimed: true, credits: 0 }
+    }
+
+    await refreshUserProgress(userId)
+    return { claimed: true, amount, alreadyClaimed: false, credits: result.credits }
   })
-
-  if (!result) {
-    return { claimed: false, amount: 0, alreadyClaimed: true, credits: 0 }
-  }
-
-  await refreshUserProgress(userId)
-  return { claimed: true, amount, alreadyClaimed: false, credits: result.credits }
 }

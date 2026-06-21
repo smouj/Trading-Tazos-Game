@@ -147,12 +147,19 @@ export async function POST(request: NextRequest) {
       })
       if (existing) throw new Error('ALREADY_LISTED')
 
-      return Promise.all([
-        tx.tradeListing.create({
-          data: { sellerId: authUser.id, userTazoId, price, status: 'active' },
-        }),
-        tx.userTazo.update({ where: { id: userTazoId }, data: { quantity: { decrement: 1 } } }),
-      ])
+      const reserve = await tx.userTazo.updateMany({
+        where: { id: userTazoId, userId: authUser.id, quantity: { gte: 1 } },
+        data: { quantity: { decrement: 1 } },
+      })
+      if (reserve.count !== 1) {
+        throw new Error('NO_COPIES')
+      }
+
+      const listing = await tx.tradeListing.create({
+        data: { sellerId: authUser.id, userTazoId, price, status: 'active' },
+      })
+
+      return [listing]
     })
 
     return NextResponse.json({ listing, message: 'Tazo listed for sale!' }, { status: 201 })

@@ -4,6 +4,8 @@ import { db } from '@/lib/db'
 import { getAuthUser } from '@/lib/auth'
 import { NextRequest, NextResponse } from 'next/server'
 
+const MAX_LISTING_PRICE = 1_000_000
+
 // GET /api/trade — browse active listings with tazo + seller info
 export async function GET(request: NextRequest) {
   try {
@@ -128,8 +130,14 @@ export async function POST(request: NextRequest) {
     if (!authUser) return NextResponse.json({ error: 'Login required' }, { status: 401 })
 
     const { userTazoId, price } = await request.json()
-    if (!userTazoId || typeof price !== 'number' || price < 1) {
-      return NextResponse.json({ error: 'userTazoId and price (>=1) required' }, { status: 400 })
+    if (
+      !userTazoId ||
+      typeof price !== 'number' ||
+      !Number.isSafeInteger(price) ||
+      price < 1 ||
+      price > MAX_LISTING_PRICE
+    ) {
+      return NextResponse.json({ error: `userTazoId and integer price (1-${MAX_LISTING_PRICE}) required` }, { status: 400 })
     }
 
     // Atomic transaction: verify ownership + check no existing active listing + decrement

@@ -397,11 +397,32 @@ export async function DELETE(request: NextRequest) {
           where: { id: userTazoId, userId: user.id },
         })
         if (!existing) throw new Error("NOT_FOUND")
+
+        const [activeListing, pendingOffer] = await Promise.all([
+          tx.tradeListing.findFirst({
+            where: { userTazoId, sellerId: user.id, status: "active" },
+            select: { id: true },
+          }),
+          tx.tradeOffer.findFirst({
+            where: { offeredUserTazoId: userTazoId, offererId: user.id, status: "pending" },
+            select: { id: true },
+          }),
+        ])
+
+        if (activeListing) throw new Error("ACTIVE_LISTING")
+        if (pendingOffer) throw new Error("PENDING_OFFER")
+
         await tx.userTazo.delete({ where: { id: userTazoId } })
       })
     } catch (err: any) {
       if (err.message === "NOT_FOUND") {
         return NextResponse.json({ error: "Tazo not found in your collection" }, { status: 404 })
+      }
+      if (err.message === "ACTIVE_LISTING") {
+        return NextResponse.json({ error: "Cancel the active listing before removing this tazo" }, { status: 409 })
+      }
+      if (err.message === "PENDING_OFFER") {
+        return NextResponse.json({ error: "Cancel the pending trade offer before removing this tazo" }, { status: 409 })
       }
       throw err
     }

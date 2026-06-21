@@ -1079,23 +1079,25 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
     engine.setBusy(true)
 
     // Opponent's slam — simulate it locally to see the result
-    if (action.slamParams) {
-      const oppTazo = cfg.opponentDeck.find(t => t.id === action.slamParams!.tazoId) || cfg.opponentDeck[0]
+    const slamParams = action.slamParams
+    if (slamParams) {
+      const oppTazo = cfg.opponentDeck.find(t => t.id === slamParams.tazoId) || cfg.opponentDeck[0]
 
       const slam: SlamParams = {
-        tazoId: action.slamParams.tazoId,
-        impactX: action.slamParams.impactX,
-        impactZ: action.slamParams.impactZ,
-        verticalForce: action.slamParams.verticalForce,
-        timingAccuracy: action.slamParams.timingAccuracy,
-        tilt: action.slamParams.tilt as SlamParams["tilt"],
-        tiltIntensity: action.slamParams.tiltIntensity,
-        spinIntensity: action.slamParams.spinIntensity,
-        aimPrecision: action.slamParams.aimPrecision,
+        tazoId: slamParams.tazoId,
+        impactX: slamParams.impactX,
+        impactZ: slamParams.impactZ,
+        verticalForce: slamParams.verticalForce,
+        timingAccuracy: slamParams.timingAccuracy,
+        tilt: slamParams.tilt as SlamParams["tilt"],
+        tiltIntensity: slamParams.tiltIntensity,
+        spinIntensity: slamParams.spinIntensity,
+        aimPrecision: slamParams.aimPrecision,
       }
 
       // Brief delay for "AI" feel
       setTimeout(() => {
+        if (!mountedRef.current) return
         if (!engine.ctx || !cfg) { engine.setBusy(false); return }
         playSfx("slam_impact", 0.5)
         const { staked: pvpOppStaked, result: impact } = simulateSlam(oppTazo, slam, engine.ctx.stakedTazos, cfg.arena, "opponent", ctxDefenders)
@@ -1109,6 +1111,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
         if (scoring.playerLostTazos > 0) { spawnPopup(`-${scoring.playerLostTazos} tazo`, "var(--ttg-opponent)", "left"); playSfx("damage_taken", 0.35) }
 
         setTimeout(() => {
+          if (!mountedRef.current) return
           engine.setShowImpact(false)
           const c2 = engine.ctx
           const newPS = (c2?.player.score ?? 0) + scoring.playerDelta

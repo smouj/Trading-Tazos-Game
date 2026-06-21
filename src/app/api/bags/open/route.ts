@@ -7,10 +7,12 @@ import { generateTGAGrade } from "@/lib/grading/tga"
 import { refreshUserProgress } from "@/lib/progression"
 
 // Randomize stats within ±20% of base values
-function randomizeStat(base: number): number {
-  const variance = Math.floor(base * 0.2)
-  const min = Math.max(10, base - variance)
-  const max = Math.min(99, base + variance)
+// Ensure base is always a JS number (Prisma may return BigInt for large ints)
+function randomizeStat(base: number | bigint): number {
+  const n = typeof base === "bigint" ? Number(base) : base
+  const variance = Math.floor(n * 0.2)
+  const min = Math.max(10, n - variance)
+  const max = Math.min(99, n + variance)
   return min + Math.floor(Math.random() * (max - min + 1))
 }
 

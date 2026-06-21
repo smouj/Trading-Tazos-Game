@@ -36,10 +36,12 @@ export function useMultiplayer() {
 
   const wsRef = useRef<WebSocket | null>(null)
   const reconnectRef = useRef(0)
+  const reconnectTimerRef = useRef<number | null>(null)
   const connectRef = useRef<() => void>(() => {})
+  const mountedRef = useRef(true)
 
   const connect = useCallback(() => {
-    if (!token || !user) return
+    if (!token || !user || !mountedRef.current) return
     if (wsRef.current?.readyState === WebSocket.OPEN) return
 
     setState("connecting")
@@ -47,11 +49,13 @@ export function useMultiplayer() {
     wsRef.current = ws
 
     ws.onopen = () => {
+      if (!mountedRef.current) { ws.close(); return }
       reconnectRef.current = 0
       setState("idle")
     }
 
     ws.onmessage = (event) => {
+      if (!mountedRef.current) return
       let msg: { type: string; payload: any }
       try {
         msg = JSON.parse(event.data)
@@ -95,11 +99,12 @@ export function useMultiplayer() {
     }
 
     ws.onclose = () => {
+      if (!mountedRef.current) return
       setState("disconnected")
       // Exponential backoff reconnect
       const delay = Math.min(1000 * Math.pow(2, reconnectRef.current), 30000)
       reconnectRef.current += 1
-      setTimeout(() => connectRef.current(), delay)
+      reconnectTimerRef.current = window.setTimeout(() => connectRef.current(), delay)
     }
 
     ws.onerror = () => {
@@ -112,9 +117,15 @@ export function useMultiplayer() {
   }, [connect])
 
   useEffect(() => {
+    mountedRef.current = true
     const timer = token ? window.setTimeout(() => connect(), 0) : null
     return () => {
+      mountedRef.current = false
       if (timer !== null) window.clearTimeout(timer)
+      if (reconnectTimerRef.current !== null) {
+        window.clearTimeout(reconnectTimerRef.current)
+        reconnectTimerRef.current = null
+      }
       wsRef.current?.close()
     }
   }, [token, connect])

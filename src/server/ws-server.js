@@ -120,7 +120,17 @@ function log(msg) {
     console.log(`[WS] ${new Date().toISOString().slice(11, 19)} ${msg}`);
 }
 // ---- Server ----
-const wss = new ws_1.WebSocketServer({ port: PORT });
+// Kill orphan process on WS port before listening (prevents EADDRINUSE on PM2 restart)
+try {
+  const { execSync } = require("child_process");
+  const fuser = execSync("fuser " + PORT + "/tcp 2>/dev/null || true").toString().trim();
+  if (fuser && fuser !== String(process.pid)) {
+    log("⚠️  Killing orphan on port " + PORT + ": " + fuser);
+    execSync("fuser -k " + PORT + "/tcp 2>/dev/null || true");
+  }
+} catch (_) { /* ignore */ }
+
+const wss = new ws_1.WebSocketServer({ port: PORT, maxPayload: 1024 * 1024 });
 wss.on("listening", () => {
     log(`Multiplayer server listening on port ${PORT}`);
     if (typeof process.send === "function") process.send("ready");

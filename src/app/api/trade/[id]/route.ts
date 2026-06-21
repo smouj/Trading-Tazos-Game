@@ -45,18 +45,36 @@ export async function POST(
       }
 
       // Transfer credits
-      await tx.user.update({ where: { id: authUser.id }, data: { credits: { decrement: listing.price } } })
-      await tx.user.update({ where: { id: listing.sellerId }, data: { credits: { increment: listing.price } } })
+      await tx.user.update({ where: { id: authUser.id }, data: { credits: { decrement: freshListing.price } } })
+      await tx.user.update({ where: { id: freshListing.sellerId }, data: { credits: { increment: freshListing.price } } })
 
       // Transfer tazo ownership
       const existing = await tx.userTazo.findUnique({
         where: { userId_tazoId: { userId: authUser.id, tazoId: ut.tazoId } },
       })
+      let buyerUserTazoId: string
       if (existing) {
-        await tx.userTazo.update({ where: { id: existing.id }, data: { quantity: { increment: 1 } } })
+        const updated = await tx.userTazo.update({ where: { id: existing.id }, data: { quantity: { increment: 1 } } })
+        buyerUserTazoId = updated.id
       } else {
-        await tx.userTazo.create({
+        const created = await tx.userTazo.create({
           data: { userId: authUser.id, tazoId: ut.tazoId, quantity: 1, obtainedFrom: 'marketplace' },
+        })
+        buyerUserTazoId = created.id
+      }
+
+      const listedInstance = await tx.tazoInstance.findFirst({
+        where: {
+          userTazoId: freshListing.userTazoId,
+          userId: freshListing.sellerId,
+          tazoId: ut.tazoId,
+        },
+        orderBy: { acquiredAt: 'asc' },
+      })
+      if (listedInstance) {
+        await tx.tazoInstance.update({
+          where: { id: listedInstance.id },
+          data: { userTazoId: buyerUserTazoId, userId: authUser.id },
         })
       }
 
@@ -66,8 +84,8 @@ export async function POST(
       })
 
       // Transaction logs
-      await tx.creditTransaction.create({ data: { userId: authUser.id, amount: -listing.price, source: 'marketplace_buy', reference: id } })
-      await tx.creditTransaction.create({ data: { userId: listing.sellerId, amount: listing.price, source: 'marketplace_sell', reference: id } })
+      await tx.creditTransaction.create({ data: { userId: authUser.id, amount: -freshListing.price, source: 'marketplace_buy', reference: id } })
+      await tx.creditTransaction.create({ data: { userId: freshListing.sellerId, amount: freshListing.price, source: 'marketplace_sell', reference: id } })
     })
 
     const tazoName = ut.tazo.displayName || ut.tazo.name || ut.tazo.slug

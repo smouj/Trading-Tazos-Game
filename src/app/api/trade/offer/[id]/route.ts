@@ -56,6 +56,47 @@ export async function POST(
 
       const offeredTazoId = offeredUT.tazoId
       const acceptorTazoId = acceptorUT.tazoId
+      const moveOneTazo = async (
+        sourceUT: { id: string; userId: string; tazoId: string; quantity: number },
+        targetUserTazoId: string,
+        targetUserId: string
+      ) => {
+        const instance = await tx.tazoInstance.findFirst({
+          where: {
+            userTazoId: sourceUT.id,
+            userId: sourceUT.userId,
+            tazoId: sourceUT.tazoId,
+          },
+          orderBy: { acquiredAt: 'asc' },
+        })
+        if (instance) {
+          await tx.tazoInstance.update({
+            where: { id: instance.id },
+            data: { userTazoId: targetUserTazoId, userId: targetUserId },
+          })
+        }
+
+        if (sourceUT.quantity > 1) {
+          await tx.userTazo.update({
+            where: { id: sourceUT.id },
+            data: { quantity: { decrement: 1 } },
+          })
+          return
+        }
+
+        const remainingInstances = await tx.tazoInstance.count({
+          where: { userTazoId: sourceUT.id },
+        })
+        if (remainingInstances === 0) {
+          await tx.userTazo.delete({ where: { id: sourceUT.id } })
+          return
+        }
+
+        await tx.userTazo.update({
+          where: { id: sourceUT.id },
+          data: { quantity: 0 },
+        })
+      }
 
       // ── Transfer offered tazo to acceptor (merge if acceptor already owns) ──
       const acceptorExisting = await tx.userTazo.findUnique({
@@ -68,17 +109,10 @@ export async function POST(
           where: { id: acceptorExisting.id },
           data: { quantity: { increment: 1 } },
         })
-        if (offeredUT.quantity === 1) {
-          await tx.userTazo.delete({ where: { id: offeredUT.id } })
-        } else {
-          await tx.userTazo.update({
-            where: { id: offeredUT.id },
-            data: { quantity: { decrement: 1 } },
-          })
-        }
+        await moveOneTazo(offeredUT, acceptorExisting.id, authUser.id)
       } else {
         // Acceptor has none: create a one-copy stack and remove one offered copy.
-        await tx.userTazo.create({
+        const created = await tx.userTazo.create({
           data: {
             userId: authUser.id,
             tazoId: offeredTazoId,
@@ -86,14 +120,7 @@ export async function POST(
             obtainedFrom: 'trade',
           },
         })
-        if (offeredUT.quantity === 1) {
-          await tx.userTazo.delete({ where: { id: offeredUT.id } })
-        } else {
-          await tx.userTazo.update({
-            where: { id: offeredUT.id },
-            data: { quantity: { decrement: 1 } },
-          })
-        }
+        await moveOneTazo(offeredUT, created.id, authUser.id)
       }
 
       // ── Transfer acceptor's tazo to offerer (merge if offerer already owns) ──
@@ -107,17 +134,10 @@ export async function POST(
           where: { id: offererExisting.id },
           data: { quantity: { increment: 1 } },
         })
-        if (acceptorUT.quantity === 1) {
-          await tx.userTazo.delete({ where: { id: acceptorUT.id } })
-        } else {
-          await tx.userTazo.update({
-            where: { id: acceptorUT.id },
-            data: { quantity: { decrement: 1 } },
-          })
-        }
+        await moveOneTazo(acceptorUT, offererExisting.id, freshOffer.offererId)
       } else {
         // Offerer has none: create a one-copy stack and remove one accepted copy.
-        await tx.userTazo.create({
+        const created = await tx.userTazo.create({
           data: {
             userId: freshOffer.offererId,
             tazoId: acceptorTazoId,
@@ -125,14 +145,7 @@ export async function POST(
             obtainedFrom: 'trade',
           },
         })
-        if (acceptorUT.quantity === 1) {
-          await tx.userTazo.delete({ where: { id: acceptorUT.id } })
-        } else {
-          await tx.userTazo.update({
-            where: { id: acceptorUT.id },
-            data: { quantity: { decrement: 1 } },
-          })
-        }
+        await moveOneTazo(acceptorUT, created.id, freshOffer.offererId)
       }
 
       // Mark offer as accepted

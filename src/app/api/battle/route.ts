@@ -644,6 +644,7 @@ export async function POST(request: NextRequest) {
     // ── All post-battle mutations wrapped in $transaction to prevent race conditions ──
     let credits: number | null = null
     let creditsEarned = 0
+    let shouldRefreshProgress = false
 
     await db.$transaction(async (tx) => {
       // Update battle records on tazos
@@ -725,8 +726,7 @@ export async function POST(request: NextRequest) {
           },
         })
 
-        // Trigger quest progression AFTER transaction commit (so it sees the new data)
-        await refreshUserProgress(authUser.id)
+        shouldRefreshProgress = true
       }
 
       // Get updated credits
@@ -737,6 +737,12 @@ export async function POST(request: NextRequest) {
         } catch (_) { }
       }
     })
+
+    // Trigger quest progression after transaction commit so it sees the new
+    // battle record and does not open a second Prisma client inside the tx.
+    if (authUser && shouldRefreshProgress) {
+      await refreshUserProgress(authUser.id)
+    }
 
     // Format tazos for response (strip runtime battle fields)
     const formatTazo = (t: BattleTazo) => ({

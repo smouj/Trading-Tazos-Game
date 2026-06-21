@@ -56,10 +56,6 @@ export async function POST(request: NextRequest) {
     if (!offeredUserTazoId || !requestedTazoId) {
       return NextResponse.json({ error: 'offeredUserTazoId and requestedTazoId required' }, { status: 400 })
     }
-    if (offeredUserTazoId === requestedTazoId) {
-      return NextResponse.json({ error: 'Cannot offer and request the same tazo' }, { status: 400 })
-    }
-
     // Verify existence first (lightweight reads outside transaction)
     const requestedTazo = await db.tazo.findUnique({ where: { id: requestedTazoId } })
     if (!requestedTazo) {

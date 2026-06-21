@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { MAX_REWARDED_ADS_PER_DAY, REWARDED_AD_CREDITS, REWARDED_AD_COOLDOWN_SECONDS } from "@/lib/monetization"
 
 interface RewardedAdButtonProps {
@@ -21,6 +21,16 @@ export function RewardedAdButton({ isAuthenticated, onRewardClaimed }: RewardedA
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [claimed, setClaimed] = useState(false)
+  const mountedRef = useRef(false)
+  const claimResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+      if (claimResetTimerRef.current) clearTimeout(claimResetTimerRef.current)
+    }
+  }, [])
 
   const fetchStatus = useCallback(async () => {
     if (!isAuthenticated) return
@@ -28,7 +38,7 @@ export function RewardedAdButton({ isAuthenticated, onRewardClaimed }: RewardedA
       const res = await fetch("/api/credits/rewarded-ad")
       if (res.ok) {
         const data = await res.json()
-        setStatus(data)
+        if (mountedRef.current) setStatus(data)
       }
     } catch {
       // Silently fail
@@ -64,6 +74,7 @@ export function RewardedAdButton({ isAuthenticated, onRewardClaimed }: RewardedA
       })
 
       const data = await res.json()
+      if (!mountedRef.current) return
 
       if (!res.ok) {
         setError(data.error || "Could not claim reward")
@@ -73,11 +84,14 @@ export function RewardedAdButton({ isAuthenticated, onRewardClaimed }: RewardedA
       setClaimed(true)
       onRewardClaimed?.(data.credits)
       fetchStatus()
-      setTimeout(() => setClaimed(false), 3000)
+      if (claimResetTimerRef.current) clearTimeout(claimResetTimerRef.current)
+      claimResetTimerRef.current = setTimeout(() => {
+        if (mountedRef.current) setClaimed(false)
+      }, 3000)
     } catch {
-      setError("Network error. Please try again.")
+      if (mountedRef.current) setError("Network error. Please try again.")
     } finally {
-      setLoading(false)
+      if (mountedRef.current) setLoading(false)
     }
   }
 

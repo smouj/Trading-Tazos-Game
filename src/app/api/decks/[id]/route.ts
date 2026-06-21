@@ -11,27 +11,17 @@ export async function PATCH(
     const user = await getAuthUser(request)
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-    const { id } = await params
-    const deck = await db.deck.findFirst({ where: { id, userId: user.id } })
-    if (!deck) return NextResponse.json({ error: "Deck not found" }, { status: 404 })
-
     const body = await request.json()
-
-    // Activate deck — deactivate all others
-    if (body.isActive === true) {
-      await db.deck.updateMany({
-        where: { userId: user.id, isActive: true },
-        data: { isActive: false },
-      })
-    }
 
     // Update name
     if (body.name !== undefined) {
       if (!body.name?.trim()) {
         return NextResponse.json({ error: "Deck name cannot be empty" }, { status: 400 })
       }
-      await db.deck.update({ where: { id }, data: { name: body.name.trim() } })
     }
+
+    const { id } = await params
+    let notOwnedCount = 0
 
     // Update tazos — replace all
     if (body.tazoIds !== undefined) {
@@ -41,58 +31,82 @@ export async function PATCH(
       if (body.tazoIds.length > 20) {
         return NextResponse.json({ error: "Maximum 20 tazos per deck" }, { status: 400 })
       }
+      if (!body.tazoIds.every((id: unknown): id is string => typeof id === "string" && id.trim().length > 0)) {
+        return NextResponse.json({ error: "All tazo IDs must be non-empty strings" }, { status: 400 })
+      }
 
-      // Verify ownership
+      const tazoIds = body.tazoIds.map((tazoId: string) => tazoId.trim())
+      if (new Set(tazoIds).size !== tazoIds.length) {
+        return NextResponse.json({ error: "Deck cannot contain duplicate tazos" }, { status: 400 })
+      }
+      body.tazoIds = tazoIds
+
       const userTazos = await db.userTazo.findMany({
         where: { userId: user.id, tazoId: { in: body.tazoIds } },
       })
       const ownedIds = new Set(userTazos.map((ut) => ut.tazoId))
       const notOwned = body.tazoIds.filter((tid: string) => !ownedIds.has(tid))
-      if (notOwned.length > 0) {
+      notOwnedCount = notOwned.length
+      if (notOwnedCount > 0) {
         return NextResponse.json(
-          { error: `${notOwned.length} tazo(s) not found in your collection` },
+          { error: `${notOwnedCount} tazo(s) not found in your collection` },
           { status: 400 }
         )
       }
+    }
 
-      // Replace all deck tazos (atomic)
-      await db.$transaction([
-        db.deckTazo.deleteMany({ where: { deckId: id } }),
-        db.deckTazo.createMany({
+    const updated = await db.$transaction(async (tx) => {
+      const deck = await tx.deck.findFirst({ where: { id, userId: user.id } })
+      if (!deck) return null
+
+      if (body.isActive === true) {
+        await tx.deck.updateMany({
+          where: { userId: user.id, isActive: true },
+          data: { isActive: false },
+        })
+      }
+
+      const updateData: { name?: string; isActive?: boolean; settings?: string } = {}
+
+      if (body.name !== undefined) {
+        updateData.name = body.name.trim()
+      }
+
+      if (body.color !== undefined || body.textureUrl !== undefined || body.tubeSlug !== undefined) {
+        let settingsParsed: Record<string, any> = {}
+        try {
+          if (deck.settings) settingsParsed = JSON.parse(deck.settings)
+        } catch { /* ignore */ }
+        if (body.color !== undefined) settingsParsed.color = body.color
+        if (body.textureUrl !== undefined) settingsParsed.textureUrl = body.textureUrl
+        if (body.tubeSlug !== undefined) settingsParsed.tubeSlug = body.tubeSlug
+        updateData.settings = JSON.stringify(settingsParsed)
+      }
+
+      if (body.isActive !== undefined) {
+        updateData.isActive = body.isActive
+      }
+
+      if (Object.keys(updateData).length > 0) {
+        await tx.deck.update({ where: { id }, data: updateData })
+      }
+
+      if (body.tazoIds !== undefined) {
+        await tx.deckTazo.deleteMany({ where: { deckId: id } })
+        await tx.deckTazo.createMany({
           data: body.tazoIds.map((tazoId: string) => ({ deckId: id, tazoId })),
-        }),
-      ])
-    }
+        })
+      }
 
-    // Update settings (color, textureUrl, tubeSlug)
-    if (body.color !== undefined || body.textureUrl !== undefined || body.tubeSlug !== undefined) {
-      let settingsParsed: Record<string, any> = {}
-      try {
-        if (deck.settings) settingsParsed = JSON.parse(deck.settings)
-      } catch { /* ignore */ }
-      if (body.color !== undefined) settingsParsed.color = body.color
-      if (body.textureUrl !== undefined) settingsParsed.textureUrl = body.textureUrl
-      if (body.tubeSlug !== undefined) settingsParsed.tubeSlug = body.tubeSlug
-      await db.deck.update({
+      return tx.deck.findUnique({
         where: { id },
-        data: { settings: JSON.stringify(settingsParsed) },
-      })
-    }
-
-    // Activate/deactivate
-    if (body.isActive !== undefined) {
-      await db.deck.update({ where: { id }, data: { isActive: body.isActive } })
-    }
-
-    // Return updated deck — re-read inside transaction for atomicity
-    const updated = await db.deck.findUnique({
-      where: { id },
-      include: {
-        deckTazos: {
-          where: { tazo: { publishStatus: "published" } },
-          include: { tazo: { include: { franchise: true } } },
+        include: {
+          deckTazos: {
+            where: { tazo: { publishStatus: "published" } },
+            include: { tazo: { include: { franchise: true } } },
+          },
         },
-      },
+      })
     })
 
     if (!updated) {

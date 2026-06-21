@@ -104,6 +104,14 @@ export async function POST(request: NextRequest) {
     if (finalTazoIds.length > 20) {
       return NextResponse.json({ error: "Maximum 20 tazos per battle deck" }, { status: 400 })
     }
+    if (!finalTazoIds.every((id: unknown): id is string => typeof id === "string" && id.trim().length > 0)) {
+      return NextResponse.json({ error: "All tazo IDs must be non-empty strings" }, { status: 400 })
+    }
+
+    finalTazoIds = finalTazoIds.map((id: string) => id.trim())
+    if (new Set(finalTazoIds).size !== finalTazoIds.length) {
+      return NextResponse.json({ error: "Deck cannot contain duplicate tazos" }, { status: 400 })
+    }
 
     // Build settings JSON
     const settings: Record<string, any> = {}
@@ -125,30 +133,30 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Deactivate other decks if this one is active
-    if (isActive) {
-      await db.deck.updateMany({
-        where: { userId: user.id, isActive: true },
-        data: { isActive: false },
-      })
-    }
+    const deck = await db.$transaction(async (tx) => {
+      if (isActive) {
+        await tx.deck.updateMany({
+          where: { userId: user.id, isActive: true },
+          data: { isActive: false },
+        })
+      }
 
-    // Create deck with tazos
-    const deck = await db.deck.create({
-      data: {
-        userId: user.id,
-        name: name.trim(),
-        isActive: isActive || false,
-        settings: Object.keys(settings).length > 0 ? JSON.stringify(settings) : null,
-        deckTazos: {
-          create: finalTazoIds.map((tazoId: string) => ({ tazoId })),
+      return tx.deck.create({
+        data: {
+          userId: user.id,
+          name: name.trim(),
+          isActive: isActive || false,
+          settings: Object.keys(settings).length > 0 ? JSON.stringify(settings) : null,
+          deckTazos: {
+            create: finalTazoIds.map((tazoId: string) => ({ tazoId })),
+          },
         },
-      },
-      include: {
-        deckTazos: {
-          include: { tazo: true },
+        include: {
+          deckTazos: {
+            include: { tazo: true },
+          },
         },
-      },
+      })
     })
 
     return NextResponse.json({

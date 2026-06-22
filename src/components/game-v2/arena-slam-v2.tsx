@@ -495,7 +495,13 @@ function SlamTexts({ events }: { events: Array<{ text: string; x: number; z: num
 // MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════
 
-export default function ArenaSlamV2() {
+export default function ArenaSlamV2({ 
+  initialPlayerDiscs, 
+  initialOpponentDiscs 
+}: {
+  initialPlayerDiscs?: DiscState[]
+  initialOpponentDiscs?: DiscState[]
+} = {}) {
   // State
   const [discs, setDiscs] = useState<DiscState[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -522,7 +528,9 @@ export default function ArenaSlamV2() {
 
   useEffect(() => { scoreRef.current = { player: playerScore, opponent: opponentScore } }, [playerScore, opponentScore])
 
-  // ── Demo setup ──
+  // ── Setup (real data or demo) ──
+  const hasRealData = !!(initialPlayerDiscs?.length && initialOpponentDiscs?.length)
+  
   const demoPlayer = useMemo(() => spreadDiscs([
     createDemoDisc("p1", "TITAN", "heavy", 0, 0, "player", "dracobell"),
     createDemoDisc("p2", "BLADE", "technical", 0, 0, "player", "cybermon"),
@@ -538,9 +546,11 @@ export default function ArenaSlamV2() {
   ], -1), [])
 
   const initDemo = useCallback(() => {
-    setDiscs([...demoPlayer, ...demoOpponents])
-    setPlayerHand(demoPlayer)
-    setSelectedId(demoPlayer[0].id)
+    const p = hasRealData ? (initialPlayerDiscs || []) : demoPlayer
+    const o = hasRealData ? (initialOpponentDiscs || []) : demoOpponents
+    setDiscs([...p, ...o])
+    setPlayerHand(p)
+    setSelectedId(p[0]?.id || null)
     setPhase("select")
     scoreRef.current = { player: 0, opponent: 0 }
     setPlayerScore(0)
@@ -549,7 +559,7 @@ export default function ArenaSlamV2() {
     setSlamTexts([])
     setDragState({ startX: 0, startZ: 0, currentX: 0, currentZ: 0, active: false })
     setTrajectory([])
-  }, [demoPlayer, demoOpponents])
+  }, [demoPlayer, demoOpponents, hasRealData, initialPlayerDiscs, initialOpponentDiscs])
 
   useEffect(() => { initDemo() }, [initDemo])
 

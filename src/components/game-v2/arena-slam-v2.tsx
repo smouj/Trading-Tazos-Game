@@ -1342,8 +1342,13 @@ export default function ArenaSlamV2({
             const target = result.discs.find(t => t.id === d.landedOnId)
             const isPlayer = d.owner === "player"
             if (target?.flipped) {
-              isPlayer ? scoreRef.current.player++ : scoreRef.current.opponent++
-              isPlayer ? setPlayerScore(s => s + 1) : setOpponentScore(s => s + 1)
+              if (isPlayer) {
+                scoreRef.current.player++;
+                setPlayerScore(s => s + 1);
+              } else {
+                scoreRef.current.opponent++;
+                setOpponentScore(s => s + 1);
+              }
               setShakeIntensity(0.7)
               setTextId(t => { const n = t + 1; setSlamTexts(p => [...p.slice(-3), { text: isPlayer ? "⚡ CAPTURE!" : "💀 LOST!", x: d.x, z: d.z, color: isPlayer ? "#44FF44" : "#FF4444", id: n }]); return n })
             } else {

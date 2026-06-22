@@ -404,8 +404,8 @@ function TazoDiscV3({ disc, isSelected, isDragging, dragRatio }: {
       <TazoDisc3D
         name={disc.name}
         franchise={franchise}
-        imageUrl={disc.flipped ? disc.imageUrl : (disc.backImageUrl || disc.imageUrl)}
-        backImageUrl={disc.flipped ? (disc.backImageUrl || disc.imageUrl) : disc.imageUrl}
+        imageUrl={disc.imageUrl ?? undefined}
+        backImageUrl={disc.backImageUrl ?? undefined}
         size={DISC_RADIUS * 1.05}
         autoRotate={disc.flying}
         finish={disc.finish}
@@ -875,17 +875,17 @@ export default function ArenaSlamV2({
   const hasRealData = !!(initialPlayerDiscs?.length && initialOpponentDiscs?.length)
   
   const demoPlayerRaw = useMemo(() => [
-    createDemoDisc("p1", "TITAN", "heavy", 0, 0, "player", "dracobell"),
-    createDemoDisc("p2", "BLADE", "technical", 0, 0, "player", "cybermon"),
-    createDemoDisc("p3", "VORTEX", "spinner", 0, 0, "player", "minimon"),
-    createDemoDisc("p4", "SHIELD", "defender", 0, 0, "player", "dracobell"),
-    createDemoDisc("p5", "STRIKE", "balanced", 0, 0, "player", "cybermon"),
+    { ...createDemoDisc("p1", "TITAN", "heavy", 0, 0, "player", "dracobell"), finish: "metallic" as const },
+    { ...createDemoDisc("p2", "BLADE", "technical", 0, 0, "player", "cybermon"), finish: "chrome" as const },
+    { ...createDemoDisc("p3", "VORTEX", "spinner", 0, 0, "player", "minimon"), finish: "gold" as const },
+    { ...createDemoDisc("p4", "SHIELD", "defender", 0, 0, "player", "dracobell"), finish: "metallic" as const },
+    { ...createDemoDisc("p5", "STRIKE", "balanced", 0, 0, "player", "cybermon"), finish: "chrome" as const },
   ], [])
 
   const demoOpponentsRaw = useMemo(() => [
-    createDemoDisc("o1", "ROCK", "defender", 0, 0, "opponent", "dracobell"),
-    createDemoDisc("o2", "BYTE", "technical", 0, 0, "opponent", "cybermon"),
-    createDemoDisc("o3", "SLIME", "balanced", 0, 0, "opponent", "minimon"),
+    { ...createDemoDisc("o1", "ROCK", "defender", 0, 0, "opponent", "dracobell"), finish: "metallic" as const },
+    { ...createDemoDisc("o2", "BYTE", "technical", 0, 0, "opponent", "cybermon"), finish: "chrome" as const },
+    { ...createDemoDisc("o3", "SLIME", "balanced", 0, 0, "opponent", "minimon"), finish: "gold" as const },
   ], [])
 
   const initDemo = useCallback(() => {

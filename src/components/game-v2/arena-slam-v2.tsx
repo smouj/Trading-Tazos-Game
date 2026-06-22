@@ -513,6 +513,43 @@ function ImpactParticles({ impacts }: { impacts: ImpactEvent[] }) {
 
 // ─── Camera Shake (self-resetting) ───
 // ─── Ambient Arena Particles (floating dust/motes) ───
+// ─── Positioning Overlay ───
+// Invisible plane covering player half for click-to-place during positioning phase
+function PositioningOverlay({ onPlace }: { onPlace: (x: number, z: number) => void }) {
+  const { camera, raycaster, pointer } = useThree()
+  const meshRef = useRef<THREE.Mesh>(null!)
+
+  useFrame(() => {
+    if (!meshRef.current) return
+    // Cast ray onto this plane
+    raycaster.setFromCamera(pointer, camera)
+    const intersects = raycaster.intersectObject(meshRef.current)
+    if (intersects.length > 0) {
+      const p = intersects[0].point
+      // Map to field coords
+      meshRef.current.userData.hitX = p.x
+      meshRef.current.userData.hitZ = p.z
+    }
+  })
+
+  return (
+    <mesh
+      ref={meshRef}
+      rotation={[-Math.PI / 2, 0, 0]}
+      position={[0, 0.01, 0]}
+      visible={false}
+      onClick={(e) => {
+        e.stopPropagation()
+        const p = e.point
+        onPlace(p.x, p.z)
+      }}
+    >
+      <planeGeometry args={[FIELD_WIDTH, FIELD_HEIGHT]} />
+      <meshBasicMaterial transparent opacity={0} />
+    </mesh>
+  )
+}
+
 function ArenaParticlesV3() {
   const count = 80
   const meshRef = useRef<THREE.InstancedMesh>(null)
@@ -651,18 +688,29 @@ function TurnIndicator({ phase, turn, playerName, opponentName }: { phase: strin
   )
 }
 
-function HandDisplay({ discs, selectedId, onSelect, phase, deckCount }: {
+function HandDisplay({ discs, selectedId, onSelect, phase, deckCount, placingId, onPlace, placedCount }: {
   discs: DiscState[]
   selectedId: string | null
   onSelect: (id: string) => void
   phase: string
   deckCount?: number
+  placingId?: string | null
+  onPlace?: (id: string) => void
+  placedCount?: number
 }) {
   if (phase === "result" || phase === "intro") return null
   const available = discs.filter(d => !d.flipped && !d.ringOut)
+  const isPositioning = phase === "positioning"
   if (available.length === 0 && (typeof deckCount !== "number" || deckCount === 0)) return null
   return (
     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20" style={{ maxWidth: "90vw", overflowX: "auto" }}>
+    {isPositioning && (
+      <div className="text-center mb-3 px-6 py-2 rounded-full bg-cyan-400/5 border border-cyan-400/10 backdrop-blur-sm">
+        <span className="text-cyan-400/60 font-black text-[10px] uppercase tracking-[0.2em]">
+          Click card then click field to place · {3 - (placedCount ?? 0)} remaining
+        </span>
+      </div>
+    )}
     <div className="flex items-end gap-2.5 px-4 justify-center">
       {/* Deck counter */}
       {typeof deckCount === "number" && deckCount > 0 && (
@@ -748,7 +796,9 @@ export default function ArenaSlamV2({
   // State
   const [discs, setDiscs] = useState<DiscState[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [phase, setPhase] = useState<"intro" | "select" | "aim" | "resolving" | "opponent" | "result">("intro")
+  const [placingId, setPlacingId] = useState<string | null>(null)  // card being placed during positioning
+  const [placedCount, setPlacedCount] = useState(0)  // how many player tazos placed
+  const [phase, setPhase] = useState<"intro" | "positioning" | "select" | "aim" | "resolving" | "opponent" | "result">("intro")
   const [playerScore, setPlayerScore] = useState(0)
   const [opponentScore, setOpponentScore] = useState(0)
   const [impacts, setImpacts] = useState<ImpactEvent[]>([])
@@ -817,7 +867,7 @@ export default function ArenaSlamV2({
     setSelectedId(pHand[0]?.id || null)
     setPhase("intro")
     // Auto-transition to select after intro animation
-    setTimeout(() => setPhase("select"), 1800)
+    setTimeout(() => setPhase("positioning"), 1800)
     scoreRef.current = { player: 0, opponent: 0 }
     turnRef.current = "player"
     setPlayerScore(0)
@@ -826,6 +876,8 @@ export default function ArenaSlamV2({
     setSlamTexts([])
     setDragState({ startX: 0, startZ: 0, currentX: 0, currentZ: 0, active: false })
     setTrajectory([])
+    setPlacingId(null)
+    setPlacedCount(0)
   }, [demoPlayerRaw, demoOpponentsRaw, hasRealData, initialPlayerDiscs, initialOpponentDiscs])
 
   useEffect(() => { initDemo() }, [initDemo])

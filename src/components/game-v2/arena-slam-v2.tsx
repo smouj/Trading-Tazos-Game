@@ -130,8 +130,9 @@ function ArenaFloorV3() {
     const ctx = c.getContext("2d")!
     const mid = sz / 2
     const px = (v: number) => mid + v * (mid / ARENA_RADIUS)
+    const arenaPxRadius = mid - 10 // pixel radius of arena in texture
 
-    // Base gradient — richer dark blue/purple
+    // ─── Base gradient ───
     const g = ctx.createRadialGradient(mid, mid, 30, mid, mid, mid)
     g.addColorStop(0, "#1e1e3c")
     g.addColorStop(0.25, "#161630")
@@ -141,72 +142,130 @@ function ArenaFloorV3() {
     ctx.fillStyle = g
     ctx.fillRect(0, 0, sz, sz)
 
-    // Grid lines — slightly more visible
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.04)"
-    ctx.lineWidth = 0.8
+    // ─── Roughness zones (stippled texture rings) ───
+    // Each zone has different dot density = visual roughness indicator
+    const roughnessZones = [
+      { from: 0, to: 0.9, color: "255,255,255", alpha: 0.04, dots: 0,   label: "center" },      // smooth center
+      { from: 0.9, to: 2.0, color: "255,200,100", alpha: 0.12, dots: 600, label: "rough inner" }, // rough ring
+      { from: 2.0, to: 3.0, color: "255,255,255", alpha: 0.05, dots: 200, label: "smooth" },      // smooth mid
+      { from: 3.0, to: 4.35, color: "200,180,140", alpha: 0.14, dots: 900, label: "rough outer" }, // rough outer
+    ]
+
+    // Store roughness zones for physics (exported as floorRoughness)
+    const zoneData: {from: number, to: number, roughness: number}[] = []
+
+    roughnessZones.forEach((zone, zi) => {
+      const fromPx = px(zone.from) - mid
+      const toPx = px(zone.to) - mid
+      
+      // Fill zone background tint
+      ctx.fillStyle = `rgba(${zone.color}, ${zone.alpha * 0.4})`
+      ctx.beginPath()
+      ctx.arc(mid, mid, toPx, 0, Math.PI * 2)
+      if (zone.from > 0) {
+        ctx.arc(mid, mid, fromPx, 0, Math.PI * 2, true)
+      }
+      ctx.fill()
+
+      // Dot stipple pattern (density = roughness)
+      if (zone.dots > 0) {
+        for (let i = 0; i < zone.dots; i++) {
+          const angle = Math.random() * Math.PI * 2
+          const r = fromPx + Math.sqrt(Math.random()) * (toPx - fromPx)
+          const x = mid + Math.cos(angle) * r
+          const y = mid + Math.sin(angle) * r
+          const dotSize = 0.8 + Math.random() * 1.5
+          ctx.fillStyle = `rgba(${zone.color}, ${zone.alpha + Math.random() * 0.06})`
+          ctx.beginPath()
+          ctx.arc(x, y, dotSize, 0, Math.PI * 2)
+          ctx.fill()
+        }
+      }
+
+      // Zone border ring
+      if (zone.to < ARENA_RADIUS) {
+        ctx.strokeStyle = `rgba(${zone.color}, 0.18)`
+        ctx.lineWidth = 1.2
+        ctx.setLineDash([3, 12])
+        ctx.beginPath()
+        ctx.arc(mid, mid, toPx, 0, Math.PI * 2)
+        ctx.stroke()
+        ctx.setLineDash([])
+      }
+    })
+
+    // ─── Grid lines ───
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.035)"
+    ctx.lineWidth = 0.7
     for (let i = -ARENA_RADIUS; i <= ARENA_RADIUS; i += 1) {
       const p = px(i)
       ctx.beginPath(); ctx.moveTo(p, px(-ARENA_RADIUS)); ctx.lineTo(p, px(ARENA_RADIUS)); ctx.stroke()
       ctx.beginPath(); ctx.moveTo(px(-ARENA_RADIUS), p); ctx.lineTo(px(ARENA_RADIUS), p); ctx.stroke()
     }
 
-    // Concentric rings — warmer glow
+    // ─── Concentric rings ───
     for (let r = 1; r <= ARENA_RADIUS; r += 1) {
       ctx.strokeStyle = `rgba(255, 204, 0, ${0.06 + r * 0.012})`
       ctx.lineWidth = r === Math.floor(ARENA_RADIUS) ? 2.5 : 0.9
       ctx.beginPath(); ctx.arc(mid, mid, px(r) - mid, 0, Math.PI * 2); ctx.stroke()
     }
 
-    // Center circle with cross
+    // ─── Center mark ───
     ctx.fillStyle = "rgba(255, 204, 0, 0.18)"
     ctx.beginPath(); ctx.arc(mid, mid, 20, 0, Math.PI * 2); ctx.fill()
     ctx.strokeStyle = "rgba(255, 204, 0, 0.4)"
     ctx.lineWidth = 2
     ctx.beginPath(); ctx.arc(mid, mid, 20, 0, Math.PI * 2); ctx.stroke()
+
     // Center cross
     ctx.strokeStyle = "rgba(255, 255, 255, 0.08)"
     ctx.lineWidth = 1
     ctx.beginPath(); ctx.moveTo(mid - 12, mid); ctx.lineTo(mid + 12, mid); ctx.stroke()
     ctx.beginPath(); ctx.moveTo(mid, mid - 12); ctx.lineTo(mid, mid + 12); ctx.stroke()
 
-    // Half-line — bolder
+    // ─── Half-line ───
     ctx.strokeStyle = "rgba(255, 255, 255, 0.10)"
     ctx.lineWidth = 2
     ctx.setLineDash([10, 18])
     ctx.beginPath(); ctx.moveTo(px(-ARENA_RADIUS + 0.3), mid); ctx.lineTo(px(ARENA_RADIUS - 0.3), mid); ctx.stroke()
     ctx.setLineDash([])
 
-    // Spawn zone markers — glowing circles
+    // ─── Spawn zone markers ───
     const spawnZ = ARENA_RADIUS - 1.5
     const oppZ = -(ARENA_RADIUS - 1.5)
-    const spawnR = px(1.0) - mid  // circle radius for zone
     
-    // Player spawn zone (bottom)
-    ctx.fillStyle = "rgba(0, 255, 200, 0.08)"
-    ctx.beginPath(); ctx.arc(mid, px(spawnZ), 22, 0, Math.PI * 2); ctx.fill()
-    ctx.strokeStyle = "rgba(0, 255, 200, 0.35)"
+    // Player spawn zone (smooth landing pad)
+    ctx.fillStyle = "rgba(0, 255, 200, 0.10)"
+    ctx.beginPath(); ctx.arc(mid, px(spawnZ), 24, 0, Math.PI * 2); ctx.fill()
+    ctx.strokeStyle = "rgba(0, 255, 200, 0.40)"
     ctx.lineWidth = 1.5; ctx.setLineDash([4, 6])
-    ctx.beginPath(); ctx.arc(mid, px(spawnZ), 22, 0, Math.PI * 2); ctx.stroke()
+    ctx.beginPath(); ctx.arc(mid, px(spawnZ), 24, 0, Math.PI * 2); ctx.stroke()
     ctx.setLineDash([])
     
-    // Opponent spawn zone (top)
-    ctx.fillStyle = "rgba(255, 60, 60, 0.08)"
-    ctx.beginPath(); ctx.arc(mid, px(oppZ), 22, 0, Math.PI * 2); ctx.fill()
-    ctx.strokeStyle = "rgba(255, 60, 60, 0.35)"
+    // Opponent spawn zone
+    ctx.fillStyle = "rgba(255, 60, 60, 0.10)"
+    ctx.beginPath(); ctx.arc(mid, px(oppZ), 24, 0, Math.PI * 2); ctx.fill()
+    ctx.strokeStyle = "rgba(255, 60, 60, 0.40)"
     ctx.lineWidth = 1.5; ctx.setLineDash([4, 6])
-    ctx.beginPath(); ctx.arc(mid, px(oppZ), 22, 0, Math.PI * 2); ctx.stroke()
+    ctx.beginPath(); ctx.arc(mid, px(oppZ), 24, 0, Math.PI * 2); ctx.stroke()
     ctx.setLineDash([])
 
-    // Zone labels — bolder
-    ctx.fillStyle = "rgba(0, 255, 200, 0.25)"
+    // ─── Labels ───
+    ctx.fillStyle = "rgba(0, 255, 200, 0.28)"
     ctx.font = "bold 22px 'Geist', sans-serif"
     ctx.textAlign = "center"
     ctx.fillText("▸ LAUNCH ZONE ▸", mid, px(spawnZ + 0.8))
     
-    ctx.fillStyle = "rgba(255, 60, 60, 0.25)"
+    ctx.fillStyle = "rgba(255, 60, 60, 0.28)"
     ctx.fillText("RIVAL ZONE", mid, px(oppZ + 1.2))
 
-    // Arena edge labels
+    // Roughness zone labels (small hints)
+    ctx.font = "bold 11px 'Geist', sans-serif"
+    ctx.fillStyle = "rgba(255,255,255,0.08)"
+    ctx.fillText("ROUGH", mid, px(1.5))
+    ctx.fillText("SMOOTH", mid, px(2.5))
+    ctx.fillText("ROUGH", mid, px(3.7))
+
     ctx.fillStyle = "rgba(255, 255, 255, 0.04)"
     ctx.font = "bold 14px 'Geist', sans-serif"
     ctx.fillText("YOUR SIDE", mid, px(ARENA_RADIUS - 0.6))

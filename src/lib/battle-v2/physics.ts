@@ -240,6 +240,33 @@ function checkLanding(
   return { landed: true, targetId: null, impactType: "land", targetIsEnemy: false }
 }
 
+// ─── Floor surface roughness ───
+// Arena floor has concentric zones of varying roughness
+// Returns a multiplier (0.5–1.0) where 1.0 = smooth (easy flip), <1 = rough (harder flip)
+
+export function floorRoughness(x: number, z: number): number {
+  const dist = Math.hypot(x, z)
+  
+  // Zone definitions (matching the visual floor texture):
+  // 0.0–0.9: smooth center ring → easy flips
+  // 0.9–2.0: rough inner ring → harder to flip
+  // 2.0–3.0: smooth middle ring → easier flips  
+  // 3.0–4.35: rough outer ring → hardest to flip (near edge)
+  
+  // Seeded deterministic-ish variation (based on position, not time)
+  const microVariation = 1.0 + (Math.sin(x * 17.3 + z * 23.7) * 0.04) // tiny position-based noise
+  
+  if (dist < 0.9) {
+    return 1.0 * microVariation              // smooth center — easy
+  } else if (dist < 2.0) {
+    return 0.7 * microVariation              // rough inner — harder
+  } else if (dist < 3.0) {
+    return 1.0 * microVariation              // smooth middle — easy
+  } else {
+    return 0.55 * microVariation             // rough outer — hardest (edge zone)
+  }
+}
+
 // ─── Flip resolution ───
 
 // Momentum-based flip: collision impulse from weight × landing speed
@@ -264,9 +291,14 @@ function resolveFlip(
   // Very small randomness (only ±5%) for realistic feel
   const variance = 0.95 + Math.random() * 0.1
 
+  // Surface roughness modifier — rough floor makes flips harder
+  const surfaceRoughness = floorRoughness(attacker.x, attacker.z)
+  // Rough surface increases effective resistance
+  const surfaceResistance = resistance / (surfaceRoughness + 0.01)
+  
   // Flip threshold: impulse must significantly exceed resistance
   const FLIP_THRESHOLD = 1.15
-  const flipScore = (effectiveImpulse * variance) / (resistance + 0.01)
+  const flipScore = (effectiveImpulse * variance) / (surfaceResistance + 0.01)
 
   if (flipScore > FLIP_THRESHOLD) {
     return { flipped: true, impactType: "capture" }
@@ -446,10 +478,13 @@ export function simulateStep(discs: DiscState[], delta: number): SimResult {
         }
       }
 
-      const friction = 5.0
+      // Surface roughness affects ground friction
+      const roughnessMod = floorRoughness(x, z)
+      // Rough surface = more friction (friction multiplier 1.3x on rough zones)
+      const surfaceFriction = 5.0 * (2.0 - roughnessMod)
       const speed = Math.hypot(vx, vz)
       if (speed > 0.08) {
-        const ns = Math.max(0, speed - friction * dt)
+        const ns = Math.max(0, speed - surfaceFriction * dt)
         const ratio = ns / speed
         vx *= ratio
         vz *= ratio

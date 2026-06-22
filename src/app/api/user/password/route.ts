@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuthUser } from '@/lib/auth'
+import { getAuthUser, hashPassword, verifyPassword } from '@/lib/auth'
 import { db } from '@/lib/db'
-import bcrypt from 'bcryptjs'
 
 export async function PUT(request: NextRequest) {
   try {
@@ -27,16 +26,15 @@ export async function PUT(request: NextRequest) {
     }
 
     // Verify current password
-    const isValid = await bcrypt.compare(currentPassword, fullUser.passwordHash)
+    const isValid = await verifyPassword(currentPassword, fullUser.passwordHash)
     if (!isValid) {
       return NextResponse.json({ error: 'Current password is incorrect' }, { status: 400 })
     }
 
     // Hash and update
-    const hashed = await bcrypt.hash(newPassword, 12)
     await db.user.update({
       where: { id: user.id },
-      data: { passwordHash: hashed },
+      data: { passwordHash: hashPassword(newPassword) },
     })
 
     return NextResponse.json({ success: true })

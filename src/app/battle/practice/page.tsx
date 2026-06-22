@@ -1,31 +1,78 @@
 // ============================================================
 // Trading Tazos Game — Public Practice Arena
 // No auth required. No progress saved. Instant gameplay.
+// Uses GameShell for visual consistency with /app/battle/play.
 // ============================================================
 "use client"
-import Image from "next/image"
 
 import { useEffect, useState } from "react"
 import dynamic from "next/dynamic"
+import { useI18n } from "@/lib/i18n"
 import { AuthProvider } from "@/lib/auth-context"
+import GameShell from "@/components/game/game-shell"
 
-// Lazy-load BattleView — it's heavy (~1315 lines, Three.js)
+// Loading overlay — matches GameShell aesthetic with scanlines
+function PracticeLoadingOverlay() {
+  const { t } = useI18n()
+  return (
+    <GameShell>
+      {/* Scanlines */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          pointerEvents: "none",
+          backgroundImage:
+            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px)",
+        }}
+      />
+      {/* Diagonal stripes */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          pointerEvents: "none",
+          opacity: 0.08,
+          backgroundImage:
+            "repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(255,204,0,0.3) 8px, rgba(255,204,0,0.3) 10px)",
+        }}
+      />
+
+      {/* Spinner */}
+      <div style={{
+        position: "absolute", inset: 0, display: "flex",
+        flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "2rem"
+      }}>
+        <div style={{ position: "relative" }}>
+          <div style={{
+            width: 72, height: 72, borderRadius: "50%",
+            border: "3px solid rgba(255,204,0,0.12)",
+            borderTopColor: "var(--ttg-yellow)",
+            animation: "spin 0.8s linear infinite",
+            boxShadow: "0 0 32px rgba(255,204,0,0.15)",
+          }} />
+          <div style={{
+            position: "absolute", inset: -6, borderRadius: "50%",
+            border: "2px solid rgba(255,204,0,0.06)",
+            animation: "ping 1.5s ease-out infinite",
+          }} />
+        </div>
+        <div style={{ textAlign: "center" }}>
+          <p style={{ fontSize: 12, fontWeight: 900, color: "rgba(255,255,255,0.7)", textTransform: "uppercase", letterSpacing: "0.25em", margin: 0 }}>
+            {t.battle_entering_arena}
+          </p>
+          <p style={{ fontSize: 8, fontWeight: 700, color: "rgba(255,204,0,0.25)", textTransform: "uppercase", letterSpacing: "0.4em", marginTop: 8 }}>
+            {t.battle_battle_loading}
+          </p>
+        </div>
+      </div>
+    </GameShell>
+  )
+}
+
 const BattleView = dynamic(() => import("@/components/game/battle-view"), {
   ssr: false,
-  loading: () => (
-    <div className="fixed inset-0 flex items-center justify-center bg-ttg-arena-bg">
-      <div className="flex flex-col items-center gap-6">
-        <div className="relative w-16 h-16">
-          <div className="absolute inset-0 rounded-full bg-ttg-yellow/15 animate-ping" />
-          <Image src="/logo/logo-tg-yellow.png" alt="" width={64} height={64} className="relative animate-pulse" priority  unoptimized/>
-        </div>
-        <div className="w-8 h-8 rounded-full border-[3px] border-white/10 border-t-ttg-yellow animate-spin" />
-        <p className="text-xs font-bold text-white/20 uppercase tracking-[0.3em] animate-pulse">
-          Loading Arena
-        </p>
-      </div>
-    </div>
-  ),
+  loading: PracticeLoadingOverlay,
 })
 
 export default function PracticePage() {
@@ -53,10 +100,9 @@ export default function PracticePage() {
 
   return (
     <AuthProvider>
-      {/* Full viewport — no magazine shell, no header, no footer */}
-      <div className="fixed inset-0 bg-ttg-arena-bg overflow-hidden">
+      <GameShell>
         <BattleView />
-      </div>
+      </GameShell>
     </AuthProvider>
   )
 }

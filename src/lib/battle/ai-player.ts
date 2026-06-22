@@ -22,6 +22,7 @@ import {
 } from "./game-loop"
 import { autoSelectOpponentBet } from "./state-machine"
 import type { BattleContext } from "./state-machine"
+import { createRNG } from "./rng"
 
 // ────────────────────────────────────────
 // AI Timing by Difficulty
@@ -40,10 +41,11 @@ const TIMING_BY_DIFFICULTY: Record<AIDifficulty, AITiming> = {
   master:     { think: 400,  select: 300,  aim: 600,  charge: 500 },
 }
 
-export function getAITiming(difficulty: AIDifficulty): AITiming {
+export function getAITiming(difficulty: AIDifficulty, seed?: number): AITiming {
   const base = TIMING_BY_DIFFICULTY[difficulty]
-  // Add ±30% variance for human feel
-  const vary = () => 0.7 + Math.random() * 0.6 // 0.7-1.3
+  // Add ±30% variance for human feel (deterministic with seed)
+  const rng = createRNG(seed ?? Date.now())
+  const vary = () => 0.7 + rng.random() * 0.6 // 0.7-1.3
   return {
     think:  Math.round(base.think  * vary()),
     select: Math.round(base.select * vary()),
@@ -59,8 +61,9 @@ export function getAITiming(difficulty: AIDifficulty): AITiming {
 export function selectAIBet(ctx: BattleContext): TazoCard | null {
   const hand = ctx.opponentHand
   if (hand.length === 0) return null
+  const rngSeed = ctx.config?.rngSeed ?? Date.now()
   const scoreGap = ctx.opponent.score - ctx.player.score
-  const strategy = getStrategy(ctx.config.aiDifficulty, scoreGap)
+  const strategy = getStrategy(ctx.config.aiDifficulty, scoreGap, rngSeed)
 
   // Strategy-based stake selection
   if (strategy === "aggressive") {
@@ -85,7 +88,8 @@ export function selectAIBet(ctx: BattleContext): TazoCard | null {
 
 type AIStrategy = "aggressive" | "balanced" | "defensive" | "chaotic"
 
-function getStrategy(diff: AIDifficulty, scoreGap: number): AIStrategy {
+function getStrategy(diff: AIDifficulty, scoreGap: number, seed: number): AIStrategy {
+  const varyRng = createRNG(seed)
   // Master: adapts strategy based on game state
   if (diff === "master") {
     if (scoreGap <= -2) return "defensive"   // Losing → protect staked tazo
@@ -94,10 +98,10 @@ function getStrategy(diff: AIDifficulty, scoreGap: number): AIStrategy {
   }
   // Skilled: mostly balanced, sometimes aggressive
   if (diff === "skilled") {
-    return Math.random() < 0.25 ? "aggressive" : "balanced"
+    return varyRng.random() < 0.25 ? "aggressive" : "balanced"
   }
   // Novice: random / chaotic
-  return Math.random() < 0.4 ? "chaotic" : "defensive"
+  return varyRng.random() < 0.4 ? "chaotic" : "defensive"
 }
 
 export function selectAILauncher(ctx: BattleContext): TazoCard | null {
@@ -108,8 +112,9 @@ export function selectAILauncher(ctx: BattleContext): TazoCard | null {
   const available = hand.filter(t => t.id !== betId)
   if (available.length === 0) return hand[0] || null
 
+  const rngSeed = ctx.config?.rngSeed ?? Date.now()
   const scoreGap = ctx.opponent.score - ctx.player.score
-  const strategy = getStrategy(ctx.config.aiDifficulty, scoreGap)
+  const strategy = getStrategy(ctx.config.aiDifficulty, scoreGap, rngSeed)
 
   switch (strategy) {
     case "aggressive":
@@ -131,7 +136,8 @@ export function selectAILauncher(ctx: BattleContext): TazoCard | null {
       )[0]
     case "chaotic":
       // Random pick = unpredictable
-      return available[Math.floor(Math.random() * available.length)]
+      const pickRng = createRNG(rngSeed + 137)
+      return available[Math.floor(pickRng.random() * available.length)]
   }
 }
 

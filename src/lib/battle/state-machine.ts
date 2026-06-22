@@ -22,6 +22,8 @@ import {
   placeStakedTazos, createAirborneTazo,
   scoreBettingImpact, checkMatchEnd, DEFAULT_ARENA_3D,
 } from "./game-loop"
+import { createRNG } from "./rng"
+import { DECK_SIZE, STARTING_HAND, SCORE_TO_WIN } from "./rules"
 
 // ────────────────────────────────────────
 // Events
@@ -148,14 +150,14 @@ export const BATTLE_TRANSITIONS: StateTransition[] = [
     from: "match_intro", to: "draw_initial_hand",
     event: "INTRO_DONE",
     action(ctx) {
-      // Draw 5 starting hand for both players
-      const rn = () => Math.random()
-      const pShuffled = [...ctx.player.deck].sort(() => rn() - 0.5)
-      const oShuffled = [...ctx.opponent.deck].sort(() => rn() - 0.5)
-      const pHand = pShuffled.slice(0, 5)
-      const pRemDeck = pShuffled.slice(5)
-      const oHand = oShuffled.slice(0, 5)
-      const oRemDeck = oShuffled.slice(5)
+      // Draw starting hand for both players using deterministic RNG
+      const rng = createRNG(ctx.config?.rngSeed ?? Date.now())
+      const pShuffled = rng.shuffle([...ctx.player.deck])
+      const oShuffled = rng.shuffle([...ctx.opponent.deck])
+      const pHand = pShuffled.slice(0, STARTING_HAND)
+      const pRemDeck = pShuffled.slice(STARTING_HAND)
+      const oHand = oShuffled.slice(0, STARTING_HAND)
+      const oRemDeck = oShuffled.slice(STARTING_HAND)
       return {
         ...ctx, state: "draw_initial_hand",
         playerHand: pHand, opponentHand: oHand,
@@ -508,8 +510,9 @@ export function autoSelectOpponentBet(ctx: BattleContext): TazoCard | null {
     sorted.sort((a, b) => (b.attack + b.defense) - (a.attack + a.defense))
     return sorted[0]
   }
-  const r = Math.random()
-  return ctx.opponentHand[Math.floor(r * ctx.opponentHand.length)]
+  // Novice: pick a random card using context seed for determinism
+  const idx = ctx.config?.rngSeed ? (ctx.config.rngSeed + ctx.currentRound) % ctx.opponentHand.length : Math.floor(Math.random() * ctx.opponentHand.length)
+  return ctx.opponentHand[idx]
 }
 
 export function applyScoring(

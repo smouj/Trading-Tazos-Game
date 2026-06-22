@@ -18,6 +18,8 @@ import {
   DEFAULT_ARENA_3D, createAirborneTazo, simulateSlam,
   scoreBettingImpact, checkMatchEnd, generateAISlam, placeStakedTazos,
 } from "@/lib/battle/game-loop"
+import { DECK_SIZE, STARTING_HAND } from "@/lib/battle/rules"
+import { createRNG } from "@/lib/battle/rng"
 import { playSfx, warmSfx } from "@/lib/battle/sfx"
 import type {
   TazoCard, MatchConfig, MatchResult, SlamParams,
@@ -100,7 +102,7 @@ function IntroCinematic({ playerName, deckName, deckSize, playerHand, opponentHa
             {deckName || "Battle Deck"} &middot; {deckSize} tazos
           </p>
           <div style={{ display: "flex", gap: 3, justifyContent: "center", marginTop: 6 }}>
-            {playerHand.slice(0, 5).map((t, i) => (
+            {playerHand.slice(0, STARTING_HAND).map((t, i) => (
               <div key={i} style={{
                 width: 28, height: 28, borderRadius: "50%",
                 border: "1px solid rgba(255,255,255,0.2)",
@@ -150,7 +152,7 @@ function IntroCinematic({ playerName, deckName, deckSize, playerHand, opponentHa
             Full Deck &middot; 20 tazos
           </p>
           <div style={{ display: "flex", gap: 3, justifyContent: "center", marginTop: 6 }}>
-            {opponentHand.slice(0, 5).map((t, i) => (
+            {opponentHand.slice(0, STARTING_HAND).map((t, i) => (
               <div key={i} style={{
                 width: 28, height: 28, borderRadius: "50%",
                 border: "1px solid rgba(255,255,255,0.2)",
@@ -641,7 +643,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
     aiTurnRunning.current = true
     
     const aiLauncher = c.opponentHand.length > 0 
-      ? c.opponentHand[Math.floor(Math.random() * c.opponentHand.length)]
+      ? c.opponentHand[Math.floor(c.opponentHand.length * ((c.config?.rngSeed ?? Date.now()) % 1000) / 1000)]
       : null
     if (!aiLauncher) {
       engine.turnOver()
@@ -655,8 +657,9 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
     
     // AI aim (random target in arena)
     const timing = engine.aiTiming()
-    const aimX = (Math.random() - 0.5) * cfg.arena.radius * 0.5
-    const aimZ = (Math.random() - 0.5) * cfg.arena.radius * 0.5
+    const aimRng = createRNG((c?.config?.rngSeed ?? Date.now()) + (c?.currentRound ?? 1) * 7)
+    const aimX = (aimRng.random() - 0.5) * cfg.arena.radius * 0.5
+    const aimZ = (aimRng.random() - 0.5) * cfg.arena.radius * 0.5
     
     const aiTimeout1 = setTimeout(() => {
       if (!mountedRef.current) { aiTurnRunning.current = false; return }
@@ -664,7 +667,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
       if (!cc || !cfg) { aiTurnRunning.current = false; return }
       engine.lockAim(aimX, aimZ)
       
-      const chargeLevel = 0.5 + Math.random() * 0.5
+      const chargeLevel = 0.5 + aimRng.random() * 0.5
       const aiTimeout2 = setTimeout(() => {
         if (!mountedRef.current) { aiTurnRunning.current = false; return }
         engine.lockCharge(chargeLevel)
@@ -814,19 +817,22 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
       return // PvP not yet enabled — button shows "Coming Soon"
     }
 
-    const shuffled = [...d].sort(() => Math.random() - 0.5)
-    const hand = shuffled.slice(0, Math.min(5, shuffled.length))
+    const rngSeed = Date.now()
+    const oppFull = [...DEMO_TAZOS, ...DEMO_TAZOS, ...DEMO_TAZOS].slice(0, 20)
+    const config: MatchConfig = {
+      mode, aiDifficulty: diff, arena: arenaOverride || DEFAULT_ARENA_3D,
+      scoreToWin: 5, playerDeck: d, opponentDeck: oppFull,
+      rngSeed,
+    }
+    const startRng = createRNG(rngSeed)
+    const shuffled = startRng.shuffle([...d])
+    const hand = shuffled.slice(0, Math.min(STARTING_HAND, shuffled.length))
     setDeck(d)
     setPlayerHand(hand)
     setSelectedBetId(null)
     setBettingPhase("idle")
-    const oppFull = [...DEMO_TAZOS, ...DEMO_TAZOS, ...DEMO_TAZOS].slice(0, 20)
-    const oppHand = [...oppFull].sort(() => Math.random() - 0.5).slice(0, 5)
+    const oppHand = createRNG(rngSeed + 1).shuffle([...oppFull]).slice(0, STARTING_HAND)
     setOpponentHand(oppHand)
-    const config: MatchConfig = {
-      mode, aiDifficulty: diff, arena: arenaOverride || DEFAULT_ARENA_3D,
-      scoreToWin: 5, playerDeck: d, opponentDeck: oppFull,
-    }
 
     engine.startMatch(config)
 
@@ -871,8 +877,8 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
     let deckTazos: TazoCard[]
     if (isPublicPractice) {
       // Demo deck: 5 random tazos from DEMO_TAZOS (no API calls needed)
-      const shuffled = [...DEMO_TAZOS].sort(() => Math.random() - 0.5)
-      deckTazos = shuffled.slice(0, 5)
+      const demoRng = createRNG(Date.now() + 1)
+      deckTazos = demoRng.shuffle([...DEMO_TAZOS]).slice(0, STARTING_HAND)
     } else {
       const autoDeck = allDecks.find((d: any) => d.id === battleDeckId)
       if (!autoDeck?.tazos || autoDeck.tazos.length < 1) return
@@ -905,7 +911,8 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
     engine.setBusy(true)
     
     const playerTazo = playerHand.find(t => t.id === selectedBetId) || playerHand[0]
-    const oppPick = opponentHand[Math.floor(Math.random() * opponentHand.length)]
+    const betRng = createRNG((ctx?.config?.rngSeed ?? Date.now()) + (ctx?.currentRound ?? 1) * 13)
+    const oppPick = opponentHand[Math.floor(betRng.random() * opponentHand.length)]
     setOpponentBetId(oppPick.id)
     setSelectedBetId(playerTazo.id)
     setBettingPhase("revealed")
@@ -939,8 +946,13 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
     resultSaved.current = false; setCreditsEarned(0); setAirborne(null)
     setSelectedBetId(null); setBettingPhase("idle")
     engine.resetToLobby()
-    // Notify parent page (inline lobby) that user wants to exit battle
-    window.dispatchEvent(new Event("ttg:battle:exit"))
+    // Navigate back to lobby (fullscreen game route, not inline)
+    const isPublicPractice = sessionStorage.getItem("battle_public_practice") === "1"
+    if (isPublicPractice) {
+      router.push("/battle/practice")
+    } else {
+      router.push("/app/battle")
+    }
   }
 
   // ═══════════════════════════════════════════════
@@ -1391,7 +1403,7 @@ export default function BattleView({ pvp }: { pvp?: PvPWebSocket }) {
         opponentDeckCount={opponentRemaining}
         opponentDeckTotal={ctx?.opponent?.deck?.length || cfg?.opponentDeck?.length || 0}
         opponentDeckFranchise={opponentHand[0]?.franchise || "minimon"}
-        opponentDeckImages={opponentHand.slice(0, 5).map(t => t.imageUrl || "").filter(Boolean)}
+        opponentDeckImages={opponentHand.slice(0, STARTING_HAND).map(t => t.imageUrl || "").filter(Boolean)}
         isDrawing={isDrawing}
         drawTrigger={drawTrigger}
       >

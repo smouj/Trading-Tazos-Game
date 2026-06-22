@@ -6,11 +6,14 @@
 // GameShell provides the fixed fullscreen container.
 // BattleView handles arena, physics, HUD, and state.
 //
+// If no battle config in sessionStorage, redirect to lobby.
 // BattleView reads mode/difficulty/deckId from sessionStorage
-// (set by the /app/battle lobby).
+// (set by the /app/battle lobby or /battle/practice).
 // ============================================================
 
 import dynamic from "next/dynamic"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { useI18n } from "@/lib/i18n"
 import GameShell from "@/components/game/game-shell"
 
@@ -79,6 +82,22 @@ const BattleView = dynamic(() => import("@/components/game/battle-view"), {
 })
 
 export default function BattlePlayPage() {
+  const router = useRouter()
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    // Validate that battle config exists in sessionStorage.
+    // If not, the user navigated here directly — redirect to lobby.
+    const hasConfig = sessionStorage.getItem("battle_mode") && sessionStorage.getItem("battle_deckId")
+    if (!hasConfig) {
+      router.replace("/app/battle")
+      return
+    }
+    setReady(true)
+  }, [router])
+
+  if (!ready) return null
+
   return (
     <GameShell>
       <BattleView />

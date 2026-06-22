@@ -78,7 +78,7 @@ function forceColor(ratio: number): string {
 // Shows the player's deck as a glowing tube on the edge of the arena
 
 function DeckTubeV3({ deckCount, totalCount, side }: { deckCount: number; totalCount: number; side: 1 | -1 }) {
-  const z = side * (FIELD_HALF_W - 1.5)
+  const z = side * (FIELD_HALF_H - 1.5)
   const stackHeight = Math.max(0.15, (totalCount - deckCount) * 0.04)
   const remainingRatio = totalCount > 0 ? deckCount / totalCount : 0
   
@@ -909,7 +909,7 @@ export default function ArenaSlamV2({
     e.preventDefault()
     const { x, z } = getCoords(e)
     // Player spawn position (discs enter from player's side)
-    const spawnX = 0, spawnZ = FIELD_HALF_W - 1.5
+    const spawnX = 0, spawnZ = FIELD_HALF_H - 1.5
     const dsStart = { startX: spawnX + x * 0.5, startZ: spawnZ + z * 0.5, currentX: x, currentZ: z, active: true }
     dragRef.current = dsStart
     setDragState(dsStart)
@@ -926,7 +926,7 @@ export default function ArenaSlamV2({
     if (dist < 0.2) { setTrajectory([]); return }
 
     setTrajectory(calculateTrajectoryPreview(
-      selectedDisc.x || 0, FIELD_HALF_W - 1.5,
+      selectedDisc.x, selectedDisc.z,
       dragRef.current,
       selectedDisc.stats, 70
     ))
@@ -1006,7 +1006,7 @@ export default function ArenaSlamV2({
     setPhase("resolving")
     // Remove from hand, place on field at default position
     setPlayerHand(prev => prev.filter(d => d.id !== selectedId))
-    setDiscs(prev => [...prev, { ...selectedDisc, x: 0, z: FIELD_HALF_W - 1.5, vx, vy, vz, y: 0.05, moving: true, flying: true, rotationSpeed: vx * 0.6 }])
+    setDiscs(prev => [...prev, { ...selectedDisc, x: 0, z: FIELD_HALF_H - 1.5, vx, vy, vz, y: 0.05, moving: true, flying: true, rotationSpeed: vx * 0.6 }])
     simulatingRef.current = true
   }, [dragState, selectedDisc, selectedId])
 
@@ -1120,7 +1120,7 @@ export default function ArenaSlamV2({
     }
     // Place attacker on field at opponent side + compute launch in one batch
     const attackerX = 0 + (Math.random() - 0.5) * 1.2
-    const attackerZ = -(FIELD_HALF_W - 1.5)
+    const attackerZ = -(FIELD_HALF_H - 1.5)
     const pDiscs = cd.filter(d => d.owner === "player" && !d.flipped && !d.ringOut)
     let target: DiscState | null = null
     if (pDiscs.length > 0) {

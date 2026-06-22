@@ -474,7 +474,7 @@ export async function POST(request: NextRequest) {
               })
               creditsEarned = BATTLE_WIN_CREDITS
             }
-          } else {
+          } else if (winner === 'opponent') {
             // Loss consolation — small reward to encourage playing
             const BATTLE_LOSS_CREDITS = 2
             await tx.user.update({ where: { id: authUser.id }, data: { credits: { increment: BATTLE_LOSS_CREDITS } } })

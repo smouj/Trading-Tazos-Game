@@ -158,7 +158,7 @@ async function seedWelcomePack(userId: string) {
 
       const bags = selected.map((tazo) => ({
         userId,
-        bagType: slug,  // franchise bag type for shop display
+        bagType: "welcome",
         cost: 0,
         tazoId: tazo.id,
         opened: false,

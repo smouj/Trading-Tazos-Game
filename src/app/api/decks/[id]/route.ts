@@ -169,10 +169,18 @@ export async function DELETE(
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
     const { id } = await params
-    const deck = await db.deck.findFirst({ where: { id, userId: user.id } })
-    if (!deck) return NextResponse.json({ error: "Deck not found" }, { status: 404 })
-
-    await db.deck.delete({ where: { id } })
+    try {
+      await db.$transaction(async (tx) => {
+        const deck = await tx.deck.findFirst({ where: { id, userId: user.id } })
+        if (!deck) throw new Error("NOT_FOUND")
+        await tx.deck.delete({ where: { id } })
+      })
+    } catch (err: any) {
+      if (err?.message === "NOT_FOUND") {
+        return NextResponse.json({ error: "Deck not found" }, { status: 404 })
+      }
+      throw err
+    }
     return NextResponse.json({ success: true })
   } catch (error) {
     if (error instanceof Response) throw error

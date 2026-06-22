@@ -695,6 +695,9 @@ function TurnIndicator({ phase, turn, playerName, opponentName }: { phase: strin
     aim: "Drag back · Release to jump!",
     physics_live: turn === "player" ? "Your disc in flight!" : "Rival disc incoming!",
     settle: "Disks settling...",
+    opponent_aiming: "Rival sighting...",
+    opponent_launching: "Rival disc incoming!",
+    opponent_settling: "Rival disks settling...",
     opponent: "Opponent aims...",
   }
   const colors: Record<string, string> = {
@@ -819,6 +822,36 @@ function SlamTexts({ events }: { events: Array<{ text: string; x: number; z: num
           {ev.text}
         </div>
       ))}
+    </div>
+  )
+}
+
+
+// ─── Power Meter (appears during drag/aim) ───
+function PowerMeter({ dragRatio, selectedDisc }: { dragRatio: number; selectedDisc: DiscState | null }) {
+  if (!selectedDisc || dragRatio < 0.08) return null
+  const pct = Math.round(dragRatio * 100)
+  const color = forceColor(dragRatio)
+  const label = dragRatio < 0.18 ? "LIGHT" : dragRatio < 0.38 ? "MEDIUM" : dragRatio < 0.58 ? "STRONG" : dragRatio < 0.78 ? "POWER" : "MAX"
+  return (
+    <div className="absolute bottom-28 left-1/2 -translate-x-1/2 z-25 pointer-events-none">
+      <div className="flex flex-col items-center gap-1.5">
+        {/* Power bar */}
+        <div className="w-52 h-2.5 rounded-full bg-white/5 border border-white/10 overflow-hidden">
+          <div className="h-full rounded-full transition-all duration-75" style={{
+            width: `${pct}%`,
+            background: `linear-gradient(90deg, #44FF66, #FFCC00, #FF8800, #FF4444)`,
+            boxShadow: `0 0 12px ${color}80`,
+          }} />
+        </div>
+        {/* Label + value */}
+        <div className="flex items-center gap-2">
+          <span className="text-white/20 font-black text-[8px] uppercase tracking-[0.2em]">{selectedDisc.name}</span>
+          <span className="font-black text-[11px] uppercase tracking-[0.15em]" style={{ color }}>{label} {pct}%</span>
+        </div>
+        {/* Direction hint */}
+        <span className="text-white/12 font-black text-[7px] uppercase tracking-[0.3em]">▼ RELEASE ▼</span>
+      </div>
     </div>
   )
 }
@@ -989,8 +1022,8 @@ export default function ArenaSlamV2({
     const z = Math.max(CENTER_LINE_Z + 0.8, Math.min(FIELD_HALF_L - 0.8, fieldZ))
     const x = Math.max(-FIELD_HALF_W + 1.5, Math.min(FIELD_HALF_W - 1.5, fieldX))
     
-    // Auto-select first card if none explicitly selected
-    const targetCard = playerHand.find(d => d.id === placingId) || playerHand[0]
+    // Require card selection — don't auto-pick
+    const targetCard = playerHand.find(d => d.id === placingId)
     if (!targetCard) return
     
     // Place on field
@@ -1120,7 +1153,9 @@ export default function ArenaSlamV2({
             })
             turnRef.current = "opponent"
             setPhase("opponent")
-            setTimeout(() => doOpponentTurn(result.discs), 900)
+            // Show brief aim delay then execute opponent turn
+            setTextId(t => { const n = t + 1; setSlamTexts(p => [...p.slice(-2), { text: "RIVAL AIMING", x: 0, z: 0, color: "#FF8866", id: n }]); return n })
+            setTimeout(() => doOpponentTurn(result.discs), 700)
           } else {
             // Opponent's turn ends → now player's turn
             turnRef.current = "player"
@@ -1149,7 +1184,7 @@ export default function ArenaSlamV2({
   }, [])
 
   useEffect(() => {
-    if (phase === "physics_live" || phase === "settle" && simulatingRef.current) startSim()
+    if ((phase === "physics_live" || phase === "settle") && simulatingRef.current) startSim()
     return () => cancelAnimationFrame(animRef.current)
   }, [phase, startSim])
 
@@ -1220,6 +1255,8 @@ export default function ArenaSlamV2({
     }
     setPhase("physics_live")
     simulatingRef.current = true
+    // Fire text
+    setTextId(t => { const n = t + 1; setSlamTexts(p => [...p.slice(-2), { text: "RIVAL FIRING", x: attackerX, z: attackerZ, color: "#FF4444", id: n }]); return n })
     // Safety timeout: force settle after 8 seconds
     const safetyTimer2 = setTimeout(() => {
       if (simulatingRef.current) {
@@ -1265,6 +1302,9 @@ export default function ArenaSlamV2({
       <ScoreHUD playerScore={playerScore} opponentScore={opponentScore} playerName={playerName} opponentName={opponentName} />
       <TurnIndicator phase={phase} turn={turnRef.current} playerName={playerName} opponentName={opponentName} />
       <SlamTexts events={slamTexts} />
+
+      {/* Power meter (aim phase) */}
+      {phase === "aim" && <PowerMeter dragRatio={dragRatio} selectedDisc={selectedDisc} />}
 
       {/* Hand */}
       <HandDisplay discs={playerHand} selectedId={selectedId} onSelect={handleSelectDisc} phase={phase} deckCount={playerDeck.length} placingId={placingId} onPlace={(id) => { setPlacingId(id); setGhostPos(null) }} placedCount={placedCount} />

@@ -160,7 +160,14 @@ export async function DELETE(
       if (listing.sellerId !== authUser.id) {
         throw new Error('NOT_OWNER')
       }
-      await tx.tradeListing.update({ where: { id }, data: { status: 'cancelled' } })
+      const claim = await tx.tradeListing.updateMany({
+        where: { id, sellerId: authUser.id, status: 'active' },
+        data: { status: 'cancelled' },
+      })
+      if (claim.count !== 1) {
+        throw new Error('LISTING_UNAVAILABLE')
+      }
+
       await tx.userTazo.update({ where: { id: listing.userTazoId }, data: { quantity: { increment: 1 } } })
     })
 

@@ -19,6 +19,18 @@ const CONFIG_DEFAULTS: Record<string, any> = {
   registrations_open: true,
 };
 
+/** Type validators for known config keys — prevents bad values from crashing consumers */
+const CONFIG_VALIDATORS: Record<string, (v: unknown) => string | null> = {
+  maintenance_mode:       (v) => typeof v === "boolean" ? null : "must be boolean",
+  welcome_credits:        (v) => typeof v === "number" && Number.isSafeInteger(v) && v >= 0 ? null : "must be a non-negative integer",
+  daily_quest_reward:     (v) => typeof v === "number" && Number.isSafeInteger(v) && v >= 0 ? null : "must be a non-negative integer",
+  pvp_enabled:            (v) => typeof v === "boolean" ? null : "must be boolean",
+  max_tazos_per_collection: (v) => typeof v === "number" && Number.isSafeInteger(v) && v > 0 ? null : "must be a positive integer",
+  shop_enabled:           (v) => typeof v === "boolean" ? null : "must be boolean",
+  trading_enabled:        (v) => typeof v === "boolean" ? null : "must be boolean",
+  registrations_open:     (v) => typeof v === "boolean" ? null : "must be boolean",
+};
+
 /** Safe JSON parse — returns null on corruption instead of throwing */
 function safeJsonParse(raw: string): any {
   try { return JSON.parse(raw) } catch { return null }
@@ -85,6 +97,18 @@ export async function POST(req: NextRequest) {
 
     if (!key) {
       return NextResponse.json({ error: "Key is required" }, { status: 400 });
+    }
+
+    // Validate type for known config keys
+    const validator = CONFIG_VALIDATORS[key];
+    if (validator) {
+      const error = validator(value);
+      if (error) {
+        return NextResponse.json({ error: `Invalid value for "${key}": ${error}` }, { status: 400 });
+      }
+    } else {
+      // Log unknown keys for audit but allow them (for future/flexible config)
+      console.warn(`[site-config] Saving unrecognized config key: "${key}"`);
     }
 
     const config = await prisma.siteConfig.upsert({

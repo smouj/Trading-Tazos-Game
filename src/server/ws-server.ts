@@ -138,10 +138,19 @@ function tryMatch() {
   while (queue.length >= 2) {
     const p1 = queue.shift()!
     const p2 = queue.shift()!
-    if (!isOpen(p1) || !isOpen(p2)) continue
+
+    // If either disconnected, re-insert the alive player(s) so they aren't silently dropped
+    if (!isOpen(p1) || !isOpen(p2)) {
+      if (isOpen(p1)) queue.unshift(p1)
+      if (isOpen(p2)) queue.unshift(p2)
+      continue
+    }
+
     if (p1.userId === p2.userId) {
       broadcast(p1.ws, { type: "queue_error", payload: { message: "Cannot match against yourself" } })
       broadcast(p2.ws, { type: "queue_error", payload: { message: "Cannot match against yourself" } })
+      // Re-queue one of the identical connections so the user can still match
+      if (isOpen(p1)) queue.unshift(p1)
       continue
     }
     makeRoom(p1, p2)
@@ -425,7 +434,7 @@ const statusServer = createServer((_req, res) => {
     res.end("Not found")
   }
 })
-statusServer.listen(PORT + 1)
+statusServer.listen(PORT + 1, "127.0.0.1")
 log(`Status HTTP on port ${PORT + 1}`)
 
 // Graceful shutdown

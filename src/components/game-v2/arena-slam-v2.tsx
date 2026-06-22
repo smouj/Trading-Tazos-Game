@@ -72,6 +72,56 @@ function forceColor(ratio: number): string {
 // ═══ 3D ELEMENTS ═══
 
 // ─── Arena Floor with Grid ───
+// ─── 3D Deck Tube (Tubemazo) ───
+// Shows the player's deck as a glowing tube on the edge of the arena
+
+function DeckTubeV3({ deckCount, totalCount, side }: { deckCount: number; totalCount: number; side: 1 | -1 }) {
+  const z = side * (ARENA_RADIUS - 1.5)
+  const stackHeight = Math.max(0.15, (totalCount - deckCount) * 0.04)
+  const remainingRatio = totalCount > 0 ? deckCount / totalCount : 0
+  
+  return (
+    <group position={[0, 0.02, z]}>
+      {/* Tube base — glowing ring on floor */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
+        <ringGeometry args={[0.5, 0.65, 32]} />
+        <meshBasicMaterial color={side === 1 ? "#00FFC8" : "#FF3C3C"} transparent opacity={0.25} side={2} depthWrite={false} />
+      </mesh>
+      
+      {/* Tube cylinder — translucent glass */}
+      <mesh position={[0, stackHeight / 2 + 0.1, 0]}>
+        <cylinderGeometry args={[0.45, 0.5, stackHeight + 0.1, 32, 1, true]} />
+        <meshPhysicalMaterial 
+          color={side === 1 ? "#00FFC8" : "#FF3C3C"} 
+          roughness={0.3} metalness={0.1} 
+          transparent opacity={0.12}
+          depthWrite={false}
+        />
+      </mesh>
+      
+      {/* Remaining discs visual stack */}
+      {Array.from({ length: Math.min(deckCount, 5) }).map((_, i) => (
+        <mesh key={i} position={[0, 0.1 + i * 0.04, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.42, 0.42, 0.03, 24]} />
+          <meshStandardMaterial 
+            color={side === 1 ? "#00FFC8" : "#FF3C3C"} 
+            roughness={0.4} metalness={0.5} 
+            transparent opacity={0.2 + (remainingRatio * 0.3)}
+          />
+        </mesh>
+      ))}
+      
+      {/* Deck count ring */}
+      {deckCount > 0 && (
+        <mesh position={[0, stackHeight + 0.18, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.48, 0.025, 8, 32]} />
+          <meshBasicMaterial color={side === 1 ? "#00FFC8" : "#FF3C3C"} transparent opacity={0.5} />
+        </mesh>
+      )}
+    </group>
+  )
+}
+
 function ArenaFloorV3() {
   const tex = useMemo(() => {
     const sz = 1024
@@ -81,49 +131,86 @@ function ArenaFloorV3() {
     const mid = sz / 2
     const px = (v: number) => mid + v * (mid / ARENA_RADIUS)
 
-    // Base gradient
-    const g = ctx.createRadialGradient(mid, mid, 40, mid, mid, mid)
-    g.addColorStop(0, "#1c1c32")
-    g.addColorStop(0.3, "#141428")
-    g.addColorStop(0.6, "#0e0e1c")
-    g.addColorStop(0.9, "#080812")
+    // Base gradient — richer dark blue/purple
+    const g = ctx.createRadialGradient(mid, mid, 30, mid, mid, mid)
+    g.addColorStop(0, "#1e1e3c")
+    g.addColorStop(0.25, "#161630")
+    g.addColorStop(0.5, "#101020")
+    g.addColorStop(0.75, "#0a0a14")
     g.addColorStop(1, "#040408")
     ctx.fillStyle = g
     ctx.fillRect(0, 0, sz, sz)
 
-    // Grid lines
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.032)"
-    ctx.lineWidth = 1
+    // Grid lines — slightly more visible
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.04)"
+    ctx.lineWidth = 0.8
     for (let i = -ARENA_RADIUS; i <= ARENA_RADIUS; i += 1) {
       const p = px(i)
       ctx.beginPath(); ctx.moveTo(p, px(-ARENA_RADIUS)); ctx.lineTo(p, px(ARENA_RADIUS)); ctx.stroke()
       ctx.beginPath(); ctx.moveTo(px(-ARENA_RADIUS), p); ctx.lineTo(px(ARENA_RADIUS), p); ctx.stroke()
     }
 
-    // Concentric rings
+    // Concentric rings — warmer glow
     for (let r = 1; r <= ARENA_RADIUS; r += 1) {
-      ctx.strokeStyle = `rgba(255, 204, 0, ${0.05 + r * 0.01})`
-      ctx.lineWidth = r === Math.floor(ARENA_RADIUS) ? 2 : 0.8
+      ctx.strokeStyle = `rgba(255, 204, 0, ${0.06 + r * 0.012})`
+      ctx.lineWidth = r === Math.floor(ARENA_RADIUS) ? 2.5 : 0.9
       ctx.beginPath(); ctx.arc(mid, mid, px(r) - mid, 0, Math.PI * 2); ctx.stroke()
     }
 
-    // Center mark
-    ctx.fillStyle = "rgba(255, 204, 0, 0.12)"
-    ctx.beginPath(); ctx.arc(mid, mid, 15, 0, Math.PI * 2); ctx.fill()
+    // Center circle with cross
+    ctx.fillStyle = "rgba(255, 204, 0, 0.18)"
+    ctx.beginPath(); ctx.arc(mid, mid, 20, 0, Math.PI * 2); ctx.fill()
+    ctx.strokeStyle = "rgba(255, 204, 0, 0.4)"
+    ctx.lineWidth = 2
+    ctx.beginPath(); ctx.arc(mid, mid, 20, 0, Math.PI * 2); ctx.stroke()
+    // Center cross
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.08)"
+    ctx.lineWidth = 1
+    ctx.beginPath(); ctx.moveTo(mid - 12, mid); ctx.lineTo(mid + 12, mid); ctx.stroke()
+    ctx.beginPath(); ctx.moveTo(mid, mid - 12); ctx.lineTo(mid, mid + 12); ctx.stroke()
 
-    // Half-line
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.06)"
-    ctx.lineWidth = 1.5
-    ctx.setLineDash([8, 16])
-    ctx.beginPath(); ctx.moveTo(px(-ARENA_RADIUS), mid); ctx.lineTo(px(ARENA_RADIUS), mid); ctx.stroke()
+    // Half-line — bolder
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.10)"
+    ctx.lineWidth = 2
+    ctx.setLineDash([10, 18])
+    ctx.beginPath(); ctx.moveTo(px(-ARENA_RADIUS + 0.3), mid); ctx.lineTo(px(ARENA_RADIUS - 0.3), mid); ctx.stroke()
     ctx.setLineDash([])
 
-    // Zone labels
-    ctx.fillStyle = "rgba(255, 255, 255, 0.05)"
-    ctx.font = "bold 20px sans-serif"
+    // Spawn zone markers — glowing circles
+    const spawnZ = ARENA_RADIUS - 1.5
+    const oppZ = -(ARENA_RADIUS - 1.5)
+    const spawnR = px(1.0) - mid  // circle radius for zone
+    
+    // Player spawn zone (bottom)
+    ctx.fillStyle = "rgba(0, 255, 200, 0.08)"
+    ctx.beginPath(); ctx.arc(mid, px(spawnZ), 22, 0, Math.PI * 2); ctx.fill()
+    ctx.strokeStyle = "rgba(0, 255, 200, 0.35)"
+    ctx.lineWidth = 1.5; ctx.setLineDash([4, 6])
+    ctx.beginPath(); ctx.arc(mid, px(spawnZ), 22, 0, Math.PI * 2); ctx.stroke()
+    ctx.setLineDash([])
+    
+    // Opponent spawn zone (top)
+    ctx.fillStyle = "rgba(255, 60, 60, 0.08)"
+    ctx.beginPath(); ctx.arc(mid, px(oppZ), 22, 0, Math.PI * 2); ctx.fill()
+    ctx.strokeStyle = "rgba(255, 60, 60, 0.35)"
+    ctx.lineWidth = 1.5; ctx.setLineDash([4, 6])
+    ctx.beginPath(); ctx.arc(mid, px(oppZ), 22, 0, Math.PI * 2); ctx.stroke()
+    ctx.setLineDash([])
+
+    // Zone labels — bolder
+    ctx.fillStyle = "rgba(0, 255, 200, 0.25)"
+    ctx.font = "bold 22px 'Geist', sans-serif"
     ctx.textAlign = "center"
-    ctx.fillText("YOUR ZONE", mid, px(1.8))
-    ctx.fillText("RIVAL ZONE", mid, px(-2.0))
+    ctx.fillText("▸ LAUNCH ZONE ▸", mid, px(spawnZ + 0.8))
+    
+    ctx.fillStyle = "rgba(255, 60, 60, 0.25)"
+    ctx.fillText("RIVAL ZONE", mid, px(oppZ + 1.2))
+
+    // Arena edge labels
+    ctx.fillStyle = "rgba(255, 255, 255, 0.04)"
+    ctx.font = "bold 14px 'Geist', sans-serif"
+    ctx.fillText("YOUR SIDE", mid, px(ARENA_RADIUS - 0.6))
+    ctx.fillText("RIVAL SIDE", mid, px(-ARENA_RADIUS + 0.8))
 
     return new THREE.CanvasTexture(c)
   }, [])
@@ -140,16 +227,32 @@ function ArenaFloorV3() {
 function ArenaWallV3() {
   return (
     <group>
-      {/* Outer wall ring — horizontal on ground */}
+      {/* Outer wall ring — main torus */}
       <mesh position={[0, 0.25, 0]} rotation={[-Math.PI / 2, 0, 0]} castShadow>
         <torusGeometry args={[ARENA_RADIUS, 0.22, 16, 80]} />
-        <meshStandardMaterial color="#FFCC00" roughness={0.2} metalness={0.7} emissive="#FFCC00" emissiveIntensity={0.15} />
+        <meshStandardMaterial color="#FFCC00" roughness={0.2} metalness={0.7} emissive="#FFCC00" emissiveIntensity={0.18} />
       </mesh>
-      {/* Inner glow ring — horizontal */}
+      {/* Inner glow ring — brighter */}
       <mesh position={[0, 0.15, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[ARENA_RADIUS - 0.05, 0.03, 8, 72]} />
-        <meshBasicMaterial color="#FFCC00" transparent opacity={0.35} />
+        <torusGeometry args={[ARENA_RADIUS - 0.05, 0.035, 12, 72]} />
+        <meshBasicMaterial color="#FFCC00" transparent opacity={0.4} />
       </mesh>
+      {/* Outer dark trim ring */}
+      <mesh position={[0, 0.08, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[ARENA_RADIUS + 0.1, 0.04, 8, 64]} />
+        <meshStandardMaterial color="#111122" roughness={0.8} metalness={0.2} />
+      </mesh>
+      {/* Corner posts (4 pillars at quadrant points) */}
+      {[0, Math.PI / 2, Math.PI, Math.PI * 1.5].map(angle => {
+        const px = Math.cos(angle) * ARENA_RADIUS
+        const pz = Math.sin(angle) * ARENA_RADIUS
+        return (
+          <mesh key={angle} position={[px, 0.6, pz]} castShadow>
+            <cylinderGeometry args={[0.08, 0.08, 1.2, 8]} />
+            <meshStandardMaterial color="#FFCC00" roughness={0.15} metalness={0.8} emissive="#FFCC00" emissiveIntensity={0.25} />
+          </mesh>
+        )
+      })}
     </group>
   )
 }
@@ -357,6 +460,47 @@ function ImpactParticles({ impacts }: { impacts: ImpactEvent[] }) {
 }
 
 // ─── Camera Shake (self-resetting) ───
+// ─── Ambient Arena Particles (floating dust/motes) ───
+function ArenaParticlesV3() {
+  const count = 80
+  const meshRef = useRef<THREE.InstancedMesh>(null)
+  const positions = useMemo(() => {
+    const pos = new Float32Array(count * 3)
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2
+      const radius = Math.sqrt(Math.random()) * (ARENA_RADIUS - 0.5)
+      pos[i * 3] = Math.cos(angle) * radius
+      pos[i * 3 + 1] = 0.5 + Math.random() * 4
+      pos[i * 3 + 2] = Math.sin(angle) * radius
+    }
+    return pos
+  }, [])
+  
+  useFrame((_, delta) => {
+    const m = meshRef.current
+    if (!m) return
+    for (let i = 0; i < count; i++) {
+      // Slowly float upward, reset when too high
+      let y = positions[i * 3 + 1] + delta * (0.05 + Math.random() * 0.15)
+      if (y > 5) { y = 0.3 + Math.random() * 0.5 }
+      positions[i * 3 + 1] = y
+      m.setMatrixAt(i, new THREE.Matrix4().compose(
+        new THREE.Vector3(positions[i * 3], y, positions[i * 3 + 2]),
+        new THREE.Quaternion(),
+        new THREE.Vector3(0.015, 0.015, 0.015)
+      ))
+    }
+    m.instanceMatrix.needsUpdate = true
+  })
+
+  return (
+    <instancedMesh ref={meshRef} args={[undefined, undefined, count]} frustumCulled={false}>
+      <sphereGeometry args={[0.015, 4, 4]} />
+      <meshBasicMaterial color="#FFFFFF" transparent opacity={0.12} depthWrite={false} />
+    </instancedMesh>
+  )
+}
+
 function CameraShakeV3({ intensity, duration }: { intensity: number; duration: number }) {
   const { camera } = useThree()
   const basePos = useRef(new THREE.Vector3())
@@ -936,6 +1080,8 @@ export default function ArenaSlamV2({
 
         <ArenaFloorV3 />
         <ArenaWallV3 />
+        {/* Deck tubes (tubemazos) */}
+        <DeckTubeV3 deckCount={playerDeck.length} totalCount={playerDeck.length + playerHand.length} side={1} />
 
         {/* Discs */}
         {discs.filter(d => !d.ringOut).map(d => (
@@ -954,6 +1100,7 @@ export default function ArenaSlamV2({
         )}
 
         <ImpactParticles impacts={impacts} />
+        <ArenaParticlesV3 />
         <CameraShakeV3 intensity={shakeIntensity} duration={0.3} />
       </Canvas>
 

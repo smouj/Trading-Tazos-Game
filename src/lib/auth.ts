@@ -217,10 +217,18 @@ export async function requireAuth(request: Request): Promise<AuthUser> {
 
 // ── OAuth: Build authorize URL ──
 
-export function getOAuthAuthorizeUrl(provider: OAuthProvider, redirectUri: string): string | null {
+function safeOAuthRedirectPath(value: unknown): string {
+  if (typeof value !== "string" || !value.startsWith("/") || value.startsWith("//")) {
+    return "/app/collection"
+  }
+
+  return value
+}
+
+export function getOAuthAuthorizeUrl(provider: OAuthProvider, redirectUri: string, redirectTo = "/app/collection"): string | null {
   const cfg = OAUTH_PROVIDERS[provider]
   if (!cfg.clientId || !cfg.clientSecret) return null
-  const state = jwt.sign({ provider, redirectUri }, JWT_SECRET, { expiresIn: "10m" })
+  const state = jwt.sign({ provider, redirectUri, redirectTo: safeOAuthRedirectPath(redirectTo) }, JWT_SECRET, { expiresIn: "10m" })
   const params = new URLSearchParams({
     client_id: cfg.clientId,
     redirect_uri: redirectUri,
@@ -242,9 +250,10 @@ export async function exchangeOAuthCode(
   // Verify state
   let redirectTo = "/app/collection"
   try {
-    const decoded = jwt.verify(state, JWT_SECRET) as { provider: string; redirectUri: string }
+    const decoded = jwt.verify(state, JWT_SECRET) as { provider: string; redirectUri: string; redirectTo?: unknown }
     if (decoded.provider !== provider) return { error: "Invalid state" }
     if (decoded.redirectUri !== redirectUri) return { error: "Invalid state" }
+    redirectTo = safeOAuthRedirectPath(decoded.redirectTo)
   } catch {
     return { error: "Invalid or expired state" }
   }

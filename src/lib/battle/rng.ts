@@ -29,7 +29,6 @@ function mulberry32(seed: number): () => number {
 }
 
 export function createRNG(seed?: number): RNG {
-  const s = seed ?? (Date.now() ^ (Math.random() * 0xffffffff))
 
   // If seed is not an integer, derive one
   const actualSeed = seed !== undefined ? seed : Math.floor(Math.random() * 0x7fffffff)

@@ -12,7 +12,6 @@ const AVATARS_DIR = path.join(process.cwd(), 'public', 'uploads', 'avatars')
 // ── Simple content moderation: detect known-bad patterns ──
 function detectProhibited(buffer: Buffer): string | null {
   // Check PNG for embedded ICC profile with known-bad keywords
-  const magic = buffer.toString('utf-8', 0, 8)
   const content = buffer.toString('utf-8', 0, Math.min(buffer.length, 2048))
 
   // Check for common inappropriate patterns
@@ -59,7 +58,6 @@ export async function POST(request: NextRequest) {
     // Content moderation
     const prohibited = detectProhibited(buffer)
     if (prohibited) {
-      // Security: blocked prohibited image upload
       return NextResponse.json({ error: prohibited }, { status: 400 })
     }
 
@@ -83,10 +81,26 @@ export async function POST(request: NextRequest) {
         .toFile(filepath)
     }
 
-    // Delete old avatar if exists
-    const currentUser = await db.user.findUnique({ where: { id: user.id }, select: { avatarUrl: true } })
-    if (currentUser?.avatarUrl) {
-      const oldFilename = currentUser.avatarUrl.split('/').pop()
+    const avatarUrl = `/uploads/avatars/${filename}`
+
+    // ── Atomic: find old avatar + update user in single transaction ──
+    const oldAvatarUrl = await db.$transaction(async (tx) => {
+      const current = await tx.user.findUnique({
+        where: { id: user.id },
+        select: { avatarUrl: true },
+      })
+
+      await tx.user.update({
+        where: { id: user.id },
+        data: { avatarUrl },
+      })
+
+      return current?.avatarUrl ?? null
+    })
+
+    // Delete old avatar file (best-effort — after transaction succeeded)
+    if (oldAvatarUrl) {
+      const oldFilename = oldAvatarUrl.split('/').pop()
       if (oldFilename && !oldFilename.startsWith('http')) {
         const oldPath = path.join(AVATARS_DIR, oldFilename)
         if (fs.existsSync(oldPath)) {
@@ -94,14 +108,6 @@ export async function POST(request: NextRequest) {
         }
       }
     }
-
-    const avatarUrl = `/uploads/avatars/${filename}`
-
-    // Update user
-    await db.user.update({
-      where: { id: user.id },
-      data: { avatarUrl },
-    })
 
     return NextResponse.json({ avatarUrl })
   } catch (error) {
@@ -116,9 +122,24 @@ export async function DELETE(request: NextRequest) {
     const user = await getAuthUser(request)
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const currentUser = await db.user.findUnique({ where: { id: user.id }, select: { avatarUrl: true } })
-    if (currentUser?.avatarUrl) {
-      const filename = currentUser.avatarUrl.split('/').pop()
+    // ── Atomic: find old avatar + update user in single transaction ──
+    const oldAvatarUrl = await db.$transaction(async (tx) => {
+      const current = await tx.user.findUnique({
+        where: { id: user.id },
+        select: { avatarUrl: true },
+      })
+
+      await tx.user.update({
+        where: { id: user.id },
+        data: { avatarUrl: null },
+      })
+
+      return current?.avatarUrl ?? null
+    })
+
+    // Clean up old file (best-effort — after transaction succeeded)
+    if (oldAvatarUrl) {
+      const filename = oldAvatarUrl.split('/').pop()
       if (filename && !filename.startsWith('http')) {
         const filepath = path.join(AVATARS_DIR, filename)
         if (fs.existsSync(filepath)) {
@@ -126,11 +147,6 @@ export async function DELETE(request: NextRequest) {
         }
       }
     }
-
-    await db.user.update({
-      where: { id: user.id },
-      data: { avatarUrl: null },
-    })
 
     return NextResponse.json({ avatarUrl: null })
   } catch (error) {

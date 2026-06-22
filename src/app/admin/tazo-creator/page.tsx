@@ -151,7 +151,7 @@ function DiscPreview({ franchise, rarity }: { franchise: string; rarity: string 
 
 // ── Main component ──
 export default function AdminTazoCreatorPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
 
   // Form state
   const [name, setName] = useState("");

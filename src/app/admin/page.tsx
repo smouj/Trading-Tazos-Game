@@ -19,7 +19,7 @@ interface OverviewData {
 interface DbStats { [key: string]: number }
 
 export default function AdminPage() {
-  const { user, loading: authLoading } = useAuth()
+  const { user } = useAuth()
   const [overview, setOverview] = useState<OverviewData | null>(null)
   const [dbStats, setDbStats] = useState<DbStats | null>(null)
   const [loading, setLoading] = useState(true)

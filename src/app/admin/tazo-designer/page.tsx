@@ -23,7 +23,7 @@ import type { TazoFinish, TazoCreatureVariant } from "@/lib/battle/game-loop";
 const FRANCHISE_ORDER = ["cybermon", "dracobell", "minimon"];
 
 export default function AdminTazoDesignerPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const isAdmin = user?.email === "dev@tradingtazosgame.com";
 
   const [publishedTazos, setPublishedTazos] = useState<any[]>([]);

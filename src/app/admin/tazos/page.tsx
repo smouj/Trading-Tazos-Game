@@ -61,7 +61,7 @@ type SortField = "default" | "name" | "attack" | "defense" | "rarity" | "number"
 
 // ── Main ──
 export default function AdminTazoManagerPage() {
-  const { user, loading: authLoading } = useAuth()
+  const { user } = useAuth()
   const isAdmin = user?.email === "dev@tradingtazosgame.com"
 
   const [tazos, setTazos] = useState<TazoData[]>([])

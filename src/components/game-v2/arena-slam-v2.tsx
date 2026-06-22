@@ -10,12 +10,14 @@ import { OrbitControls } from "@react-three/drei"
 import * as THREE from "three"
 import {
   FIELD_WIDTH, FIELD_HEIGHT, FIELD_HALF_W, FIELD_HALF_H, CENTER_LINE_Z,
-  DISC_RADIUS,
+  DISC_RADIUS, DISC_THICKNESS,
   MIN_LAUNCH_SPEED,
-  floorRoughness, clampToField, isInField, isInPlayerHalf, isInOpponentHalf, isInOwnerZone, getOwnerHalf,
+  SETTLE_TIME_MS,
+  validatePosition,
+  floorRoughness, clampToField, isInField, isInPlayerHalf, isInOpponentHalf, isInOwnerZone,
   calculateLaunchVelocity, calculateTrajectoryPreview,
   simulateStep, allStopped, createDemoDisc,
-  type DiscState, type DragState,
+  type DiscState, type DiscFaceState, type DragState,
   type ImpactEvent, type ImpactType, type TrajectoryPoint,
 } from "@/lib/battle-v2/physics"
 import TazoDisc3D from "@/components/game/3d/tazo-disc-3d"
@@ -513,34 +515,40 @@ function ImpactParticles({ impacts }: { impacts: ImpactEvent[] }) {
 
 // ─── Camera Shake (self-resetting) ───
 // ─── Ambient Arena Particles (floating dust/motes) ───
-// ─── Positioning Overlay ───
-// Invisible plane covering player half for click-to-place during positioning phase
-function PositioningOverlay({ onPlace }: { onPlace: (x: number, z: number) => void }) {
+// ─── Ghost disc preview during positioning ───
+function GhostDisc({ x, z, valid }: { x: number; z: number; valid: boolean }) {
+  return (
+    <group position={[x, 0.15, z]}>
+      {/* Ghost ring */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[DISC_RADIUS * 0.8, DISC_RADIUS, 32]} />
+        <meshBasicMaterial color={valid ? "#00FF88" : "#FF4444"} transparent opacity={0.4} side={2} depthWrite={false} />
+      </mesh>
+      {/* Ghost disc body */}
+      <mesh>
+        <cylinderGeometry args={[DISC_RADIUS, DISC_RADIUS, DISC_THICKNESS, 32]} />
+        <meshStandardMaterial color={valid ? "#00FF88" : "#FF4444"} transparent opacity={0.25} depthWrite={false} />
+      </mesh>
+    </group>
+  )
+}
+
+// ─── Positioning field overlay (click target) ───
+function PositioningOverlay({ onPlace }: { onPlace: (x: number, z: number, valid: boolean) => void }) {
   const { camera, raycaster, pointer } = useThree()
   const meshRef = useRef<THREE.Mesh>(null!)
-
-  useFrame(() => {
-    if (!meshRef.current) return
-    // Cast ray onto this plane
-    raycaster.setFromCamera(pointer, camera)
-    const intersects = raycaster.intersectObject(meshRef.current)
-    if (intersects.length > 0) {
-      const p = intersects[0].point
-      // Map to field coords
-      meshRef.current.userData.hitX = p.x
-      meshRef.current.userData.hitZ = p.z
-    }
-  })
 
   return (
     <mesh
       ref={meshRef}
       rotation={[-Math.PI / 2, 0, 0]}
-      position={[0, 0.01, 0]}
+      position={[0, 0.005, 0]}
       onClick={(e) => {
         e.stopPropagation()
+        // Validate the position
         const p = e.point
-        onPlace(p.x, p.z)
+        const validation = validatePosition(p.x, p.z, "player", [], DISC_RADIUS * 2.2)
+        onPlace(p.x, p.z, validation.valid)
       }}
     >
       <planeGeometry args={[FIELD_WIDTH, FIELD_HEIGHT]} />
@@ -657,14 +665,16 @@ function TurnIndicator({ phase, turn, playerName, opponentName }: { phase: strin
     positioning: "Place your tazos on the field",
     select: "Choose your tazo",
     aim: "Drag back · Release to jump!",
-    resolving: turn === "player" ? "Your disc in flight!" : "Rival disc incoming!",
+    physics_live: turn === "player" ? "Your disc in flight!" : "Rival disc incoming!",
+    settle: "Disks settling...",
     opponent: "Opponent aims...",
   }
   const colors: Record<string, string> = {
     positioning: "border-cyan-400/20 text-cyan-400/60",
     select: "border-yellow-400/20 text-yellow-400/60",
     aim: "border-green-400/20 text-green-400/60",
-    resolving: turn === "player" ? "border-cyan-400/20 text-cyan-400/60" : "border-red-400/20 text-red-400/60",
+    physics_live: turn === "player" ? "border-cyan-400/20 text-cyan-400/60" : "border-red-400/20 text-red-400/60",
+    settle: "border-yellow-400/15 text-yellow-400/40",
     opponent: "border-red-400/20 text-red-400/50",
   }
   return (
@@ -726,7 +736,7 @@ function HandDisplay({ discs, selectedId, onSelect, phase, deckCount, placingId,
         <button
           key={d.id}
           onClick={() => { if (isPositioning && onPlace) { onPlace(d.id); return } if (phase !== "resolving") onSelect(d.id) }}
-          disabled={phase === "resolving"}
+          disabled={phase === "physics_live" || phase === "settle"}
           className={`relative w-16 h-16 rounded-full border-2 flex flex-col items-center justify-center transition-all duration-150 ${
             selectedId === d.id || placingId === d.id
               ? "border-yellow-400 bg-yellow-400/20 scale-115 shadow-lg shadow-yellow-400/25 z-10"
@@ -799,9 +809,10 @@ export default function ArenaSlamV2({
   // State
   const [discs, setDiscs] = useState<DiscState[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [placingId, setPlacingId] = useState<string | null>(null)  // card being placed during positioning
+  const [placingId, setPlacingId] = useState<string | null>(null)
+  const [ghostPos, setGhostPos] = useState<{ x: number; z: number; valid: boolean } | null>(null)
   const [placedCount, setPlacedCount] = useState(0)  // how many player tazos placed
-  const [phase, setPhase] = useState<"intro" | "positioning" | "select" | "aim" | "resolving" | "opponent" | "result">("intro")
+  const [phase, setPhase] = useState<"intro" | "positioning" | "select" | "aim" | "physics_live" | "settle" | "opponent" | "result">("intro")
   const [playerScore, setPlayerScore] = useState(0)
   const [opponentScore, setOpponentScore] = useState(0)
   const [impacts, setImpacts] = useState<ImpactEvent[]>([])
@@ -1003,7 +1014,7 @@ export default function ArenaSlamV2({
     const { vx, vy, vz } = calculateLaunchVelocity(dragRef.current, selectedDisc.stats)
     if (Math.hypot(vx, vz) < MIN_LAUNCH_SPEED) { setPhase("aim"); return }
 
-    setPhase("resolving")
+    setPhase("physics_live")
     // Remove from hand, place on field at default position
     setPlayerHand(prev => prev.filter(d => d.id !== selectedId))
     setDiscs(prev => [...prev, { ...selectedDisc, x: 0, z: FIELD_HALF_H - 1.5, vx, vy, vz, y: 0.05, moving: true, flying: true, rotationSpeed: vx * 0.6 }])
@@ -1091,7 +1102,7 @@ export default function ArenaSlamV2({
   }, [])
 
   useEffect(() => {
-    if (phase === "resolving" && simulatingRef.current) startSim()
+    if (phase === "physics_live" || phase === "settle" && simulatingRef.current) startSim()
     return () => cancelAnimationFrame(animRef.current)
   }, [phase, startSim])
 
@@ -1160,7 +1171,7 @@ export default function ArenaSlamV2({
       opponentDeckRef.current = deck.slice(1)
       setOpponentHand(oh => [...oh, deck[0]])
     }
-    setPhase("resolving")
+    setPhase("physics_live")
     simulatingRef.current = true
   }, [])
 
@@ -1354,9 +1365,12 @@ export default function ArenaSlamV2({
         onPointerLeave={handlePointerUp}
         style={{ cursor: phase === "intro" ? "default" : (orbitMode ? "grab" : phase === "aim" ? (dragState.active ? "grabbing" : "grab") : "default"), pointerEvents: phase === "intro" ? "none" : "auto" }}
       >
-        {/* Positioning click target */}
+        {/* Positioning: ghost preview + click target */}
         {phase === "positioning" && (
-          <PositioningOverlay onPlace={handlePlaceDisc} />
+          <>
+            <PositioningOverlay onPlace={handlePlaceDisc} />
+            {ghostPos && <GhostDisc x={ghostPos.x} z={ghostPos.z} valid={ghostPos.valid} />}
+          </>
         )}
         <CameraController preset={camPreset} orbitEnabled={orbitMode} />
 

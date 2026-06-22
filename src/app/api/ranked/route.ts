@@ -16,15 +16,10 @@ export async function GET(req: NextRequest) {
   try {
     // Single player stats
     if (userId) {
-      // Use upsert via transaction to prevent race between findUnique + create
-      const rating = await db.$transaction(async (tx) => {
-        let r = await tx.rankedRating.findUnique({ where: { userId } })
-        if (!r) {
-          r = await tx.rankedRating.create({
-            data: { userId, elo: getInitialElo() },
-          })
-        }
-        return r
+      const rating = await db.rankedRating.upsert({
+        where: { userId },
+        create: { userId, elo: getInitialElo() },
+        update: {},
       })
       return NextResponse.json({
         ...rating,
@@ -78,27 +73,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Cannot report a ranked match against yourself" }, { status: 400 })
     }
 
-    // Wrap all rating reads/writes in a transaction to prevent upsert races
+    // Wrap all rating reads/writes in a transaction so Elo deltas use one snapshot.
     const result = await db.$transaction(async (tx) => {
-      // Get or create player rating (atomic within tx)
-      let playerRating = await tx.rankedRating.findUnique({
+      const playerRating = await tx.rankedRating.upsert({
         where: { userId: auth.id },
+        create: { userId: auth.id, elo: getInitialElo() },
+        update: {},
       })
-      if (!playerRating) {
-        playerRating = await tx.rankedRating.create({
-          data: { userId: auth.id, elo: getInitialElo() },
-        })
-      }
 
-      // Get or create opponent rating (atomic within tx)
-      let opponentRating = opponentUserId
-        ? await tx.rankedRating.findUnique({ where: { userId: opponentUserId } })
+      const opponentRating = opponentUserId
+        ? await tx.rankedRating.upsert({
+            where: { userId: opponentUserId },
+            create: { userId: opponentUserId, elo: getInitialElo() },
+            update: {},
+          })
         : null
-      if (opponentUserId && !opponentRating) {
-        opponentRating = await tx.rankedRating.create({
-          data: { userId: opponentUserId, elo: getInitialElo() },
-        })
-      }
 
       const oppElo = opponentRating?.elo ?? getInitialElo()
 

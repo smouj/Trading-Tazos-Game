@@ -109,7 +109,7 @@ describe("simulateStep", () => {
   })
 
   it("detects ringOut when landing outside arena", () => {
-    const d = createDemoDisc("r1", "Ringer", "balanced", 3.5, 3.5, "player")
+    const d = createDemoDisc("r1", "Ringer", "balanced", 8.5, 13.5, "player")
     d.flying = true; d.moving = true
     d.vx = 2; d.vy = -1; d.vz = 2; d.y = 0.03
     const result = simulateStep([d], 0.05)

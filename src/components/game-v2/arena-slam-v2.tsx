@@ -26,10 +26,10 @@ import TazoDisc3D from "@/components/game/3d/tazo-disc-3d"
 type CamPreset = "default" | "top" | "side" | "player"
 
 const CAM_PRESETS: Record<CamPreset, { pos: [number, number, number]; target: [number, number, number] }> = {
-  default: { pos: [0, 14, 20], target: [0, 0, 0] },
-  top:     { pos: [0, 22, 0.1], target: [0, 0, 0] },
-  side:    { pos: [8, 6, 16], target: [0, 0, 0] },
-  player:  { pos: [0, 5, 10], target: [0, 0, 0] },
+  default: { pos: [0, 24, 36], target: [0, 0, 0] },
+  top:     { pos: [0, 38, 0.1], target: [0, 0, 0] },
+  side:    { pos: [14, 10, 28], target: [0, 0, 0] },
+  player:  { pos: [0, 8, 22], target: [0, 0, 0] },
 }
 
 // ─── Camera controller (preset + OrbitControls) ───
@@ -56,7 +56,7 @@ function CameraController({ preset, orbitEnabled }: { preset: CamPreset; orbitEn
       enableDamping
       dampingFactor={0.08}
       minDistance={6}
-      maxDistance={25}
+      maxDistance={55}
       maxPolarAngle={Math.PI * 0.48}
       minPolarAngle={0.1}
       target={[0, 0, 0]}
@@ -80,7 +80,7 @@ function forceColor(ratio: number): string {
 // Shows the player's deck as a glowing tube on the edge of the arena
 
 function DeckTubeV3({ deckCount, totalCount, side }: { deckCount: number; totalCount: number; side: 1 | -1 }) {
-  const z = side * (FIELD_HALF_L - 2.0)
+  const z = side * (FIELD_HALF_L - 3.5)
   const stackHeight = Math.max(0.15, (totalCount - deckCount) * 0.04)
   const remainingRatio = totalCount > 0 ? deckCount / totalCount : 0
   
@@ -128,137 +128,185 @@ function DeckTubeV3({ deckCount, totalCount, side }: { deckCount: number; totalC
 
 function RectangularField() {
   const tex = useMemo(() => {
-    const w = 1024, h = 512
+    const w = 1024, h = 1792
     const c = document.createElement("canvas")
     c.width = w; c.height = h
     const ctx = c.getContext("2d")!
     const px = (vx: number) => (vx / FIELD_WIDTH + 0.5) * w
     const pz = (vz: number) => ((FIELD_HALF_L - vz) / FIELD_LENGTH) * h
 
-    // ─── Field base (stadium green with grass-like gradient) ───
+    // ─── Field base: rich stadium green with warm undertones ───
     const g = ctx.createLinearGradient(0, 0, 0, h)
-    g.addColorStop(0, "#182c18")
-    g.addColorStop(0.12, "#1c3420")
-    g.addColorStop(0.35, "#1f3c22")
-    g.addColorStop(0.5, "#224428")
-    g.addColorStop(0.65, "#1e3822")
-    g.addColorStop(0.88, "#1a3020")
-    g.addColorStop(1, "#162618")
+    g.addColorStop(0, "#1a3018")
+    g.addColorStop(0.08, "#1e3820")
+    g.addColorStop(0.22, "#223e24")
+    g.addColorStop(0.38, "#254828")
+    g.addColorStop(0.5, "#264a2a")
+    g.addColorStop(0.62, "#234428")
+    g.addColorStop(0.78, "#1f3c22")
+    g.addColorStop(0.92, "#1b3220")
+    g.addColorStop(1, "#182a18")
     ctx.fillStyle = g
     ctx.fillRect(0, 0, w, h)
 
-    // ─── Grass texture (tiny dots) ───
-    for (let i = 0; i < 8000; i++) {
+    // ─── Grass blades texture (vertical strokes for realism) ───
+    for (let i = 0; i < 12000; i++) {
       const gx = Math.random() * w
       const gy = Math.random() * h
-      ctx.fillStyle = `rgba(0,0,0,${0.01 + Math.random() * 0.03})`
-      ctx.fillRect(gx, gy, 1 + Math.random() * 2, 1 + Math.random() * 2)
+      const gh = 2 + Math.random() * 6
+      const shade = 0 + Math.random() * 25
+      ctx.fillStyle = `rgba(${shade},${shade + 8},${shade},${0.015 + Math.random() * 0.03})`
+      ctx.fillRect(gx, gy, 1 + Math.random(), gh)
     }
 
-    // ─── Center line ───
-    ctx.strokeStyle = "rgba(255,255,255,0.15)"
-    ctx.lineWidth = 3
+    // ─── Subtle mowing pattern (horizontal stripes) ───
+    for (let row = 0; row < 18; row++) {
+      const ry = (row / 18) * h
+      ctx.fillStyle = `rgba(255,255,255,${0.003 + (row % 2) * 0.004})`
+      ctx.fillRect(0, ry, w, h / 18)
+    }
+
+    // ─── Center line (bold, dashed grass paint) ───
+    ctx.strokeStyle = "rgba(255,255,255,0.18)"
+    ctx.lineWidth = 4
+    ctx.setLineDash([18, 12])
     ctx.beginPath()
     ctx.moveTo(0, pz(CENTER_LINE_Z))
     ctx.lineTo(w, pz(CENTER_LINE_Z))
     ctx.stroke()
+    ctx.setLineDash([])
 
-    // ─── Center circle ───
+    // ─── Center circle (regulation style) ───
     const centerX = px(0), centerY = pz(CENTER_LINE_Z)
-    const circleR = px(1.5) - centerX
-    ctx.strokeStyle = "rgba(255,255,255,0.12)"
-    ctx.lineWidth = 2
-    ctx.setLineDash([6, 10])
+    const circleR = px(3.0) - centerX
+    ctx.strokeStyle = "rgba(255,255,255,0.14)"
+    ctx.lineWidth = 2.5
+    ctx.setLineDash([8, 12])
     ctx.beginPath()
     ctx.arc(centerX, centerY, circleR, 0, Math.PI * 2)
     ctx.stroke()
     ctx.setLineDash([])
 
     // Center dot
-    ctx.fillStyle = "rgba(255,204,0,0.2)"
+    ctx.fillStyle = "rgba(255,204,0,0.25)"
     ctx.beginPath()
-    ctx.arc(centerX, centerY, 6, 0, Math.PI * 2)
+    ctx.arc(centerX, centerY, 8, 0, Math.PI * 2)
     ctx.fill()
 
-    // ─── Roughness zone stripes (horizontal bands) ───
+    // ─── Halfway lines (subtle) ───
+    for (const hz of [FIELD_HALF_L/2, -FIELD_HALF_L/2]) {
+      ctx.strokeStyle = "rgba(255,255,255,0.04)"
+      ctx.lineWidth = 1
+      ctx.setLineDash([4, 20])
+      ctx.beginPath()
+      ctx.moveTo(0, pz(hz))
+      ctx.lineTo(w, pz(hz))
+      ctx.stroke()
+    }
+    ctx.setLineDash([])
+
+    // ─── Roughness zone stripes (smooth gradient transitions) ───
     const zones = [
-      { zMin: 0, zMax: 1.0, color: "255,255,255", alpha: 0.02, label: "SMOOTH" },
-      { zMin: 1.0, zMax: 2.2, color: "200,150,50", alpha: 0.06, label: "MEDIUM" },
-      { zMin: 2.2, zMax: 3.0, color: "180,120,30", alpha: 0.09, label: "ROUGH" },
-      { zMin: 3.0, zMax: 4.0, color: "160,90,20", alpha: 0.12, label: "VERY ROUGH" },
+      { zMin: 0, zMax: 3.0, color: "60,80,45", alpha: 0.04, label: "SMOOTH" },
+      { zMin: 3.0, zMax: 7.0, color: "140,110,40", alpha: 0.08, label: "MEDIUM" },
+      { zMin: 7.0, zMax: 10.0, color: "160,100,30", alpha: 0.11, label: "ROUGH" },
+      { zMin: 10.0, zMax: 14.0, color: "170,80,20", alpha: 0.14, label: "ROUGH EDGE" },
     ]
     
     zones.forEach(zone => {
       // Player side
       const y1 = pz(zone.zMax)
       const y2 = pz(zone.zMin)
-      ctx.fillStyle = `rgba(${zone.color}, ${zone.alpha})`
+      // Gradient fill for smoother transition
+      const grad = ctx.createLinearGradient(0, y1, 0, y2)
+      grad.addColorStop(0, `rgba(${zone.color}, 0)`)
+      grad.addColorStop(0.3, `rgba(${zone.color}, ${zone.alpha})`)
+      grad.addColorStop(0.7, `rgba(${zone.color}, ${zone.alpha})`)
+      grad.addColorStop(1, `rgba(${zone.color}, 0)`)
+      ctx.fillStyle = grad
       ctx.fillRect(0, y1, w, y2 - y1)
       
       // Opponent side (mirrored)
       const oy1 = pz(-zone.zMin)
       const oy2 = pz(-zone.zMax)
-      ctx.fillStyle = `rgba(${zone.color}, ${zone.alpha})`
+      const grad2 = ctx.createLinearGradient(0, oy1, 0, oy2)
+      grad2.addColorStop(0, `rgba(${zone.color}, 0)`)
+      grad2.addColorStop(0.3, `rgba(${zone.color}, ${zone.alpha})`)
+      grad2.addColorStop(0.7, `rgba(${zone.color}, ${zone.alpha})`)
+      grad2.addColorStop(1, `rgba(${zone.color}, 0)`)
+      ctx.fillStyle = grad2
       ctx.fillRect(0, oy1, w, oy2 - oy1)
 
       // Zone label
       if (zone.label) {
-        ctx.fillStyle = `rgba(${zone.color}, 0.15)`
-        ctx.font = "bold 11px 'Geist', sans-serif"
+        ctx.fillStyle = `rgba(${zone.color}, 0.22)`
+        ctx.font = "bold 13px 'Geist', sans-serif"
         ctx.textAlign = "center"
-        ctx.fillText("· " + zone.label + " ·", w/2, y1 + 16)
-        ctx.fillText("· " + zone.label + " ·", w/2, oy1 + 16)
+        ctx.fillText(zone.label, w/2, y1 + 20)
+        ctx.fillText(zone.label, w/2, oy1 + 20)
       }
     })
 
-    // ─── Grid lines (light) ───
-    ctx.strokeStyle = "rgba(255,255,255,0.025)"
+    // ─── Grid lines (subtle reference) ───
+    ctx.strokeStyle = "rgba(255,255,255,0.02)"
     ctx.lineWidth = 0.6
-    for (let i = -5; i <= 5; i++) {
+    for (let i = -8; i <= 8; i++) {
       const lx = px(i)
       ctx.beginPath(); ctx.moveTo(lx, 0); ctx.lineTo(lx, h); ctx.stroke()
     }
-    for (let j = -3; j <= 3; j++) {
-      const lz = pz(j)
+    for (let j = -7; j <= 7; j++) {
+      const lz = pz(j * 2)
       ctx.beginPath(); ctx.moveTo(0, lz); ctx.lineTo(w, lz); ctx.stroke()
     }
 
     // ─── Spawn zone: Player half ───
-    const playerZ = FIELD_HALF_L - 2.0
-    const opponentZ = -FIELD_HALF_L + 2.0
+    const playerZ = FIELD_HALF_L - 4.0
+    const opponentZ = -FIELD_HALF_L + 4.0
     
     // Player zone box
     const pzY = pz(playerZ)
-    ctx.fillStyle = "rgba(0,255,200,0.06)"
-    ctx.fillRect(px(-2.5), pzY - 30, px(2.5) - px(-2.5), 60)
-    ctx.strokeStyle = "rgba(0,255,200,0.2)"
-    ctx.lineWidth = 1.5
-    ctx.setLineDash([5, 8])
-    ctx.strokeRect(px(-2.5), pzY - 30, px(2.5) - px(-2.5), 60)
+    ctx.fillStyle = "rgba(0,255,200,0.05)"
+    ctx.fillRect(px(-3.5), pzY - 35, px(3.5) - px(-3.5), 70)
+    ctx.strokeStyle = "rgba(0,255,200,0.18)"
+    ctx.lineWidth = 2
+    ctx.setLineDash([8, 10])
+    ctx.beginPath()
+    ctx.rect(px(-3.5), pzY - 35, px(3.5) - px(-3.5), 70)
+    ctx.stroke()
     ctx.setLineDash([])
-    ctx.fillStyle = "rgba(0,255,200,0.18)"
-    ctx.font = "bold 16px 'Geist', sans-serif"
+    ctx.fillStyle = "rgba(0,255,200,0.16)"
+    ctx.font = "bold 18px 'Geist', sans-serif"
     ctx.textAlign = "center"
-    ctx.fillText("LAUNCH ZONE", w/2, pzY - 36)
+    ctx.fillText("LAUNCH ZONE", w/2, pzY - 42)
 
     // Opponent zone box
     const ozY = pz(opponentZ)
-    ctx.fillStyle = "rgba(255,60,60,0.06)"
-    ctx.fillRect(px(-2.5), ozY - 30, px(2.5) - px(-2.5), 60)
-    ctx.strokeStyle = "rgba(255,60,60,0.2)"
-    ctx.lineWidth = 1.5
-    ctx.setLineDash([5, 8])
-    ctx.strokeRect(px(-2.5), ozY - 30, px(2.5) - px(-2.5), 60)
+    ctx.fillStyle = "rgba(255,60,60,0.05)"
+    ctx.fillRect(px(-3.5), ozY - 35, px(3.5) - px(-3.5), 70)
+    ctx.strokeStyle = "rgba(255,60,60,0.18)"
+    ctx.lineWidth = 2
+    ctx.setLineDash([8, 10])
+    ctx.beginPath()
+    ctx.rect(px(-3.5), ozY - 35, px(3.5) - px(-3.5), 70)
+    ctx.stroke()
     ctx.setLineDash([])
-    ctx.fillStyle = "rgba(255,60,60,0.18)"
-    ctx.fillText("RIVAL ZONE", w/2, ozY + 50)
+    ctx.fillStyle = "rgba(255,60,60,0.16)"
+    ctx.fillText("RIVAL ZONE", w/2, ozY + 55)
 
-    // ─── Labels ───
-    ctx.fillStyle = "rgba(255,255,255,0.04)"
-    ctx.font = "bold 18px 'Geist', sans-serif"
+    // ─── Field labels ───
+    ctx.fillStyle = "rgba(255,255,255,0.035)"
+    ctx.font = "bold 20px 'Geist', sans-serif"
     ctx.textAlign = "center"
-    ctx.fillText("YOUR SIDE", w/2, pz(FIELD_HALF_L - 0.5))
-    ctx.fillText("RIVAL SIDE", w/2, pz(-FIELD_HALF_L + 0.5))
+    ctx.fillText("YOUR SIDE", w/2, pz(FIELD_HALF_L - 1.5))
+    ctx.fillText("RIVAL SIDE", w/2, pz(-FIELD_HALF_L + 1.5))
+
+    // ─── Field dimension markers ───
+    ctx.fillStyle = "rgba(255,255,255,0.03)"
+    ctx.font = "10px 'Geist', sans-serif"
+    ctx.fillText("28m", w/2, pz(FIELD_HALF_L - 0.3))
+    ctx.fillText("28m", w/2, pz(-FIELD_HALF_L + 0.3))
+    ctx.fillText("16m", px(FIELD_HALF_W - 0.3), pz(0))
+    ctx.fillText("16m", px(-FIELD_HALF_W + 0.3), pz(0))
 
     return new THREE.CanvasTexture(c)
   }, [])
@@ -266,15 +314,15 @@ function RectangularField() {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
       <planeGeometry args={[FIELD_WIDTH, FIELD_LENGTH]} />
-      <meshStandardMaterial map={tex} roughness={0.55} metalness={0.03} />
+      <meshStandardMaterial map={tex} roughness={0.5} metalness={0.02} />
     </mesh>
   )
 }
 
 // ─── Field Walls ───
 function FieldWalls() {
-  const wallH = 0.35
-  const wallT = 0.08
+  const wallH = 0.45
+  const wallT = 0.1
   const hw = FIELD_HALF_W
   const hh = FIELD_HALF_L
   
@@ -592,7 +640,7 @@ function ArenaParticlesV3() {
     const pos = new Float32Array(count * 3)
     for (let i = 0; i < count; i++) {
       const angle = Math.random() * Math.PI * 2
-      const radius = Math.sqrt(Math.random()) * (FIELD_HALF_W - 0.5)
+      const radius = Math.sqrt(Math.random()) * (FIELD_HALF_W - 1.0)
       pos[i * 3] = Math.cos(angle) * radius
       pos[i * 3 + 1] = 0.5 + Math.random() * 4
       pos[i * 3 + 2] = Math.sin(angle) * radius
@@ -965,7 +1013,7 @@ export default function ArenaSlamV2({
   }, [dragState])
 
   // ── Pointer handlers ──
-  const SCREEN_SCALE = 2.6
+  const SCREEN_SCALE = 3.4
 
   const getCoords = useCallback((e: React.PointerEvent) => {
     const rect = arenaRef.current?.getBoundingClientRect()
@@ -981,7 +1029,7 @@ export default function ArenaSlamV2({
     e.preventDefault()
     const { x, z } = getCoords(e)
     // Player spawn position (discs enter from player's side)
-    const spawnX = 0, spawnZ = FIELD_HALF_L - 2.0
+    const spawnX = 0, spawnZ = FIELD_HALF_L - 4.0
     const dsStart = { startX: spawnX + x * 0.5, startZ: spawnZ + z * 0.5, currentX: x, currentZ: z, active: true }
     dragRef.current = dsStart
     setDragState(dsStart)
@@ -1008,9 +1056,9 @@ export default function ArenaSlamV2({
   const handlePositioningMove = useCallback((e: React.PointerEvent) => {
     if (phase !== "positioning") return
     const { x, z } = getCoords(e)
-    const cz = Math.max(CENTER_LINE_Z + 0.8, Math.min(FIELD_HALF_L - 0.8, z))
-    const cx = Math.max(-FIELD_HALF_W + 1.5, Math.min(FIELD_HALF_W - 1.5, x))
-    const valid = cz >= CENTER_LINE_Z + 0.6
+    const cz = Math.max(CENTER_LINE_Z + 1.5, Math.min(FIELD_HALF_L - 1.5, z))
+    const cx = Math.max(-FIELD_HALF_W + 2.5, Math.min(FIELD_HALF_W - 2.5, x))
+    const valid = cz >= CENTER_LINE_Z + 1.2
     setGhostPos({ x: cx, z: cz, valid })
   }, [phase, getCoords])
 
@@ -1019,8 +1067,8 @@ export default function ArenaSlamV2({
     const isPositioning = phase === "positioning"
     if (!isPositioning) return
     
-    const z = Math.max(CENTER_LINE_Z + 0.8, Math.min(FIELD_HALF_L - 0.8, fieldZ))
-    const x = Math.max(-FIELD_HALF_W + 1.5, Math.min(FIELD_HALF_W - 1.5, fieldX))
+    const z = Math.max(CENTER_LINE_Z + 1.5, Math.min(FIELD_HALF_L - 1.5, fieldZ))
+    const x = Math.max(-FIELD_HALF_W + 2.5, Math.min(FIELD_HALF_W - 2.5, fieldX))
     
     // Require card selection — don't auto-pick
     const targetCard = playerHand.find(d => d.id === placingId)
@@ -1048,7 +1096,7 @@ export default function ArenaSlamV2({
             ...d,
             x: (i - 1) * 2.0,
             y: 0,
-            z: -(FIELD_HALF_L - 2.0),
+            z: -(FIELD_HALF_L - 4.0),
             moving: false, flying: false,
             wobbleAngle: 0, wobbleSpeed: 0, wobbleAxis: 0,
           }))
@@ -1097,7 +1145,7 @@ export default function ArenaSlamV2({
     }, 8000)
     // Remove from hand, place on field at default position
     setPlayerHand(prev => prev.filter(d => d.id !== selectedId))
-    setDiscs(prev => [...prev, { ...selectedDisc, x: 0, z: FIELD_HALF_L - 2.0, vx, vy, vz, y: 0.05, moving: true, flying: true, rotationSpeed: vx * 0.6 }])
+    setDiscs(prev => [...prev, { ...selectedDisc, x: 0, z: FIELD_HALF_L - 4.0, vx, vy, vz, y: 0.05, moving: true, flying: true, rotationSpeed: vx * 0.6 }])
     simulatingRef.current = true
   }, [dragState, selectedDisc, selectedId])
 
@@ -1213,7 +1261,7 @@ export default function ArenaSlamV2({
     }
     // Place attacker on field at opponent side + compute launch in one batch
     const attackerX = 0 + (Math.random() - 0.5) * 1.2
-    const attackerZ = -(FIELD_HALF_L - 2.0)
+    const attackerZ = -(FIELD_HALF_L - 4.0)
     const pDiscs = cd.filter(d => d.owner === "player" && !d.flipped && !d.ringOut)
     let target: DiscState | null = null
     if (pDiscs.length > 0) {
@@ -1292,7 +1340,7 @@ export default function ArenaSlamV2({
   // ═══ RENDER ═══
   return (
     <div ref={arenaRef} className="w-full h-full relative select-none overflow-hidden"
-      style={{ background: "radial-gradient(ellipse at center, #1a1a3e 0%, #12122a 35%, #0a0a1e 65%, #050510 100%)" }}>
+      style={{ background: "radial-gradient(ellipse at center, #2a2018 0%, #1c1610 35%, #100d08 65%, #060504 100%)" }}>
 
       {/* Scanlines */}
       <div className="absolute inset-0 pointer-events-none z-25 opacity-[0.02]"
@@ -1343,7 +1391,7 @@ export default function ArenaSlamV2({
       {/* ─── Intro / VS Screen ─── */}
       {phase === "intro" && (
         <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none"
-          style={{ background: "radial-gradient(ellipse at center, #1a1a3e00 0%, #0a0a1e88 60%, #030308ee 100%)" }}>
+          style={{ background: "radial-gradient(ellipse at center, #2a201800 0%, #1a141088 60%, #060504ee 100%)" }}>
           <style>{`
             @keyframes intro-vs-pulse {
               0%, 100% { transform: scale(1); opacity: 0.5; }
@@ -1474,8 +1522,8 @@ export default function ArenaSlamV2({
         <directionalLight position={[6, 16, 4]} intensity={1.0} castShadow
           shadow-mapSize={[512, 512]}
           shadow-camera-near={0.5} shadow-camera-far={60}
-          shadow-camera-left={-10} shadow-camera-right={10}
-          shadow-camera-top={10} shadow-camera-bottom={-10} />
+          shadow-camera-left={-16} shadow-camera-right={16}
+          shadow-camera-top={16} shadow-camera-bottom={-16} />
         <directionalLight position={[-4, 8, -5]} intensity={0.3} />
         <spotLight position={[0, 12, 0]} angle={0.6} penumbra={0.4} intensity={2.5} color="#FFF8E7" castShadow
           shadow-mapSize={[256, 256]} />
@@ -1486,19 +1534,19 @@ export default function ArenaSlamV2({
         <FieldWalls />
         {/* Distant arena horizon ring */}
         <mesh position={[0, 0.35, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[FIELD_HALF_W + 2.0, FIELD_HALF_W + 2.15, 64]} />
+          <ringGeometry args={[FIELD_HALF_W + 3.0, FIELD_HALF_W + 3.2, 64]} />
           <meshBasicMaterial color="#FFE0A0" transparent opacity={0.025} side={2} depthWrite={false} />
         </mesh>
         {/* Stadium ambient lights — ring of distant lights */}
         {Array.from({ length: 16 }).map((_, i) => {
           const angle = (i / 16) * Math.PI * 2
-          const r = FIELD_HALF_W + 2.5
+          const r = FIELD_HALF_W + 4.0
           const px = Math.cos(angle) * r
           const pz = Math.sin(angle) * r
           return (
             <pointLight key={i} position={[px, 6 + Math.sin(i * 1.7) * 2, pz]} 
               intensity={0.15 + Math.sin(i * 2.3) * 0.08} 
-              color="#FFE0A0" distance={12} />
+              color="#FFE0A0" distance={20} />
           )
         })}
         {/* Deck tubes (tubemazos) — player + opponent */}

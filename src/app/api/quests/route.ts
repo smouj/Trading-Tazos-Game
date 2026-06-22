@@ -77,7 +77,11 @@ export async function POST(req: NextRequest) {
       if (!fresh) throw new Error("QUEST_NOT_FOUND")
       if (!fresh.completed) throw new Error("QUEST_NOT_COMPLETED")
       if (fresh.claimed) throw new Error("ALREADY_CLAIMED")
-      await tx.userQuest.update({ where: { id: uq.id }, data: { claimed: true } })
+      const claim = await tx.userQuest.updateMany({
+        where: { id: uq.id, completed: true, claimed: false },
+        data: { claimed: true },
+      })
+      if (claim.count !== 1) throw new Error("ALREADY_CLAIMED")
       await tx.user.update({ where: { id: user.id }, data: { credits: { increment: uq.quest.rewardCredits } } })
       await tx.creditTransaction.create({
         data: { userId: user.id, amount: uq.quest.rewardCredits, source: "quest", reference: questId },

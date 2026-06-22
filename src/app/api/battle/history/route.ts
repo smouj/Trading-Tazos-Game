@@ -1,6 +1,7 @@
 import { db } from '@/lib/db'
 import { getAuthUser } from '@/lib/auth'
 import { getLevelInfo } from '@/lib/leveling'
+import { withAsyncLock } from '@/lib/async-lock'
 import { NextRequest, NextResponse } from 'next/server'
 
 // ── POST: Save battle result (from PvP WebSocket or solo battle) ──
@@ -13,15 +14,21 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     const { winner, victoryType, score, turns, rounds, playerTazos, opponentTazos, opponentName, battleLog, idempotencyKey, xpEarned } = body
+    const idempotencyKeyText = typeof idempotencyKey === 'string' && idempotencyKey.trim()
+      ? idempotencyKey.trim().slice(0, 128)
+      : null
 
     // Idempotency: if key provided, store it in battleLog for dedup
     const finalBattleLog = battleLog 
-      ? JSON.stringify({ ...(typeof battleLog === 'string' ? JSON.parse(battleLog) : battleLog), idempotencyKey: idempotencyKey || undefined })
-      : (idempotencyKey ? JSON.stringify({ idempotencyKey }) : null)
+      ? JSON.stringify({ ...(typeof battleLog === 'string' ? JSON.parse(battleLog) : battleLog), idempotencyKey: idempotencyKeyText || undefined })
+      : (idempotencyKeyText ? JSON.stringify({ idempotencyKey: idempotencyKeyText }) : null)
+    const idempotencyNeedle = idempotencyKeyText
+      ? `"idempotencyKey":${JSON.stringify(idempotencyKeyText)}`
+      : null
 
-    if (idempotencyKey) {
+    if (idempotencyNeedle) {
       const existing = await db.battleRecord.findFirst({
-        where: { userId: authUser.id, battleLog: { contains: `"idempotencyKey":"${idempotencyKey}"` } },
+        where: { userId: authUser.id, battleLog: { contains: idempotencyNeedle } },
       })
       if (existing) {
         return NextResponse.json({ success: true, id: existing.id, deduplicated: true }, { status: 200 })
@@ -34,7 +41,16 @@ export async function POST(request: NextRequest) {
     }
 
     // ── All DB mutations wrapped in $transaction to prevent race conditions ──
-    const txResult = await db.$transaction(async (tx) => {
+    const txResult = await withAsyncLock(`battle-history:${authUser.id}`, () => db.$transaction(async (tx) => {
+      if (idempotencyNeedle) {
+        const existing = await tx.battleRecord.findFirst({
+          where: { userId: authUser.id, battleLog: { contains: idempotencyNeedle } },
+        })
+        if (existing) {
+          return { id: existing.id, creditsEarned: 0, deduplicated: true }
+        }
+      }
+
       const record = await tx.battleRecord.create({
         data: {
           userId: authUser.id,
@@ -99,10 +115,13 @@ export async function POST(request: NextRequest) {
         creditsEarned = 2
       }
 
-      return { id: record.id, creditsEarned }
-    })
+      return { id: record.id, creditsEarned, deduplicated: false }
+    }))
 
-    return NextResponse.json({ success: true, id: txResult.id, creditsEarned: txResult.creditsEarned }, { status: 201 })
+    return NextResponse.json(
+      { success: true, id: txResult.id, creditsEarned: txResult.creditsEarned, deduplicated: txResult.deduplicated },
+      { status: txResult.deduplicated ? 200 : 201 }
+    )
   } catch (error) {
     console.error('Error saving battle result:', error)
     return NextResponse.json({ error: 'Failed to save battle result' }, { status: 500 })

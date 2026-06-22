@@ -72,7 +72,6 @@ async function getUserMetrics(userId: string, since?: Date): Promise<ProgressMet
 
 export async function refreshUserProgress(userId: string) {
   return withAsyncLock(`progress:${userId}`, async () => {
-    const origRefreshUserProgress(userId: string) {
   const [achievements, quests, totalMetrics, dailyMetrics] = await Promise.all([
     db.achievement.findMany(),
     db.quest.findMany({ where: { isActive: true } }),
@@ -118,6 +117,7 @@ export async function refreshUserProgress(userId: string) {
       },
     })
   }
+  })
 }
 
 export async function claimDailyBonus(userId: string, amount = 25) {

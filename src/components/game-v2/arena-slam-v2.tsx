@@ -644,7 +644,8 @@ function HandDisplay({ discs, selectedId, onSelect, phase, deckCount }: {
   const available = discs.filter(d => !d.flipped && !d.ringOut)
   if (available.length === 0 && (typeof deckCount !== "number" || deckCount === 0)) return null
   return (
-    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-end gap-2.5 z-20">
+    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20" style={{ maxWidth: "90vw", overflowX: "auto" }}>
+    <div className="flex items-end gap-2.5 px-4 justify-center">
       {/* Deck counter */}
       {typeof deckCount === "number" && deckCount > 0 && (
         <div className="w-10 h-14 rounded-lg border border-white/8 bg-white/3 flex flex-col items-center justify-center text-white/20 text-[9px] font-black uppercase tracking-wider mr-1 flex-shrink-0">
@@ -691,6 +692,7 @@ function HandDisplay({ discs, selectedId, onSelect, phase, deckCount }: {
       {available.length === 0 && (
         <span className="text-white/15 text-[9px] font-black uppercase tracking-wider px-2">No cards</span>
       )}
+    </div>
     </div>
   )
 }

@@ -13,7 +13,6 @@ import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 import ArenaSlamV2 from "./arena-slam-v2"
 import {
-  spreadDiscs,
   type DiscState,
   type TazoArchetype,
   type TazoStats,
@@ -202,13 +201,10 @@ export default function BattlePlayV2() {
 
         const tazos: RawTazo[] = activeDeck.tazos
         const discs: DiscState[] = tazos.map((t, i) => rawToDisc(t, "player", i))
-        const placed = spreadDiscs(discs, 1)
-
         const oppDiscs = generateOpponentDiscs(difficulty, 0)
-        const oppPlaced = spreadDiscs(oppDiscs, -1)
 
-        setPlayerDiscs(placed)
-        setOpponentDiscs(oppPlaced)
+        setPlayerDiscs(discs)
+        setOpponentDiscs(oppDiscs)
         setLoading(false)
       } catch (err: any) {
         setError(err.message || "Failed to load battle data")

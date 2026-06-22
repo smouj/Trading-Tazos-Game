@@ -72,12 +72,12 @@ function ServerHowToPlay() {
     <section className="sr-only">
       <h1>How to Play Trading Tazos Game</h1>
       <h2>Game Overview</h2>
-      <p>Trading Tazos Game is a skill-based digital tazo battle game. Collect 139 tazos across 3 series. Build a 20-tazo deck, draw 5 for your starting hand, and draw 1 each turn, and compete in a physics-driven 3D battle arena.</p>
+      <p>Trading Tazos Game is a skill-based digital tazo battle game. Collect 139 tazos across 3 series. Build your battle deck, draw 3 tazos into your hand, and launch one per turn by dragging back and releasing. Land on opponent discs to flip them in a physics-driven 3D arena.</p>
       <h2>Game Rules</h2>
       <ol>
-        <li>Build a battle deck with 5 tazos from your collection.</li>
-        <li>Each battle starts with both players placing a bet tazo on the arena.</li>
-        <li>The winner of the coin flip goes first.</li>
+        <li>Draw 3 tazos into your starting hand from your deck.</li>
+        <li>Select a tazo, drag back to aim, and release to launch it in a parabolic arc.</li>
+        <li>Land on opponent discs to flip them — momentum and weight determine the outcome.</li>
         <li>On your turn, select a tazo from your hand and launch it vertically from above.</li>
         <li>Use Aim controls to position your drop, then Charge to power up your slam.</li>
         <li>The tazo impacts the stack below — flipped tazos are captured by the attacker.</li>

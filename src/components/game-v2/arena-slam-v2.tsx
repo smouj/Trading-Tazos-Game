@@ -4,7 +4,7 @@
 // ============================================================
 "use client"
 
-import { useRef, useState, useCallback, useEffect, useMemo, Suspense } from "react"
+import { useRef, useState, useCallback, useEffect, useMemo } from "react"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { OrbitControls } from "@react-three/drei"
 import * as THREE from "three"
@@ -140,13 +140,13 @@ function ArenaFloorV3() {
 function ArenaWallV3() {
   return (
     <group>
-      {/* Outer wall ring */}
-      <mesh position={[0, 0.25, 0]} castShadow>
+      {/* Outer wall ring — horizontal on ground */}
+      <mesh position={[0, 0.25, 0]} rotation={[-Math.PI / 2, 0, 0]} castShadow>
         <torusGeometry args={[ARENA_RADIUS, 0.15, 12, 72]} />
         <meshStandardMaterial color="#FFCC00" roughness={0.2} metalness={0.7} emissive="#FFCC00" emissiveIntensity={0.15} />
       </mesh>
-      {/* Inner glow ring */}
-      <mesh position={[0, 0.15, 0]}>
+      {/* Inner glow ring — horizontal */}
+      <mesh position={[0, 0.15, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <torusGeometry args={[ARENA_RADIUS - 0.05, 0.03, 8, 72]} />
         <meshBasicMaterial color="#FFCC00" transparent opacity={0.35} />
       </mesh>

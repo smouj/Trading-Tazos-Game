@@ -155,15 +155,15 @@ function LoadingScreen() {
     <div style={{
       position: "absolute", inset: 0, display: "flex",
       flexDirection: "column", alignItems: "center", justifyContent: "center",
-      background: "radial-gradient(ellipse at center, #161630 0%, #0b0b18 50%, #030308 100%)",
+      background: "radial-gradient(ellipse at center, #2a2018 0%, #181210 50%, #0a0806 100%)",
       gap: "2rem", zIndex: 40,
     }}>
       <div style={{
         width: 72, height: 72, borderRadius: "50%",
         border: "3px solid rgba(255,204,0,0.12)",
-        borderTopColor: "#FFCC00",
+        borderTopColor: "#FFCC00", borderLeftColor: "rgba(255,180,40,0.3)", borderRightColor: "rgba(255,180,40,0.15)",
         animation: "spin 0.8s linear infinite",
-        boxShadow: "0 0 32px rgba(255,204,0,0.15)",
+        boxShadow: "0 0 48px rgba(255,180,30,0.2), 0 0 12px rgba(255,204,0,0.08)",
       }} />
       <p style={{ fontSize: 14, fontWeight: 900, color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "0.25em", margin: 0 }}>
         Entering Arena…
@@ -229,7 +229,7 @@ export default function BattlePlayV2() {
       <div style={{
         position: "absolute", inset: 0, display: "flex",
         flexDirection: "column", alignItems: "center", justifyContent: "center",
-        background: "radial-gradient(ellipse at center, #161630 0%, #0b0b18 50%, #030308 100%)",
+        background: "radial-gradient(ellipse at center, #2a2018 0%, #181210 50%, #0a0806 100%)",
         gap: "1.5rem", zIndex: 40,
       }}>
         <div style={{ fontSize: 48 }}>⚠️</div>

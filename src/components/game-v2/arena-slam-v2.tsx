@@ -33,7 +33,7 @@ const CAM_PRESETS: Record<CamPreset, { pos: [number, number, number]; target: [n
 }
 
 // ─── Camera controller (preset + OrbitControls) ───
-function CameraController({ preset, orbitEnabled }: { preset: CamPreset; orbitEnabled: boolean }) {
+function CameraController({ preset, orbitEnabled }: { preset: CamPreset; orbitEnabled?: boolean }) {
   const { camera } = useThree()
   const targetRef = useRef(new THREE.Vector3(0, 0, 0))
   const posRef = useRef(new THREE.Vector3())
@@ -755,44 +755,53 @@ function CameraShakeV3({ intensity, duration }: { intensity: number; duration: n
 
 function ScoreHUD({ playerScore, opponentScore, playerName, opponentName, round }: { playerScore: number; opponentScore: number; playerName?: string; opponentName?: string; round?: number }) {
   return (
-    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
-      <div className="flex flex-col items-center gap-2">
-        {/* Round counter */}
-        {typeof round === "number" && round > 0 && (
-          <div className="px-3 py-0.5 rounded-full bg-white/3 border border-white/5 backdrop-blur-sm">
-            <span className="text-white/15 font-black text-[8px] uppercase tracking-[0.3em]">ROUND {round}</span>
+    <div className="absolute top-4 left-4 right-4 z-30 pointer-events-none select-none">
+      <div className="flex items-center justify-between max-w-2xl mx-auto">
+        {/* Player */}
+        <div className="flex items-center gap-3">
+          <div className="flex flex-col items-end">
+            <span className="text-white/10 font-black text-[9px] uppercase tracking-[0.3em]">{playerName || "YOU"}</span>
+            <span className="text-cyan-400 font-black text-4xl leading-none drop-shadow-[0_0_20px_rgba(0,255,200,0.25)]">{playerScore}</span>
           </div>
-        )}
-        <div className="flex items-center gap-5 bg-black/40 backdrop-blur-sm px-5 py-2.5 rounded-full border border-white/8">
-          {/* Player */}
-          <div className="flex flex-col items-center gap-0.5">
-            <span className="text-cyan-400 font-black text-2xl drop-shadow-[0_0_12px_rgba(0,255,200,0.3)]">{playerScore}</span>
-            <span className="text-white/15 font-black text-[8px] uppercase tracking-wider">{playerName || "YOU"}</span>
-          </div>
-          {/* VS */}
-          <div className="w-8 h-8 rounded-full border border-white/5 bg-white/[0.02] flex items-center justify-center">
-            <span className="text-white/10 font-black text-[10px]">VS</span>
-          </div>
-          {/* Opponent */}
-          <div className="flex flex-col items-center gap-0.5">
-            <span className="text-red-400 font-black text-2xl drop-shadow-[0_0_12px_rgba(255,50,50,0.3)]">{opponentScore}</span>
-            <span className="text-white/15 font-black text-[8px] uppercase tracking-wider">{opponentName || "RIVAL"}</span>
+          <div className="flex gap-1">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="w-2.5 h-8 rounded-sm transition-all duration-300"
+                style={{
+                  background: i < playerScore
+                    ? "linear-gradient(180deg, #00FFC8, #008866)"
+                    : "rgba(255,255,255,0.04)",
+                  boxShadow: i < playerScore ? "0 0 10px rgba(0,255,200,0.4)" : "none",
+                  border: `1px solid ${i < playerScore ? "rgba(0,255,200,0.3)" : "rgba(255,255,255,0.06)"}`
+                }} />
+            ))}
           </div>
         </div>
-        {/* Capture threshold indicator */}
+        {/* VS + round */}
+        <div className="flex flex-col items-center gap-1">
+          <div className="w-10 h-10 rounded-full border-2 border-white/5 bg-white/[0.02] backdrop-blur-sm flex items-center justify-center">
+            <span className="text-white/10 font-black text-xs">VS</span>
+          </div>
+          {typeof round === "number" && round > 0 && (
+            <span className="text-white/06 font-black text-[7px] uppercase tracking-[0.3em]">R{round}</span>
+          )}
+        </div>
+        {/* Opponent */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1">
+          <div className="flex gap-1 flex-row-reverse">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="w-2 h-2 rounded-full transition-all duration-300"
-                style={{ background: i < playerScore ? "#00FFC8" : "transparent", border: `1px solid ${i < playerScore ? "#00FFC8" : "rgba(255,255,255,0.08)"}` }} />
+              <div key={i} className="w-2.5 h-8 rounded-sm transition-all duration-300"
+                style={{
+                  background: i < opponentScore
+                    ? "linear-gradient(180deg, #FF4444, #992222)"
+                    : "rgba(255,255,255,0.04)",
+                  boxShadow: i < opponentScore ? "0 0 10px rgba(255,68,68,0.4)" : "none",
+                  border: `1px solid ${i < opponentScore ? "rgba(255,68,68,0.3)" : "rgba(255,255,255,0.06)"}`
+                }} />
             ))}
           </div>
-          <span className="text-white/06 font-black text-[7px]">5</span>
-          <div className="flex items-center gap-1">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="w-2 h-2 rounded-full transition-all duration-300"
-                style={{ background: i < opponentScore ? "#FF4444" : "transparent", border: `1px solid ${i < opponentScore ? "#FF4444" : "rgba(255,255,255,0.08)"}` }} />
-            ))}
+          <div className="flex flex-col items-start">
+            <span className="text-white/10 font-black text-[9px] uppercase tracking-[0.3em]">{opponentName || "RIVAL"}</span>
+            <span className="text-red-400 font-black text-4xl leading-none drop-shadow-[0_0_20px_rgba(255,68,68,0.25)]">{opponentScore}</span>
           </div>
         </div>
       </div>
@@ -800,48 +809,54 @@ function ScoreHUD({ playerScore, opponentScore, playerName, opponentName, round 
   )
 }
 
+
 function TurnIndicator({ phase, turn, playerName, opponentName }: { phase: string; turn?: string; playerName?: string; opponentName?: string }) {
-  if (phase === "intro" || phase === "result") return null
   const msgs: Record<string, string> = {
-    positioning: "Place your tazos on the field",
-    select: "Choose your tazo",
-    aim: "Drag back · Release to jump!",
-    physics_live: turn === "player" ? "Your disc in flight!" : "Rival disc incoming!",
-    settle: "Disks settling...",
-    opponent_aiming: "Rival sighting...",
-    opponent_launching: "Rival disc incoming!",
-    opponent_settling: "Rival disks settling...",
-    opponent: "Opponent aims...",
+    intro: "GET READY",
+    positioning: "PLACE 3 TAZOS",
+    select: "SELECT A TAZO",
+    aim: "DRAG BACK ⬌ RELEASE!",
+    physics_live: turn === "player" ? "YOUR DISC IN FLIGHT" : "RIVAL DISC INCOMING",
+    settle: "SETTLING...",
+    opponent: "RIVAL TURN",
+    result: "BATTLE OVER",
   }
   const colors: Record<string, string> = {
-    positioning: "border-cyan-400/20 text-cyan-400/60",
-    select: "border-yellow-400/20 text-yellow-400/60",
-    aim: "border-green-400/20 text-green-400/60",
-    physics_live: turn === "player" ? "border-cyan-400/20 text-cyan-400/60" : "border-red-400/20 text-red-400/60",
-    settle: "border-yellow-400/15 text-yellow-400/40",
-    opponent: "border-red-400/20 text-red-400/50",
+    aim: "#00FFC8",
+    physics_live: turn === "player" ? "#00FFC8" : "#FF4444",
+    intro: "#FFCC00",
+    positioning: "#FFCC00",
+    select: "#FFFFFF",
+    opponent: "#FF6644",
+    result: "#FFCC00",
   }
+  const msg = msgs[phase] || ""
+  if (!msg) return null
+
   return (
-    <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex items-center gap-6">
-      {/* Player name chip */}
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-cyan-400/10 bg-black/30 backdrop-blur-sm">
-        <div className="w-2 h-2 rounded-full bg-cyan-400/60" />
-        <span className="text-white/40 font-black text-[10px] uppercase tracking-wider">{playerName || "YOU"}</span>
-      </div>
-      
-      {/* Phase indicator */}
-      <div className={`px-4 py-1.5 rounded-full border bg-black/40 backdrop-blur-sm text-[10px] font-black uppercase tracking-[0.12em] ${colors[phase] || "border-white/10 text-white/50"}`}>
-        {msgs[phase] || phase}
-      </div>
-      
-      {/* Opponent name chip */}
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-red-400/10 bg-black/30 backdrop-blur-sm">
-        <span className="text-white/40 font-black text-[10px] uppercase tracking-wider">{opponentName || "RIVAL"}</span>
-        <div className="w-2 h-2 rounded-full bg-red-400/60" />
+    <div className="absolute top-24 left-1/2 -translate-x-1/2 z-20 pointer-events-none select-none">
+      <div className="flex flex-col items-center gap-1">
+        <span className="text-white/04 font-black text-[7px] uppercase tracking-[0.4em]">
+          {phase === "physics_live" ? "IN PLAY" : phase.toUpperCase()}
+        </span>
+        <span className="font-black text-sm uppercase tracking-[0.2em] transition-all duration-300"
+          style={{ color: colors[phase] || "rgba(255,255,255,0.6)", textShadow: `0 0 16px ${colors[phase] || "transparent"}40` }}>
+          {msg}
+        </span>
+        <div className="flex items-center gap-2 mt-0.5">
+          <div className="w-1.5 h-1.5 rounded-full transition-all duration-300"
+            style={{ background: turn === "player" ? "#00FFC8" : "transparent", border: "1px solid rgba(0,255,200,0.2)" }} />
+          <span className="text-white/05 font-black text-[6px] uppercase tracking-[0.3em]">
+            {turn === "player" ? playerName || "YOU" : opponentName || "RIVAL"}
+          </span>
+          <div className="w-1.5 h-1.5 rounded-full transition-all duration-300"
+            style={{ background: turn === "opponent" ? "#FF4444" : "transparent", border: "1px solid rgba(255,68,68,0.2)" }} />
+        </div>
       </div>
     </div>
   )
 }
+
 
 function HandDisplay({ discs, selectedId, onSelect, phase, deckCount, placingId, onPlace, placedCount }: {
   discs: DiscState[]
@@ -1004,6 +1019,9 @@ export default function ArenaSlamV2({
 
   // Camera
   const [camPreset, setCamPreset] = useState<CamPreset>("default")
+  const [camAnim, setCamAnim] = useState(false)
+  const [wireframe, setWireframe] = useState(false)
+  const [fogOn, setFogOn] = useState(true)
   const [orbitMode, setOrbitMode] = useState(false)
 
   const arenaRef = useRef<HTMLDivElement>(null)
@@ -1442,26 +1460,53 @@ export default function ArenaSlamV2({
       {/* Hand */}
       <HandDisplay discs={playerHand} selectedId={selectedId} onSelect={handleSelectDisc} phase={phase} deckCount={playerDeck.length} placingId={placingId} onPlace={(id) => { setPlacingId(id); setGhostPos(null) }} placedCount={placedCount} />
 
-      {/* Camera controls */}
-      <div className="absolute top-4 right-4 z-30 flex flex-col gap-1.5">
-        {(["default", "top", "side", "player"] as CamPreset[]).map(p => (
-          <button key={p} onClick={() => { setOrbitMode(false); setCamPreset(p) }}
-            className={`w-8 h-8 rounded-lg border text-[9px] font-black uppercase transition-all ${
-              camPreset === p && !orbitMode
-                ? "border-yellow-400 bg-yellow-400/20 text-yellow-400"
-                : "border-white/10 bg-black/40 text-white/50 hover:border-white/25 hover:text-white/70"
-            }`}>
-            {p.slice(0, 2).toUpperCase()}
+            {/* Camera controls */}
+      <div className="absolute top-32 right-4 z-30 flex flex-col gap-1.5">
+        {(["default", "top", "side", "player"] as CamPreset[]).map((p) => (
+          <button key={p} onClick={() => { setCamPreset(p); setCamAnim(true); setOrbitMode(false) }}
+            className={`
+              w-8 h-8 rounded-lg border text-[8px] uppercase tracking-wider font-black
+              transition-all duration-200 backdrop-blur-sm
+              ${camPreset === p && !orbitMode
+                ? "border-white/20 bg-white/[0.08] text-white/80 shadow-lg shadow-white/5"
+                : "border-white/5 bg-white/[0.02] text-white/15 hover:border-white/12 hover:text-white/30"}
+            `}
+            title={`Camera: ${p}`}
+          >
+            {p === "default" ? "3D" : p === "top" ? "TOP" : p === "side" ? "SIDE" : "YOU"}
           </button>
         ))}
+        <div className="w-6 h-px bg-white/5 mx-auto my-0.5" />
         <button onClick={() => setOrbitMode(o => !o)}
-          className={`w-8 h-8 rounded-lg border text-[8px] font-black uppercase transition-all ${
-            orbitMode
-              ? "border-cyan-400 bg-cyan-400/20 text-cyan-400"
-              : "border-white/10 bg-black/40 text-white/50 hover:border-white/25 hover:text-white/70"
-          }`}>
-          ORBIT
-        </button>
+          className={`
+            w-8 h-8 rounded-lg border text-[7px] uppercase tracking-wider font-black
+            transition-all duration-200 backdrop-blur-sm
+            ${orbitMode
+              ? "border-cyan-400/30 bg-cyan-400/[0.08] text-cyan-400/80"
+              : "border-white/5 bg-white/[0.02] text-white/10 hover:border-white/12 hover:text-white/25"}
+          `}
+          title="Free orbit"
+        >ORB</button>
+        <button onClick={() => setWireframe(w => !w)}
+          className={`
+            w-8 h-8 rounded-lg border text-[7px] uppercase tracking-wider font-black
+            transition-all duration-200 backdrop-blur-sm
+            ${wireframe
+              ? "border-yellow-400/30 bg-yellow-400/[0.08] text-yellow-400/80"
+              : "border-white/5 bg-white/[0.02] text-white/10 hover:border-white/12 hover:text-white/25"}
+          `}
+          title="Wireframe mode"
+        >WF</button>
+        <button onClick={() => setFogOn(f => !f)}
+          className={`
+            w-8 h-8 rounded-lg border text-[7px] uppercase tracking-wider font-black
+            transition-all duration-200 backdrop-blur-sm
+            ${fogOn
+              ? "border-white/15 bg-white/[0.06] text-white/50"
+              : "border-white/5 bg-white/[0.02] text-white/10 hover:border-white/12 hover:text-white/25"}
+          `}
+          title="Atmospheric fog"
+        >FG</button>
       </div>
 
       {/* Instructions */}
@@ -1600,7 +1645,8 @@ export default function ArenaSlamV2({
             {ghostPos && <GhostDisc x={ghostPos.x} z={ghostPos.z} valid={ghostPos.valid} />}
           </>
         )}
-        <CameraController preset={camPreset} orbitEnabled={orbitMode} />
+        {fogOn && <fog attach="fog" args={["#1a1410", 20, 60]} />}
+        <CameraController preset={camPreset} orbitEnabled={false} />
 
         {/* Lighting */}
         <ambientLight intensity={0.55} />

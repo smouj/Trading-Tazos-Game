@@ -57,7 +57,7 @@ export interface TazoDiscImageProps {
 const FRANCHISE_FALLBACK_BG: Record<string, string> = {
   minimon: "radial-gradient(circle at 50% 50%, #FFF5E1 0%, #FFE6C8 70%, rgba(255,203,5,0.3) 100%)",
   cybermon: "radial-gradient(circle at 50% 50%, #E1F5FF 0%, #C8E6FF 70%, rgba(0,161,233,0.3) 100%)",
-  dracobell: "radial-gradient(circle at 50% 50%, #FFF5E1 0%, #FFE6C8 70%, rgba(227,53,13,0.3) 100%)",
+  dracobell: "radial-gradient(circle at 50% 50%, #FFF5E1 0%, #FFE6C8 70%, rgba(var(--ttg-red-ch), 0.3) 100%)",
 }
 
 const FRANCHISE_FALLBACK_TEXT: Record<string, string> = {

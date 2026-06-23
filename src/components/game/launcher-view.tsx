@@ -279,7 +279,7 @@ function BagPreview({ tazos }: { tazos: any[] }) {
         </div>
         <div className="flex flex-col gap-1.5 items-center">
           <div className="w-14 h-16 border-2 border-ttg-rarity-rare bg-ttg-rarity-rare/5 flex flex-col items-center justify-center relative overflow-hidden"
-            style={{ boxShadow: "2px 2px 0 #3B82F630" }}>
+            style={{ boxShadow: "2px 2px 0 oklch(0.5880 0.0993 245.7394 / 0.19)" }}>
             <span className="text-[7px] font-black text-ttg-rarity-rare uppercase mt-1">Prem</span>
             <span className="text-[6px] font-bold text-ttg-rarity-rare/50">100 CREDITS</span>
             <div className="absolute -bottom-1 left-0 right-0 h-3 bg-ttg-rarity-rare/10 border-t border-ttg-rarity-rare/20" />

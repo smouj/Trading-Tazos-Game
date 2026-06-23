@@ -200,27 +200,6 @@ export const PAGE_META: Record<string, PageMeta> = {
       "Get in touch with the Trading Tazos Game team. Bug reports, feature requests, partnership inquiries, or just say hello.",
     canonicalPath: "/?page=contact",
   },
-  "app/collection": {
-    title: "My Collection — Trading Tazos Game",
-    description:
-      "View and manage your personal tazo collection. Browse owned tazos, check stats, and organize your digital album.",
-    canonicalPath: "/app/collection",
-    noIndex: true,
-  },
-  "app/shop": {
-    title: "Shop — Buy Tazo Bags | Trading Tazos Game",
-    description:
-      "Buy tazo bags and open packs to expand your collection. Basic and Premium packs with different rarity odds.",
-    canonicalPath: "/app/shop",
-    noIndex: true,
-  },
-  "app/battle": {
-    title: "Battle Arena — Trading Tazos Game",
-    description:
-      "Enter the 3D battle arena. Challenge AI opponents, compete in ranked matches, or battle friends in PvP mode.",
-    canonicalPath: "/app/battle",
-    noIndex: true,
-  },
   cookies: {
     title: "Cookie Policy — Trading Tazos Game",
     description:

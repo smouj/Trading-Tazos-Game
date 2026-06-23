@@ -266,7 +266,7 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned, on
         </div>
 
         {/* CONTENT AREA */}
-        <div className="px-4 sm:px-6 py-4 space-y-4 mag-dots" style={{ background: '#fffef0' }}>
+        <div className="px-4 sm:px-6 py-4 space-y-4 mag-dots" style={{ background: 'var(--ttg-cream-light)' }}>
 
           {/* ===== LARGE TAZO DISC + SPEECH BUBBLE ===== */}
           <div className="flex flex-col items-center">

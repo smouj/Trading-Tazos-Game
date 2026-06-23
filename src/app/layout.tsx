@@ -3,8 +3,7 @@ import { Oxanium, Source_Code_Pro } from "next/font/google";
 import "../styles/tokens.css";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import I18nClientWrapper from "@/components/i18n-client-wrapper";
 import CookieConsentBanner from "@/components/ui/cookie-consent-banner";
 import ScrollReveal from "@/components/scroll-reveal";
 import { SITE_CONFIG } from "@/lib/site-config";
@@ -91,16 +90,13 @@ export const metadata: Metadata = {
 
 const ADSENSE_ENABLED = process.env.NEXT_PUBLIC_ADSENSE_ENABLED === "true"
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const locale = await getLocale();
-  const messages = await getMessages();
-
   return (
-    <html lang={locale} className="overflow-x-hidden" suppressHydrationWarning>
+    <html lang="en" className="overflow-x-hidden" suppressHydrationWarning>
       <head>
         <meta name="app-version" content={VERSION} />
         {/* JSON-LD structured data for VideoGame */}
@@ -255,10 +251,10 @@ export default async function RootLayout({
         className={`${oxanium.variable} ${sourceCodePro.variable} antialiased overflow-x-hidden bg-background text-foreground`}
       >
         <a href="#main-content" className="skip-to-content">Skip to content</a>
-        <NextIntlClientProvider messages={messages} locale={locale}>
+        <I18nClientWrapper>
           <ScrollReveal />
           {children}
-        </NextIntlClientProvider>
+        </I18nClientWrapper>
         <Toaster />
         <div data-ttg-hide-on-battle>
           <CookieConsentBanner />

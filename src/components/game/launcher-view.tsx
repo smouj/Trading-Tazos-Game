@@ -9,7 +9,6 @@
 // and FAQ inside the same magazine shell, replacing the hero.
 // ============================================================
 "use client"
-import { useTranslations, useLocale } from "next-intl"
 import Image from "next/image"
 import WikiLauncherContent from "@/components/wiki/WikiLauncherContent"
 
@@ -2067,8 +2066,6 @@ function CollectionDetailContent({ collection }: { collection: string }) {
 }
 
 export default function LauncherView({ initialPage }: { initialPage?: string }) {
-  const t = useTranslations()
-  const locale = useLocale()
   const user = null
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -2130,14 +2127,14 @@ export default function LauncherView({ initialPage }: { initialPage?: string }) 
             {/* Desktop nav */}
             <nav className="hidden sm:flex items-center gap-1" role="navigation" aria-label="Main navigation">
               {([
-                ["home", t("nav.home")],
-                ["how-to-play", t("nav.howToPlay")],
-                ["collections", t("nav.collections")],
-                ["leaderboard", t("nav.leaderboard")],
-                ["download", t("nav.download")],
-                ["faq", t("nav.faq")],
-                ["wiki", t("nav.wiki")],
-                ["contact", t("nav.contact")],
+                ["home", "Home"],
+                ["how-to-play", "How to Play"],
+                ["collections", "Collections"],
+                ["leaderboard", "Rankings"],
+                ["download", "Download"],
+                ["faq", "FAQ"],
+                ["wiki", "Wiki"],
+                ["contact", "Contact"],
               ] as [PageId, string][]).map(([id, label]) => (
                 <button key={id} onClick={() => navigate(id)}
                   className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider transition-colors ${
@@ -2150,7 +2147,7 @@ export default function LauncherView({ initialPage }: { initialPage?: string }) 
 
             <div className="flex items-center gap-2">
               {/* Language Switcher */}
-              <LanguageSwitcher currentLocale={locale} />
+              <LanguageSwitcher />
               {user ? (
                 <>
                   <button onClick={handlePlay}
@@ -2308,9 +2305,15 @@ export default function LauncherView({ initialPage }: { initialPage?: string }) 
 
 // ── Language Switcher ──
 
-function LanguageSwitcher({ currentLocale }: { currentLocale: string }) {
+function LanguageSwitcher() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const [currentLocale, setCurrentLocale] = useState("en");
+
+  useEffect(() => {
+    const match = document.cookie.match(/NEXT_LOCALE=([^;]+)/);
+    if (match) setCurrentLocale(match[1]);
+  }, []);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {

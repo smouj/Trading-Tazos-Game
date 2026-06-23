@@ -145,7 +145,7 @@ export default function RootLayout({
                 "@type": "SearchAction",
                 "target": {
                   "@type": "EntryPoint",
-                  "urlTemplate": `${SITE_URL}/?page=tazos&q={search_term_string}`
+                  "urlTemplate": `${SITE_URL}/?page=wiki&q={search_term_string}`
                 },
                 "query-input": "required name=search_term_string"
               }
@@ -201,8 +201,8 @@ export default function RootLayout({
                 {
                   "@type": "ListItem",
                   "position": 3,
-                  "name": "Tazo Catalog",
-                  "item": `${SITE_URL}/?page=tazos`
+                  "name": "Wiki",
+                  "item": `${SITE_URL}/?page=wiki`
                 }
               ]
             }),

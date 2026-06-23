@@ -5,7 +5,7 @@ import type { Metadata } from "next"
 import Image from "next/image"
 export const metadata: Metadata = {
   title: "404 - Page Not Found | Trading Tazos Game",
-  description: "The page you're looking for doesn't exist. Return home to collect and battle tazos.",
+  description: "The page you're looking for doesn't exist. Return home to explore the wiki and discover all 351 tazos.",
   robots: { index: false, follow: false },
 }
 
@@ -55,11 +55,11 @@ export default function NotFoundPage() {
               <Home className="w-4 h-4" />
               Back Home
             </Link>
-            <Link href="/?page=tazos"
+            <Link href="/?page=wiki"
               className="inline-flex items-center gap-2 px-6 py-3 border-3 border-ttg-black bg-white text-sm font-black text-ttg-black uppercase tracking-wider hover:bg-ttg-yellow/10 transition-colors"
               style={{ boxShadow: "3px 3px 0px var(--ttg-black)" }}>
               <Search className="w-4 h-4" />
-              Browse Tazos
+              Browse Wiki
             </Link>
           </div>
         </div>

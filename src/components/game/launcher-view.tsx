@@ -822,9 +822,9 @@ function SeriesPreviewHome({ onNavigate }: { onNavigate: (page: PageId) => void 
   }, [])
 
   const series = [
-    { name: "Minimon", slug: "minimon", count: stats?.bySeries?.Minimon ?? 50, planned: FRANCHISE_BY_SLUG.minimon.total, year: 2026, color: "var(--ttg-yellow)", desc: "Natural creatures born from Life Sparks in Luminara. Pathfinders form Bond Marks with them, and each one grows through Blooming." },
-    { name: "Dracobell", slug: "dracobell", count: stats?.bySeries?.Dracobell ?? 50, planned: FRANCHISE_BY_SLUG.dracobell.total, year: 2026, color: "var(--ttg-dracobell)", desc: "Martial fighters from Bellora. Roar Aura, clan discipline, Bell Shards, and Dragon Bell mastery." },
-    { name: "Cybermon", slug: "cybermon", count: stats?.bySeries?.Cybermon ?? 50, planned: FRANCHISE_BY_SLUG.cybermon.total, year: 2026, color: "var(--ttg-cybermon-alt)", desc: "Living digital monsters from the Neon Grid. Soul Protocols shift through patches, surges, cores, and prime forms." },
+    { name: "Minimon", slug: "minimon", count: stats?.bySeries?.Minimon ?? FRANCHISE_BY_SLUG.minimon.count, planned: FRANCHISE_BY_SLUG.minimon.total, year: 2026, color: "var(--ttg-yellow)", desc: "Natural creatures born from Life Sparks in Luminara. Pathfinders form Bond Marks with them, and each one grows through Blooming." },
+    { name: "Dracobell", slug: "dracobell", count: stats?.bySeries?.Dracobell ?? FRANCHISE_BY_SLUG.dracobell.count, planned: FRANCHISE_BY_SLUG.dracobell.total, year: 2026, color: "var(--ttg-dracobell)", desc: "Martial fighters from Bellora. Roar Aura, clan discipline, Bell Shards, and Dragon Bell mastery." },
+    { name: "Cybermon", slug: "cybermon", count: stats?.bySeries?.Cybermon ?? FRANCHISE_BY_SLUG.cybermon.count, planned: FRANCHISE_BY_SLUG.cybermon.total, year: 2026, color: "var(--ttg-cybermon-alt)", desc: "Living digital monsters from the Neon Grid. Soul Protocols shift through patches, surges, cores, and prime forms." },
   ]
 
   return (
@@ -2043,7 +2043,7 @@ export default function LauncherView({ initialPage }: { initialPage?: string }) 
                 ["leaderboard", "Rankings"],
                 ["download", "Download"],
                 ["faq", "FAQ"],
-                                ["wiki", "Wiki"],
+                ["wiki", "Wiki"],
                 ["contact", "Contact"],
               ] as [PageId, string][]).map(([id, label]) => (
                 <button key={id} onClick={() => navigate(id)}
@@ -2074,7 +2074,7 @@ export default function LauncherView({ initialPage }: { initialPage?: string }) 
 
           {/* Mobile nav */}
           <nav className="sm:hidden flex items-center justify-start gap-0 px-1.5 pb-1.5 overflow-x-auto scrollbar-none" aria-label="Mobile navigation">
-            {(["home", "how-to-play", "collections", "leaderboard", "download", "faq", "contact"] as PageId[]).map(id => (
+            {(["home", "how-to-play", "collections", "wiki", "leaderboard", "download", "faq", "contact"] as PageId[]).map(id => (
               <button key={id} onClick={() => navigate(id)}
                 className={`px-2.5 py-1.5 text-[9px] font-black uppercase tracking-wider whitespace-nowrap transition-colors ${
                   currentPage === id ? "text-ttg-yellow border-b-2 border-ttg-yellow" : "text-white/40 hover:text-white/70"

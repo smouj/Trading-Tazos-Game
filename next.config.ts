@@ -19,8 +19,6 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/**/*": ["nodemailer", "stripe", "bcryptjs"],
     "/_not-found": [".next/server/app/not-found*", ".next/server/app/_not-found*"],
-    "/app/battle": [".next/server/app/app/battle/page_client-reference-manifest.js"],
-    "/app/battle/play": [".next/server/app/app/battle/play/page_client-reference-manifest.js"],
   },
 
   // ── Security Headers ──
@@ -60,14 +58,13 @@ const nextConfig: NextConfig = {
       { source: "/terms-of-service", destination: "/terms", permanent: true },
       { source: "/signup", destination: "/register", permanent: true },
 
-      // Battle
-      { source: "/arena", destination: "/app/battle", permanent: false },
-      // Legacy prototype → new practice arena
-      { source: "/battle/prototype", destination: "/battle/practice", permanent: true },
+      // Battle — game now in TTG-Engine desktop launcher
+      { source: "/arena", destination: "/?page=download", permanent: false },
+      { source: "/battle/prototype", destination: "/?page=download", permanent: true },
+      { source: "/battle/practice", destination: "/?page=download", permanent: true },
 
-      // App nav merge — Album merged into Collection
-      { source: "/app/album", destination: "/app/collection", permanent: true },
-      { source: "/app/album/:path*", destination: "/app/collection", permanent: true },
+      // App routes removed — game now in TTG-Engine launcher
+      { source: "/app/:path*", destination: "/?page=download", permanent: true },
 
       // Standalone pages → launcher tabs (single source of truth)
       { source: "/wiki", destination: "/?page=wiki", permanent: true },

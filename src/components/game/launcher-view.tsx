@@ -660,7 +660,7 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
               {/* Quick Actions — magazine navigation cards */}
               <div className="grid grid-cols-4 gap-2">
                 {[
-                  { icon: Swords, label: "Battle", color: "var(--ttg-red)", href: user ? "/app/battle" : "/battle/practice" },
+                  { icon: Swords, label: "Battle", color: "var(--ttg-red)", href: "/?page=download" },
                   { icon: Disc3, label: "Collection", color: "var(--ttg-cybermon)", href: "/?page=collections" },
                   { icon: Medal, label: "Rankings", color: "var(--ttg-success)", href: "/?page=leaderboard" },
                 ].map(({ icon: Icon, label, color, href }) => (
@@ -2004,13 +2004,13 @@ export default function LauncherView() {
   }, [router])
 
   const handlePlay = useCallback(() => {
-    // Guests → public practice, logged-in → app battle
-    window.location.href = user ? "/app/battle" : "/battle/practice"
-  }, [user])
+    // Marketing site → navigate to download (game is in TTG-Engine launcher)
+    navigate("download")
+  }, [navigate])
   const handleSplashDone = useCallback(() => {
     setShowSplash(false)
-    window.location.href = user ? "/app/battle" : "/battle/practice"
-  }, [user])
+    navigate("home")
+  }, [navigate])
 
   const isHome = currentPage === "home"
 

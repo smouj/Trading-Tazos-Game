@@ -16,7 +16,6 @@ import { SITE_CONFIG } from "@/lib/site-config"
 
 const FOOTER_LINKS: [string, string][] = [
   ["tazos", "Tazos"],
-  ["shop", "Shop"],
   ["how-to-play", "How to Play"],
   ["faq", "FAQ"],
   ["privacy", "Privacy"],

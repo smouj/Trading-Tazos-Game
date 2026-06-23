@@ -163,7 +163,7 @@ function ServerFAQ() {
       <h2>Is Trading Tazos Game free?</h2>
       <p>Yes, completely free. You get 30 welcome bags and 100 CREDITS when you create an account.</p>
       <h2>How many tazos are there?</h2>
-      <p>139 tazos across 3 original series: Minimon (50), Dracobell (45), and Cybermon (44). Plus 11 more planned for full Season 1.</p>
+      <p>139 tazos across 3 original series: Minimon (50), Dracobell (50), and Cybermon (50). More planned for future seasons.</p>
       <h2>How do battles work?</h2>
       <p>Choose a tazo, drag back to aim, and release to launch it in an arcing jump. Land on opponent discs to flip them — heavier discs hit harder, faster discs are harder to catch. First to flip 5 opponent discs wins. It is a physics-based arcade battle.</p>
       <h2>Can I play as a guest?</h2>

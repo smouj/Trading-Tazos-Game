@@ -21,11 +21,10 @@ const NAV_ITEMS: [string, string][] = [
   ["home", "Home"],
   ["how-to-play", "How to Play"],
   ["collections", "Collections"],
-  ["tazos", "Tazos"],
+  ["wiki", "Wiki"],
   ["leaderboard", "Rankings"],
   ["download", "Download"],
   ["faq", "FAQ"],
-  ["wiki", "Wiki"],
   ["contact", "Contact"],
 ]
 
@@ -41,7 +40,12 @@ export default function MagazineHeader({
   const isApp = variant === "app"
 
   return (
-    <header className="sticky top-0 z-40 bg-ttg-black border-b-[5px] border-ttg-black">
+    <header className="sticky top-0 z-40 border-b-[5px] border-ttg-black"
+      style={{
+        background: "var(--ttg-black)",
+        backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.05) 0.5px, transparent 0.5px)",
+        backgroundSize: "4px 4px"
+      }}>
       {/* Top row: logo + brand + nav + auth */}
       <div className="flex items-center justify-between px-4 sm:px-6 py-2.5">
         {/* Left: Logo + Brand */}

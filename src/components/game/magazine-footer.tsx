@@ -15,8 +15,9 @@ import { Download, Globe, Monitor, Apple, Terminal } from "lucide-react"
 import { SITE_CONFIG } from "@/lib/site-config"
 
 const FOOTER_LINKS: [string, string][] = [
-  ["tazos", "Tazos"],
+  ["wiki", "Wiki"],
   ["how-to-play", "How to Play"],
+  ["collections", "Collections"],
   ["faq", "FAQ"],
   ["privacy", "Privacy"],
   ["terms", "Terms"],
@@ -40,7 +41,12 @@ function PlatformBadge({ icon: Icon, label }: { icon: any; label: string }) {
 
 export default function MagazineFooter() {
   return (
-    <footer className="relative z-10 bg-ttg-black border-t-[5px] border-ttg-yellow">
+    <footer className="relative z-10 border-t-[5px] border-ttg-yellow"
+      style={{
+        background: "var(--ttg-black)",
+        backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.05) 0.5px, transparent 0.5px)",
+        backgroundSize: "4px 4px"
+      }}>
       {/* Platform badges + Download button */}
       <div className="flex items-center justify-center gap-1.5 sm:gap-3 px-3 py-2.5 border-b border-white/10">
         <PlatformBadge icon={Globe} label="Browser" />

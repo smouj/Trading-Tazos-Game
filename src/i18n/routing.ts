@@ -1,8 +1,4 @@
-import { defineRouting } from "next-intl/routing";
+// i18n routing — currently unused (no next-intl middleware)
+// Locale detection is cookie-based via LanguageSwitcher component
 import { locales, defaultLocale } from "./config";
-
-export const routing = defineRouting({
-  locales,
-  defaultLocale,
-  localePrefix: "never",
-});
+export { locales, defaultLocale };

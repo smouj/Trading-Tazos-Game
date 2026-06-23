@@ -5,7 +5,7 @@
 // This IS the launcher that the desktop app (.exe/.dmg) loads.
 //
 // v2: Integrated content pages — the masthead tabs render
-// How to Play, Collections, Tazos, Leaderboard, Download,
+// How to Play, Collections, Wiki, Leaderboard, Download,
 // and FAQ inside the same magazine shell, replacing the hero.
 // ============================================================
 "use client"
@@ -590,13 +590,13 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
 
   return (
     <div className="max-w-6xl mx-auto w-full px-3 sm:px-6">
-      <div className="flex flex-col justify-center py-6 sm:py-10">
+      <div className="flex flex-col justify-center py-6 sm:py-8 md:py-10">
 
       {/* ═══ MAGAZINE COVER SPREAD ═══ */}
-      <div className="flex flex-col md:flex-row gap-6 md:gap-10">
+      <div className="flex flex-col md:flex-row gap-6 md:gap-10 md:items-start">
 
         {/* ── LEFT: MASTHEAD + IDENTITY ── */}
-        <div className="flex flex-col items-center md:items-start gap-4 sm:gap-5 shrink-0 md:w-[340px] lg:w-[400px] relative">
+        <div className="flex flex-col items-center md:items-start gap-4 sm:gap-5 shrink-0 md:w-[360px] lg:w-[420px] relative">
           {/* Ambient glow behind logo */}
           <div className="absolute pointer-events-none" style={{
             background: "radial-gradient(ellipse 300px 200px at 50% 30%, rgba(255,204,0,0.15) 0%, rgba(255,204,0,0.04) 50%, transparent 70%)",
@@ -1229,191 +1229,8 @@ function CollectionsContent({ onNavigate }: { onNavigate: (page: PageId) => void
 
 // ── Tazo Catalog ──
 
-function TazosContent() {
-  const [tazos, setTazos] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState("")
-  const [franchiseFilter, setFranchiseFilter] = useState("all")
-  const [sortBy, setSortBy] = useState<"name"|"rarity"|"attack"|"number">("number")
-  const [sortDir, setSortDir] = useState<"asc"|"desc">("asc")
-  const [selectedTazo, setSelectedTazo] = useState<any>(null)
-  const [detailOpen, setDetailOpen] = useState(false)
-  const [detailIndex, setDetailIndex] = useState(0)
 
-  const fetchContent = useCallback(async () => {
-    fetch(`/api/wiki/entities?limit=200&_t=${Date.now()}`).then(r => r.json()).then(d => {
-      setTazos(d.tazos || [])
-      setLoading(false)
-    }).catch(() => setLoading(false))
-  }, [])
 
-  useEffect(() => {
-    fetchContent()
-  }, [fetchContent])
-
-  useVisibilityRefresh(fetchContent)
-
-  const rarityOrder: Record<string, number> = { common: 0, uncommon: 1, rare: 2, "ultra-rare": 3, ultra: 3, legendary: 4 }
-
-  const filtered = tazos
-    .filter(t =>
-      (franchiseFilter === "all" || t.franchise === franchiseFilter) &&
-      (!search || (t.displayName || t.name || "").toLowerCase().includes(search.toLowerCase()))
-    )
-    .sort((a: any, b: any) => {
-      const dir = sortDir === "asc" ? 1 : -1
-      switch (sortBy) {
-        case "name":
-          return dir * (a.displayName || a.name || "").localeCompare(b.displayName || b.name || "")
-        case "rarity":
-          return dir * ((rarityOrder[a.rarity] ?? 0) - (rarityOrder[b.rarity] ?? 0))
-        case "attack":
-          return dir * ((a.attack || 0) - (b.attack || 0))
-        case "number":
-        default:
-          return dir * ((a.number ?? 999) - (b.number ?? 999))
-      }
-    })
-
-  const handleTazoClick = (t: any, idx: number) => {
-    setSelectedTazo(t)
-    setDetailIndex(idx)
-    setDetailOpen(true)
-  }
-
-  const handleNavDetail = (dir: 1 | -1) => {
-    const nextIdx = detailIndex + dir
-    if (nextIdx >= 0 && nextIdx < filtered.length) {
-      setSelectedTazo(filtered[nextIdx])
-      setDetailIndex(nextIdx)
-    }
-  }
-
-  const fColors: Record<string, { bg: string; badge: string }> = {
-    minimon: { bg: "#FFCB0510", badge: "var(--ttg-minimon)" },
-    dracobell: { bg: "#FF6B0010", badge: "var(--ttg-dracobell)" },
-    cybermon: { bg: "#00A1E910", badge: "var(--ttg-cybermon)" },
-  }
-
-  return (
-    <>
-    <div className="w-full max-w-5xl mx-auto space-y-4">
-      {/* Filters + Sorting */}
-      <div className="flex flex-wrap items-center gap-2 p-2.5 bg-white border-2 border-ttg-black/10 mag-stripes">
-        <input value={search} onChange={e => setSearch(e.target.value)}
-          placeholder="Search tazos..."
-          className="px-3 py-1.5 text-xs font-bold border-2 border-ttg-black bg-white text-ttg-black placeholder:text-ttg-black/30 outline-none flex-1 min-w-[140px] max-w-[200px]" />
-        {["all", "minimon", "dracobell", "cybermon"].map(f => (
-          <button key={f} onClick={() => setFranchiseFilter(f)}
-            className={`px-3 py-1 text-[10px] font-black uppercase border-2 transition-all ${
-              franchiseFilter === f
-                ? "bg-ttg-black text-white border-ttg-black"
-                : "bg-white text-ttg-black border-ttg-black/15 hover:border-ttg-yellow"
-            }`}>{f === "all" ? "All" : f}</button>
-        ))}
-        {/* Sort controls */}
-        <div className="flex items-center gap-1 ml-auto">
-          <select value={sortBy} onChange={e => setSortBy(e.target.value as any)}
-            className="px-2 py-1 text-[9px] font-black uppercase border-2 border-ttg-black bg-white text-ttg-black outline-none cursor-pointer">
-            <option value="number">#</option>
-            <option value="name">Name</option>
-            <option value="rarity">Rarity</option>
-            <option value="attack">ATK</option>
-          </select>
-          <button onClick={() => setSortDir(d => d === "asc" ? "desc" : "asc")}
-            className="px-2 py-1 text-[9px] font-black uppercase border-2 border-ttg-black bg-white text-ttg-black hover:bg-ttg-yellow transition-colors"
-            title={`Sort ${sortDir === "asc" ? "descending" : "ascending"}`}>
-            {sortDir === "asc" ? "↑" : "↓"}
-          </button>
-        </div>
-        <span className="text-[9px] font-black text-ttg-black/25 uppercase">
-          {filtered.length} tazos
-        </span>
-      </div>
-
-      {loading ? (
-        <div className="flex items-center justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-ttg-black/40" /></div>
-      ) : (
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
-          {filtered.map((t: any, idx: number) => {
-            const f = t.franchise || "minimon"
-            const fc = fColors[f] || fColors.minimon
-            const rarityColor = {
-              common: "var(--ttg-rarity-common)", uncommon: "var(--ttg-success)", rare: "var(--ttg-rarity-rare)",
-              "ultra-rare": "var(--ttg-purple)", legendary: "var(--ttg-warning)",
-              ultra: "var(--ttg-purple)",
-            }[t.rarity] || "var(--ttg-rarity-common)"
-            return (
-            <button key={t.id} onClick={() => handleTazoClick(t, idx)}
-              className="tazo-tilt-card text-left border-2 border-ttg-black/10 bg-white p-2.5 hover:bg-ttg-cream hover:border-ttg-yellow hover:shadow-[3px_3px_0px_var(--ttg-black)] transition-all duration-200 group"
-              style={{ perspective: "500px" }}>
-              {/* Disc — mouse-tracking tilt */}
-              <div className="aspect-square rounded-full overflow-hidden mb-1.5 mx-auto max-w-[92px] relative"
-                style={{
-                  transition: "transform 0.15s ease-out",
-                }}
-                onMouseMove={e => {
-                  const rect = e.currentTarget.getBoundingClientRect()
-                  const cx = rect.left + rect.width / 2
-                  const cy = rect.top + rect.height / 2
-                  const nx = (e.clientX - cx) / (rect.width / 2)
-                  const ny = (e.clientY - cy) / (rect.height / 2)
-                  e.currentTarget.style.transform = `perspective(500px) rotateX(${-ny * 14}deg) rotateY(${nx * 14}deg) scale(1.06)`
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.transform = "perspective(500px) rotateX(0deg) rotateY(0deg) scale(1)"
-                }}
-              >
-                {t.imageUrl ? (
-                  <TazoDiscImage
-                    src={t.imageUrl}
-                    alt=""
-                    size="100%"
-                    borderWidth={0}
-                    scale={0.88}
-                    franchiseSlug={typeof t.franchise === "string" ? t.franchise : t.franchiseSlug}
-                    finish={t.finish}
-                    creatureVariant={t.creatureVariant}
-                    shinyImageUrl={t.shinyImageUrl}
-                    lazy
-                  />
-                ) : (
-                  <Disc3 className="w-6 h-6 absolute inset-0 m-auto text-ttg-black/10" />
-                )}
-                {/* Rarity dot */}
-                <div className="absolute bottom-1 right-1 w-2.5 h-2.5 rounded-full border border-white"
-                  style={{ background: rarityColor }} />
-              </div>
-              <p className="text-[9px] font-black text-ttg-black uppercase truncate">
-                {t.displayName || t.name}
-              </p>
-              <div className="flex items-center gap-1 mt-0.5">
-                <span className="text-[7px] font-bold text-ttg-black/30 uppercase">{t.franchiseName || t.franchise}</span>
-                <span className="ml-auto text-[7px] font-black px-1 py-px" style={{ background: `${rarityColor}15`, color: rarityColor }}>
-                  {(t.rarity || "common").replace("ultra-rare", "ultra").toUpperCase()}
-                </span>
-              </div>
-            </button>
-          )})}
-        </div>
-      )}
-    </div>
-
-    {/* Detail Modal */}
-    {selectedTazo && (
-      <TazoDetailModal
-        tazo={selectedTazo as any}
-        open={detailOpen}
-        onClose={() => { setDetailOpen(false); setSelectedTazo(null) }}
-        onPrev={detailIndex > 0 ? () => handleNavDetail(-1) : undefined}
-        onNext={detailIndex < filtered.length - 1 ? () => handleNavDetail(1) : undefined}
-        hasPrev={detailIndex > 0}
-        hasNext={detailIndex < filtered.length - 1}
-      />
-    )}
-    </>
-  )
-}
 
 // ── Leaderboard ──
 
@@ -2110,7 +1927,11 @@ export default function LauncherView({ initialPage }: { initialPage?: string }) 
         <div className="mag-halftone absolute inset-0 opacity-40 pointer-events-none" />
 
         {/* ═══ MASTHEAD ═══ */}
-        <header className="sticky top-0 z-40 border-b-[5px] border-ttg-black" style={{ background: "var(--ttg-black)" }}>
+        <header className="sticky top-0 z-40 border-b-[5px] border-ttg-black" style={{
+            background: "var(--ttg-black)",
+            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.05) 0.5px, transparent 0.5px)",
+            backgroundSize: "4px 4px"
+          }}>
           <div className="flex items-center justify-between px-4 sm:px-6 py-2.5">
             <div className="flex items-center gap-2.5">
               <button onClick={() => navigate("home")} className="cursor-pointer">
@@ -2246,7 +2067,11 @@ export default function LauncherView({ initialPage }: { initialPage?: string }) 
         </main>
 
         {/* ═══ FOOTER ═══ */}
-        <footer className="relative z-10 border-t-[5px] border-ttg-yellow" style={{ background: "var(--ttg-black)" }}>
+        <footer className="relative z-10 border-t-[5px] border-ttg-yellow" style={{
+            background: "var(--ttg-black)",
+            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.05) 0.5px, transparent 0.5px)",
+            backgroundSize: "4px 4px"
+          }}>
           <div className="flex items-center justify-center gap-1.5 sm:gap-3 px-3 py-2.5 border-b border-white/10">
             <PlatformBadge icon={Globe} label="Browser" />
             <PlatformBadge icon={Monitor} label="Windows" />

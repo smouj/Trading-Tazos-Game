@@ -839,7 +839,7 @@ function BattlePreviewHome() {
 
 function SeriesPreviewHome({ onNavigate }: { onNavigate: (page: PageId) => void }) {
   const [seriesTazos, setSeriesTazos] = useState<Record<string, any[]>>({})
-  const [stats, setStats] = useState<{totalTazos: number; bySeries: Record<string,number>} | null>(null)
+  const [stats, setStats] = useState<{totalTazos: number; bySeries: Record<string, {count: number; planned: number}>} | null>(null)
 
   useEffect(() => {
     // Fetch stats for accurate counts
@@ -866,9 +866,9 @@ function SeriesPreviewHome({ onNavigate }: { onNavigate: (page: PageId) => void 
   }, [])
 
   const series = [
-    { name: "Minimon", slug: "minimon", count: stats?.bySeries?.Minimon ?? FRANCHISE_BY_SLUG.minimon.count, planned: FRANCHISE_BY_SLUG.minimon.total, year: 2026, color: "var(--ttg-yellow)", desc: "Natural creatures born from Life Sparks in Luminara. Pathfinders form Bond Marks with them, and each one grows through Blooming." },
-    { name: "Dracobell", slug: "dracobell", count: stats?.bySeries?.Dracobell ?? FRANCHISE_BY_SLUG.dracobell.count, planned: FRANCHISE_BY_SLUG.dracobell.total, year: 2026, color: "var(--ttg-dracobell)", desc: "Martial fighters from Bellora. Roar Aura, clan discipline, Bell Shards, and Dragon Bell mastery." },
-    { name: "Cybermon", slug: "cybermon", count: stats?.bySeries?.Cybermon ?? FRANCHISE_BY_SLUG.cybermon.count, planned: FRANCHISE_BY_SLUG.cybermon.total, year: 2026, color: "var(--ttg-cybermon-alt)", desc: "Living digital monsters from the Neon Grid. Soul Protocols shift through patches, surges, cores, and prime forms." },
+    { name: "Minimon", slug: "minimon", count: stats?.bySeries?.Minimon?.count ?? FRANCHISE_BY_SLUG.minimon.count, planned: FRANCHISE_BY_SLUG.minimon.total, year: 2026, color: "var(--ttg-yellow)", desc: "Natural creatures born from Life Sparks in Luminara. Pathfinders form Bond Marks with them, and each one grows through Blooming." },
+    { name: "Dracobell", slug: "dracobell", count: stats?.bySeries?.Dracobell?.count ?? FRANCHISE_BY_SLUG.dracobell.count, planned: FRANCHISE_BY_SLUG.dracobell.total, year: 2026, color: "var(--ttg-dracobell)", desc: "Martial fighters from Bellora. Roar Aura, clan discipline, Bell Shards, and Dragon Bell mastery." },
+    { name: "Cybermon", slug: "cybermon", count: stats?.bySeries?.Cybermon?.count ?? FRANCHISE_BY_SLUG.cybermon.count, planned: FRANCHISE_BY_SLUG.cybermon.total, year: 2026, color: "var(--ttg-cybermon-alt)", desc: "Living digital monsters from the Neon Grid. Soul Protocols shift through patches, surges, cores, and prime forms." },
   ]
 
   return (
@@ -1106,7 +1106,7 @@ function CollectionsContent({ onNavigate }: { onNavigate: (page: PageId) => void
   const [showcaseTazos, setShowcaseTazos] = useState<Record<string, any[]>>({})
 
   useEffect(() => {
-    fetch("/api/stats").then(r => r.json()).then(d => { if (d.bySeries) setPublishedCounts(d.bySeries) }).catch(() => {})
+    fetch("/api/stats").then(r => r.json()).then(d => { if (d.bySeries) { const pc: Record<string,number> = {}; for (const [k,v] of Object.entries(d.bySeries)) pc[k] = (v as any).count || 0; setPublishedCounts(pc) } }).catch(() => {})
     // Fetch tazos for all 3 series to populate panels
     Promise.all([
       fetch("/api/wiki/entities?franchise=cybermon&limit=4").then(r => r.json()),
@@ -1742,7 +1742,7 @@ function CollectionDetailContent({ collection }: { collection: string }) {
   const [detailCounts, setDetailCounts] = useState<Record<string,number> | null>(null)
 
   useEffect(() => {
-    fetch("/api/stats").then(r => r.json()).then(d => { if (d.bySeries) setDetailCounts(d.bySeries) }).catch(() => {})
+    fetch("/api/stats").then(r => r.json()).then(d => { if (d.bySeries) { const dc: Record<string,number> = {}; for (const [k,v] of Object.entries(d.bySeries)) dc[k] = (v as any).count || 0; setDetailCounts(dc) } }).catch(() => {})
   }, [])
   const c = COLLECTION_DETAILS[collection]
   if (!c) return null

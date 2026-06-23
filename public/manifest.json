@@ -71,17 +71,17 @@
   "related_applications": [
     {
       "platform": "windows",
-      "url": "https://github.com/smouj/Trading-Tazos-Game/releases/download/v0.11.2/trading-tazos-game-0.11.2-win-x64.exe",
+      "url": "https://github.com/smouj/TTG-Platform/releases/download/v0.11.2/trading-tazos-game-0.11.2-win-x64.exe",
       "id": "com.tradingtazosgame.ttg.windows"
     },
     {
       "platform": "linux",
-      "url": "https://github.com/smouj/Trading-Tazos-Game/releases/download/v0.11.2/trading-tazos-game-0.11.2-linux-x86_64.AppImage",
+      "url": "https://github.com/smouj/TTG-Platform/releases/download/v0.11.2/trading-tazos-game-0.11.2-linux-x86_64.AppImage",
       "id": "com.tradingtazosgame.ttg.linux"
     },
     {
       "platform": "mac",
-      "url": "https://github.com/smouj/Trading-Tazos-Game/releases/download/v0.11.2/trading-tazos-game-0.11.2-mac-x64.dmg",
+      "url": "https://github.com/smouj/TTG-Platform/releases/download/v0.11.2/trading-tazos-game-0.11.2-mac-x64.dmg",
       "id": "com.tradingtazosgame.ttg.mac"
     }
   ],

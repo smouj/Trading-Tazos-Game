@@ -26,7 +26,7 @@ Trading Tazos Game (TTG) is an independent fictional digital tazo game. Players 
 - API Health: https://tradingtazosgame.com/api/health
 - API Version: https://tradingtazosgame.com/api/version
 - API Stats: https://tradingtazosgame.com/api/stats
-- GitHub: https://github.com/smouj/Trading-Tazos-Game
+- GitHub: https://github.com/smouj/TTG-Platform
 
 ## Franchises
 - **Minimon** (50 tazos): Natural creatures from Luminara — Life Sparks, Blooming, Pathfinder Bond Marks

@@ -63,7 +63,7 @@ export const SITE_CONFIG = {
     telegram: "https://t.me/tradingtazosgame",
     instagram: "https://www.instagram.com/tradingtazosgame/",
     discord: "https://discord.gg/4mUhnc2REb",
-    github: "https://github.com/smouj/Trading-Tazos-Game",
+    github: "https://github.com/smouj/TTG-Platform",
   },
 } as const
 

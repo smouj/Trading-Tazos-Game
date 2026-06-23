@@ -305,7 +305,7 @@ Trading-Tazos-Game/
 - SQLite (bundled — no external DB)
 
 ```bash
-git clone https://github.com/smouj/Trading-Tazos-Game.git
+git clone https://github.com/smouj/TTG-Platform.git
 cd Trading-Tazos-Game
 
 bun install
@@ -329,7 +329,7 @@ NEXT_PUBLIC_BASE_URL=http://localhost:3000
 
 ## 🖥️ Desktop App
 
-Native desktop installers available on the [Releases page](https://github.com/smouj/Trading-Tazos-Game/releases/latest).
+Native desktop installers available on the [Releases page](https://github.com/smouj/TTG-Platform/releases/latest).
 
 | Platform | Format | Version |
 |----------|--------|---------|

@@ -1723,7 +1723,7 @@ function CookiesContent() {
 function ContactContent() {
   const channels = [
     { icon: <Mail className="w-6 h-6" />, title: "Email Support", desc: "For general questions, account help, and gameplay support.", action: "support@tradingtazosgame.com", href: "mailto:support@tradingtazosgame.com", color: "var(--ttg-red)" },
-    { icon: <Bug className="w-6 h-6" />, title: "Bug Reports", desc: "Found a bug? Report it on GitHub Issues with steps to reproduce.", action: "GitHub Issues", href: "https://github.com/smouj/Trading-Tazos-Game/issues", color: "var(--ttg-blue)" },
+    { icon: <Bug className="w-6 h-6" />, title: "Bug Reports", desc: "Found a bug? Report it on GitHub Issues with steps to reproduce.", action: "GitHub Issues", href: "https://github.com/smouj/TTG-Platform/issues", color: "var(--ttg-blue)" },
     { icon: <Shield className="w-6 h-6" />, title: "Privacy & Data", desc: "Data deletion requests, privacy questions, and account removal.", action: "support@tradingtazosgame.com", href: "mailto:support@tradingtazosgame.com", color: "var(--ttg-success)" },
     { icon: <HelpCircle className="w-6 h-6" />, title: "Content Removal", desc: "If you believe any content violates our policies, let us know.", action: "support@tradingtazosgame.com", href: "mailto:support@tradingtazosgame.com", color: "var(--ttg-warning)" },
   ]

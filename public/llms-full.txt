@@ -123,7 +123,7 @@ common, uncommon, rare, ultra, legendary, epic
 - Telegram: https://t.me/tradingtazosgame
 - Discord: https://discord.gg/4mUhnc2REb
 - Instagram: https://www.instagram.com/tradingtazosgame/
-- GitHub: https://github.com/smouj/Trading-Tazos-Game
+- GitHub: https://github.com/smouj/TTG-Platform
 - Support email: support@tradingtazosgame.com
 
 ## SEO Assets

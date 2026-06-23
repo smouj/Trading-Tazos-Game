@@ -79,7 +79,7 @@ export default function WikiLauncherContent() {
               {/* ── Action ── */}
               <div className="px-4 sm:px-5 py-3 flex items-center justify-between">
                 <span className="text-[10px] font-black text-ttg-black/40 uppercase tracking-wider">
-                  Explorar catálogo
+                  Explore catalog
                 </span>
                 <span
                   className="text-[10px] font-black uppercase group-hover:translate-x-1 transition-transform"
@@ -105,18 +105,18 @@ export default function WikiLauncherContent() {
           </h2>
           <div className="prose max-w-none text-sm font-bold text-ttg-black/60 space-y-2">
             <p>
-              El <strong className="text-ttg-black">TTG Wiki</strong> es el catálogo oficial de lore de Trading Tazos Game —
+              The <strong className="text-ttg-black">TTG Wiki</strong> is the official lore catalog for Trading Tazos Game —
               a compendium of all creatures, characters, techniques, and elements
               that make up the TTG universe.
             </p>
             <p>
-              Cada entrada incluye tipos, rareza, evolución, inspiración original,
-              estilo visual y relaciones con otras entidades. El lore es completamente
-              original, sin referencias a franquicias externas.
+              Each entry includes type, rarity, evolution, original inspiration,
+              visual style, and relationships with other entities. The lore is completely
+              original, with no references to external franchises.
             </p>
             <p>
-              El catálogo crecerá junto con el arte de los tazos — las imágenes se
-              añadirán a medida que el arte esté disponible.
+              The catalog will grow alongside tazo artwork — images will be added
+              as art becomes available.
             </p>
           </div>
         </div>

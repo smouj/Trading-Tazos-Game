@@ -70,7 +70,7 @@ export const WIKI_SERIES_CONFIG: Record<TTGWikiSeries, {
     bgColor: "#E8F5E9",
     borderColor: "#2E7D32",
     description:
-      "151 criaturas naturales de Luminara. Criaturas, animales, plantas, elementos y fantasía biológica.",
+      "151 natural creatures from Luminara. Creatures, animals, plants, elements, and biological fantasy.",
     total: 151,
   },
   cybermon: {
@@ -80,7 +80,7 @@ export const WIKI_SERIES_CONFIG: Record<TTGWikiSeries, {
     bgColor: "#E3F2FD",
     borderColor: "#1565C0",
     description:
-      "128 tazos de aventura digital con Niños Vinculados y Cybermons compañeros.",
+      "128 digital adventure tazos with Bound Children and companion Cybermons.",
     total: 128,
   },
   draco_bell: {
@@ -90,7 +90,7 @@ export const WIKI_SERIES_CONFIG: Record<TTGWikiSeries, {
     bgColor: "#FFF3E0",
     borderColor: "#E65100",
     description:
-      "72 tazos de artes marciales, aura, transformaciones y Campanas Draco.",
+      "72 martial arts tazos with aura, transformations, and Draco Bells.",
     total: 72,
   },
 };

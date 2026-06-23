@@ -21,7 +21,7 @@ import {
   Zap, Star, Disc3, Swords, Medal, PackageOpen,
   ExternalLink,
   Trophy, Coins, Package, ArrowLeft, Loader2,
-  Crown, X, ArrowUp, HelpCircle, ArrowRight, ShoppingBag, Sparkles,
+  Crown, X, ArrowUp, HelpCircle, ArrowRight, Sparkles,
   User, Mail, Key, Gift, Shield, Crosshair, Gem, TrendingUp, Layers, Bug
 } from "lucide-react"
 import TazoDiscImage from "@/components/game/tazo-disc-image"
@@ -43,7 +43,7 @@ type PageId = "home"
   | "leaderboard"
   | "download"
   | "faq"
-  | "shop"
+
   | "wiki"
   | "privacy" | "terms" | "cookies" | "contact" | "refund-policy" | "disclaimer"
 
@@ -65,7 +65,6 @@ const PAGE_LABELS: Record<PageId, string> = {
   "refund-policy": "Refund Policy",
   wiki: "Wiki",
   disclaimer: "Disclaimer",
-  shop: "Shop",
 }
 
 // ── Magazine Splash Screen ──
@@ -661,7 +660,6 @@ function HomeHero({ user, onPlay }: { user: any; onPlay: () => void }) {
               {/* Quick Actions — magazine navigation cards */}
               <div className="grid grid-cols-4 gap-2">
                 {[
-                  { icon: ShoppingBag, label: "Shop", color: "var(--ttg-dracobell)", href: "/?page=shop" },
                   { icon: Swords, label: "Battle", color: "var(--ttg-red)", href: user ? "/app/battle" : "/battle/practice" },
                   { icon: Disc3, label: "Collection", color: "var(--ttg-cybermon)", href: "/?page=collections" },
                   { icon: Medal, label: "Rankings", color: "var(--ttg-success)", href: "/?page=leaderboard" },
@@ -1326,183 +1324,6 @@ function TazosContent() {
       />
     )}
     </>
-  )
-}
-
-// ── Shop ──
-
-const BAGS = [
-  { type: "classic", name: "Classic Bag", cost: 100, bonusChance: 15, rareBoost: 2, color: "var(--ttg-yellow)", bg: "#FFF8E7", border: "#E5B800", franchise: "minimon", franchiseName: "Minimon", icon: ShoppingBag, tagline: "Original collection tazos", desc: "Classic Minimon tazos with balanced rarity distribution.", rarity: [{ l:"Common",p:48},{l:"Uncommon",p:30},{l:"Rare",p:15},{l:"Ultra Rare",p:5},{l:"Legendary",p:2}] },
-  { type: "premium", name: "Premium Bag", cost: 100, bonusChance: 15, rareBoost: 2, color: "var(--ttg-rarity-rare)", bg: "#EFF6FF", border: "#2563EB", franchise: "cybermon", franchiseName: "Cybermon", icon: Star, tagline: "Digital monsters and tech", desc: "Cybermon tazos with digital finishes and balanced rarity.", rarity: [{ l:"Common",p:48},{l:"Uncommon",p:30},{l:"Rare",p:15},{l:"Ultra Rare",p:5},{l:"Legendary",p:2}] },
-  { type: "mega", name: "Mega Bag", cost: 100, bonusChance: 15, rareBoost: 2, color: "var(--ttg-dracobell)", bg: "#FFF7ED", border: "#EA580C", franchise: "dracobell", franchiseName: "Dracobell", icon: Zap, tagline: "Legendary auras, top rarity", desc: "Dracobell tazos with legendary finishes and balanced rarity.", rarity: [{ l:"Common",p:48},{l:"Uncommon",p:30},{l:"Rare",p:15},{l:"Ultra Rare",p:5},{l:"Legendary",p:2}] },
-]
-const RC: Record<string, string> = { Common:"var(--ttg-rarity-common)", Uncommon:"var(--ttg-success)", Rare:"var(--ttg-rarity-rare)","Ultra Rare":"var(--ttg-purple)", Legendary:"var(--ttg-warning)" }
-
-// Strip cache-buster query params before passing to Next.js <Image>
-function stripCB(url: string): string { return url.split("?")[0] }
-
-function ShopContent() {
-  const [tazosByF, setTazosByF] = useState<Record<string, any[]>>({})
-  const [tazosLoading, setTazosLoading] = useState(true)
-  useEffect(() => {
-    setTazosLoading(true)
-    Promise.all([
-      fetch("/api/tazos?franchise=cybermon&publishStatus=published&limit=4").then(r => r.json()),
-      fetch("/api/tazos?franchise=dracobell&publishStatus=published&limit=4").then(r => r.json()),
-      fetch("/api/tazos?franchise=minimon&publishStatus=published&limit=4").then(r => r.json()),
-    ]).then(results => {
-      const byF: Record<string, any[]> = {}
-      for (const d of results) {
-        for (const t of (d.tazos || [])) {
-          const f = t.franchise || t.franchiseSlug || "minimon"
-          if (!byF[f]) byF[f] = []
-          if (byF[f].length < 3) byF[f].push(t)
-        }
-      }
-      setTazosByF(byF)
-    }).catch(() => {}).finally(() => setTazosLoading(false))
-  }, [])
-
-  return (
-    <div className="w-full max-w-5xl mx-auto space-y-8 sm:space-y-10">
-      {/* Hero */}
-      <section className="text-center space-y-2">
-        <p className="text-sm sm:text-base text-ttg-black/50 font-bold max-w-lg mx-auto">
-          Open bags to discover and collect tazos across 3 series.{" "}
-          <span className="text-ttg-black/30">Bags 100 CREDITS each — earn CREDITS by playing or buy packs.</span>
-        </p>
-        <div className="flex items-center justify-center gap-2 pt-1">
-          <span className="inline-flex items-center gap-1 px-3 py-1.5 text-[10px] font-black bg-ttg-yellow/10 border border-ttg-yellow/30 text-ttg-black uppercase">
-            <Coins className="w-3.5 h-3.5 text-ttg-dracobell" /> 100 CREDITS
-          </span>
-          <span className="inline-flex items-center gap-1 px-3 py-1.5 text-[10px] font-black bg-ttg-success/10 border border-ttg-success/30 text-ttg-black uppercase">
-            <Sparkles className="w-3.5 h-3.5 text-ttg-success" /> Free to Play
-          </span>
-        </div>
-      </section>
-
-      {/* Bag cards */}
-      <section className="grid md:grid-cols-3 gap-4 sm:gap-6">
-        {BAGS.map(bag => {
-          const examples = tazosByF[bag.franchise] || []
-          return (
-            <div key={bag.type} className="mag-card border-3 border-ttg-black bg-white overflow-hidden" style={{ boxShadow: `4px 4px 0px ${bag.border}40` }}>
-              <div className="px-4 sm:px-5 py-4 border-b-2 border-ttg-black/10" style={{ backgroundColor: bag.bg }}>
-                {/* 3D Bag Preview */}
-                <div className="-mx-4 sm:-mx-5 -mt-4 mb-0 overflow-hidden" style={{ background: "linear-gradient(135deg, #2a2520 0%, #1a1815 50%, #0f0d0a 100%)" }}>
-                  
-                    <div className="w-full h-[180px] sm:h-[200px] flex items-center justify-center overflow-hidden">
-                    <img
-                      src={`/textures/bags/${bag.franchise}/bag-${bag.franchise}-front-01.png`}
-                      alt={`${bag.name} preview`}
-                      className="w-auto h-full object-contain drop-shadow-lg"
-                      style={{ filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.5))" }}
-                    />
-                  </div>
-                  
-                </div>
-                <div className="flex items-start justify-between mb-2 mt-3">
-                  <div className="flex items-center gap-2">
-                    {/* Example tazo from this series */}
-                    {tazosLoading ? (
-                      <Skeleton className="w-10 h-10 rounded-full flex-shrink-0" />
-                    ) : examples.length > 0 ? (
-                      <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-ttg-black/30 flex-shrink-0 bg-white" style={{ boxShadow: "2px 2px 0 var(--ttg-black)" }}>
-                        <Image src={stripCB(examples[0].imageUrl || "/tazos-artgen/backs/minimon-back.png")} alt={examples[0].displayName || examples[0].name} width={300} height={300}
-                          className="w-full h-full object-cover" />
-                      </div>
-                    ) : null}
-                    <div>
-                      <h3 className="text-sm sm:text-base font-black text-ttg-black uppercase leading-tight">{bag.name}</h3>
-                      <p className="text-[9px] sm:text-[10px] font-bold text-ttg-black/50">{bag.tagline}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-0.5 bg-white px-2 py-1 border-2 border-ttg-black shadow-[2px_2px_0px_var(--ttg-black)]">
-                    <Coins className="w-3 h-3 text-ttg-dracobell" />
-                    <span className="text-xs font-black text-ttg-black">{bag.cost}</span>
-                  </div>
-                </div>
-                <p className="text-[10px] sm:text-xs text-ttg-black/60 font-bold leading-relaxed">{bag.desc}</p>
-
-                {/* Rarity bar */}
-                <div className="mt-3 space-y-1.5">
-                  <div className="flex h-2 overflow-hidden border border-ttg-black/10">
-                    {bag.rarity.map(r => (
-                      <div key={r.l} className="h-full" style={{ width: `${r.p}%`, backgroundColor: RC[r.l] }} title={`${r.l}: ${r.p}%`} />
-                    ))}
-                  </div>
-                  <div className="flex flex-wrap gap-x-3 gap-y-1">
-                    {bag.rarity.map(r => (
-                      <div key={r.l} className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: RC[r.l] }} />
-                        <span className="text-[8px] font-bold text-ttg-black/50 uppercase">{r.l}</span>
-                        <span className="text-[8px] font-black text-ttg-black">{r.p}%</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Stats */}
-                <div className="flex gap-3 mt-3">
-                  <span className="text-[8px] font-black text-ttg-black/40 uppercase">Bonus <span className="text-[10px]" style={{ color: bag.color }}>{bag.bonusChance}%</span></span>
-                  <span className="text-[8px] font-black text-ttg-black/40 uppercase">Rare Boost <span className="text-[10px]" style={{ color: bag.color }}>×{bag.rareBoost}</span></span>
-                </div>
-              </div>
-
-              {/* Franchise + example tazos */}
-              <div className="px-4 sm:px-5 py-3 space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-[8px] font-black text-ttg-black/30 uppercase tracking-wider">Series</span>
-                  <span className="text-[10px] font-black uppercase px-2 py-0.5 border border-ttg-black/20" style={{ backgroundColor: bag.bg, color: bag.border }}>{bag.franchiseName}</span>
-                </div>
-                {/* Example tazo discs */}
-                <div className="flex items-center gap-2 mt-2 pt-2 border-t border-ttg-black/8">
-                  <span className="text-[8px] font-black text-ttg-black/25 uppercase tracking-wider shrink-0">Tazos:</span>
-                  <div className="flex gap-1.5">
-                    {tazosLoading ? (
-                      Array.from({ length: 4 }).map((_, i) => (
-                        <Skeleton key={i} className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex-shrink-0" />
-                      ))
-                    ) : examples.length > 0 ? (
-                      <>
-                        {examples.slice(0, 4).map((t: any, idx: number) => (
-                          <div key={t.id || idx} className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-ttg-black/15 overflow-hidden flex-shrink-0 hover:border-ttg-yellow hover:scale-110 transition-all bg-white" title={t.displayName || t.name}>
-                            <div className="w-full h-full rounded-full overflow-hidden relative">
-                              <TazoDiscImage src={t.imageUrl} alt={t.displayName || t.name} size="100%" borderWidth={0} scale={0.88}
-                                franchiseSlug={t.franchiseSlug || t.franchise?.slug}
-                                finish={t.finish} creatureVariant={t.creatureVariant} shinyImageUrl={t.shinyImageUrl} lazy />
-                            </div>
-                          </div>
-                        ))}
-                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-dashed border-ttg-black/10 flex items-center justify-center flex-shrink-0">
-                          <span className="text-[7px] font-black text-ttg-black/25">+more</span>
-                        </div>
-                      </>
-                    ) : null}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )
-        })}
-      </section>
-
-
-
-      {/* CTA */}
-      <section className="mag-card border-3 border-ttg-black bg-white p-6 sm:p-8 text-center space-y-4 relative overflow-hidden" style={{ boxShadow: "6px 6px 0px #FFCC0040" }}>
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: "repeating-linear-gradient(45deg, var(--ttg-black) 0px, var(--ttg-black) 2px, transparent 2px, transparent 12px)" }} />
-        <div className="relative z-10 space-y-3">
-          <h3 className="text-lg sm:text-2xl font-black text-ttg-black uppercase tracking-tight">Ready to Start Collecting?</h3>
-          <p className="text-sm text-ttg-black/50 font-bold max-w-md mx-auto">Sign up free and get starter CREDITS + 30 welcome bags to open. Collect, trade, and battle with 139 tazos across 3 series.</p>
-          <div className="flex items-center justify-center gap-3 pt-2">
-            <a href="/?page=download" className="inline-flex items-center gap-2 px-8 sm:px-10 py-3.5 text-xs sm:text-sm font-black uppercase tracking-wider bg-ttg-yellow text-ttg-black border-3 border-ttg-black shadow-[4px_4px_0px_var(--ttg-black)] hover:shadow-[2px_2px_0px_var(--ttg-black)] hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all">
-              Download TTG-Engine <ArrowRight className="w-5 h-5 ml-1" />
-            </a>
-          </div>
-        </div>
-      </section>
-    </div>
   )
 }
 
@@ -2225,8 +2046,7 @@ export default function LauncherView() {
                 ["leaderboard", "Rankings"],
                 ["download", "Download"],
                 ["faq", "FAQ"],
-                ["shop", "Shop"],
-                ["wiki", "Wiki"],
+                                ["wiki", "Wiki"],
                 ["contact", "Contact"],
               ] as [PageId, string][]).map(([id, label]) => (
                 <button key={id} onClick={() => navigate(id)}
@@ -2257,7 +2077,7 @@ export default function LauncherView() {
 
           {/* Mobile nav */}
           <nav className="sm:hidden flex items-center justify-start gap-0 px-1.5 pb-1.5 overflow-x-auto scrollbar-none" aria-label="Mobile navigation">
-            {(["home", "how-to-play", "collections", "tazos", "leaderboard", "download", "faq", "shop", "contact"] as PageId[]).map(id => (
+            {(["home", "how-to-play", "collections", "tazos", "leaderboard", "download", "faq", "contact"] as PageId[]).map(id => (
               <button key={id} onClick={() => navigate(id)}
                 className={`px-2.5 py-1.5 text-[9px] font-black uppercase tracking-wider whitespace-nowrap transition-colors ${
                   currentPage === id ? "text-ttg-yellow border-b-2 border-ttg-yellow" : "text-white/40 hover:text-white/70"
@@ -2314,9 +2134,7 @@ export default function LauncherView() {
               <div className="w-full max-w-5xl mx-auto"><FAQContent /></div>
             )}
 
-            {currentPage === "shop" && (
-              <div className="w-full max-w-5xl mx-auto"><ShopContent /></div>
-            )}
+            {/* Shop removed — use TTG-Engine */}
             {currentPage === "privacy" && (
               <div className="w-full max-w-5xl mx-auto"><PrivacyContent /></div>
             )}
@@ -2357,7 +2175,6 @@ export default function LauncherView() {
           <div className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-2 gap-2">
             <div className="flex items-center gap-3 sm:gap-4">
               <button onClick={() => navigate("tazos")} className="text-[9px] font-bold text-white/30 hover:text-ttg-yellow uppercase tracking-wider transition-colors">Tazos</button>
-              <button onClick={() => navigate("shop")} className="text-[9px] font-bold text-white/30 hover:text-ttg-yellow uppercase tracking-wider transition-colors">Shop</button>
               <button onClick={() => navigate("wiki")} className="text-[9px] font-bold text-white/30 hover:text-ttg-yellow uppercase tracking-wider transition-colors">Wiki</button>
               <button onClick={() => navigate("collections")} className="text-[9px] font-bold text-white/30 hover:text-ttg-yellow uppercase tracking-wider transition-colors">Collections</button>
               <button onClick={() => navigate("how-to-play")} className="text-[9px] font-bold text-white/30 hover:text-ttg-yellow uppercase tracking-wider transition-colors">How to Play</button>

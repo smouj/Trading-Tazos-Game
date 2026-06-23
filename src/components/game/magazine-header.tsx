@@ -25,7 +25,6 @@ const NAV_ITEMS: [string, string][] = [
   ["leaderboard", "Rankings"],
   ["download", "Download"],
   ["faq", "FAQ"],
-  ["shop", "Shop"],
   ["wiki", "Wiki"],
   ["contact", "Contact"],
 ]

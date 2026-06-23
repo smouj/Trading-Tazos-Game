@@ -7,6 +7,8 @@ import type { TTGWikiEntity } from "@/lib/wiki-types";
 
 type Props = { params: Promise<{ slug: string }> };
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   const slugs = getAllWikiEntitySlugs();
   return slugs.map((slug) => ({ slug }));

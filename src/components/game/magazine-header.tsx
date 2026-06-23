@@ -15,7 +15,6 @@ import Image from "next/image"
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { useAuth } from "@/lib/auth-context"
 import { Shield } from "lucide-react"
 
 const NAV_ITEMS: [string, string][] = [
@@ -36,7 +35,7 @@ export default function MagazineHeader({
 }: {
   variant?: "landing" | "app"
 }) {
-  const { user, logout } = useAuth()
+  // auth removed (TTG-Engine)
   const [mounted, setMounted] = useState(false)
   useEffect(() => { setMounted(true) }, [])
 
@@ -90,51 +89,13 @@ export default function MagazineHeader({
           </nav>
         )}
 
-        {/* Right: Auth buttons */}
-        <div className="flex items-center gap-2">
-          {mounted && user ? (
-            <>
-              {user.email === "dev@tradingtazosgame.com" && (
-                <a
-                  href="/admin"
-                  className="inline-flex items-center gap-1 px-2 py-1.5 text-[10px] font-black uppercase tracking-wider transition-colors no-underline border-2"
-                  style={{ color: "var(--ttg-red)", borderColor: "color-mix(in srgb, var(--ttg-red) 20%, transparent)" }}
-                >
-                  <Shield className="w-3 h-3" /> Admin
-                </a>
-              )}
-              {!isApp && (
-                <a
-                  href="/app"
-                  className="px-3 py-1.5 text-[10px] font-black text-ttg-black bg-ttg-yellow uppercase tracking-wider border-2 border-white/20 hover:bg-ttg-yellow-hover transition-colors no-underline"
-                >
-                  Dashboard
-                </a>
-              )}
-              <button
-                onClick={() => {
-                  localStorage.removeItem("ttg-token")
-                  document.cookie =
-                    "auth_token=; Max-Age=0; path=/"
-                  document.cookie =
-                    "ttg_session=; Max-Age=0; path=/"
-                  logout()
-                  window.location.href = "/"
-                }}
-                className="px-3 py-1.5 text-[10px] font-black text-white/40 uppercase tracking-wider border-2 border-white/10 hover:border-ttg-red hover:text-ttg-red transition-colors bg-transparent cursor-pointer"
+        {/* Right: Download CTA */}
+              <a
+                href="/?page=download"
+                className="inline-flex items-center px-4 py-1.5 text-xs font-black uppercase tracking-wider bg-ttg-yellow text-ttg-black border-2 border-ttg-black shadow-[2px_2px_0px_var(--ttg-black)] hover:shadow-[1px_1px_0px_var(--ttg-black)] hover:translate-x-[0.5px] hover:translate-y-[0.5px] active:shadow-none active:translate-x-[1px] active:translate-y-[1px] transition-all"
               >
-                Log Out
-              </button>
-            </>
-          ) : mounted ? (
-            <a
-              href="/login"
-              className="px-3 py-1.5 text-[10px] font-black text-white uppercase tracking-wider border-2 border-white/30 hover:border-ttg-yellow hover:text-ttg-yellow transition-colors no-underline"
-            >
-              Sign In
-            </a>
-          ) : null}
-        </div>
+                Download
+              </a>
       </div>
 
       {/* Mobile nav — only on landing variant */}

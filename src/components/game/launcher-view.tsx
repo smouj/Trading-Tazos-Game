@@ -15,7 +15,6 @@ import WikiLauncherContent from "@/components/wiki/WikiLauncherContent"
 import { useState, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useAuth } from "@/lib/auth-context"
 import { useVisibilityRefresh } from "@/lib/use-visibility-refresh"
 import {
   Download, Globe, Monitor, Apple, Terminal, Smartphone,
@@ -1512,11 +1511,8 @@ function ShopContent() {
           <h3 className="text-lg sm:text-2xl font-black text-ttg-black uppercase tracking-tight">Ready to Start Collecting?</h3>
           <p className="text-sm text-ttg-black/50 font-bold max-w-md mx-auto">Sign up free and get starter CREDITS + 30 welcome bags to open. Collect, trade, and battle with 139 tazos across 3 series.</p>
           <div className="flex items-center justify-center gap-3 pt-2">
-            <a href="/register" className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 text-xs sm:text-sm font-black uppercase tracking-wider bg-ttg-red text-white border-3 border-ttg-black shadow-[4px_4px_0px_var(--ttg-black)] hover:shadow-[2px_2px_0px_var(--ttg-black)] hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all">
-              Sign Up Free <ArrowRight className="w-4 h-4" />
-            </a>
-            <a href="/login" className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 text-xs sm:text-sm font-black uppercase tracking-wider bg-white text-ttg-black border-3 border-ttg-black shadow-[4px_4px_0px_var(--ttg-black)] hover:shadow-[2px_2px_0px_var(--ttg-black)] hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all">
-              Sign In
+            <a href="/?page=download" className="inline-flex items-center gap-2 px-8 sm:px-10 py-3.5 text-xs sm:text-sm font-black uppercase tracking-wider bg-ttg-yellow text-ttg-black border-3 border-ttg-black shadow-[4px_4px_0px_var(--ttg-black)] hover:shadow-[2px_2px_0px_var(--ttg-black)] hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all">
+              Download TTG-Engine <ArrowRight className="w-5 h-5 ml-1" />
             </a>
           </div>
         </div>
@@ -1528,8 +1524,7 @@ function ShopContent() {
 // ── Monetization Widgets ──
 
 function RewardedAdWidget() {
-  const { user, loading } = useAuth()
-  const isAuth = !loading && !!user
+  const isAuth = false // auth removed (TTG-Engine)
 
   return (
     <RewardedAdButton
@@ -1540,9 +1535,8 @@ function RewardedAdWidget() {
 }
 
 function CreditShopWidget() {
-  const { user, loading } = useAuth()
-  const isAuth = !loading && !!user
-  const userCredits = user?.credits ?? 0
+  const isAuth = false
+  const userCredits = 0
 
   return (
     <CreditShop
@@ -1650,11 +1644,8 @@ function DownloadContent() {
                 Create a free account, open your starter bags, build a deck, and jump into the 3D arena — all from your browser.
               </p>
               <div className="flex flex-wrap items-center gap-3 mt-3">
-                <Link href="/register"
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-black text-ttg-black bg-white uppercase border-2 border-ttg-black hover:bg-ttg-cream transition-colors"
-                  style={{ boxShadow: "3px 3px 0 var(--ttg-black)" }}>
-                  <Zap className="w-3.5 h-3.5" /> Play Free
-                </Link>
+              {/* Register link removed — use TTG-Engine */}
+
                 <span className="text-[10px] font-black text-ttg-black/50 uppercase tracking-wider">
                   tradingtazosgame.com
                 </span>
@@ -2206,7 +2197,7 @@ function CollectionDetailContent({ collection }: { collection: string }) {
 }
 
 export default function LauncherView() {
-  const { user } = useAuth()
+  const user = null
   const router = useRouter()
   const searchParams = useSearchParams()
   const [showSplash, setShowSplash] = useState(false)
@@ -2298,8 +2289,8 @@ export default function LauncherView() {
                     className="px-3 py-1 text-[10px] font-black text-white/40 uppercase tracking-wider border-2 border-white/10 hover:border-ttg-red hover:text-ttg-red transition-colors">Log Out</button>
                 </>
               ) : (
-                <a href="/login"
-                  className="px-3 py-1 text-[10px] font-black text-white uppercase tracking-wider border-2 border-white/30 hover:border-ttg-yellow hover:text-ttg-yellow transition-colors">Sign In</a>
+                <a href="/?page=download"
+                  className="px-3 py-1 text-[10px] font-black text-white uppercase tracking-wider border-2 border-white/30 hover:border-ttg-yellow hover:text-ttg-yellow transition-colors">Download</a>
               )}
             </div>
           </div>

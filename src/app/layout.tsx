@@ -4,7 +4,6 @@ import "../styles/tokens.css";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import I18nClientWrapper from "@/components/i18n-client-wrapper";
-import AuthProviderComponent from "@/components/auth-provider";
 import CookieConsentBanner from "@/components/ui/cookie-consent-banner";
 import ScrollReveal from "@/components/scroll-reveal";
 import { SITE_CONFIG } from "@/lib/site-config";
@@ -253,10 +252,8 @@ export default function RootLayout({
       >
         <a href="#main-content" className="skip-to-content">Skip to content</a>
         <I18nClientWrapper>
-          <AuthProviderComponent>
-            <ScrollReveal />
-            {children}
-          </AuthProviderComponent>
+          <ScrollReveal />
+          {children}
         </I18nClientWrapper>
         <Toaster />
         <div data-ttg-hide-on-battle>

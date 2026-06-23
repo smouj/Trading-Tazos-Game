@@ -14,7 +14,6 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useAuth } from "@/lib/auth-context"
 import { sfxEnsureUnlocked } from "@/lib/audio/sfx-engine"
 import MagazineHeader from "@/components/game/magazine-header"
 import MagazineFooter from "@/components/game/magazine-footer"
@@ -39,13 +38,13 @@ const NAV_ITEMS: { id: TabId; label: string; icon: typeof BookOpen; href: string
 
 // ── HUD status bar (bottom) — magazine-style ──
 function GameHUD({ credits, tazoCount }: { credits?: number; tazoCount?: number }) {
-  const { user } = useAuth()
+  const user = null // auth removed (TTG-Engine)
   if (!user) return null
   return (
     <div className="sticky bottom-0 z-40 bg-ttg-yellow border-t-[3px] border-ttg-black" data-ttg-hide-on-battle>
       <div className="max-w-7xl mx-auto px-4 py-1.5 flex items-center justify-between text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-ttg-black">
         <div className="flex items-center gap-3 sm:gap-4">
-          <span style={{ color: "var(--ttg-black)", opacity: 0.5 }}>{user.displayName || user.name}</span>
+          <span style={{ color: "var(--ttg-black)", opacity: 0.5 }}>Collector</span>
           <span className="flex items-center gap-1">
             <Coins className="w-3 h-3" /> {credits != null ? credits : "—"}
           </span>
@@ -66,7 +65,7 @@ export default function MagazinePageShell({
   children: React.ReactNode
   currentTab?: TabId
 }) {
-  const { user } = useAuth()
+  const user = null // auth removed (TTG-Engine)
   const pathname = usePathname()
   const [credits, setCredits] = useState<number>(0)
 
@@ -74,7 +73,7 @@ export default function MagazinePageShell({
     if (!user) return
     const token = localStorage.getItem("token")
     fetch("/api/credits", {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      // auth removed — public requests only
     })
       .then((r) => r.json())
       .then((d) => {
@@ -142,7 +141,7 @@ export default function MagazinePageShell({
 
       {/* ═══ GAME HUD (bottom status bar) ═══ */}
       <div data-ttg-hide-on-battle>
-        <GameHUD credits={credits} tazoCount={user?.tazoCount} />
+        <GameHUD credits={credits} tazoCount={139} />
       </div>
 
       {/* ═══ MAGAZINE FOOTER ═══ */}

@@ -485,11 +485,11 @@ function QuestsPreview() {
 
 const RARITY_GRADIENTS: Record<string, { bg: string; text: string }> = {
   common: { bg: "#9CA3AF15", text: "var(--ttg-rarity-common)" },
-  uncommon: { bg: "#22C55E15", text: "var(--ttg-success)" },
-  rare: { bg: "#3B82F615", text: "var(--ttg-rarity-rare)" },
+  uncommon: { bg: "oklch(0.4955 0.0896 126.1858 / 0.08)", text: "var(--ttg-success)" },
+  rare: { bg: "oklch(0.5880 0.0993 245.7394 / 0.08)", text: "var(--ttg-rarity-rare)" },
   "ultra-rare": { bg: "rgba(var(--ttg-purple-ch), 0.08)", text: "var(--ttg-purple)" },
   ultra: { bg: "rgba(var(--ttg-purple-ch), 0.08)", text: "var(--ttg-purple)" },
-  legendary: { bg: "#F59E0B15", text: "var(--ttg-warning)" },
+  legendary: { bg: "oklch(0.7076 0.1975 46.4558 / 0.08)", text: "var(--ttg-warning)" },
 }
 
 function FeaturedTazoCard({ tazo, featured }: { tazo: any; featured?: boolean }) {
@@ -1059,7 +1059,7 @@ function CollectionsContent({ onNavigate }: { onNavigate: (page: PageId) => void
             {/* Tazo + Back art showcase */}
             <div className="p-3 grid grid-cols-2 gap-2 bg-ttg-cream-light border-b-2 border-ttg-black/10">
               {/* Back art of franchise */}
-              <div className="rounded-full overflow-hidden aspect-square flex items-center justify-center bg-white border-2 border-ttg-black/10 shadow-[1px_1px_0px_#1a1a1a10]">
+              <div className="rounded-full overflow-hidden aspect-square flex items-center justify-center bg-white border-2 border-ttg-black/10 shadow-[1px_1px_0px_#1F1F1F10]">
                 <img
                   src={backArtUrl}
                   alt={`${c.name} back art`}
@@ -1069,7 +1069,7 @@ function CollectionsContent({ onNavigate }: { onNavigate: (page: PageId) => void
                 />
               </div>
               {/* Sample front tazo — or more backs if no tazos loaded */}
-              <div className="rounded-full overflow-hidden aspect-square flex items-center justify-center bg-white shadow-[1px_1px_0px_#1a1a1a10]">
+              <div className="rounded-full overflow-hidden aspect-square flex items-center justify-center bg-white shadow-[1px_1px_0px_#1F1F1F10]">
                 {franchiseTazos.length > 0 ? (
                   <div className="relative w-full h-full">
                     {franchiseTazos.slice(0, 3).map((t: any, i: number) => (

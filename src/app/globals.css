@@ -61,17 +61,17 @@
   --color-minimon: #ffcb05;
   --color-cybermon: #00a1e9;
   --color-dracobell: #ff6b00;
-  /* ── TTG Brand Palette (TweakCN-adapted) ── */
-  --color-ttg-yellow: #ffcc00;
-  --color-ttg-yellow-hover: #ffe566;
-  --color-ttg-yellow-dark: #e6b800;
-  --color-ttg-red: oklch(0.5016 0.1887 27.4816);
-  --color-ttg-red-dark: oklch(0.42 0.16 27);
-  --color-ttg-blue: oklch(0.5880 0.0993 245.7394);
-  --color-ttg-blue-dark: oklch(0.48 0.08 245);
-  --color-ttg-black: oklch(0.2393 0 0);
-  --color-ttg-cream: oklch(0.8452 0 0);
-  --color-ttg-cream-dark: oklch(0.73 0 0);
+  /* ── TTG Brand Palette → aliased from tokens.css ── */
+  --color-ttg-yellow: var(--ttg-yellow);
+  --color-ttg-yellow-hover: var(--ttg-yellow-hover);
+  --color-ttg-yellow-dark: var(--ttg-yellow-dark);
+  --color-ttg-red: var(--ttg-red);
+  --color-ttg-red-dark: var(--ttg-red-dark);
+  --color-ttg-blue: var(--ttg-blue);
+  --color-ttg-blue-dark: var(--ttg-blue-dark);
+  --color-ttg-black: var(--ttg-black);
+  --color-ttg-cream: var(--ttg-cream);
+  --color-ttg-cream-dark: var(--ttg-cream-dark);
   /* ── Series ── */
   --color-ttg-minimon: #ffcb05;
   --color-ttg-cybermon: #00a1e9;
@@ -79,19 +79,19 @@
   /* ── Battle ── */
   --color-ttg-player: #29adff;
   --color-ttg-opponent: #ff004d;
-  /* ── Feedback (TweakCN-adapted) ── */
-  --color-ttg-success: oklch(0.4955 0.0896 126.1858);
-  --color-ttg-warning: oklch(0.7076 0.1975 46.4558);
+  /* ── Feedback → aliased from tokens.css ── */
+  --color-ttg-success: var(--ttg-success);
+  --color-ttg-warning: var(--ttg-warning);
   --color-ttg-purple: #a855f7;
-  /* ── Rarity tiers ── */
-  --color-ttg-rarity-common: #9ca3af;
-  --color-ttg-rarity-uncommon: oklch(0.4955 0.0896 126.1858);
-  --color-ttg-rarity-rare: oklch(0.5880 0.0993 245.7394);
+  /* ── Rarity tiers → aliased from tokens.css ── */
+  --color-ttg-rarity-common: var(--ttg-rarity-common);
+  --color-ttg-rarity-uncommon: var(--ttg-rarity-uncommon);
+  --color-ttg-rarity-rare: var(--ttg-rarity-rare);
   --color-ttg-rarity-ultra: #a855f7;
   --color-ttg-rarity-legendary: #ffcc00;
-  /* ── Surfaces (TweakCN) ── */
-  --color-ttg-cream-light: oklch(0.9 0 0);
-  --color-ttg-paper: oklch(0.8452 0 0);
+  /* ── Surfaces → aliased from tokens.css ── */
+  --color-ttg-cream-light: var(--ttg-cream-light);
+  --color-ttg-paper: var(--ttg-paper);
   /* ── Arena ── */
   --color-ttg-arena-bg: #0a0a0a;
   --color-ttg-arena-ink: #c0b060;

@@ -134,7 +134,7 @@ export function PageSkeleton({ lines = 3, hero = false }: { lines?: number; hero
             className="h-3"
             style={{
               width: `${100 - i * 15}%`,
-              background: "linear-gradient(90deg, #1a1a1a08 25%, #1a1a1a10 50%, #1a1a1a08 75%)",
+              background: "linear-gradient(90deg, #1F1F1F08 25%, #1F1F1F10 50%, #1F1F1F08 75%)",
               backgroundSize: "200% 100%",
               animation: "mag-skeleton-shimmer 1.5s ease-in-out infinite",
             }}

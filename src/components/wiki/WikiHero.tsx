@@ -45,7 +45,7 @@ export default function WikiHero({ series, title, subtitle, total }: WikiHeroPro
         style={{
           background: cfg
             ? `linear-gradient(135deg, ${cfg.color}08 0%, transparent 40%, ${cfg.color}12 100%)`
-            : "linear-gradient(135deg, #1a1a1a08 0%, transparent 40%, #FFCC0012 100%)",
+            : "linear-gradient(135deg, #1F1F1F08 0%, transparent 40%, #FFCC0012 100%)",
         }}
       />
 

@@ -20,24 +20,24 @@
   --ttg-yellow-dim:           rgba(255, 204, 0, 0.15);
 
   /* ── TTG Red (accent, CTAs) ── */
-  --ttg-red:                 #E3350D;
-  --ttg-red-hover:           #FF4D2E;
-  --ttg-red-dark:            #c9302c;
+  --ttg-red:                 oklch(0.5016 0.1887 27.4816); /* TweakCN */
+  --ttg-red-hover:           oklch(0.55 0.20 27.5); /* TweakCN: lightened */
+  --ttg-red-dark:            oklch(0.42 0.16 27); /* TweakCN */
 
   /* ── TTG Blue (accent, trust) ── */
-  --ttg-blue:                #3B4CCA;
-  --ttg-blue-dark:           #2a3aa0;
+  --ttg-blue:                oklch(0.5880 0.0993 245.7394); /* TweakCN */
+  --ttg-blue-dark:           oklch(0.48 0.08 245); /* TweakCN */
 
   /* ── TTG Black (ink, borders) ── */
-  --ttg-black:               #1a1a1a;
-  --ttg-black-dim:            rgba(26, 26, 26, 0.08);
+  --ttg-black:               oklch(0.2393 0 0); /* TweakCN */
+  --ttg-black-dim:            oklch(0.2393 0 0 / 0.08); /* TweakCN */
 
   /* ── Magazine Surfaces ── */
-  --ttg-cream:               #FFF9E6;
-  --ttg-cream-dark:          #FFF3CC;
-  --ttg-cream-light:         #fffef0;
-  --ttg-paper:               #fafaf5;
-  --ttg-ink:                 #6b5c00;
+  --ttg-cream:               oklch(0.8452 0 0); /* TweakCN */
+  --ttg-cream-dark:          oklch(0.73 0 0); /* TweakCN */
+  --ttg-cream-light:         oklch(0.9 0 0); /* TweakCN */
+  --ttg-paper:               oklch(0.8452 0 0); /* TweakCN */
+  --ttg-ink:                 oklch(0.45 0.05 90); /* TweakCN: muted warm */
 
   /* ── Arena Dark (battle mode) ── */
   --ttg-arena-bg:            #0a0a0a;
@@ -75,9 +75,9 @@
   /* ═══════════════════════════════════════════════════════════════
      FEEDBACK COLORS  
      ═══════════════════════════════════════════════════════════════ */
-  --ttg-success:             #22C55E;
-  --ttg-success-glow:        0 0 20px rgba(34, 197, 94, 0.7);
-  --ttg-warning:             #F59E0B;
+  --ttg-success:             oklch(0.4955 0.0896 126.1858); /* TweakCN */
+  --ttg-success-glow:        0 0 20px rgba(var(--ttg-success-ch), 0.7); /* TweakCN */
+  --ttg-warning:             oklch(0.7076 0.1975 46.4558); /* TweakCN */
   --ttg-purple:              #A855F7;
 
   /* ═══════════════════════════════════════════════════════════════
@@ -92,8 +92,8 @@
      RARITY COLORS (6 tiers)
      ═══════════════════════════════════════════════════════════════ */
   --ttg-rarity-common:       #9CA3AF;
-  --ttg-rarity-uncommon:     #22C55E;
-  --ttg-rarity-rare:         #3B82F6;
+  --ttg-rarity-uncommon:     oklch(0.4955 0.0896 126.1858); /* TweakCN */
+  --ttg-rarity-rare:         oklch(0.5880 0.0993 245.7394); /* TweakCN */
   --ttg-rarity-ultra:        #A855F7;
   --ttg-rarity-legendary:    #FFCC00;
   --ttg-rarity-holo3d:       #FF6B9D;
@@ -189,30 +189,33 @@
   --ttg-yellow-ch:            255 204 0;
   --ttg-yellow-hover-ch:      255 229 102;
   --ttg-yellow-dark-ch:       230 184 0;
-  --ttg-red-ch:               227 53 13;
-  --ttg-red-dark-ch:          201 48 44;
-  --ttg-blue-ch:              59 76 202;
-  --ttg-blue-dark-ch:         42 58 160;
-  --ttg-black-ch:             26 26 26;
-  --ttg-cream-ch:             255 249 230;
-  --ttg-cream-dark-ch:        255 243 204;
+  --ttg-red-ch:               183 28 28; /* TweakCN oklch→sRGB */
+  --ttg-red-dark-ch:          144 17 20; /* TweakCN oklch→sRGB */
+  --ttg-blue-ch:              70 130 180; /* TweakCN oklch→sRGB */
+  --ttg-blue-dark-ch:         51 98 136; /* TweakCN oklch→sRGB */
+  --ttg-black-ch:             31 31 31; /* TweakCN oklch→sRGB */
+  --ttg-cream-ch:             204 204 204; /* TweakCN oklch→sRGB */
+  --ttg-cream-dark-ch:        168 168 168; /* TweakCN oklch→sRGB */
+
+  --ttg-cream-light-ch:       222 222 222; /* TweakCN oklch→sRGB */
+  --ttg-paper-ch:             204 204 204; /* TweakCN oklch→sRGB */
   --ttg-arena-bg-ch:          10 10 10;
   --ttg-arena-surface-ch:     42 42 78;
   --ttg-minimon-ch:           255 203 5;
   --ttg-cybermon-ch:          0 161 233;
   --ttg-dracobell-ch:         255 107 0;
-  --ttg-player-ch:            41 173 255;
-  --ttg-opponent-ch:          255 0 77;
-  --ttg-success-ch:           34 197 94;
-  --ttg-warning-ch:           245 158 11;
+  --ttg-player-ch:            41 173 255; /* kept (hex brand) */
+  --ttg-opponent-ch:          255 0 77; /* kept (hex brand) */
+  --ttg-success-ch:           85 107 47; /* TweakCN oklch→sRGB */
+  --ttg-warning-ch:           255 111 0; /* TweakCN oklch→sRGB */
   --ttg-purple-ch:            168 85 247;
   --ttg-twitter-ch:           38 165 228;
   --ttg-instagram-ch:         228 64 95;
   --ttg-discord-ch:           88 101 242;
   --ttg-reddit-ch:            255 69 0;
   --ttg-rarity-common-ch:     156 163 175;
-  --ttg-rarity-uncommon-ch:   34 197 94;
-  --ttg-rarity-rare-ch:       59 130 246;
+  --ttg-rarity-uncommon-ch:   85 107 47; /* TweakCN oklch→sRGB */
+  --ttg-rarity-rare-ch:       70 130 180; /* TweakCN oklch→sRGB */
   --ttg-rarity-ultra-ch:      168 85 247;
   --ttg-rarity-legendary-ch:  255 204 0;
 

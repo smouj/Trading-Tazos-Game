@@ -32,8 +32,8 @@ const FRANCHISE_COLORS: Record<string, { from: string; to: string; text: string;
 }
 
 const STAT_CONFIG = [
-  { key: 'attack' as const, label: 'ATK', color: 'var(--ttg-red)', bgColor: '#E3350D15' },
-  { key: 'defense' as const, label: 'DEF', color: 'var(--ttg-blue)', bgColor: '#3B4CCA15' },
+  { key: 'attack' as const, label: 'ATK', color: 'var(--ttg-red)', bgColor: 'oklch(0.5016 0.1887 27.4816 / 0.08)' },
+  { key: 'defense' as const, label: 'DEF', color: 'var(--ttg-blue)', bgColor: 'oklch(0.5880 0.0993 245.7394 / 0.08)' },
   { key: 'resistance' as const, label: 'RESIST', color: '#6366F1', bgColor: '#6366F115' },
   { key: 'weight' as const, label: 'WEIGHT', color: 'var(--ttg-yellow)', bgColor: '#FFCC0015' },
   { key: 'stability' as const, label: 'STABLE', color: '#14B8A6', bgColor: '#14B8A615' },
@@ -464,7 +464,7 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned, on
               {/* Total */}
               <div
                 className="flex items-center justify-between mt-1 pt-2"
-                style={{ borderTop: '3px dashed #1a1a1a20' }}
+                style={{ borderTop: '3px dashed #1F1F1F20' }}
               >
                 <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--ttg-black)' }}>
                   <BarChart3 className="w-3.5 h-3.5 inline mr-1" /> Total Power
@@ -531,7 +531,7 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned, on
               {tazo.skillDesc && (
                 <p
                   className="text-xs font-bold pl-7"
-                  style={{ color: '#1a1a1aCC' }}
+                  style={{ color: '#1F1F1FCC' }}
                 >
                   {tazo.skillDesc}
                 </p>
@@ -789,12 +789,12 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned, on
                   boxShadow: '3px 3px 0px var(--ttg-black)',
                 }}
               >
-                <div className="text-xs font-black uppercase" style={{ color: '#1a1a1a90' }}>Wins</div>
+                <div className="text-xs font-black uppercase" style={{ color: '#1F1F1F90' }}>Wins</div>
                 <div
                   className="text-3xl font-black leading-none"
                   style={{
                     color: 'white',
-                    textShadow: '2px 2px 0px#1a1a1a40',
+                    textShadow: '2px 2px 0px#1F1F1F40',
                   }}
                 >
                   {tazo.battleWins}
@@ -815,7 +815,7 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned, on
                   className="text-3xl font-black leading-none"
                   style={{
                     color: 'white',
-                    textShadow: '2px 2px 0px#1a1a1a40',
+                    textShadow: '2px 2px 0px#1F1F1F40',
                   }}
                 >
                   {tazo.battleLosses}
@@ -831,7 +831,7 @@ export default function TazoDetailModal({ tazo, open, onClose, onToggleOwned, on
                   boxShadow: '3px 3px 0px var(--ttg-black)',
                 }}
               >
-                <div className="text-xs font-black uppercase" style={{ color: '#1a1a1a90' }}>Win %</div>
+                <div className="text-xs font-black uppercase" style={{ color: '#1F1F1F90' }}>Win %</div>
                 <div
                   className="text-2xl font-black leading-none"
                   style={{

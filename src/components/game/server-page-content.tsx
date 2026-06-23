@@ -72,7 +72,7 @@ function ServerHowToPlay() {
     <section className="sr-only">
       <h1>How to Play Trading Tazos Game</h1>
       <h2>Game Overview</h2>
-      <p>Trading Tazos Game is a skill-based digital tazo battle game. Collect 139 tazos across 3 series. Build your battle deck, draw 3 tazos into your hand, and launch one per turn by dragging back and releasing. Land on opponent discs to flip them in a physics-driven 3D arena.</p>
+      <p>Trading Tazos Game is a skill-based digital tazo battle game. Discover 351 tazos across 3 series. Build your battle deck, draw 3 tazos into your hand, and launch one per turn by dragging back and releasing. Land on opponent discs to flip them in a physics-driven 3D arena.</p>
       <h2>Game Rules</h2>
       <ol>
         <li>Draw 3 tazos into your starting hand from your deck.</li>
@@ -98,8 +98,8 @@ function ServerHowToPlay() {
 function ServerCollections() {
   return (
     <section className="sr-only">
-      <h1>Collections — 139 Tazos Across 3 Series</h1>
-      <p>Explore all 139 published tazos in Trading Tazos Game, distributed across three original series with 50 tazos each.</p>
+      <h1>Collections — 351 Tazos Across 3 Series</h1>
+      <p>Explore all 351 entities in Trading Tazos Game, distributed across three original series: Minimon (151), Dracobell (72), and Cybermon (128).</p>
       <h2>Minimon Series</h2>
       <p>50 natural creatures from Luminara. Elemental types, diverse biomes, and unique evolutions.</p>
       <h2>Dracobell Series</h2>
@@ -114,8 +114,8 @@ function ServerCollections() {
 function ServerTazos() {
   return (
     <section className="sr-only">
-      <h1>Tazo Catalog — 139 Published Tazos</h1>
-      <p>Browse the complete catalog of 139 published tazos in Trading Tazos Game. Filter by series, rarity, combat type, and more. Each tazo features 9 combat stats, unique artwork, and finish variants.</p>
+      <h1>Tazo Catalog — 351 Published Tazos</h1>
+      <p>Browse the complete catalog of 351 entities in Trading Tazos Game. Filter by series, rarity, combat type, and more. Each tazo features 9 combat stats, unique artwork, and finish variants.</p>
       <h2>Rarity Tiers</h2>
       <ul>
         <li>Common — Basic collection tazos</li>
@@ -163,7 +163,7 @@ function ServerFAQ() {
       <h2>Is Trading Tazos Game free?</h2>
       <p>Yes, completely free. You get 30 welcome bags and 100 CREDITS when you create an account.</p>
       <h2>How many tazos are there?</h2>
-      <p>139 tazos across 3 original series: Minimon (50), Dracobell (45), and Cybermon (44). More planned for future seasons.</p>
+      <p>351 tazos across 3 original series: Minimon (151), Dracobell (72), and Cybermon (128). More planned for future seasons.</p>
       <h2>How do battles work?</h2>
       <p>Choose a tazo, drag back to aim, and release to launch it in an arcing jump. Land on opponent discs to flip them — heavier discs hit harder, faster discs are harder to catch. First to flip 5 opponent discs wins. It is a physics-based arcade battle.</p>
       <h2>Can I play as a guest?</h2>

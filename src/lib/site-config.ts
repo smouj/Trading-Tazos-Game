@@ -10,9 +10,9 @@ export const SITE_CONFIG = {
   shortName: "TTG",
   version: "0.12.0",
   canonicalUrl: "https://tradingtazosgame.com",
-  totalTazos: 139,
-  publishedTazos: 139,
-  plannedTazos: 150,
+  totalTazos: 351,
+  publishedTazos: 351,
+  plannedTazos: 351,
   totalSeries: 3,
   statsCount: 9,
   freeToPlay: true,
@@ -26,8 +26,8 @@ export const SITE_CONFIG = {
       id: "minimon",
       slug: "minimon",
       name: "Minimon",
-      total: 50,
-      published: 50,
+      total: 151,
+      published: 151,
       year: 2026,
       realm: "Luminara",
       description:
@@ -37,8 +37,8 @@ export const SITE_CONFIG = {
       id: "dracobell",
       slug: "dracobell",
       name: "Dracobell",
-      total: 50,
-      published: 45,
+      total: 72,
+      published: 72,
       year: 2026,
       realm: "Bellora",
       description:
@@ -48,8 +48,8 @@ export const SITE_CONFIG = {
       id: "cybermon",
       slug: "cybermon",
       name: "Cybermon",
-      total: 50,
-      published: 44,
+      total: 128,
+      published: 128,
       year: 2026,
       realm: "Neon Grid",
       description:
@@ -105,9 +105,9 @@ export interface PageMeta {
 
 export const PAGE_META: Record<string, PageMeta> = {
   home: {
-    title: "Collect, Trade & Battle 139 Tazos — Free Online Game",
+    title: "Collect, Trade & Battle 351 Tazos — Free Online Game",
     description:
-      "Trading Tazos Game is a free browser-based skill game. Collect 139 tazos across Minimon, Dracobell & Cybermon collections. Build a 20-tazo deck, draw 5 for your starting hand, draw 1 each turn, and battle in a physics-driven 3D arena. No download required.",
+      "Trading Tazos Game is a free browser-based skill game. Collect 351 tazos across Minimon, Dracobell & Cybermon collections. Build a 20-tazo deck, draw 5 for your starting hand, draw 1 each turn, and battle in a physics-driven 3D arena. No download required.",
     canonicalPath: "/",
   },
   "how-to-play": {
@@ -119,31 +119,31 @@ export const PAGE_META: Record<string, PageMeta> = {
   "collections-minimon": {
     title: "Minimon Collection — Creature Companions from Luminara | Trading Tazos Game",
     description:
-      "Explore the Minimon series — 50 natural creatures from Luminara. Discover regions, blooming evolution, Pathfinders, creature habitats, and elemental companions.",
+      "Explore the Minimon series — 151 natural creatures from Luminara. Discover regions, blooming evolution, Pathfinders, creature habitats, and elemental companions.",
     canonicalPath: "/collections/minimon",
   },
   "collections-dracobell": {
     title: "Dracobell Collection — Martial Warriors of Bellora | Trading Tazos Game",
     description:
-      "Explore the Dracobell series — 50 martial warriors from Bellora. Clans, Roar Aura, Bell Shards, ascension phases, and the legendary Dracobell tournament.",
+      "Explore the Dracobell series — 72 martial warriors from Bellora. Clans, Roar Aura, Bell Shards, ascension phases, and the legendary Dracobell tournament.",
     canonicalPath: "/collections/dracobell",
   },
   "collections-cybermon": {
     title: "Cybermon Collection — Digital Beasts of the Neon Grid | Trading Tazos Game",
     description:
-      "Explore the Cybermon series — 50 digital monsters from the Neon Grid. Sectors, Soul Protocols, shift phases, Linkers, and the fight against the Null Signal.",
+      "Explore the Cybermon series — 128 digital monsters from the Neon Grid. Sectors, Soul Protocols, shift phases, Linkers, and the fight against the Null Signal.",
     canonicalPath: "/collections/cybermon",
   },
   collections: {
-    title: "Collections — 139 Tazos Across 3 Series | Trading Tazos Game",
+    title: "Collections — 351 Tazos Across 3 Series | Trading Tazos Game",
     description:
-      "Explore all 139 tazos across Minimon (Luminara, 50 creatures), Dracobell (Bellora, 45), and Cybermon (Neon Grid, 44). Each series has original creatures with lore, stats, and finishes.",
+      "Explore all 351 tazos across Minimon (Luminara, 151 entities), Dracobell (Bellora, 72), and Cybermon (Neon Grid, 128). Each series has original creatures with lore, stats, and finishes.",
     canonicalPath: "/?page=collections",
   },
   tazos: {
-    title: "Tazo Catalog — 139 Published Tazos | Trading Tazos Game",
+    title: "Tazo Catalog — 351 Published Tazos | Trading Tazos Game",
     description:
-      "Browse the full catalog of 139 published tazos across 3 series. Filter by series, rarity, condition, and element. Each tazo has 9 combat stats for 20-tazo deck building and arena battles.",
+      "Browse the full catalog of 351 published tazos across 3 series. Filter by series, rarity, condition, and element. Each tazo has 9 combat stats for 20-tazo deck building and arena battles.",
     canonicalPath: "/?page=tazos",
   },
   leaderboard: {

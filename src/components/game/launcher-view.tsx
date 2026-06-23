@@ -838,7 +838,7 @@ function SeriesPreviewHome({ onNavigate }: { onNavigate: (page: PageId) => void 
         <div className="flex-1 h-0.5 bg-ttg-black/8" />
       </div>
       <div className="text-center mb-6">
-        <h2 className="text-lg sm:text-xl font-black text-ttg-black uppercase tracking-[0.06em]">3 Series · {stats?.totalTazos ?? 139} Tazos Published</h2>
+        <h2 className="text-lg sm:text-xl font-black text-ttg-black uppercase tracking-[0.06em]">3 Series · {stats?.totalTazos ?? 351} Tazos Published</h2>
         <p className="text-[10px] font-bold text-ttg-black/30 uppercase tracking-wider">Original TTG lore series</p>
       </div>
       <div className="grid sm:grid-cols-3 gap-3 sm:gap-4">
@@ -1043,7 +1043,7 @@ function CollectionsContent({ onNavigate }: { onNavigate: (page: PageId) => void
   return (
     <div className="w-full max-w-4xl mx-auto space-y-5">
       <p className="text-xs font-bold text-ttg-black/50 uppercase tracking-wider">
-        3 original series · 139 Season 1 tazos · lore-safe TTG canon
+        3 original series · 351 Season 1 tazos · lore-safe TTG canon
       </p>
       <div className="grid md:grid-cols-3 gap-4">
         {COLLECTION_DATA.map(c => {

@@ -23,8 +23,8 @@ export const FRANCHISES: FranchiseConfig[] = [
   {
     slug: "minimon",
     name: "Minimon",
-    count: 50,
-    total: 50,
+    count: 151,
+    total: 151,
     year: 2026,
     origin: "TazoForge Studios",
     color: "var(--ttg-yellow)",
@@ -33,8 +33,8 @@ export const FRANCHISES: FranchiseConfig[] = [
   {
     slug: "dracobell",
     name: "Dracobell",
-    count: 45,
-    total: 50,
+    count: 72,
+    total: 72,
     year: 2026,
     origin: "TazoForge Studios",
     color: "var(--ttg-dracobell)",
@@ -43,8 +43,8 @@ export const FRANCHISES: FranchiseConfig[] = [
   {
     slug: "cybermon",
     name: "Cybermon",
-    count: 44,
-    total: 50,
+    count: 128,
+    total: 128,
     year: 2026,
     origin: "TazoForge Studios",
     color: "#00B4D8",
